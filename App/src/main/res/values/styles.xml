@@ -29,4 +29,16 @@
         <item name="android:padding">16dp</item>
     </style>
 
+    <style name="TextAppearance">
+        <item name="android:textSize">26sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CodeFont" parent="TextAppearance">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:typeface">monospace</item>
+    </style>
+
+
 </resources>

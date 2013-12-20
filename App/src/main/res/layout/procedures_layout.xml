@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <!-- 手续录入部分 -->
+    <ScrollView android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableLayout android:layout_width="match_parent"
+                     android:layout_height="wrap_content">
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/regArea"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/regArea_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/plateNumber"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <EditText android:id="@+id/plateNumber_edit"
+                          android:layout_height="wrap_content"
+                          android:layout_width="0dp"
+                          android:layout_weight="2"
+                          android:maxLength="10"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/licenseModel"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <EditText android:id="@+id/licenseModel_edit"
+                          android:layout_height="wrap_content"
+                          android:layout_width="0dp"
+                          android:layout_weight="2"
+                          android:descendantFocusability="beforeDescendants"
+                          android:focusableInTouchMode="true"
+                          android:maxLength="30"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/vehicleType"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/vehicleType_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/vehicleType_items"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/useCharacter"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/useCharacter_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/useCharacter_items"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/mileage"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <EditText
+                    android:id="@+id/mileage_edit"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"/>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/kilometer"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/exteriorColor"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/exteriorColor_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/regDate"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/regYear_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:textAlignment="center"
+                         android:layout_weight="1"/>
+                <Spinner android:id="@+id/regMonth_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/builtDate"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/builtYear_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"/>
+                <Spinner android:id="@+id/builtMonth_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/invoice"
+                    android:layout_weight="2"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/invoice_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/invoice_items"/>
+                <EditText
+                    android:id="@+id/invoice_edit"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:inputType="number"
+                    android:maxLength="7"/>
+                <TextView
+                    android:id="@+id/rmb"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/rmb"
+                    android:textSize="18sp"/>
+                <TextView android:id="@+id/placeholder"
+                          android:layout_width="0dp"
+                          android:layout_height="wrap_content"
+                          android:layout_weight="2"
+                          android:visibility="gone"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/surtax"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/surtax_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/surtax_items"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/transferCount"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/transferCount_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"/>
+            </TableRow>
+            <TableRow android:id="@+id/transferLastDate_row">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/transferLastDate"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/transferLastYear_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"/>
+                <Spinner android:id="@+id/transferLastMonth_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/annualInspectionDate"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/annualInspectionYear_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"/>
+                <Spinner android:id="@+id/annualInspectionMonth_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/compulsoryInsurance"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/compulsoryInsurance_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/existornot"/>
+            </TableRow>
+
+            <TableRow android:id="@+id/compulsoryInsuranceDate_table">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/compulsoryInsuranceDate"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/compulsoryInsuranceYear_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"/>
+                <Spinner android:id="@+id/compulsoryInsuranceMonth_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/licencePhotoMatch"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <EditText android:id="@+id/licencePhotoMatch_edit"
+                          android:layout_height="wrap_content"
+                          android:layout_width="0dp"
+                          android:editable="false"
+                          android:layout_weight="1"/>
+                <Button android:id="@+id/licencePhotoMatch_button"
+                        android:layout_width="0dp"
+                        android:layout_height="35dp"
+                        android:text="@string/choose"
+                        android:textColor="#FFF"
+                        android:background="@drawable/button_custom"
+                        android:layout_weight="1"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/insurance"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/insurance_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/insurance_items"/>
+            </TableRow>
+            <TableLayout android:id="@+id/insurance_table"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content">
+                <TableRow>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:text="@string/insuranceRegion"
+                        android:layout_weight="1"
+                        android:textSize="18sp"/>
+                    <Spinner android:id="@+id/insuranceRegion_spinner"
+                             android:layout_height="wrap_content"
+                             android:layout_width="0dp"
+                             android:layout_weight="2"
+                             android:entries="@array/insuranceRegion_items"/>
+                </TableRow>
+                <TableRow>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:text="@string/insuranceAmount"
+                        android:layout_weight="1"
+                        android:textSize="18sp"/>
+                    <EditText android:id="@+id/insuranceAmount_edit"
+                              android:layout_height="wrap_content"
+                              android:layout_width="0dp"
+                              android:layout_weight="1"
+                              android:maxLength="7"
+                              android:inputType="number"/>
+                    <TextView android:layout_height="wrap_content"
+                              android:layout_width="0dp"
+                              android:text="@string/rmb"
+                              android:layout_weight="1"/>
+                </TableRow>
+                <TableRow>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:text="@string/insuranceExpiryDate"
+                        android:layout_weight="1"
+                        android:textSize="18sp"/>
+                    <Spinner android:id="@+id/insuranceExpiryYear_spinner"
+                             android:layout_height="wrap_content"
+                             android:layout_width="0dp"
+                             android:layout_weight="1"/>
+                    <Spinner android:id="@+id/insuranceExpiryMonth_spinner"
+                             android:layout_height="wrap_content"
+                             android:layout_width="0dp"
+                             android:layout_weight="1"/>
+                </TableRow>
+                <TableRow>
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:text="@string/insuranceCompany"
+                        android:layout_weight="1"
+                        android:textSize="18sp"/>
+                    <Spinner android:id="@+id/insuranceCompany_spinner"
+                             android:layout_height="wrap_content"
+                             android:layout_width="0dp"
+                             android:layout_weight="2"
+                             android:entries="@array/insuranceCompany_items"/>
+                </TableRow>
+            </TableLayout>
+
+            <TableRow android:id="@+id/importProcedures_row"
+                      android:visibility="gone">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/importProcedures"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/importProcedures_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/importProcedures_items"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/spareTire"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/spareTire_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/spareTire_items"/>
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/spareKey"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <Spinner android:id="@+id/spareKey_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/existornot"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/ownerName"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <EditText android:id="@+id/ownerName_edit"
+                          android:layout_height="wrap_content"
+                          android:layout_width="0dp"
+                          android:layout_weight="2"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/ownerIdNumber"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <EditText android:id="@+id/ownerIdNumber_edit"
+                          android:layout_height="wrap_content"
+                          android:layout_width="0dp"
+                          android:layout_weight="2"/>
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/ownerPhone"
+                    android:layout_weight="1"
+                    android:textSize="18sp"/>
+                <EditText android:id="@+id/ownerPhone_edit"
+                          android:layout_height="wrap_content"
+                          android:layout_width="0dp"
+                          android:inputType="phone"
+                          android:layout_weight="2"
+                          android:maxLength="13"/>
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
+</LinearLayout>

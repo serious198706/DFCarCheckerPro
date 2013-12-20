@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dip"
+        android:paddingTop="10dip" >
+
+        <TextView
+            android:id="@+id/tabExterior"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="外观检查"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tabInterior"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="内饰检查"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tabIt1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="综合检查一"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tabIt2"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="综合检查二"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tabIt3"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="综合检查三"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:paddingBottom="3dip" >
+
+        <ImageView
+            android:id="@+id/iv_bottom_line"
+            android:layout_width="100dp"
+            android:layout_height="2dp"
+            android:layout_marginLeft="10dp"
+            android:scaleType="matrix"
+            android:src="#FFA500" />
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vPager"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1.0"
+        android:layout_margin="10dp"
+        android:flipInterval="30"
+        android:persistentDrawingCache="animation" />
+</LinearLayout>

@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <LinearLayout android:id="@+id/tabButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button android:id="@+id/buttonBasicInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/title_basicInfo"/>
+        <Button android:id="@+id/buttonAccidentCheck"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/title_accidentCheck"/>
+        <Button android:id="@+id/buttonIntegratedCheck"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/title_integratedCheck"/>
+        <Button android:id="@+id/buttonPhoto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/title_photo"/>
+
+    </LinearLayout>
+
+    <com.df.app.CarCheck.BasicInfoLayout android:id="@+id/basicInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tabButton"/>
+
+    <com.df.app.CarCheck.AccidentCheckLayout android:id="@+id/accidentCheck"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tabButton"
+        android:visibility="gone"/>
+
+    <com.df.app.CarCheck.IntegratedCheckLayout android:id="@+id/integratedCheck"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tabButton"
+        android:visibility="gone"/>
+
+    <com.df.app.CarCheck.PhotoLayout android:id="@+id/photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tabButton"
+        android:visibility="gone"/>
+</RelativeLayout>
+
+

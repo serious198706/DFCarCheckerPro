@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_basicInfo">基本信息</string>
+    <string name="title_carRecognise">车型识别</string>
+    <string name="title_procedures">手续信息</string>
+
+    <!-- 车型识别 -->
+    <string name="type1">模板1</string>
+    <string name="type2">模板2</string>
+    <string name="recognise">识别</string>
+    <string name="engineSerial">发动机号：</string>
+    <string name="vin">VIN编码：</string>
+    <string name="brand">厂牌型号：</string>
+
+    <!-- 手续录入 -->
+    <string name="procedure_input">手续录入</string>
+    <string name="procedures">手续</string>
+    <string name="ci">车辆信息</string>
+    <string name="licenseModel">行驶证品牌型号：</string>
+    <string name="vehicleType">行驶证车辆类型：</string>
+    <string-array name="vehicleType_items">
+        <item>小型客车、轿车</item>
+        <item>微型客车</item>
+        <item>中型客车</item>
+        <item>大型客车</item>
+    </string-array>
+
+    <string-array name="car_color_arrays">
+        <item>黑</item>
+        <item>白</item>
+        <item>蓝</item>
+        <item>红</item>
+        <item>银</item>
+        <item>金</item>
+        <item>绿</item>
+        <item>灰</item>
+        <item>紫</item>
+        <item>黄</item>
+        <item>橙</item>
+        <item>粉</item>
+        <item>其他</item>
+    </string-array>
+
+    <string name="regDate">初次登记时间：</string>
+    <string name="plateNumber">牌照号码：</string>
+    <string name="exteriorColor">车身颜色：</string>
+    <string name="builtDate">出厂日期：</string>
+    <string name="mileage">表显里程：</string>
+    <string name="kilometer">万公里</string>
+    <string name="ownerName">卖方姓名（单位）：</string>
+    <string name="ownerIdNumber">卖方有效证件号：</string>
+    <string name="ownerPhone">卖方联系电话：</string>
+
+    <string name="regArea">注册地：</string>
+
+    <string-array name="province">
+        <item>上海</item>
+        <item>北京</item>
+        <item>天津</item>
+        <item>重庆</item>
+        <item>河北</item>
+        <item>山西</item>
+        <item>内蒙古</item>
+        <item>辽宁</item>
+        <item>吉林</item>
+        <item>黑龙江</item>
+        <item>江苏</item>
+        <item>浙江</item>
+        <item>安徽</item>
+        <item>福建</item>
+        <item>江西</item>
+        <item>山东</item>
+        <item>河南</item>
+        <item>湖北</item>
+        <item>湖南</item>
+        <item>广东</item>
+        <item>广西</item>
+        <item>海南</item>
+        <item>四川</item>
+        <item>贵州</item>
+        <item>云南</item>
+        <item>西藏</item>
+        <item>陕西</item>
+        <item>甘肃</item>
+        <item>青海</item>
+        <item>宁夏</item>
+        <item>新疆</item>
+    </string-array>
+    <string-array name="province_abbreviation">
+        <item>沪</item>
+        <item>京</item>
+        <item>津</item>
+        <item>渝</item>
+        <item>冀</item>
+        <item>晋</item>
+        <item>蒙</item>
+        <item>辽</item>
+        <item>吉</item>
+        <item>黑</item>
+        <item>苏</item>
+        <item>浙</item>
+        <item>皖</item>
+        <item>闽</item>
+        <item>赣</item>
+        <item>鲁</item>
+        <item>豫</item>
+        <item>鄂</item>
+        <item>湘</item>
+        <item>粤</item>
+        <item>桂</item>
+        <item>琼</item>
+        <item>川</item>
+        <item>贵</item>
+        <item>云</item>
+        <item>藏</item>
+        <item>陕</item>
+        <item>甘</item>
+        <item>青</item>
+        <item>宁</item>
+        <item>新</item>
+    </string-array>
+
+    <string name="transferCount">过户次数：</string>
+    <string name="transferLastDate">最后过户时间：</string>
+
+    <string name="useCharacter">使用性质：</string>
+    <string-array name="useCharacter_items">
+        <item>非营运</item>
+        <item>营运</item>
+        <item>营转非</item>
+        <item>租赁</item>
+    </string-array>
+
+    <string name="licencePhotoMatch">实车与行驶本照片：</string>
+    <string name="attention">注意！</string>
+    <string name="attention_content">常见实车与行驶本照片不符现象包含：</string>
+    <string name="attention_content1">1. 主要是外观不符：中网改装、前杠改装、私改天窗、轮毂改装为赛车、私改车身颜色；</string>
+    <string name="attention_content2">2. 常见车型：翼神</string>
+    <string name="attention_content3">以上信息请运营人员仔细核查</string>
+    <string name="attention_content4">实车与行驶本照片：</string>
+    <string name="attention_match">相符</string>
+    <string name="attention_notmatch">不符</string>
+    <string name="attention_done">确定</string>
+
+    <string name="invoice">购车发票：</string>
+    <string-array name="invoice_items">
+        <item>有票有工商章</item>
+        <item>有票无工商章</item>
+        <item>过户票</item>
+        <item>无</item>
+    </string-array>
+    <string name="rmb">元</string>
+
+    <string name="surtax">附加税证：</string>
+    <string-array name="surtax_items">
+        <item>有-征税</item>
+        <item>有-免税</item>
+        <item>无</item>
+    </string-array>
+
+    <string name="spareTire">备胎</string>
+    <string-array name="spareTire_items">
+        <item>有</item>
+        <item>无</item>
+        <item>未见</item>
+    </string-array>
+
+    <string name="spareKey">备用钥匙：</string>
+    <string name="annualInspectionDate">年检有效期：</string>
+
+    <string name="compulsoryInsurance">交强险：</string>
+    <string name="compulsoryInsuranceDate">交强险有效期：</string>
+
+    <string name="insurance">商业保险：</string>
+    <string-array name="insurance_items">
+        <item>有-随车出售</item>
+        <item>有-不随车出售</item>
+        <item>无</item>
+    </string-array>
+
+    <string name="insuranceRegion">商险地域：</string>
+    <string-array name="insuranceRegion_items">
+        <item>本市</item>
+        <item>外地</item>
+    </string-array>
+
+    <string name="insuranceAmount">商险金额：</string>
+    <string name="insuranceExpiryDate">商险有效期：</string>
+    <string name="insuranceCompany">商险公司：</string>
+
+    <string-array name="insuranceCompany_items">
+        <item>人保</item>
+        <item>太保</item>
+        <item>平安</item>
+        <item>华泰</item>
+        <item>太平</item>
+        <item>中华</item>
+        <item>永安</item>
+        <item>天安</item>
+        <item>大地</item>
+        <item>华安</item>
+        <item>安邦</item>
+        <item>永诚</item>
+        <item>阳光</item>
+        <item>都邦</item>
+        <item>渤海</item>
+        <item>天平</item>
+        <item>安华</item>
+        <item>华农财险</item>
+        <item>人寿财险</item>
+        <item>民安</item>
+        <item>中银保险</item>
+        <item>浙商财保</item>
+        <item>紫金保险</item>
+    </string-array>
+
+    <string name="importProcedures">进口车手续：</string>
+    <string-array name="importProcedures_items">
+        <item>大贸</item>
+        <item>小贸</item>
+    </string-array>
+</resources>

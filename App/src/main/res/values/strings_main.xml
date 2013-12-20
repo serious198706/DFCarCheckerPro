@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_main">268V检测端专业版</string>
+    <string name="quitMsg">确定退出？</string>
+</resources>
