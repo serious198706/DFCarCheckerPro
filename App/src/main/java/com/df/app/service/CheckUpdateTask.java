@@ -36,8 +36,7 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
         boolean success = true;
 
         soapService = new SoapService();
-        soapService.setUtils(Common.SERVER_ADDRESS + Common.USER_MANAGE_SERVICE,
-                "http://cheyipai/IUserManageService/GetAppNewVersionInfo", "GetAppNewVersionInfo");
+        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_APP_NEW_VERSION);
 
         success = soapService.checkUpdate();
 

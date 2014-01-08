@@ -48,7 +48,7 @@ public class StartupActivity extends Activity {
             // 将文件拷入相关路径
             CopyAssets(); // Then run the method to copy the file.
 
-            Log.d(Common.TAG, "/.cheyipai_pro created.");
+            Log.d(Common.TAG, "/.cheyipaiPro created.");
 
             // 创建照片路径
             File photoDirectory = new File(Common.photoDirectory);
@@ -72,7 +72,7 @@ public class StartupActivity extends Activity {
         try {
             files = assetManager.list("");
         } catch (IOException e) {
-            Log.e("tag", e.getMessage());
+            Log.e(Common.TAG, e.getMessage());
         }
         for (int i = 0; i < files.length; i++) {
             InputStream in = null;

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="standard_points">基准点图示: </string>
+
+    <string name="options">选项: </string>
+    <string name="A">A柱隐藏</string>
+    <string name="B">B柱隐藏</string>
+    <string name="BN">B柱上贴有外装饰，无法测量</string>
+
+    <string name="tip">注：覆盖件各部位如有超出测量范围或非金属材质时， 表在对应输入框后面打钩，当加强件和结构件无法测量时，请留空。</string>
+
+    <string name="search_devices">查找设备</string>
+    <string name="device_type">设备类型选择: </string>
+
+    <string-array name="device_type_item">
+        <item>DF3000</item>
+        <item>DF5000</item>
+    </string-array>
+
+    <string name="start">开始获取数据</string>
+    <string name="collecting">正在获取，请稍候&#8320;&#8320;&#8320;</string>
+    <string name="collect_finished">数据获取完成！</string>
+
+    <string name="parts">部件: </string>
+
+    <string name="overlap">覆盖件</string>
+    <string name="L">右前翼子板(L)</string>
+    <string name="M">引擎盖(M)</string>
+    <string name="D">左前翼子板(D)</string>
+    <string name="LA">左A柱(LA)</string>
+    <string name="E">左前门(E)</string>
+    <string name="LB">左B柱(LB)</string>
+    <string name="F">左后门(F)</string>
+    <string name="LC">左C柱(LC)</string>
+    <string name="G">左后翼子板(G)</string>
+    <string name="H">行李箱盖(H)</string>
+    <string name="I">右后翼子板(I)</string>
+    <string name="RC">右C柱(RC)</string>
+    <string name="J">右后门(J)</string>
+    <string name="RB">右B柱(RB)</string>
+    <string name="K">右前门(K)</string>
+    <string name="RA">右A柱(RA)</string>
+    <string name="N">车顶(N)</string>
+
+    <string name="enhance">加强件、结构件</string>
+    <string name="M1">前防火墙(M1)</string>
+    <string name="D1">左前减震器座(D1)</string>
+    <string name="D2">左翼子板内衬(D2)</string>
+    <string name="M3">左前纵梁(M3)</string>
+    <string name="M5">引擎盖内侧(M5)</string>
+    <string name="F1">左后门锁销下方(F1)</string>
+    <string name="M2">水箱上支架(M2)</string>
+    <string name="L1">右前减震器座(L1)</string>
+    <string name="L2">右翼子板内衬(L2)</string>
+    <string name="M4">右前纵梁(M4)</string>
+    <string name="H1">行李箱盖内侧(H1)</string>
+    <string name="J1">右后门锁销下方(J1)</string>
+
+    <string name="normal">正常部位</string>
+    <string name="repaint">重新做漆部位</string>
+    <string name="repaint_and_repair">重新做漆并且有腻子的部位</string>
+
+    <string name="yes">是</string>
+    <string name="no">否</string>
+
+    <string name="issue">查勘项: </string>
+
+    <string name="front">前方视角: </string>
+    <string name="rear">后方视角: </string>
+
+    <string name="light">轻微</string>
+    <string name="heavy">严重</string>
+
+    <string name="refreshing">正在查找设备...</string>
+</resources>

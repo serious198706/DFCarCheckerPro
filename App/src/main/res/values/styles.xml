@@ -2,8 +2,14 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light">
+    <style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <!--<item name="android:spinnerStyle">@style/Widget.Spinner</item>-->
+        <!--<item name="android:editTextStyle">@style/Widget.EditText</item>-->
+    </style>
+
+    <style name="NoActionBar" parent="android:Theme.Holo.NoActionBar">
+
     </style>
 
     <style name="FullscreenTheme" parent="android:Theme.NoTitleBar">
@@ -40,5 +46,13 @@
         <item name="android:typeface">monospace</item>
     </style>
 
+    <style name="Widget.Spinner" parent="android:Widget">
+        <item name="android:background">@drawable/spinner_selector</item>
+    </style>
 
+    <style name="Widget.EditText" parent="android:Widget">
+        <item name="android:background">@drawable/edittext_border</item>
+        <item name="android:height">40dp</item>
+        <item name="android:paddingLeft">10dp</item>
+    </style>
 </resources>

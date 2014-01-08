@@ -1,44 +1,83 @@
 package com.df.app.CarCheck;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Matrix;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
-import android.widget.ImageView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.df.app.CarsWaiting.CarsWaitingActivity;
+import com.df.app.MainActivity;
+import com.df.app.Procedures.CarRecogniseLayout;
+import com.df.app.Procedures.ProceduresLayout;
 import com.df.app.R;
+import com.df.app.entries.Brand;
+import com.df.app.entries.CarSettings;
+import com.df.app.entries.Country;
+import com.df.app.entries.Manufacturer;
+import com.df.app.entries.Model;
+import com.df.app.entries.Series;
+import com.df.app.entries.VehicleModel;
 import com.df.app.service.MyViewPagerAdapter;
 import com.df.app.service.MyOnClick;
+import com.df.app.service.SoapService;
+import com.df.app.util.Common;
+import com.df.app.util.Helper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import static com.df.app.util.Helper.enableView;
+import static com.df.app.util.Helper.getEditViewText;
+import static com.df.app.util.Helper.setEditViewText;
+import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-20.
  */
-public class BasicInfoLayout extends LinearLayout implements CarRecogniseLayout.OnShowContentListener {
+public class BasicInfoLayout extends LinearLayout {
     private View rootView;
 
     private ViewPager viewPager;
-    private ImageView imageView;
-    private TextView carRecogniseTab, proceduresTab, optionsTab;
+    private TextView vehicleInfoTab, optionsTab;
     private List<View> views;
-    private int offset = 0;
-    private int currIndex = 0;
-    private int bmpW;
-    private View carRecogniseView, proceduresView, optionsView;
+
+    private VehicleInfoLayout vehicleInfoLayout;
+    private OptionsLayout optionsLayout;
+
+    public static CarSettings mCarSettings;
+
+    public static String uniqueId;
+
+    private OnUpdateUiListener mUpdateUiCallback;
+
+    private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
+    private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
 
     public BasicInfoLayout(Context context) {
         super(context);
-        init(context);
+        if(!isInEditMode())
+            init(context);
     }
 
     public BasicInfoLayout(Context context, AttributeSet attrs) {
@@ -51,14 +90,28 @@ public class BasicInfoLayout extends LinearLayout implements CarRecogniseLayout.
         init(context);
     }
 
-    @Override
-    public void showContent() {
-
+    public void setUpdateUiListener(OnUpdateUiListener listener) {
+        this.mUpdateUiCallback = listener;
     }
 
     public void init(Context context){
         rootView = LayoutInflater.from(context).inflate(R.layout.basic_info_layout, this);
-        InitImageView();
+
+        UUID uuid = UUID.randomUUID();
+        uniqueId = uuid.toString();
+
+        // TODO 在初始化的时候，要向服务器请求一次车辆配置信息，以便初始化配置信息页面
+        mCarSettings = new CarSettings();
+
+        optionsLayout = new OptionsLayout(context);
+        vehicleInfoLayout = new VehicleInfoLayout(context, new VehicleInfoLayout.UpdateUi() {
+            @Override
+            public void updateUi() {
+                optionsLayout.updateUi();
+                mUpdateUiCallback.updateUi();
+            }
+        });
+
         InitViewPager(context);
         InitTextView();
     }
@@ -67,22 +120,8 @@ public class BasicInfoLayout extends LinearLayout implements CarRecogniseLayout.
         viewPager = (ViewPager) rootView.findViewById(R.id.vPager);
         views = new ArrayList<View>();
 
-        views.add(new CarRecogniseLayout(context, new CarRecogniseLayout.OnShowContentListener() {
-            @Override
-            public void showContent() {
-                // 当VIN确定后，出现另外两个页面
-                views.add(new ProceduresLayout(rootView.getContext()));
-                views.add(new OptionsLayout(rootView.getContext()));
-
-                proceduresTab.setVisibility(VISIBLE);
-                optionsTab.setVisibility(VISIBLE);
-
-                proceduresTab.setOnClickListener(new MyOnClick(viewPager, 1));
-                optionsTab.setOnClickListener(new MyOnClick(viewPager, 2));
-
-                viewPager.setAdapter(new MyViewPagerAdapter(views));
-            }
-        }));
+        views.add(vehicleInfoLayout);
+        views.add(optionsLayout);
 
         viewPager.setAdapter(new MyViewPagerAdapter(views));
         viewPager.setCurrentItem(0);
@@ -90,37 +129,17 @@ public class BasicInfoLayout extends LinearLayout implements CarRecogniseLayout.
     }
 
     private void InitTextView() {
-        carRecogniseTab = (TextView) rootView.findViewById(R.id.carRecogniseTab);
-        proceduresTab = (TextView) rootView.findViewById(R.id.proceduresTab);
+        vehicleInfoTab = (TextView) rootView.findViewById(R.id.vehicleInfoTab);
         optionsTab = (TextView) rootView.findViewById(R.id.optionsTab);
 
-        proceduresTab.setVisibility(INVISIBLE);
-        optionsTab.setVisibility(INVISIBLE);
+        selectTab(0);
 
-        carRecogniseTab.setOnClickListener(new MyOnClick(viewPager, 0));
-    }
-
-    private void InitImageView() {
-        imageView = (ImageView) findViewById(R.id.iv_bottom_line);
-
-        bmpW = imageView.getLayoutParams().width;
-
-        DisplayMetrics dm = new DisplayMetrics();
-        ((Activity)getContext()).getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-        int screenW = dm.widthPixels;
-        offset = (screenW / 3 - bmpW) / 2;
-
-        Matrix matrix = new Matrix();
-        matrix.postTranslate(offset, 0);
-
-        imageView.setImageMatrix(matrix);
+        vehicleInfoTab.setOnClickListener(new MyOnClick(viewPager, 0));
+        optionsTab.setOnClickListener(new MyOnClick(viewPager, 1));
     }
 
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
     {
-        int one = offset * 2 + bmpW; // 每次需要滑动的距离
-
         @Override
         public void onPageScrollStateChanged(int arg0) {
 
@@ -133,11 +152,17 @@ public class BasicInfoLayout extends LinearLayout implements CarRecogniseLayout.
 
         @Override
         public void onPageSelected(int arg0) {
-            Animation animation = new TranslateAnimation(one * currIndex, one * arg0, 0, 0);
-            currIndex = arg0;
-            animation.setFillAfter(true); // 动画完成后位置发生变化
-            animation.setDuration(300);
-            imageView.startAnimation(animation);
+            selectTab(arg0);
         }
+    }
+
+    private void selectTab(int currIndex) {
+        vehicleInfoTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
+        optionsTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
+    }
+
+    // CarCheckActivity必须实现此接口
+    public interface OnUpdateUiListener {
+        public void updateUi();
     }
 }

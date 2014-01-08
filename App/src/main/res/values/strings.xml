@@ -11,15 +11,24 @@
     <string name="cancel">取消</string>
     <string name="alert">提示</string>
     <string name="choose">选择</string>
+
     <string-array name="existornot">
         <item>有</item>
         <item>无</item>
     </string-array>
-    <string name="title_activity_car_check_frame">CarCheckFrameActivity</string>
+    <string-array name="yesornot">
+        <item>是</item>
+        <item>否</item>
+    </string-array>
 
+    <string name="title_activity_car_check_frame">CarCheckFrameActivity</string>
     <string name="title_accidentCheck">事故排查</string>
     <string name="title_integratedCheck">综合检查</string>
     <string name="title_photo">照片拍摄</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_cars_checked">CarsCheckedActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_cars_waiting">CarsWaitingActivity</string>
+    <string name="title_activity_procedures">ProceduresActivity</string>
 
 </resources>

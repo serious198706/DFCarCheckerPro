@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="carsWaiting">待检测车辆</string>
+    <string name="modifyProcedures">修改手续信息</string>
+    <string name="check">检测车辆</string>
+    <string name="saved">已保存</string>、
+    <string name="waiting">待检测</string>
+</resources>

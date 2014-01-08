@@ -3,6 +3,78 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="#FFF">
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dip"
+        android:paddingTop="10dip"
+        android:background="#edeceb" >
 
+        <TextView
+            android:id="@+id/tabExterior"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="外观组"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tabInterior"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="内饰组"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tabFault"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="缺陷组"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tabProcedure"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="手续组"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tabEngine"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="机舱组"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tabOther"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="其他组"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vPager"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1.0"
+        android:layout_margin="10dp"
+        android:flipInterval="30"
+        android:persistentDrawingCache="animation" />
 </LinearLayout>

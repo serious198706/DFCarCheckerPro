@@ -2,6 +2,7 @@ package com.df.app.CarCheck;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -24,16 +25,24 @@ import java.util.List;
 /**
  * Created by 岩 on 13-12-20.
  */
-public class AccidentCheckLayout extends LinearLayout {
+public class AccidentCheckLayout extends LinearLayout{
     private View rootView;
 
     private ViewPager viewPager;
     private ImageView imageView;
-    private TextView textView1,textView2,textView3;
+    private TextView collectTab, issueTab, resultTab;
     private List<View> views;
     private int offset =0;
     private int currIndex = 0;
     private int bmpW;
+
+    private CollectDataLayout collectDataLayout;
+    private IssueLayout issueLayout;
+    private AccidentResultLayout accidentResultLayout;
+    private boolean loaded;
+
+    private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
+    private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
 
     public AccidentCheckLayout(Context context) {
         super(context);
@@ -52,7 +61,37 @@ public class AccidentCheckLayout extends LinearLayout {
 
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.accident_check_layout, this);
-        InitImageView();
+
+        collectDataLayout = new CollectDataLayout(context, new CollectDataLayout.OnGetIssueData() {
+            @Override
+            public void showContent() {
+                // 当VIN确定后，出现另外两个页面
+                if(!loaded) {
+                    views.add(issueLayout);
+                    views.add(accidentResultLayout);
+
+                    issueTab.setVisibility(VISIBLE);
+                    resultTab.setVisibility(VISIBLE);
+
+                    issueTab.setOnClickListener(new MyOnClick(viewPager, 1));
+                    resultTab.setOnClickListener(new MyOnClick(viewPager, 2));
+
+                    viewPager.setAdapter(new MyViewPagerAdapter(views));
+
+                    loaded = true;
+                }
+            }
+
+            @Override
+            public void updateUi() {
+                issueLayout.updateUi();
+                accidentResultLayout.updateUi();
+            }
+        });
+
+        issueLayout = new IssueLayout(context);
+        accidentResultLayout = new AccidentResultLayout(context);
+
         InitViewPager(context);
         InitTextView();
     }
@@ -61,9 +100,7 @@ public class AccidentCheckLayout extends LinearLayout {
         viewPager = (ViewPager) rootView.findViewById(R.id.vPager);
         views = new ArrayList<View>();
 
-        views.add(new CollectDataLayout(context));
-        views.add(new IssueLayout(context));
-        views.add(new AccidentResultLayout(context));
+        views.add(collectDataLayout);
 
         viewPager.setAdapter(new MyViewPagerAdapter(views));
         viewPager.setCurrentItem(0);
@@ -71,29 +108,16 @@ public class AccidentCheckLayout extends LinearLayout {
     }
 
     private void InitTextView() {
-        textView1 = (TextView) rootView.findViewById(R.id.tv_tab_meinv);
-        textView2 = (TextView) rootView.findViewById(R.id.tv_tab_luoli);
-        textView3 = (TextView) rootView.findViewById(R.id.tv_tab_qiche);
-        textView1.setOnClickListener(new MyOnClick(viewPager, 0));
-        textView2.setOnClickListener(new MyOnClick(viewPager, 1));
-        textView3.setOnClickListener(new MyOnClick(viewPager, 2));
-    }
+        collectTab = (TextView) rootView.findViewById(R.id.collect);
+        issueTab = (TextView) rootView.findViewById(R.id.issue);
+        resultTab = (TextView) rootView.findViewById(R.id.result);
 
-    private void InitImageView() {
-        imageView = (ImageView) findViewById(R.id.iv_bottom_line);
+        selectTab(0);
 
-        bmpW = imageView.getLayoutParams().width;
+        issueTab.setVisibility(INVISIBLE);
+        resultTab.setVisibility(INVISIBLE);
 
-        DisplayMetrics dm = new DisplayMetrics();
-        ((Activity)getContext()).getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-        int screenW = dm.widthPixels;
-        offset = (screenW / 3 - bmpW) / 2;
-
-        Matrix matrix = new Matrix();
-        matrix.postTranslate(offset, 0);
-
-        imageView.setImageMatrix(matrix);// ÉèÖÃ¶¯»­³õÊ¼Î»ÖÃ
+        collectTab.setOnClickListener(new MyOnClick(viewPager, 0));
     }
 
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
@@ -112,11 +136,13 @@ public class AccidentCheckLayout extends LinearLayout {
 
         @Override
         public void onPageSelected(int arg0) {
-            Animation animation = new TranslateAnimation(one * currIndex, one * arg0, 0, 0);
-            currIndex = arg0;
-            animation.setFillAfter(true); // 动画完成后位置发生变化
-            animation.setDuration(300);
-            imageView.startAnimation(animation);
+            selectTab(arg0);
         }
+    }
+
+    private void selectTab(int currIndex) {
+        collectTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
+        issueTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
+        resultTab.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
     }
 }

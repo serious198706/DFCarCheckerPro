@@ -32,9 +32,9 @@ public class SoapService implements ISoapService {
     public SoapService() {}
 
     // 设置url, soapAction, methodName
-    public void setUtils(String url, String soapAction, String methodName) {
+    public void setUtils(String url, String methodName) {
         this.url = url;
-        this.soapAction = soapAction;
+        this.soapAction = Common.SOAP_ACTION + methodName;
         this.methodName = methodName;
     }
 

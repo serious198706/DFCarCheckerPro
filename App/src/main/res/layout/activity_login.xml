@@ -1,54 +1,59 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.df.app.LoginActivity">
-
-    <RelativeLayout
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/login_bg">
 
-        <LinearLayout android:layout_width="match_parent"
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="455dp">
+
+        <EditText
+            android:id="@+id/username"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:layout_width="270dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
-            style="@style/LoginFormContainer">
+            android:inputType="textEmailAddress"
+            android:background="#00000000"
+            android:textSize="38sp"
+            android:text="chenyan"
+            android:textColor="#000"
+            android:layout_marginLeft="230dp"/>
 
-            <EditText
-                android:id="@+id/username"
-                android:singleLine="true"
-                android:maxLines="1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="@string/prompt_username" />
-
-            <EditText
-                android:id="@+id/password"
-                android:singleLine="true"
-                android:maxLines="1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/prompt_password"
-                android:inputType="textPassword"
-                android:imeActionLabel="@string/action_sign_in_short"
-                android:imeActionId="@+id/login"
-                android:imeOptions="actionUnspecified" />
-
-            <Button android:id="@+id/sign_in_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/action_sign_in"
-                    android:paddingLeft="32dp"
-                    android:paddingRight="32dp"
-                    android:layout_gravity="right" />
-
-        </LinearLayout>
-
-        <TextView android:id="@+id/appVersion_text"
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/password"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:layout_width="270dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"/>
-    </RelativeLayout>
-</merge>
+            android:hint="@string/prompt_password"
+            android:text="123456"
+            android:inputType="textPassword"
+            android:background="#00000000"
+            android:textColor="#000"
+            android:textSize="38sp"
+            android:layout_marginLeft="230dp"
+            android:layout_marginTop="55dp"
+            android:imeActionLabel="@string/action_sign_in_short"
+            android:imeActionId="@+id/login"
+            android:imeOptions="actionUnspecified"/>
+
+        <Button android:id="@+id/sign_in_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:layout_gravity="center"
+                android:background="@drawable/button_login"/>
+
+    </LinearLayout>
+
+    <TextView android:id="@+id/appVersion_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"/>
+</RelativeLayout>
+

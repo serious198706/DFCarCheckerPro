@@ -2,14 +2,12 @@ package com.df.app.CarCheck;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Matrix;
+import android.graphics.Color;
+import android.renderscript.Int3;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,11 +27,22 @@ public class IntegratedCheckLayout extends LinearLayout {
 
     private ViewPager viewPager;
     private ImageView imageView;
-    private TextView textView1,textView2,textView3,textView4,textView5;
+    private TextView exteriorTab, interiorTab, itTab1, itTab2, itTab3;
     private List<View> views;
     private int offset =0;
     private int currIndex = 0;
     private int bmpW;
+
+    private Activity activity;
+
+    private static ExteriorLayout exteriorLayout;
+    private static InteriorLayout interiorLayout;
+    private static Integrated1Layout integrated1Layout;
+    private static Integrated2Layout integrated2Layout;
+    private static Integrated3Layout integrated3Layout;
+
+    private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
+    private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
 
     public IntegratedCheckLayout(Context context) {
         super(context);
@@ -52,20 +61,29 @@ public class IntegratedCheckLayout extends LinearLayout {
 
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.integrated_check_layout, this);
-        InitImageView();
         InitViewPager(context);
         InitTextView();
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
     private void InitViewPager(Context context) {
         viewPager = (ViewPager) rootView.findViewById(R.id.vPager);
         views = new ArrayList<View>();
 
-        views.add(new ExteriorLayout(context));
-        views.add(new InteriorLayout(context));
-        views.add(new ExteriorLayout(context));
-        views.add(new ExteriorLayout(context));
-        views.add(new ExteriorLayout(context));
+        exteriorLayout = new ExteriorLayout(context);
+        interiorLayout = new InteriorLayout(context);
+        integrated1Layout = new Integrated1Layout(context);
+        integrated2Layout = new Integrated2Layout(context);
+        integrated3Layout = new Integrated3Layout(context);
+
+        views.add(exteriorLayout);
+        views.add(interiorLayout);
+        views.add(integrated1Layout);
+        views.add(integrated2Layout);
+        views.add(integrated3Layout);
 
         viewPager.setAdapter(new MyViewPagerAdapter(views));
         viewPager.setCurrentItem(0);
@@ -73,40 +91,44 @@ public class IntegratedCheckLayout extends LinearLayout {
     }
 
     private void InitTextView() {
-        textView1 = (TextView) rootView.findViewById(R.id.tabExterior);
-        textView2 = (TextView) rootView.findViewById(R.id.tabInterior);
-        textView3 = (TextView) rootView.findViewById(R.id.tabIt1);
-        textView4 = (TextView) rootView.findViewById(R.id.tabIt2);
-        textView5 = (TextView) rootView.findViewById(R.id.tabIt3);
+        exteriorTab = (TextView) rootView.findViewById(R.id.tabExterior);
+        interiorTab = (TextView) rootView.findViewById(R.id.tabInterior);
+        itTab1 = (TextView) rootView.findViewById(R.id.tabIt1);
+        itTab2 = (TextView) rootView.findViewById(R.id.tabIt2);
+        itTab3 = (TextView) rootView.findViewById(R.id.tabIt3);
 
-        textView1.setOnClickListener(new MyOnClick(viewPager, 0));
-        textView2.setOnClickListener(new MyOnClick(viewPager, 1));
-        textView3.setOnClickListener(new MyOnClick(viewPager, 2));
-        textView4.setOnClickListener(new MyOnClick(viewPager, 3));
-        textView5.setOnClickListener(new MyOnClick(viewPager, 4));
+        selectTab(0);
+
+        exteriorTab.setOnClickListener(new MyOnClick(viewPager, 0));
+        interiorTab.setOnClickListener(new MyOnClick(viewPager, 1));
+        itTab1.setOnClickListener(new MyOnClick(viewPager, 2));
+        itTab2.setOnClickListener(new MyOnClick(viewPager, 3));
+        itTab3.setOnClickListener(new MyOnClick(viewPager, 4));
     }
 
-    private void InitImageView() {
-        imageView = (ImageView) findViewById(R.id.iv_bottom_line);
+    public void updateUi() {
+        exteriorLayout.updateUi();
+        interiorLayout.updateUi();
+    }
 
-        bmpW = imageView.getLayoutParams().width;
+    public void updateExteriorPreview() {
+        exteriorLayout.updateExteriorPreview();
+    }
 
-        DisplayMetrics dm = new DisplayMetrics();
-        ((Activity)getContext()).getWindowManager().getDefaultDisplay().getMetrics(dm);
+    public void updateInteriorPreview() {
+        interiorLayout.updateInteriorPreview();
+    }
 
-        int screenW = dm.widthPixels;
-        offset = (screenW / 5 - bmpW) / 2;
+    public void saveExteriorStandardPhoto() {
+        exteriorLayout.saveExteriorStandardPhoto();
+    }
 
-        Matrix matrix = new Matrix();
-        matrix.postTranslate(offset, 0);
-
-        imageView.setImageMatrix(matrix);// ÉèÖÃ¶¯»­³õÊ¼Î»ÖÃ
+    public void saveInteriorStandardPhoto() {
+        interiorLayout.saveInteriorStandardPhoto();
     }
 
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
     {
-        int one = offset * 2 + bmpW ;
-
         @Override
         public void onPageScrollStateChanged(int arg0) {
 
@@ -119,11 +141,15 @@ public class IntegratedCheckLayout extends LinearLayout {
 
         @Override
         public void onPageSelected(int arg0) {
-            Animation animation = new TranslateAnimation(one * currIndex, one * arg0, 0, 0);
-            currIndex = arg0;
-            animation.setFillAfter(true); // 动画完成后位置发生变化
-            animation.setDuration(300);
-            imageView.startAnimation(animation);
+            selectTab(arg0);
         }
+    }
+
+    private void selectTab(int currIndex) {
+        exteriorTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
+        interiorTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
+        itTab1.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
+        itTab2.setTextColor(currIndex == 3 ? selectedColor : unselectedColor);
+        itTab3.setTextColor(currIndex == 4 ? selectedColor : unselectedColor);
     }
 }

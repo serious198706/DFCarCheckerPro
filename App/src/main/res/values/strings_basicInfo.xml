@@ -5,19 +5,21 @@
     <string name="title_procedures">手续信息</string>
 
     <!-- 车型识别 -->
-    <string name="type1">模板1</string>
-    <string name="type2">模板2</string>
+    <string name="type1">新版</string>
+    <string name="type2">旧版</string>
     <string name="recognise">识别</string>
     <string name="engineSerial">发动机号：</string>
-    <string name="vin">VIN编码：</string>
+    <string name="match">匹配</string>
+    <string name="vin">VIN 编码：</string>
     <string name="brand">厂牌型号：</string>
+    <string name="select_model">选择车型</string>
 
     <!-- 手续录入 -->
     <string name="procedure_input">手续录入</string>
     <string name="procedures">手续</string>
     <string name="ci">车辆信息</string>
-    <string name="licenseModel">行驶证品牌型号：</string>
-    <string name="vehicleType">行驶证车辆类型：</string>
+    <string name="licenceModel">品牌型号：</string>
+    <string name="vehicleType">车辆类型：</string>
     <string-array name="vehicleType_items">
         <item>小型客车、轿车</item>
         <item>微型客车</item>
@@ -43,13 +45,22 @@
 
     <string name="regDate">初次登记时间：</string>
     <string name="plateNumber">牌照号码：</string>
+    <string name="namePlate">车身铭牌：</string>
+    <string name="driveLicence">行驶证：</string>
+    <string name="regLicence">登记证：</string>
     <string name="exteriorColor">车身颜色：</string>
     <string name="builtDate">出厂日期：</string>
     <string name="mileage">表显里程：</string>
     <string name="kilometer">万公里</string>
-    <string name="ownerName">卖方姓名（单位）：</string>
-    <string name="ownerIdNumber">卖方有效证件号：</string>
-    <string name="ownerPhone">卖方联系电话：</string>
+    <string name="ownerName">车主姓名(单位)：</string>
+    <string name="ownerIdNumber">车主有效证件号：</string>
+    <string name="ownerPhone">车主联系电话：</string>
+    <string name="consignerName">委托人姓名(单位)：</string>
+    <string name="consignerIdNumber">委托人有效证件号：</string>
+    <string name="consignerPhone">委托人联系电话：</string>
+    <string name="idCard">身份证</string>
+    <string name="ocs">组织机构代码公章</string>
+    <string name="idCardMatch">身份证和车辆基本信息一致</string>
 
     <string name="regArea">注册地：</string>
 
@@ -131,6 +142,15 @@
         <item>租赁</item>
     </string-array>
 
+    <string name="originUser">原使用方：</string>
+    <string-array name="originUser_items">
+        <item>个人</item>
+        <item>单位使用车辆</item>
+        <item>汽车出租公司</item>
+        <item>汽车租赁公司</item>
+        <item>汽车销售（服务）公司</item>
+    </string-array>
+
     <string name="licencePhotoMatch">实车与行驶本照片：</string>
     <string name="attention">注意！</string>
     <string name="attention_content">常见实车与行驶本照片不符现象包含：</string>
@@ -150,6 +170,7 @@
         <item>无</item>
     </string-array>
     <string name="rmb">元</string>
+    <string name="point">分</string>
 
     <string name="surtax">附加税证：</string>
     <string-array name="surtax_items">
@@ -158,7 +179,10 @@
         <item>无</item>
     </string-array>
 
-    <string name="spareTire">备胎</string>
+    <string name="vehicleTax">车船税票：</string>
+    <string name="maintenanceManual">保养手册：</string>
+
+    <string name="spareTire">备胎：</string>
     <string-array name="spareTire_items">
         <item>有</item>
         <item>无</item>
@@ -218,5 +242,221 @@
     <string-array name="importProcedures_items">
         <item>大贸</item>
         <item>小贸</item>
+    </string-array>
+
+    <string name="importWay">进口方式：</string>
+    <string-array name="importWay_items">
+        <item>海关罚没</item>
+        <item>境外自带</item>
+        <item>海关进口</item>
+    </string-array>
+
+    <string name="importEntryBill">进口关单：</string>
+    <string name="importBusinessCheck">商检单：</string>
+
+    <string name="source">车辆来源：</string>
+    <string name="code">代码：</string>
+    <string name="minValue">最小值：</string>
+    <string name="seller">销售人员：</string>
+
+    <string name="violationRecords">违章记录：</string>
+    <string name="violationScore">罚扣分数：</string>
+    <string name="violationAmount">罚扣金额：</string>
+
+    <string name="transferRequirement">过户要求：</string>
+    <string-array name="transferRequirement_items">
+        <item>本市过户</item>
+        <item>外迁过户</item>
+        <item>不限（无补贴）</item>
+        <item>不限（有补贴）</item>
+    </string-array>
+
+    <string name="localPreSellAmount">本市预售价：</string>
+    <string name="externalPreSellAmount">外迁预售价：</string>
+
+    <string name="transferTime">过户时间：</string>
+    <string-array name="transferTime_items">
+        <item>指定</item>
+        <item>区间</item>
+    </string-array>
+
+    <string name="transfer">午过户</string>
+    <string name="transfer1">个工作日内完成过户</string>
+
+    <string name="carProperty">车辆属性：</string>
+    <string-array name="carProperty_items">
+        <item>C2B</item>
+        <item>4S店B2B</item>
+        <item>商户B2B</item>
+    </string-array>
+
+    <string name="exchangeRequirement">置换需求：</string>
+    <string name="exchangeCarModel">置换车型：</string>
+
+    <!-- 配置信息 -->
+    <string name="csi">配置信息</string>
+    <string name="displacement">排量：</string>
+    <string name="category">车辆类型：</string>
+    <string-array name="category_item">
+        <item>轿车</item>
+        <item>SUV</item>
+        <item>MPV</item>
+        <item>越野车</item>
+        <item>皮卡</item>
+        <item>跑车</item>
+        <item>面包</item>
+        <item>中客</item>
+        <item>货车</item>
+        <item>房车</item>
+    </string-array>
+
+    <string name="driveType">驱动方式：</string>
+    <string-array name="driveType_item">
+        <item>两驱</item>
+        <item>四驱</item>
+        <item>全时四驱</item>
+        <item>智能四驱</item>
+    </string-array>
+
+    <string name="transmission">变速器形式：</string>
+    <string-array name="transmission_item">
+        <item>AT</item>
+        <item>MT</item>
+        <item>AMT</item>
+        <item>A/MT</item>
+        <item>CVT</item>
+    </string-array>
+
+    <string name="airBag">气囊数：</string>
+    <string-array name="airbag_number">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>12</item>
+        <item>12个以上</item>
+        <item>无</item>
+    </string-array>
+
+    <string name="abs">ABS：</string>
+    <string-array name="abs_items">
+        <item>有</item>
+        <item>无</item>
+    </string-array>
+
+    <string name="powerSteering">转向助力：</string>
+    <string-array name="turn_help_items">
+        <item>有</item>
+        <item>无</item>
+    </string-array>
+
+    <string name="powerWindows">电动车窗：</string>
+    <string-array name="powerWindows_items">
+        <item>有</item>
+        <item>无</item>
+        <item>四门</item>
+        <item>前门</item>
+        <item>加装</item>
+    </string-array>
+
+    <string name="sunroof">天窗：</string>
+    <string-array name="sunroof_items">
+        <item>有</item>
+        <item>无</item>
+        <item>手动</item>
+        <item>电动</item>
+        <item>双天窗</item>
+        <item>全景</item>
+        <item>加装</item>
+    </string-array>
+
+    <string name="airConditioning">空调：</string>
+    <string-array name="airConditioning_items">
+        <item>有</item>
+        <item>无</item>
+        <item>手动</item>
+        <item>自动</item>
+        <item>前后</item>
+    </string-array>
+
+    <string name="leatherSeats">真皮座椅：</string>
+    <string-array name="leatherSeats_items">
+        <item>有</item>
+        <item>无</item>
+        <item>电加热</item>
+        <item>按摩</item>
+        <item>通风</item>
+        <item>加装</item>
+    </string-array>
+
+    <string name="powerSeats">电动座椅：</string>
+    <string-array name="powerSeats_items">
+        <item>有</item>
+        <item>无</item>
+        <item>带记忆</item>
+    </string-array>
+
+    <string name="powerMirror">电动反光镜：</string>
+    <string-array name="powerMirror_items">
+        <item>有</item>
+        <item>无</item>
+        <item>自动折叠</item>
+    </string-array>
+
+    <string name="reversingRadar">倒车雷达：</string>
+    <string-array name="reversingRadar_items">
+        <item>有</item>
+        <item>无</item>
+        <item>加装</item>
+    </string-array>
+
+    <string name="reversingCamera">倒车影像：</string>
+    <string-array name="reversingCamera_items">
+        <item>有</item>
+        <item>无</item>
+        <item>加装</item>
+    </string-array>
+
+    <string name="ccs">定速巡航：</string>
+    <string-array name="ccs_items">
+        <item>有</item>
+        <item>无</item>
+        <item>加装</item>
+    </string-array>
+
+    <string name="softCloseDoors">电吸门：</string>
+    <string-array name="softCloseDoors_items">
+        <item>有</item>
+        <item>无</item>
+    </string-array>
+
+    <string name="rearPowerSeats">后排电动座椅：</string>
+    <string-array name="rearPowerSeats_items">
+        <item>有</item>
+        <item>无</item>
+    </string-array>
+
+    <string name="ahc">底盘升降：</string>
+    <string-array name="ahc_items">
+        <item>有</item>
+        <item>无</item>
+    </string-array>
+
+    <string name="parkAssist">自动泊车：</string>
+    <string-array name="parkAssist_items">
+        <item>有</item>
+        <item>无</item>
+    </string-array>
+
+    <string name="clapBoard">隔物板（伸缩帘）：</string>
+    <string-array name="clapBoard_items">
+        <item>有</item>
+        <item>无</item>
     </string-array>
 </resources>

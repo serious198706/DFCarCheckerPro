@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:id="@+id/root">
+
+    <include layout="@layout/paint_menu"/>
+
+    <LinearLayout
+        android:id="@+id/titleLy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <com.df.app.paintview.ExteriorPaintView
+            android:id="@+id/exterior_paint_view"
+            android:layout_width="500dp"
+            android:layout_height="703dp" />
+
+        <com.df.app.paintview.InteriorPaintView
+            android:id="@+id/interior_paint_view"
+            android:layout_width="500dp"
+            android:layout_height="691dp" />
+
+    </LinearLayout>
+</LinearLayout>

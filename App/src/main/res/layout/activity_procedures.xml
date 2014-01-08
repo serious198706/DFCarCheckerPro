@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFF">
+    <RelativeLayout android:id="@+id/naviBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+        <ImageView android:id="@+id/banner"
+                   android:layout_width="match_parent"
+                   android:layout_height="52dp"
+                   android:background="#AA030A"/>
+    </RelativeLayout>
+
+    <com.df.app.Procedures.InputProceduresLayout android:id="@+id/inputProcedures"
+                                         android:layout_width="match_parent"
+                                         android:layout_height="match_parent"
+                                         android:layout_below="@id/naviBar"/>
+
+    <RelativeLayout android:id="@+id/tabButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+        <TextView android:id="@+id/currentItem"
+                  android:layout_width="wrap_content"
+                  android:layout_height="36dp"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginTop="6dp"
+                  android:text="@string/procedure_input"
+                  android:textColor="#FFF"
+                  android:textSize="28sp"/>
+
+        <Button android:id="@+id/buttonHome"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/home"
+                android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+</RelativeLayout>

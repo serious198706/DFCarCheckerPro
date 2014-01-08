@@ -3,11 +3,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
-    <!-- 手续录入部分 -->
-    <ScrollView android:id="@+id/root"
+              android:layout_height="match_parent"
+              android:background="#FFF">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/brandText"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:textSize="24sp"
+                  android:textStyle="bold"
+                  android:gravity="center_horizontal"/>
+        <View android:id="@+id/shadow"
+              android:layout_width="match_parent"
+              android:layout_height="7dp"
+              android:background="@drawable/shadow"
+              android:visibility="invisible"/>
+    </LinearLayout>
+
+
+    <!-- 手续录入部分 -->
+    <com.df.app.service.MyScrollView android:id="@+id/root"
+                                     android:layout_width="match_parent"
+                                     android:layout_height="wrap_content"
+                                     android:layout_marginTop="-7dp">
         <TableLayout android:layout_width="match_parent"
                      android:layout_height="wrap_content">
             <TableRow>
@@ -16,428 +37,1051 @@
                     android:layout_width="0dp"
                     android:text="@string/regArea"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/regArea_spinner"
-                         android:layout_height="wrap_content"
+                         android:layout_height="40dp"
                          android:layout_width="0dp"
-                         android:layout_weight="2"/>
+                         android:layout_weight="2"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/plateNumber"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <EditText android:id="@+id/plateNumber_edit"
-                          android:layout_height="wrap_content"
+                          android:layout_height="40dp"
                           android:layout_width="0dp"
                           android:layout_weight="2"
-                          android:maxLength="10"/>
+                          android:singleLine="true"
+                          android:maxLength="10"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
-                    android:text="@string/licenseModel"
+                    android:text="@string/licenceModel"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <EditText android:id="@+id/licenseModel_edit"
-                          android:layout_height="wrap_content"
+                          android:layout_height="40dp"
                           android:layout_width="0dp"
                           android:layout_weight="2"
                           android:descendantFocusability="beforeDescendants"
                           android:focusableInTouchMode="true"
-                          android:maxLength="30"/>
+                          android:singleLine="true"
+                          android:maxLength="30"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/vehicleType"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/vehicleType_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
                          android:layout_weight="2"
-                         android:entries="@array/vehicleType_items"/>
+                         android:entries="@array/vehicleType_items"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/useCharacter"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/useCharacter_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
                          android:layout_weight="2"
-                         android:entries="@array/useCharacter_items"/>
+                         android:entries="@array/useCharacter_items"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/originUser"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <Spinner android:id="@+id/originUser_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/originUser_items"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/mileage"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <EditText
                     android:id="@+id/mileage_edit"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:inputType="numberDecimal"/>
+                    android:inputType="numberDecimal"
+                    android:background="@drawable/edittext_border"
+                    android:paddingLeft="10dp"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/kilometer"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/exteriorColor"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/exteriorColor_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="2"/>
+                         android:layout_weight="2"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/namePlate"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <Spinner android:id="@+id/namePlate_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/existornot"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/regDate"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/regYear_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:textAlignment="center"
-                         android:layout_weight="1"/>
+                         android:layout_weight="1"
+                         android:layout_marginRight="3dp"
+                         android:layout_marginLeft="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
                 <Spinner android:id="@+id/regMonth_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="1"/>
+                         android:layout_weight="1"
+                         android:layout_marginLeft="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/builtDate"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/builtYear_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="1"/>
+                         android:layout_weight="1"
+                         android:layout_marginRight="3dp"
+                         android:layout_marginLeft="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
                 <Spinner android:id="@+id/builtMonth_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="1"/>
+                         android:layout_weight="1"
+                         android:layout_marginLeft="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/driveLicence"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <Spinner android:id="@+id/driveLicence_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/existornot"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/regLicence"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <Spinner android:id="@+id/regLicence_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/existornot"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/invoice"
                     android:layout_weight="2"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/invoice_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
                          android:layout_weight="2"
-                         android:entries="@array/invoice_items"/>
-                <EditText
-                    android:id="@+id/invoice_edit"
-                    android:layout_height="wrap_content"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:inputType="number"
-                    android:maxLength="7"/>
+                         android:layout_marginRight="3dp"
+                         android:layout_marginLeft="3dp"
+                         android:entries="@array/invoice_items"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+                <EditText android:id="@+id/invoice_edit"
+                          android:layout_height="40dp"
+                          android:layout_weight="1"
+                          android:layout_width="0dp"
+                          android:inputType="number"
+                          android:maxLength="7"
+                          android:layout_marginLeft="3dp"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
                 <TextView
                     android:id="@+id/rmb"
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:text="@string/rmb"
-                    android:textSize="18sp"/>
-                <TextView android:id="@+id/placeholder"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:textAlignment="textStart"/>
+                <TextView android:id="@+id/placeHolder"
                           android:layout_width="0dp"
                           android:layout_height="wrap_content"
                           android:layout_weight="2"
                           android:visibility="gone"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/surtax"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/surtax_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
                          android:layout_weight="2"
-                         android:entries="@array/surtax_items"/>
+                         android:entries="@array/surtax_items"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/maintenanceManual"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <Spinner android:id="@+id/maintenanceManual_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/existornot"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/vehicleTax"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <Spinner android:id="@+id/vehicleTax_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"
+                         android:layout_marginRight="3dp"
+                         android:layout_marginLeft="3dp"
+                         android:entries="@array/existornot"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+                <EditText android:id="@+id/vehicleTax_edit"
+                          android:layout_height="40dp"
+                          android:layout_width="0dp"
+                          android:layout_weight="1"
+                          android:layout_marginLeft="3dp"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/transferCount"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/transferCount_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="2"/>
+                         android:layout_weight="2"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow android:id="@+id/transferLastDate_row">
+            <TableRow android:id="@+id/transferLastDate_row"
+                      android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/transferLastDate"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/transferLastYear_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="1"/>
+                         android:layout_weight="1"
+                         android:layout_marginRight="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
                 <Spinner android:id="@+id/transferLastMonth_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="1"/>
+                         android:layout_weight="1"
+                         android:layout_marginLeft="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/violationRecords"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <Spinner android:id="@+id/violationRecords_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/existornot"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp"
+                      android:id="@+id/violationScore_row">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/violationScore"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <EditText android:id="@+id/violationScore_edit"
+                          android:layout_height="40dp"
+                          android:layout_width="0dp"
+                          android:layout_weight="1"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
+                <TextView android:layout_width="0dp"
+                          android:layout_height="wrap_content"
+                          android:layout_weight="1"
+                          android:text="@string/point"
+                          android:textSize="22sp"
+                          android:textColor="#555"
+                          android:textStyle="bold"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp"
+                      android:id="@+id/violationAmount_row">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/violationAmount"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <EditText android:id="@+id/violationAmount_edit"
+                          android:layout_height="40dp"
+                          android:layout_width="0dp"
+                          android:layout_weight="1"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
+                <TextView android:layout_width="0dp"
+                          android:layout_height="wrap_content"
+                          android:layout_weight="1"
+                          android:text="@string/rmb"
+                          android:textSize="22sp"
+                          android:textColor="#555"
+                          android:textStyle="bold"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/annualInspectionDate"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/annualInspectionYear_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="1"/>
+                         android:layout_weight="1"
+                         android:layout_marginRight="3dp"
+                         android:layout_marginLeft="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
                 <Spinner android:id="@+id/annualInspectionMonth_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="1"/>
+                         android:layout_weight="1"
+                         android:layout_marginLeft="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/compulsoryInsurance"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/compulsoryInsurance_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
                          android:layout_weight="2"
-                         android:entries="@array/existornot"/>
+                         android:entries="@array/existornot"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
 
-            <TableRow android:id="@+id/compulsoryInsuranceDate_table">
+            <TableRow android:id="@+id/compulsoryInsuranceDate_table"
+                      android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/compulsoryInsuranceDate"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/compulsoryInsuranceYear_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="1"/>
+                         android:layout_weight="1"
+                         android:layout_marginRight="3dp"
+                         android:layout_marginLeft="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
                 <Spinner android:id="@+id/compulsoryInsuranceMonth_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:layout_weight="1"/>
+                         android:layout_weight="1"
+                         android:layout_marginLeft="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/licencePhotoMatch"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <EditText android:id="@+id/licencePhotoMatch_edit"
-                          android:layout_height="wrap_content"
+                          android:layout_height="40dp"
                           android:layout_width="0dp"
                           android:editable="false"
-                          android:layout_weight="1"/>
+                          android:layout_weight="1"
+                          android:layout_marginRight="3dp"
+                          android:layout_marginLeft="3dp"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
                 <Button android:id="@+id/licencePhotoMatch_button"
                         android:layout_width="0dp"
                         android:layout_height="35dp"
                         android:text="@string/choose"
+                        android:layout_marginLeft="3dp"
                         android:textColor="#FFF"
                         android:background="@drawable/button_custom"
                         android:layout_weight="1"/>
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/insurance"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/insurance_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
                          android:layout_weight="2"
-                         android:entries="@array/insurance_items"/>
+                         android:entries="@array/insurance_items"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
             <TableLayout android:id="@+id/insurance_table"
                          android:layout_width="match_parent"
                          android:layout_height="wrap_content">
-                <TableRow>
+                <TableRow android:layout_marginTop="15dp">
                     <TextView
                         android:layout_height="wrap_content"
                         android:layout_width="0dp"
                         android:text="@string/insuranceRegion"
                         android:layout_weight="1"
-                        android:textSize="18sp"/>
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
                     <Spinner android:id="@+id/insuranceRegion_spinner"
                              android:layout_height="wrap_content"
                              android:layout_width="0dp"
                              android:layout_weight="2"
-                             android:entries="@array/insuranceRegion_items"/>
+                             android:entries="@array/insuranceRegion_items"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
                 </TableRow>
-                <TableRow>
+                <TableRow android:layout_marginTop="15dp">
                     <TextView
                         android:layout_height="wrap_content"
                         android:layout_width="0dp"
                         android:text="@string/insuranceAmount"
                         android:layout_weight="1"
-                        android:textSize="18sp"/>
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
                     <EditText android:id="@+id/insuranceAmount_edit"
-                              android:layout_height="wrap_content"
+                              android:layout_height="40dp"
                               android:layout_width="0dp"
                               android:layout_weight="1"
                               android:maxLength="7"
-                              android:inputType="number"/>
+                              android:inputType="number"
+                              android:background="@drawable/edittext_border"
+                              android:paddingLeft="10dp"/>
                     <TextView android:layout_height="wrap_content"
                               android:layout_width="0dp"
                               android:text="@string/rmb"
-                              android:layout_weight="1"/>
+                              android:layout_weight="1"
+                              android:textSize="22sp"
+                              android:textColor="#555"
+                              android:textStyle="bold"/>
                 </TableRow>
-                <TableRow>
+                <TableRow android:layout_marginTop="15dp">
                     <TextView
                         android:layout_height="wrap_content"
                         android:layout_width="0dp"
                         android:text="@string/insuranceExpiryDate"
                         android:layout_weight="1"
-                        android:textSize="18sp"/>
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
                     <Spinner android:id="@+id/insuranceExpiryYear_spinner"
                              android:layout_height="wrap_content"
                              android:layout_width="0dp"
-                             android:layout_weight="1"/>
+                             android:layout_weight="1"
+                             android:layout_marginRight="3dp"
+                             android:layout_marginLeft="3dp"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
                     <Spinner android:id="@+id/insuranceExpiryMonth_spinner"
                              android:layout_height="wrap_content"
                              android:layout_width="0dp"
-                             android:layout_weight="1"/>
+                             android:layout_weight="1"
+                             android:layout_marginLeft="3dp"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
                 </TableRow>
-                <TableRow>
+                <TableRow android:layout_marginTop="15dp">
                     <TextView
                         android:layout_height="wrap_content"
                         android:layout_width="0dp"
                         android:text="@string/insuranceCompany"
                         android:layout_weight="1"
-                        android:textSize="18sp"/>
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
                     <Spinner android:id="@+id/insuranceCompany_spinner"
                              android:layout_height="wrap_content"
                              android:layout_width="0dp"
                              android:layout_weight="2"
-                             android:entries="@array/insuranceCompany_items"/>
+                             android:entries="@array/insuranceCompany_items"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
                 </TableRow>
             </TableLayout>
 
-            <TableRow android:id="@+id/importProcedures_row"
-                      android:visibility="gone">
-                <TextView
-                    android:layout_height="wrap_content"
-                    android:layout_width="0dp"
-                    android:text="@string/importProcedures"
-                    android:layout_weight="1"
-                    android:textSize="18sp"/>
-                <Spinner android:id="@+id/importProcedures_spinner"
-                         android:layout_height="wrap_content"
-                         android:layout_width="0dp"
-                         android:layout_weight="2"
-                         android:entries="@array/importProcedures_items"/>
-            </TableRow>
-            <TableRow>
+            <TableLayout android:id="@+id/importProcedures_table"
+                         android:layout_width="match_parent"
+                         android:layout_height="wrap_content">
+                <TableRow android:id="@+id/importProcedures_row"
+                          android:layout_marginTop="15dp">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:text="@string/importProcedures"
+                        android:layout_weight="1"
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
+                    <Spinner android:id="@+id/importProcedures_spinner"
+                             android:layout_height="wrap_content"
+                             android:layout_width="0dp"
+                             android:layout_weight="2"
+                             android:entries="@array/importProcedures_items"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
+                </TableRow>
+                <TableRow android:id="@+id/importWay_row"
+                          android:layout_marginTop="15dp">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:text="@string/importWay"
+                        android:layout_weight="1"
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
+                    <Spinner android:id="@+id/importWay_spinner"
+                             android:layout_height="wrap_content"
+                             android:layout_width="0dp"
+                             android:layout_weight="2"
+                             android:entries="@array/importWay_items"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
+                </TableRow>
+                <TableRow android:id="@+id/importEntryBill_row"
+                          android:layout_marginTop="15dp">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:text="@string/importEntryBill"
+                        android:layout_weight="1"
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
+                    <Spinner android:id="@+id/importEntryBill_spinner"
+                             android:layout_height="wrap_content"
+                             android:layout_width="0dp"
+                             android:layout_weight="2"
+                             android:entries="@array/existornot"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
+                </TableRow>
+                <TableRow android:id="@+id/importBusinessCheck_row"
+                          android:layout_marginTop="15dp">
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:text="@string/importBusinessCheck"
+                        android:layout_weight="1"
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
+                    <Spinner android:id="@+id/importBusinessCheck_spinner"
+                             android:layout_height="wrap_content"
+                             android:layout_width="0dp"
+                             android:layout_weight="2"
+                             android:entries="@array/existornot"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
+                </TableRow>
+            </TableLayout>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/spareTire"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/spareTire_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
                          android:layout_weight="2"
-                         android:entries="@array/spareTire_items"/>
+                         android:entries="@array/spareTire_items"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/spareKey"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner android:id="@+id/spareKey_spinner"
                          android:layout_height="wrap_content"
                          android:layout_width="0dp"
                          android:layout_weight="2"
-                         android:entries="@array/existornot"/>
+                         android:entries="@array/existornot"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/ownerName"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <EditText android:id="@+id/ownerName_edit"
-                          android:layout_height="wrap_content"
+                          android:layout_height="40dp"
                           android:layout_width="0dp"
-                          android:layout_weight="2"/>
+                          android:layout_weight="2"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/ownerIdNumber"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <EditText android:id="@+id/ownerIdNumber_edit"
-                          android:layout_height="wrap_content"
+                          android:layout_height="40dp"
                           android:layout_width="0dp"
-                          android:layout_weight="2"/>
+                          android:layout_weight="2"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
             </TableRow>
-            <TableRow>
+            <TableRow android:layout_marginTop="15dp">
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/ownerPhone"
                     android:layout_weight="1"
-                    android:textSize="18sp"/>
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <EditText android:id="@+id/ownerPhone_edit"
-                          android:layout_height="wrap_content"
+                          android:layout_height="40dp"
                           android:layout_width="0dp"
                           android:inputType="phone"
                           android:layout_weight="2"
-                          android:maxLength="13"/>
+                          android:maxLength="13"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/consignerName"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <EditText android:id="@+id/consignerName_edit"
+                          android:layout_height="40dp"
+                          android:layout_width="0dp"
+                          android:inputType="phone"
+                          android:layout_weight="2"
+                          android:maxLength="13"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/consignerIdNumber"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"
+                    android:layout_marginLeft="-5dp"/>
+                <EditText android:id="@+id/consignerIdNumber_edit"
+                          android:layout_height="40dp"
+                          android:layout_width="0dp"
+                          android:inputType="phone"
+                          android:layout_weight="2"
+                          android:maxLength="13"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/consignerPhone"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <EditText android:id="@+id/consignerPhone_edit"
+                          android:layout_height="40dp"
+                          android:layout_width="0dp"
+                          android:inputType="phone"
+                          android:layout_weight="2"
+                          android:maxLength="13"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/transferRequirement"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <Spinner android:id="@+id/transferRequirement_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/transferRequirement_items"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+            </TableRow>
+            <TableRow android:id="@+id/localPreSellAmount_row"
+                      android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/localPreSellAmount"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <EditText android:id="@+id/localPreSellAmount_edit"
+                          android:layout_height="40dp"
+                          android:layout_width="0dp"
+                          android:inputType="phone"
+                          android:layout_weight="2"
+                          android:maxLength="13"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
+            </TableRow>
+            <TableRow android:id="@+id/externalPreSellAmount_row"
+                      android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/externalPreSellAmount"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <EditText android:id="@+id/externalPreSellAmount_edit"
+                          android:layout_height="40dp"
+                          android:layout_width="0dp"
+                          android:inputType="phone"
+                          android:layout_weight="2"
+                          android:maxLength="13"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
+            </TableRow>
+            <TableRow android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/transferTime"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+                <Spinner android:id="@+id/transferTime_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="2"
+                         android:entries="@array/transferTime_items"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+            </TableRow>
+            <TableRow android:id="@+id/transfer_row"
+                      android:layout_marginTop="15dp">
+                <TextView android:width="0dp"
+                          android:layout_height="wrap_content"
+                          android:layout_weight="2"/>
+                <Spinner android:id="@+id/transferTimeMonth_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"
+                         android:layout_marginRight="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+                <Spinner android:id="@+id/transferTimeDay_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"
+                         android:layout_marginRight="3dp"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+                <Spinner android:id="@+id/transferTimeAPM_spinner"
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:layout_weight="1"
+                         android:popupBackground="@drawable/spinner_bg"
+                         android:background="@drawable/spinner_selector"/>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/transfer"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"/>
+            </TableRow>
+            <TableRow android:id="@+id/transfer1_row"
+                      android:layout_marginTop="15dp">
+                <TextView android:width="0dp"
+                          android:layout_height="wrap_content"
+                          android:layout_weight="1"/>
+                <EditText android:id="@+id/transfer1_edit"
+                          android:layout_height="40dp"
+                          android:layout_width="0dp"
+                          android:inputType="phone"
+                          android:layout_weight="1"
+                          android:maxLength="13"
+                          android:background="@drawable/edittext_border"
+                          android:paddingLeft="10dp"/>
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:text="@string/transfer1"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"/>
             </TableRow>
         </TableLayout>
-    </ScrollView>
+    </com.df.app.service.MyScrollView>
 </LinearLayout>

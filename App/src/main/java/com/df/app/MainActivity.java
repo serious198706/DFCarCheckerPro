@@ -1,16 +1,39 @@
 package com.df.app;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.df.app.CarCheck.CarCheckActivity;
+import com.df.app.CarsChecked.CarsCheckedActivity;
+import com.df.app.CarsWaiting.CarsWaitingActivity;
+import com.df.app.Procedures.InputProceduresActivity;
+import com.df.app.entries.UserInfo;
+import com.df.app.entries.VehicleModel;
+import com.df.app.service.EncryptDecryptFile;
+import com.df.app.service.VehicleModelParser;
+import com.df.app.service.XmlHandler;
+import com.df.app.util.Common;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 public class MainActivity extends Activity {
+    public static UserInfo userInfo;
+    public static VehicleModel vehicleModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,19 +71,29 @@ public class MainActivity extends Activity {
                 quit();
             }
         });
+
+        Bundle bundle = getIntent().getExtras();
+
+        if(bundle != null) {
+            userInfo = new UserInfo();
+            userInfo.setId(bundle.getString("UserId"));
+            userInfo.setKey(bundle.getString("Key"));
+        }
     }
 
     private void enterCarCheck() {
-        Intent intent = new Intent(this, CarCheckActivity.class);
-        startActivity(intent);
+        ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarCheckActivity.class);
+        parseXmlTask.execute();
     }
 
     private void enterCarsWaiting() {
-
+        ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarsWaitingActivity.class);
+        parseXmlTask.execute();
     }
 
     private void enterCarsChecked() {
-
+        ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarsCheckedActivity.class);
+        parseXmlTask.execute();
     }
 
     private void quit() {
@@ -77,5 +110,80 @@ public class MainActivity extends Activity {
                 .create();
 
         dialog.show();
+    }
+
+    // 解析车型XML
+    public void parseXml() {
+        try {
+            FileInputStream fis;
+
+            String path = Common.utilDirectory;
+            String zippedFile = path + "df001";
+
+            EncryptDecryptFile.decryptFile(zippedFile, "pdAFstScKvwO0o!D");
+
+            XmlHandler.unzip(zippedFile + ".d", path);
+
+            File f = new File(path + "vm");
+            fis = new FileInputStream(f);
+
+            if(fis == null) {
+                Toast.makeText(this, "SD卡挂载有问题!", Toast.LENGTH_LONG).show();
+                Log.d(Common.TAG, "SD卡挂载有问题!");
+            } else {
+                // 解析
+                VehicleModelParser parser = new VehicleModelParser();
+                vehicleModel = parser.parseVehicleModelXml(fis);
+
+                // delete vm
+                f.delete();
+
+                // delete df001.d
+                f = new File(zippedFile + ".d");
+                f.delete();
+            }
+        } catch (FileNotFoundException e) {
+            Toast.makeText(this, "文件不存在!", Toast.LENGTH_LONG).show();
+            Log.d(Common.TAG, "文件不存在!");
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.d(Common.TAG, "文件操作出错!");
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        quit();
+    }
+
+    public class ParseXmlTask extends AsyncTask<Void, Void, Boolean> {
+        private Context context;
+        private ProgressDialog progressDialog;
+        private Class activity;
+
+        public ParseXmlTask(Context context, Class activity) {
+            this.context = context;
+            this.activity = activity;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(context, null, "请稍候...", false, false, null);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            parseXml();
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            progressDialog.dismiss();
+
+            Intent intent = new Intent(this.context, activity);
+            startActivity(intent);
+        }
     }
 }

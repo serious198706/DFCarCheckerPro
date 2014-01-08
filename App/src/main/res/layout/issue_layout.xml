@@ -3,6 +3,78 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="#FFF">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView android:id="@+id/issue_image"
+            android:layout_width="500dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@drawable/la_2"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
 
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_margin="10dp">
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <ImageView android:id="@+id/rectangle_normal"
+                       android:layout_width="18dp"
+                       android:layout_height="18dp"
+                       android:src="@drawable/rectangle_normal"
+                       android:layout_marginLeft="5dp"/>
+            <TextView android:layout_height="wrap_content"
+                      android:layout_width="wrap_content"
+                      android:text="@string/normal"
+                      android:layout_marginLeft="5dp"
+                      android:layout_toRightOf="@id/rectangle_normal"/>
+        </RelativeLayout>
+
+        <RelativeLayout android:orientation="horizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+            <ImageView android:id="@+id/rectangle_repaint"
+                       android:layout_width="18dp"
+                       android:layout_height="18dp"
+                       android:src="@drawable/rectangle_repaint"/>
+            <TextView android:layout_height="wrap_content"
+                      android:layout_width="wrap_content"
+                      android:text="@string/repaint"
+                      android:layout_marginLeft="5dp"
+                      android:layout_toRightOf="@id/rectangle_repaint"/>
+        </RelativeLayout>
+
+        <RelativeLayout android:orientation="horizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+            <ImageView android:id="@+id/rectangle_repaint_and_repair"
+                       android:layout_width="18dp"
+                       android:layout_height="18dp"
+                       android:src="@drawable/rectangle_repaint_and_repair"/>
+            <TextView android:layout_height="wrap_content"
+                      android:layout_width="wrap_content"
+                      android:text="@string/repaint_and_repair"
+                      android:layout_marginLeft="5dp"
+                      android:layout_toRightOf="@id/rectangle_repaint_and_repair"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/issue"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+    <ListView android:id="@+id/issue_list"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"/>
 </LinearLayout>

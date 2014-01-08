@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <uses-feature android:name="android.hardware.usb.host" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -24,6 +25,7 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
@@ -31,29 +33,60 @@
             android:name="com.df.app.WelcomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" >
-        </activity>
-        <activity
-            android:name="com.df.app.StartupActivity"
-            android:label="@string/title_activity_startup" >
-        </activity>
-        <activity
-            android:name="com.df.app.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
-        </activity>
-        <activity
-            android:name="com.df.app.MainActivity"
-            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name=".CarCheck.CarCheckActivity"
-            android:label="@string/title_activity_car_check_frame" >
+            android:name="com.df.app.StartupActivity"
+            android:label="@string/title_activity_startup"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.df.app.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
+            android:name="com.df.app.MainActivity"
+            android:label="@string/title_activity_main"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.df.app.CarCheck.CarCheckActivity"
+            android:label="@string/title_activity_car_check_frame"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
+            android:name="com.df.app.CarCheck.PaintActivity"
+            android:label="@string/title_activity_car_check_frame"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
+            android:name="com.df.app.CarsChecked.CarsCheckedActivity"
+            android:label="@string/title_activity_cars_checked"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.df.app.CarsWaiting.CarsWaitingActivity"
+            android:label="@string/title_activity_cars_waiting" >
+        </activity>
+        <activity
+            android:name=".Procedures.InputProceduresActivity"
+            android:label="@string/title_activity_procedures" >
         </activity>
     </application>
 

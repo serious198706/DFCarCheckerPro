@@ -86,8 +86,10 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="support-v4-13.0.0" level="project" />
     <orderEntry type="library" exported="" name="ksoap2-android-assembly-3.0.0-jar-with-dependencies" level="project" />
+    <orderEntry type="library" exported="" name="nineoldandroids-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="zip4j_1.3.1" level="project" />
-    <orderEntry type="library" exported="" name="actionbarsherlock" level="project" />
+    <orderEntry type="library" exported="" name="swipelistview-1.0-20130701.103547-12-jar-with-dependencies" level="project" />
+    <orderEntry type="library" exported="" name="seriallib" level="project" />
   </component>
 </module>
 

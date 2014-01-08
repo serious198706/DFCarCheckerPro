@@ -1,57 +1,104 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-    <LinearLayout android:id="@+id/tabButton"
+                android:layout_height="match_parent"
+                android:background="#FFF">
+    <RelativeLayout android:id="@+id/naviBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
-        <Button android:id="@+id/buttonBasicInfo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/title_basicInfo"/>
-        <Button android:id="@+id/buttonAccidentCheck"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/title_accidentCheck"/>
-        <Button android:id="@+id/buttonIntegratedCheck"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/title_integratedCheck"/>
-        <Button android:id="@+id/buttonPhoto"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/title_photo"/>
-
-    </LinearLayout>
+        <ImageView android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="#AA030A"/>
+    </RelativeLayout>
 
     <com.df.app.CarCheck.BasicInfoLayout android:id="@+id/basicInfo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tabButton"/>
+        android:layout_below="@id/naviBar"/>
 
     <com.df.app.CarCheck.AccidentCheckLayout android:id="@+id/accidentCheck"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tabButton"
+        android:layout_below="@id/naviBar"
         android:visibility="gone"/>
 
     <com.df.app.CarCheck.IntegratedCheckLayout android:id="@+id/integratedCheck"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tabButton"
+        android:layout_below="@id/naviBar"
         android:visibility="gone"/>
 
     <com.df.app.CarCheck.PhotoLayout android:id="@+id/photo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tabButton"
+        android:layout_below="@id/naviBar"
         android:visibility="gone"/>
+
+    <RelativeLayout android:id="@+id/tabButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+        <Button android:id="@+id/buttonNavi"
+                android:layout_width="40dp"
+                android:layout_height="36dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/navi"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
+
+        <TextView android:id="@+id/currentItem"
+                  android:layout_width="wrap_content"
+                  android:layout_height="36dp"
+                  android:layout_toRightOf="@id/buttonNavi"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginTop="6dp"
+                  android:textColor="#FFF"
+                  android:textSize="28sp"/>
+
+        <Button android:id="@+id/buttonCommit"
+                android:layout_width="40dp"
+                android:layout_height="35dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/commit"
+                android:layout_alignParentRight="true"/>
+
+        <Button android:id="@+id/buttonSave"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/save"
+                android:layout_toLeftOf="@id/buttonCommit"/>
+
+        <Button android:id="@+id/buttonHome"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/home"
+                android:layout_toLeftOf="@id/buttonSave"/>
+
+        <Button android:id="@+id/buttonBasicInfo"
+                android:layout_width="195dp"
+                android:layout_height="54dp"
+                android:background="@drawable/basic_info"
+                android:layout_below="@id/buttonNavi"/>
+
+        <Button android:id="@+id/buttonAccidentCheck"
+                android:layout_width="195dp"
+                android:layout_height="54dp"
+                android:background="@drawable/accident"
+                android:layout_below="@id/buttonBasicInfo"/>
+        <Button android:id="@+id/buttonIntegratedCheck"
+                android:layout_width="195dp"
+                android:layout_height="54dp"
+                android:background="@drawable/integrated"
+                android:layout_below="@id/buttonAccidentCheck"/>
+        <Button android:id="@+id/buttonPhoto"
+                android:layout_width="195dp"
+                android:layout_height="54dp"
+                android:background="@drawable/photo"
+                android:layout_below="@id/buttonIntegratedCheck"/>
+    </RelativeLayout>
 </RelativeLayout>
 
 

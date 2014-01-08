@@ -3,173 +3,223 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="#FFF">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
+        <Button
+            android:layout_width="151dp"
+            android:layout_height="33dp"
+            android:text="车辆行驶证"
+            android:textColor="#FFF"
+            android:paddingLeft="23dp"
+            android:background="@drawable/licence"/>
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <RadioButton android:id="@+id/type1Radio"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="@string/type1"
                 android:textSize="18sp"
-                android:checked="true"/>
+                android:checked="true"
+                android:button="@drawable/radio_button"
+                android:padding="6dp"
+                android:layout_marginLeft="15dp"/>
             <RadioButton android:id="@+id/type2Radio"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/type2"
-                android:textSize="18sp"/>
+                android:textSize="18sp"
+                android:button="@drawable/radio_button"
+                android:padding="6dp"
+                android:layout_marginLeft="10dp"/>
         </RadioGroup>
+    </LinearLayout>
 
-        <ImageView android:layout_gravity="center"
-            android:layout_width="400dp"
-            android:layout_height="300dp"
-            android:src="@drawable/drive_license"/>
+    <ImageView android:layout_gravity="center"
+               android:layout_width="400dp"
+               android:layout_height="300dp"
+               android:src="@drawable/drive_license"/>
 
-        <Button android:id="@+id/recognise_button"
+    <Button android:id="@+id/recognise_button"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:text="@string/recognise"
             android:textColor="#FFF"
             android:background="@drawable/button_custom"
             android:padding="-5dp"/>
-    </LinearLayout>
 
     <TableLayout android:layout_width="match_parent"
-                 android:layout_height="wrap_content">
-        <TableRow>
+                 android:layout_height="0dp"
+                 android:layout_weight="1">
+        <TableRow android:layout_weight="1">
             <TextView
                 android:layout_height="wrap_content"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
+                android:layout_margin="5dp"
                 android:text="@string/plateNumber"
-                android:layout_weight="1"
-                android:textSize="18sp"/>
+                android:textSize="22sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="center"/>
             <EditText android:id="@+id/plateNumber_edit"
-                      android:layout_height="wrap_content"
+                      android:layout_height="40dp"
+                      android:layout_margin="5dp"
                       android:layout_width="0dp"
                       android:layout_weight="2"
-                      android:maxLength="10"/>
+                      android:singleLine="true"
+                      android:maxLength="10"
+                      android:background="@drawable/edittext_border"
+                      android:paddingLeft="10dp"/>
         </TableRow>
-        <TableRow>
+        <TableRow android:layout_weight="1">
             <TextView
                 android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:text="@string/licenseModel"
-                android:layout_weight="1"
-                android:textSize="18sp"/>
+                android:layout_width="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/licenceModel"
+                android:textSize="22sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="center"/>
             <EditText android:id="@+id/licenseModel_edit"
-                      android:layout_height="wrap_content"
+                      android:layout_height="40dp"
+                      android:layout_margin="5dp"
                       android:layout_width="0dp"
                       android:layout_weight="2"
-                      android:maxLength="30"/>
+                      android:singleLine="true"
+                      android:maxLength="30"
+                      android:background="@drawable/edittext_border"
+                      android:paddingLeft="10dp"/>
         </TableRow>
-        <TableRow>
+        <TableRow  android:layout_weight="1">
             <TextView
                 android:layout_height="wrap_content"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
+                android:layout_margin="5dp"
                 android:text="@string/vehicleType"
-                android:layout_weight="1"
-                android:textSize="18sp"/>
+                android:textSize="22sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="center"/>
             <EditText android:id="@+id/vehicleType_edit"
-                     android:layout_height="wrap_content"
+                      android:layout_height="40dp"
+                      android:layout_margin="5dp"
                      android:layout_width="0dp"
-                     android:layout_weight="2"/>
+                     android:layout_weight="2"
+                     android:singleLine="true"
+                     android:background="@drawable/edittext_border"
+                     android:paddingLeft="10dp"/>
         </TableRow>
-        <TableRow>
+        <TableRow android:layout_weight="1">
             <TextView
                 android:layout_height="wrap_content"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
+                android:layout_margin="5dp"
                 android:text="@string/useCharacter"
-                android:layout_weight="1"
-                android:textSize="18sp"/>
+                android:textSize="22sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="center"/>
             <EditText android:id="@+id/useCharacter_edit"
+                      android:layout_height="40dp"
+                      android:layout_margin="5dp"
+                     android:layout_width="0dp"
+                     android:layout_weight="2"
+                     android:singleLine="true"
+                     android:background="@drawable/edittext_border"
+                     android:paddingLeft="10dp"/>
+        </TableRow>
+        <TableRow android:layout_weight="1">
+            <TextView
+                android:layout_height="40dp"
+                android:layout_width="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/engineSerial"
+                android:textSize="22sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="center"/>
+            <EditText android:id="@+id/engineSerial_edit"
+                      android:layout_height="40dp"
+                      android:layout_margin="5dp"
+                      android:layout_width="0dp"
+                      android:layout_weight="2"
+                      android:singleLine="true"
+                      android:background="@drawable/edittext_border"
+                      android:paddingLeft="10dp"/>
+        </TableRow>
+        <TableRow android:layout_weight="1">
+            <TextView android:layout_height="40dp"
+                      android:layout_width="wrap_content"
+                      android:text="@string/vin"
+                      android:textSize="22sp"
+                      android:textColor="#555"
+                      android:textStyle="bold"
+                      android:gravity="center"
+                      android:layout_marginLeft="8dp"
+                      android:layout_marginTop="5dp"
+                      android:layout_marginRight="5dp"
+                      android:layout_marginBottom="5dp"/>
+            <Spinner android:id="@+id/vin_spinner"
                      android:layout_height="wrap_content"
                      android:layout_width="0dp"
-                     android:layout_weight="2"/>
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:text="@string/engineSerial"
-                android:layout_weight="1"
-                android:textSize="18sp"/>
-            <EditText android:id="@+id/engineSerial_edit"
-                      android:layout_height="wrap_content"
+                     android:layout_weight="1"
+                     android:visibility="gone"/>
+            <EditText android:id="@+id/vin_edit"
                       android:layout_width="0dp"
-                      android:layout_weight="2"/>
+                      android:layout_height="40dp"
+                      android:layout_margin="5dp"
+                      android:layout_weight="3"
+                      android:inputType="textCapCharacters"
+                      android:singleLine="true"
+                      android:background="@drawable/edittext_border"
+                      android:paddingLeft="10dp"/>
+            <!-- LE4FG65Z487015744 -->
+            <Button android:id="@+id/vinConfirm_button"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:layout_margin="5dp"
+                    android:text="@string/match"
+                    android:textColor="#FFF"
+                    android:background="@drawable/button_custom"
+                    android:padding="-5dp" />
+        </TableRow>
+        <TableRow android:id="@+id/brand_input"
+                  android:layout_weight="1"
+                  android:visibility="invisible">
+            <TextView android:layout_height="40dp"
+                      android:layout_width="wrap_content"
+                      android:layout_margin="5dp"
+                      android:text="@string/brand"
+                      android:textSize="22sp"
+                      android:textColor="#555"
+                      android:textStyle="bold"
+                      android:gravity="center"/>
+            <EditText android:id="@+id/brand_edit"
+                      android:layout_width="0dp"
+                      android:layout_height="40dp"
+                      android:layout_weight="3"
+                      android:layout_margin="5dp"
+                      android:enabled="false"
+                      android:background="@drawable/edittext_border"
+                      android:paddingLeft="10dp"/>
+            <Button android:id="@+id/brand_select_button"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:layout_margin="5dp"
+                    android:text="@string/choose"
+                    android:background="@drawable/button_custom"
+                    android:padding="-5dp"
+                    android:textColor="#FFF"/>
         </TableRow>
     </TableLayout>
-
-
-    <LinearLayout android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="horizontal">
-        <TextView android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_weight="1"
-                  android:text="@string/vin"
-                  android:textSize="22sp"
-                  style="@style/CodeFont"/>
-        <Spinner android:id="@+id/vin_spinner"
-                 android:layout_height="wrap_content"
-                 android:layout_width="0dp"
-                 android:layout_weight="3"
-                 android:visibility="gone"/>
-        <EditText android:id="@+id/vin_edit"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_weight="3"
-                  android:inputType="textCapCharacters"/>
-        <!-- LE4FG65Z487015744 -->
-        <Button android:id="@+id/vinConfirm_button"
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:text="@string/ok"
-                android:textColor="#FFF"
-                android:background="@drawable/button_custom"
-                android:padding="-5dp" />
-    </LinearLayout>
-    <LinearLayout android:id="@+id/brand_input"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="horizontal"
-                  android:visibility="gone">
-        <TextView android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_weight="1"
-                  android:text="@string/brand"
-                  android:textSize="22sp"
-                  style="@style/CodeFont"/>
-        <EditText android:id="@+id/bi_brand_edit"
-                  android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_weight="2"
-                  android:enabled="false"/>
-        <Button android:id="@+id/bi_brand_ok_button"
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:layout_marginRight="1dp"
-                android:text="@string/ok"
-                android:textColor="#FFF"
-                android:background="@drawable/button_custom"
-                android:padding="-5dp" />
-        <Button android:id="@+id/bi_brand_select_button"
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="1dp"
-                android:text="@string/choose"
-                android:background="@drawable/button_custom1"
-                android:padding="-5dp" />
-    </LinearLayout>
 </LinearLayout>
