@@ -18,7 +18,8 @@ public class Common {
 
     public static String NAMESPACE = "http://cheyipai";
 
-    public static final String SERVER_ADDRESS = "http://192.168.8.33:810/Services/";
+    public static final String SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
+    //public static final String SERVER_ADDRESS = "http://192.168.8.33:810/Services/";
     public static final String PICTURE_ADDRESS = "http://192.168.100.6:8006/";
 
 //    public static final String SERVER_ADDRESS = "http://192.168.100.6:50/";
@@ -37,6 +38,8 @@ public class Common {
     public static final String GET_OPTIONS_BY_VIN = "GetCarConfigInfoByVin";
     public static final String USER_LOGIN = "UserLogin";
     public static final String GET_APP_NEW_VERSION = "GetAppNewVersion";
+    public static final String GET_STANDARD_REMARKS = "GetStandardRemarks";
+    public static final String UPLOAD_PICTURE = "SaveCarPictureTagKey";
 
     // 配置信息页与综合检查页spinner的联动关系
     public static final int[][] carSettingsSpinnerMap = {
@@ -75,4 +78,8 @@ public class Common {
 
     public static final int PHOTO_FOR_EXTERIOR_STANDARD = 2;
     public static final int PHOTO_FOR_INTERIOR_STANDARD = 3;
+    public static final int PHOTO_FOR_ACCIDENT_FRONT = 4;
+    public static final int PHOTO_FOR_ACCIDENT_REAR = 5;
+    public static final int PHOTO_FOR_EXTERIOR_FAULT = 6;
+    public static final int PHOTO_FOR_INTERIOR_FAULT = 6;
 }

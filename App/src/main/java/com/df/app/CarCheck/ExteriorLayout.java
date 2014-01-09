@@ -196,7 +196,9 @@ public class ExteriorLayout extends LinearLayout {
                 Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 
                 currentTimeMillis = System.currentTimeMillis();
-                Uri fileUri = Helper.getOutputMediaFileUri(currentTimeMillis); // create a file to save the image
+                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis)); //
+                // create a
+                // file to save the image
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
                 ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_STANDARD);
@@ -309,6 +311,11 @@ public class ExteriorLayout extends LinearLayout {
         return result;
     }
 
+    public List<PhotoEntity> generatePhotoEntities() {
+        photoEntities.addAll(standardPhotoEntities);
+        return photoEntities;
+    }
+
     public void saveExteriorStandardPhoto() {
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
@@ -348,7 +355,7 @@ public class ExteriorLayout extends LinearLayout {
             jsonObject.put("PhotoData", photoJsonObject);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
-            jsonObject.put("UniqueId", BasicInfoLayout.uniqueId);
+            jsonObject.put("UniqueId", BasicInfoLayout.carId);
         } catch (JSONException e) {
 
         }
@@ -359,7 +366,7 @@ public class ExteriorLayout extends LinearLayout {
         String group = getResources().getStringArray(R.array.exterior_camera_item)[currentShotPart];
         photoEntity.setName(group);
 
-        Helper.setPhotoSize(currentTimeMillis, 800);
+        Helper.setPhotoSize(Long.toString(currentTimeMillis), 800);
 
         standardPhotoEntities.add(photoEntity);
 

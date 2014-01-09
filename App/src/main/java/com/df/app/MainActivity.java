@@ -1,6 +1,5 @@
 package com.df.app;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.df.app.CarCheck.CarCheckActivity;
 import com.df.app.CarsChecked.CarsCheckedActivity;
 import com.df.app.CarsWaiting.CarsWaitingActivity;
 import com.df.app.Procedures.InputProceduresActivity;
@@ -40,11 +38,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button carCheckButton = (Button)findViewById(R.id.buttonCarCheck);
-        carCheckButton.setOnClickListener(new View.OnClickListener() {
+        Button inputProceduresButton = (Button)findViewById(R.id.buttonInputProcedures);
+        inputProceduresButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                enterCarCheck();
+                enterInputProcedures();
             }
         });
 
@@ -81,8 +79,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void enterCarCheck() {
-        ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarCheckActivity.class);
+    private void enterInputProcedures() {
+        ParseXmlTask parseXmlTask = new ParseXmlTask(this, InputProceduresActivity.class);
         parseXmlTask.execute();
     }
 

@@ -41,7 +41,7 @@
                     android:textColor="#000000" />
             </RelativeLayout>
 
-            <TableRow android:layout_marginTop="5dp">
+            <TableRow android:layout_marginTop="15dp">
                 <TextView android:layout_width="0dp"
                           android:layout_height="wrap_content"
                           android:text="@string/smooth"
@@ -59,7 +59,7 @@
                          android:background="@drawable/spinner_selector"/>
             </TableRow>
 
-            <TableRow  android:layout_marginTop="5dp">
+            <TableRow  android:layout_marginTop="15dp">
                 <TextView android:layout_width="0dp"
                           android:layout_height="wrap_content"
                           android:text="@string/glass"
@@ -91,7 +91,7 @@
                         android:layout_margin="5dp"/>
             </TableRow>
 
-            <TableRow android:layout_marginTop="5dp">
+            <TableRow android:layout_marginTop="15dp">
                 <TextView android:layout_width="0dp"
                           android:layout_height="wrap_content"
                           android:text="@string/screw"
@@ -123,7 +123,7 @@
                         android:layout_margin="5dp"/>
             </TableRow>
 
-            <TableRow android:layout_marginTop="5dp">
+            <TableRow android:layout_marginTop="15dp">
                 <CheckBox android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="22sp"
@@ -134,7 +134,7 @@
             </TableRow>
 
             <TableRow android:id="@+id/ex_camera_3"
-                      android:layout_marginTop="5dp">
+                      android:layout_marginTop="15dp">
                 <Button android:id="@+id/exterior_camera_button"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
@@ -147,16 +147,19 @@
                         android:background="@drawable/button_custom"/>
             </TableRow>
 
-            <TableRow android:layout_marginTop="5dp">
+            <TableRow>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:text="@string/exterior_comment"
                     android:layout_weight="1"
+                    android:layout_marginTop="15dp"
                     android:textSize="22sp"
                     android:textColor="#555"
                     android:textStyle="bold"
                     android:gravity="left"/>
+            </TableRow>
+            <TableRow>
                 <EditText
                     android:id="@+id/exterior_comment_edit"
                     android:layout_width="0dp"

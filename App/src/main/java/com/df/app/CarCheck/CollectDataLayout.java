@@ -172,6 +172,14 @@ public class CollectDataLayout extends LinearLayout {
                 }
             }
         });
+
+        Button dummyRecordButton = (Button)findViewById(R.id.dummyRecord);
+        dummyRecordButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fillInDummyData();
+            }
+        });
     }
 
     private void showShadow(boolean show) {

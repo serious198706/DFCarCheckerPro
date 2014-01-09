@@ -106,6 +106,10 @@ public class ExteriorPaintView extends PaintView {
                         entity.setEnd(x, y);
                     }
 
+                    // 按下时就设置此PosEntity的fileName
+                    currentTimeMillis = System.currentTimeMillis();
+                    entity.setImageFileName(Long.toString(currentTimeMillis) + ".jpg");
+
                     data.add(entity);
                     thisTimeNewData.add(entity);
                 } else if(event.getAction() == MotionEvent.ACTION_MOVE){
@@ -240,16 +244,17 @@ public class ExteriorPaintView extends PaintView {
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                currentTimeMillis = System.currentTimeMillis();
-                Uri fileUri = Helper.getOutputMediaFileUri(currentTimeMillis); // create a file to save the image
+                Uri fileUri = Helper.getOutputMediaFileUri(data.get(data.size() - 1).getImageFileName());
+                // create a file to save the image
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
-                ((Activity)getContext()).startActivityForResult(intent, 1);
+                ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_FAULT);
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                data.get(data.size() - 1).setImageFileName("");
             }
         });
         builder.show();

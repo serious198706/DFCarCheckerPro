@@ -39,9 +39,13 @@ public class FramePaintView extends PaintView {
     private List<PosEntity> thisTimeNewData;
     private List<PosEntity> undoData;
     private Bitmap bitmap;
-    private Bitmap colorDiffBitmap;
+    private Bitmap damageBitmap;
 
     private int max_x, max_y;
+
+    private String sight;
+    private int issueId;
+    private String comment;
 
     private long currentTimeMillis;
     private List<PhotoEntity> photoEntitiesFront = AccidentResultLayout.photoEntitiesFront;
@@ -64,9 +68,12 @@ public class FramePaintView extends PaintView {
         //init();
     }
 
-    public void init(Bitmap bitmap, List<PosEntity> entities) {
+    public void init(Bitmap bitmap, List<PosEntity> entities, String sight, int issueId, String comment) {
         this.bitmap = bitmap;
-        data = entities;
+        this.data = entities;
+        this.sight = sight;
+        this.issueId = issueId;
+        this.comment = comment;
 
         max_x = bitmap.getWidth();
         max_y = bitmap.getHeight();
@@ -74,7 +81,7 @@ public class FramePaintView extends PaintView {
         undoData = new ArrayList<PosEntity>();
         thisTimeNewData = new ArrayList<PosEntity>();
 
-        colorDiffBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.damage);
+        damageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.damage);
         this.setOnTouchListener(onTouchListener);
     }
 
@@ -101,6 +108,16 @@ public class FramePaintView extends PaintView {
                     entity.setMaxX(max_x);
                     entity.setMaxY(max_y);
                     entity.setStart(x, y);
+
+                    // 按下时就设置此PosEntity的fileName
+                    currentTimeMillis = System.currentTimeMillis();
+                    entity.setImageFileName(Long.toString(currentTimeMillis) + ".jpg");
+
+                    // 按下时就设置issueId(由Adapter传来)
+                    entity.setIssueId(issueId);
+
+                    // 按下时就设置comment(由Adapter传来)
+                    entity.setComment(comment);
 
                     data.add(entity);
                     thisTimeNewData.add(entity);
@@ -132,7 +149,7 @@ public class FramePaintView extends PaintView {
     }
 
     private void paint(PosEntity entity, Canvas canvas) {
-        canvas.drawBitmap(colorDiffBitmap, entity.getStartX(), entity.getStartY(), null);
+        canvas.drawBitmap(damageBitmap, entity.getStartX(), entity.getStartY(), null);
     }
 
     private void showCamera(){
@@ -143,16 +160,21 @@ public class FramePaintView extends PaintView {
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                currentTimeMillis = System.currentTimeMillis();
-                Uri fileUri = Helper.getOutputMediaFileUri(currentTimeMillis); // create a file to save the image
+                // 根据此点文件名进行拍照
+                Uri fileUri = Helper.getOutputMediaFileUri(data.get(data.size() - 1).getImageFileName());
+
+                // create a file to save the image
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
-                ((Activity)getContext()).startActivityForResult(intent, 1);
+                ((Activity)getContext()).startActivityForResult(intent,
+                        sight.equals("F") ? Common.PHOTO_FOR_ACCIDENT_FRONT : Common.PHOTO_FOR_ACCIDENT_REAR);
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                // 如果点击了取消，则直接将此点对应的文件名设置为""
+                data.get(data.size() - 1).setImageFileName("");
             }
         });
         builder.show();

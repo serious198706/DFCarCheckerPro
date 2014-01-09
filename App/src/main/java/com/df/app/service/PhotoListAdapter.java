@@ -21,15 +21,16 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.util.Common;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by 岩 on 13-12-26.
  */
 public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
-    private ArrayList<PhotoEntity> items;
+    private List<PhotoEntity> items;
     private Context context;
 
-    public PhotoListAdapter(Context context, int layoutResourceId, ArrayList<PhotoEntity> items) {
+    public PhotoListAdapter(Context context, int layoutResourceId, List<PhotoEntity> items) {
         super(context, layoutResourceId, items);
         this.context = context;
         this.items = items;

@@ -89,7 +89,7 @@ public class InputProceduresLayout extends LinearLayout {
                 proceduresLayout.updateUi();
 
                 // TODO 删！！！
-                mUpdateUiCallback.updateUi();
+                //mUpdateUiCallback.updateUi();
             }
         });
 

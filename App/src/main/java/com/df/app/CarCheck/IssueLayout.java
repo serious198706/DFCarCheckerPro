@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class IssueLayout extends LinearLayout {
     private View rootView;
-    private SimpleAdapter adapter;
+    private IssueListAdapter adapter;
     private ArrayList<HashMap<String, String>> mylist;
 
     public IssueLayout(Context context) {
@@ -48,7 +48,9 @@ public class IssueLayout extends LinearLayout {
 
         ArrayList<Issue> issueList = fillInDummyData();
 
-        issueListView.setAdapter(new IssueListAdapter(context, issueList));
+        adapter = new IssueListAdapter(context, issueList);
+
+        issueListView.setAdapter(adapter);
     }
 
     public void updateUi() {
@@ -58,14 +60,18 @@ public class IssueLayout extends LinearLayout {
     private ArrayList<Issue> fillInDummyData() {
         ArrayList<Issue> issueList  = new ArrayList<Issue>();
 
-        issueList.add(new Issue("右前门铰链处是否平整、无修复焊接痕迹", "Y", "F"));
-        issueList.add(new Issue("前杠与前翼子板之间的缝隙是否整齐均匀", "N", "R"));
-        issueList.add(new Issue("右前翼子板和翼子板内衬连接处的胶体是否规整", "Y", "R"));
-        issueList.add(new Issue("右前翼子板内侧是否平整、无回火焊点或折痕", "N", "R"));
-        issueList.add(new Issue("右前翼子板内衬板是否平整、无钣金修复痕迹", "Y", "F"));
-        issueList.add(new Issue("右前减震器座是否平整、无钣金修复痕迹", "N", "R"));
-        issueList.add(new Issue("引擎盖内侧封边及内衬是否整齐、无修复焊接痕迹", "Y", "R"));
+        issueList.add(new Issue(1, "右前门铰链处是否平整、无修复焊接痕迹", "Y", "F"));
+        issueList.add(new Issue(2, "前杠与前翼子板之间的缝隙是否整齐均匀", "N", "R"));
+        issueList.add(new Issue(3, "右前翼子板和翼子板内衬连接处的胶体是否规整", "Y", "R"));
+        issueList.add(new Issue(4, "右前翼子板内侧是否平整、无回火焊点或折痕", "N", "R"));
+        issueList.add(new Issue(5, "右前翼子板内衬板是否平整、无钣金修复痕迹", "Y", "F"));
+        issueList.add(new Issue(6, "右前减震器座是否平整、无钣金修复痕迹", "N", "R"));
+        issueList.add(new Issue(7, "引擎盖内侧封边及内衬是否整齐、无修复焊接痕迹", "Y", "R"));
 
         return issueList;
+    }
+
+    public long getCurrentTimeMillis() {
+        return adapter.getCurrentTimeMillis();
     }
 }

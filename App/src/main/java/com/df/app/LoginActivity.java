@@ -206,6 +206,8 @@ public class LoginActivity extends Activity {
                         // 保存用户的UserId和此次登陆的Key
                         userInfo.setId(userJsonObject.getString("UserId"));
                         userInfo.setKey(userJsonObject.getString("Key"));
+                        userInfo.setName(userJsonObject.getString("UserName"));
+                        userInfo.setOrid(userJsonObject.getString("Orid"));
                     } catch (Exception e) {
                         Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
                         return false;

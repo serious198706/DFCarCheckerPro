@@ -76,6 +76,15 @@
             android:text="@string/tip"
             android:textColor="#F00"/>
 
+        <Button android:id="@+id/dummyRecord"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_margin="15dp"
+            android:text="录入测试数据"
+            android:textColor="#FFF"
+            android:background="@drawable/button_custom"
+            android:padding="-5dp"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

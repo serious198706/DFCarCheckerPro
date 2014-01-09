@@ -12,13 +12,14 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.service.PhotoListAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by 岩 on 13-12-26.
  */
 public class PhotoFaultLayout extends LinearLayout {
-    private View rootView;
-    private Context context;
+    private static View rootView;
+    private static Context context;
 
     public PhotoFaultLayout(Context context) {
         super(context);
@@ -47,11 +48,12 @@ public class PhotoFaultLayout extends LinearLayout {
         faultList.setAdapter(new PhotoListAdapter(context, R.id.photo_fault_list, photoEntities));
     }
 
-    public void updateUi() {
-        ArrayList<PhotoEntity> photoEntities = generateDummyPhoto();
+    public static void updateUi() {
+        List<PhotoEntity> photoEntities = AccidentResultLayout.photoEntitiesFront;
+        photoEntities.addAll(AccidentResultLayout.photoEntitiesRear);
 
-        ListView faultList = (ListView) findViewById(R.id.photo_fault_list);
-        faultList.setAdapter(new PhotoListAdapter(this.context, R.id.photo_fault_list, photoEntities));
+        ListView faultList = (ListView) rootView.findViewById(R.id.photo_fault_list);
+        faultList.setAdapter(new PhotoListAdapter(context, R.id.photo_fault_list, photoEntities));
     }
 
     private ArrayList<PhotoEntity> generateDummyPhoto() {

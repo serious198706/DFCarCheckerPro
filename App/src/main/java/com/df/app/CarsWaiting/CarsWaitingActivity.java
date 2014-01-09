@@ -99,7 +99,6 @@ public class CarsWaitingActivity extends Activity {
                 }
                 adapter.notifyDataSetChanged();
             }
-
         });
 
         swipeListView.setSwipeMode(SwipeListView.SWIPE_MODE_LEFT);

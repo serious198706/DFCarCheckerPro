@@ -3,20 +3,13 @@ package com.df.app.CarCheck;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -30,17 +23,12 @@ import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintview.ExteriorPaintView;
-import com.df.app.paintview.FramePaintView;
 import com.df.app.paintview.InteriorPaintView;
 import com.df.app.paintview.PaintView;
 import com.df.app.util.Common;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -381,35 +369,22 @@ public class PaintActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        long currentTimeMillis = 0;
-
         // 获取绘图父类实体
         paintView = (PaintView)map.get(currentPaintView);
 
         switch (resultCode) {
-            // 拍摄完成后，各种组织
             case Activity.RESULT_OK:
-                // 获取当前文件名
-                currentTimeMillis = paintView.getCurrentTimeMillis();
-                setPhotoSize(currentTimeMillis, 800);
+                // 对拍摄的照片做缩小化处理
+                setPhotoSize(paintView.getPosEntity().getImageFileName(), 800);
                 break;
             case Activity.RESULT_CANCELED:
-                // 获取当前文件名
-                currentTimeMillis = 0;
+                // 如果取消了拍摄，将照片名称置空
+                paintView.getPosEntity().setImageFileName("");
                 break;
             default:
                 Log.d("DFCarChecker", "拍摄故障！！");
                 break;
         }
-
-        // 获取坐标
-        PosEntity posEntity = paintView.getPosEntity();
-
-        // 如果文件名为0，则表示此点无照片
-        String fileName = (currentTimeMillis == 0 ? "" : Long.toString(currentTimeMillis) + ".jpg");
-
-        posEntity.setImageFileName(fileName);
     }
 
     private void generatePhotoEntities() {
@@ -469,7 +444,7 @@ public class PaintActivity extends Activity {
                 photoJsonObject.put("radius", radius);
 
                 jsonObject.put("PhotoData", photoJsonObject);
-                jsonObject.put("UniqueId", BasicInfoLayout.uniqueId);
+                jsonObject.put("UniqueId", BasicInfoLayout.carId);
                 jsonObject.put("UserId", MainActivity.userInfo.getId());
                 jsonObject.put("Key", MainActivity.userInfo.getKey());
             } catch (Exception e) {
@@ -483,6 +458,7 @@ public class PaintActivity extends Activity {
                     .getImageFileName();
 
             photoEntity.setFileName(fileName);
+            photoEntity.setName(paintView.getGroup());
             photoEntity.setJsonString(jsonObject.toString());
 
             // 暂时不加入照片池，只放入各自的List，等保存时再提交

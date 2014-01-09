@@ -14,14 +14,21 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.df.app.R;
+import com.df.app.entries.PhotoEntity;
 import com.df.app.service.MyScrollView;
 import com.df.app.util.Common;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by 岩 on 13-12-25.
  */
 public class Integrated2Layout extends LinearLayout {
     private static View rootView;
+
+    // 轮胎照片
+    private List<PhotoEntity> photoEntities;
 
     private int[] spinnerIds = {
             R.id.cigarLighter_spinner,
@@ -58,6 +65,8 @@ public class Integrated2Layout extends LinearLayout {
 
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.integrated2_layout, this);
+
+        photoEntities = new ArrayList<PhotoEntity>();
 
         ImageView tireImage = (ImageView)findViewById(R.id.tire_image);
 
@@ -104,7 +113,13 @@ public class Integrated2Layout extends LinearLayout {
             }
         });
     }
+
     private void showShadow(boolean show) {
         findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
+    }
+
+
+    public List<PhotoEntity> generatePhotoEntities() {
+        return photoEntities;
     }
 }

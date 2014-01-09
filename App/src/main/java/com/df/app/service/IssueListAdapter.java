@@ -2,6 +2,7 @@ package com.df.app.service;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.CarCheck.AccidentResultLayout;
+import com.df.app.CarCheck.PhotoFaultLayout;
 import com.df.app.R;
 import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
@@ -82,7 +84,7 @@ public class IssueListAdapter extends BaseAdapter {
                         if(b && issue.getPopup().equals("Y")) {
                             // 弹出绘制界面
                             Toast.makeText(context, "此项需要绘制", Toast.LENGTH_SHORT).show();
-                            drawIssuePoint(issue.getView());
+                            drawIssuePoint(issue.getView(), issue.getId(), issue.getDesc());
                         }
                     }
                 });
@@ -96,22 +98,24 @@ public class IssueListAdapter extends BaseAdapter {
         return view;
     }
 
-    private void drawIssuePoint(String sight) {
+    private void drawIssuePoint(String sight, int issueId, String comment) {
         rootView = LayoutInflater.from(context).inflate(R.layout.issue_paint_layout, null);
 
         posEntitiesFront = AccidentResultLayout.posEntitiesFront;
         posEntitiesRear = AccidentResultLayout.posEntitiesRear;
 
-        photoEntitiesFront = new ArrayList<PhotoEntity>();
-        photoEntitiesRear = new ArrayList<PhotoEntity>();
+        photoEntitiesFront = AccidentResultLayout.photoEntitiesFront;
+        photoEntitiesRear = AccidentResultLayout.photoEntitiesRear;
 
         // 初始化绘图View
         framePaintView = (FramePaintView) rootView.findViewById(R.id.image);
 
         if(sight.equals("F")) {
-            framePaintView.init(AccidentResultLayout.previewBitmapFront, posEntitiesFront);
+            framePaintView.init(AccidentResultLayout.previewBitmapFront, posEntitiesFront, "F",
+                    issueId, comment);
         } else {
-            framePaintView.init(AccidentResultLayout.previewBitmapRear, posEntitiesRear);
+            framePaintView.init(AccidentResultLayout.previewBitmapRear, posEntitiesRear, "R",
+                    issueId, comment);
         }
 
         // 选择当前绘图类型（结构检查只有一个）
@@ -119,11 +123,19 @@ public class IssueListAdapter extends BaseAdapter {
 
         mPictureDialog = new AlertDialog.Builder(context)
                 .setView(rootView)
-                .setPositiveButton(R.string.ok, null)
-                .setNegativeButton(R.string.cancel, null)
-                .setCancelable(true)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        PhotoFaultLayout.updateUi();
+                    }
+                })
+                .setCancelable(false)
                 .create();
 
         mPictureDialog.show();
+    }
+
+    public long getCurrentTimeMillis() {
+        return framePaintView.getCurrentTimeMillis();
     }
 }

@@ -3,13 +3,8 @@ package com.df.app.entries;
 /**
  * Created by 岩 on 13-12-25.
  */
+
 import android.graphics.Bitmap;
-
-import com.df.app.CarCheck.BasicInfoLayout;
-import com.df.app.MainActivity;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.Serializable;
 
@@ -18,12 +13,30 @@ public class PosEntity implements Serializable {
     private int end_x, end_y;
     private int max_x, max_y;
     private int type ;  //1色差 2划痕 3变型 4刮蹭 5其他
+    private int issueId;
+    private String comment;
 
     private String imageFileName;
     private Bitmap bitmap = null;
 
     public PosEntity(int type) {
         this.type = type;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public int getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(int issueId) {
+        this.issueId = issueId;
     }
 
     public Bitmap getBitmap() {
@@ -33,13 +46,6 @@ public class PosEntity implements Serializable {
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
     }
-
-    public void fileName(String imageFileName) {
-        this.imageFileName = imageFileName;
-    }
-
-    public String fileName() {return this.imageFileName;}
-
 
     public void setStart(int x,int y){
         this.start_x = x;
@@ -86,24 +92,4 @@ public class PosEntity implements Serializable {
     public void setMaxY(int max_y) {
         this.max_y = max_y;
     }
-
-    public String getJsonString() {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("PictureName", this.imageFileName);
-            jsonObject.put("StartPoint", Integer.toString(getStartX()) + "," + Integer.toString(getStartY()));
-            jsonObject.put("EndPoint", Integer.toString(getEndX()) + "," + Integer.toString(getEndY()));
-            jsonObject.put("UniqueId", BasicInfoLayout.uniqueId);
-            // 绘图类型
-            jsonObject.put("Type", getType());
-            jsonObject.put("UserId", MainActivity.userInfo.getId());
-            jsonObject.put("Key", MainActivity.userInfo.getKey());
-        } catch (JSONException e) {
-
-        }
-
-        return jsonObject.toString();
-    }
-
-
 }

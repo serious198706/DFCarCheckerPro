@@ -114,8 +114,8 @@ public class Helper {
     }
 
     /** Create a file Uri for saving an image*/
-    public static Uri getOutputMediaFileUri(long fileName){
-        return Uri.fromFile(getOutputMediaFile(Long.toString(fileName)));
+    public static Uri getOutputMediaFileUri(String fileName){
+        return Uri.fromFile(getOutputMediaFile(fileName));
     }
 
     /** Create a File for saving an image*/
@@ -137,8 +137,7 @@ public class Helper {
         }
 
         File mediaFile;
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                fileName + ".jpg");
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + fileName);
 
         return mediaFile;
     }
@@ -248,9 +247,8 @@ public class Helper {
         view.findViewById(id).setEnabled(enable);
     }
 
-    public static void setPhotoSize(long currentTimeMillis, int max) {
+    public static void setPhotoSize(String fileName, int max) {
         String path = Common.photoDirectory;
-        String fileName = Long.toString(currentTimeMillis) + ".jpg";
 
         File file = new File(path + fileName);
         Bitmap bitmap = BitmapFactory.decodeFile(path + fileName);

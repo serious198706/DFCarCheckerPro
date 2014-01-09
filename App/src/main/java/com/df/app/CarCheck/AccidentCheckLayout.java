@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.df.app.R;
+import com.df.app.entries.PhotoEntity;
+import com.df.app.entries.PosEntity;
 import com.df.app.service.MyOnClick;
 import com.df.app.service.MyViewPagerAdapter;
 
@@ -144,5 +146,17 @@ public class AccidentCheckLayout extends LinearLayout{
         collectTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
         issueTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
         resultTab.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
+    }
+
+    public PosEntity getPosEntity(int flag) {
+        return accidentResultLayout.getPosEntity(flag);
+    }
+
+    public List<PhotoEntity> generatePhotoEntities() {
+        return accidentResultLayout.generatePhotoEntities();
+    }
+
+    public String generateJsonString() {
+        return null;
     }
 }

@@ -1,21 +1,36 @@
 package com.df.app.CarCheck;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.renderscript.Int3;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.PhotoEntity;
+import com.df.app.entries.UserInfo;
 import com.df.app.service.MyOnClick;
 import com.df.app.service.MyViewPagerAdapter;
+import com.df.app.service.SoapService;
+import com.df.app.util.Common;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +78,9 @@ public class IntegratedCheckLayout extends LinearLayout {
         rootView = LayoutInflater.from(context).inflate(R.layout.integrated_check_layout, this);
         InitViewPager(context);
         InitTextView();
+
+        GetStandardRemarksTask task = new GetStandardRemarksTask(rootView.getContext());
+        task.execute();
     }
 
     public void setActivity(Activity activity) {
@@ -127,6 +145,20 @@ public class IntegratedCheckLayout extends LinearLayout {
         interiorLayout.saveInteriorStandardPhoto();
     }
 
+    public List<PhotoEntity> generatePhotoEntities() {
+        List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
+
+        photoEntities.addAll(exteriorLayout.generatePhotoEntities());
+        photoEntities.addAll(interiorLayout.generatePhotoEntities());
+        photoEntities.addAll(integrated2Layout.generatePhotoEntities());
+
+        return photoEntities;
+    }
+
+    public String generateJsonString() {
+        return null;
+    }
+
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
     {
         @Override
@@ -151,5 +183,42 @@ public class IntegratedCheckLayout extends LinearLayout {
         itTab1.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
         itTab2.setTextColor(currIndex == 3 ? selectedColor : unselectedColor);
         itTab3.setTextColor(currIndex == 4 ? selectedColor : unselectedColor);
+    }
+
+    public class GetStandardRemarksTask extends AsyncTask<Void, Void, Boolean> {
+        private Context context;
+        private SoapService soapService;
+
+        public GetStandardRemarksTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            boolean success = false;
+            try {
+                // 登录
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserId", MainActivity.userInfo.getId());
+                jsonObject.put("Key", MainActivity.userInfo.getKey());
+
+                soapService = new SoapService();
+
+                // 设置soap的配置
+                soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_STANDARD_REMARKS);
+
+                success = soapService.communicateWithServer(jsonObject.toString());
+            } catch (JSONException e) {
+                Log.d("DFCarChecker", "Json解析错误: " + e.getMessage());
+            }
+
+            return success;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            Log.d(Common.TAG, soapService.getResultMessage());
+        }
     }
 }
