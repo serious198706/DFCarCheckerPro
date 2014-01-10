@@ -43,9 +43,7 @@
                 android:layout_width="40dp"
                 android:layout_height="36dp"
                 android:layout_margin="8dp"
-                android:background="@drawable/navi"
-                android:focusable="true"
-                android:focusableInTouchMode="true"/>
+                android:background="@drawable/navi"/>
 
         <TextView android:id="@+id/currentItem"
                   android:layout_width="wrap_content"
@@ -80,9 +78,8 @@
         <Button android:id="@+id/buttonBasicInfo"
                 android:layout_width="195dp"
                 android:layout_height="54dp"
-                android:background="@drawable/basic_info"
+                android:background="@drawable/basic_info_active"
                 android:layout_below="@id/buttonNavi"/>
-
         <Button android:id="@+id/buttonAccidentCheck"
                 android:layout_width="195dp"
                 android:layout_height="54dp"

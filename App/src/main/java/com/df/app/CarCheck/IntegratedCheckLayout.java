@@ -79,8 +79,9 @@ public class IntegratedCheckLayout extends LinearLayout {
         InitViewPager(context);
         InitTextView();
 
-        GetStandardRemarksTask task = new GetStandardRemarksTask(rootView.getContext());
-        task.execute();
+//        // 获取标准化备注
+//        GetStandardRemarksTask task = new GetStandardRemarksTask(rootView.getContext());
+//        task.execute();
     }
 
     public void setActivity(Activity activity) {
@@ -127,6 +128,7 @@ public class IntegratedCheckLayout extends LinearLayout {
     public void updateUi() {
         exteriorLayout.updateUi();
         interiorLayout.updateUi();
+        integrated1Layout.updateUi();
     }
 
     public void updateExteriorPreview() {
@@ -143,16 +145,6 @@ public class IntegratedCheckLayout extends LinearLayout {
 
     public void saveInteriorStandardPhoto() {
         interiorLayout.saveInteriorStandardPhoto();
-    }
-
-    public List<PhotoEntity> generatePhotoEntities() {
-        List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
-
-        photoEntities.addAll(exteriorLayout.generatePhotoEntities());
-        photoEntities.addAll(interiorLayout.generatePhotoEntities());
-        photoEntities.addAll(integrated2Layout.generatePhotoEntities());
-
-        return photoEntities;
     }
 
     public String generateJsonString() {

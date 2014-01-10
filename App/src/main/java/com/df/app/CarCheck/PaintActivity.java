@@ -385,8 +385,84 @@ public class PaintActivity extends Activity {
                 Log.d("DFCarChecker", "拍摄故障！！");
                 break;
         }
+
+        generatePhotoEntityAndNotifyPhotoList();
     }
 
+    private void generatePhotoEntityAndNotifyPhotoList() {
+        PhotoEntity photoEntity = generatePhotoEntity(paintView.getPosEntity());
+
+        PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+        PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+    }
+
+    private PhotoEntity generatePhotoEntity(PosEntity posEntity) {
+        int startX, startY, endX, endY;
+        int radius = 0;
+
+        // 获取绘图父类实体
+        paintView = (PaintView)map.get(currentPaintView);
+
+        startX = posEntity.getStartX();
+        startY = posEntity.getStartY();
+        endX = posEntity.getEndX();
+        endY = posEntity.getEndY();
+
+        // 如果是“变形”，即圆
+        if(posEntity.getType() == 3) {
+            // 计算半径
+            int dx = Math.abs(endX - startX);
+            int dy = Math.abs(endY- startY);
+            int dr = (int)Math.sqrt(dx * dx + dy * dy);
+
+            // 计算圆心
+            int x0 = (startX + endX) / 2;
+            int y0 = (startY + endY) / 2;
+
+            startX = x0;
+            startY = y0;
+            endX = endY = 0;
+            radius = dr / 2;
+        }
+
+        // 组织JsonString
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            JSONObject photoJsonObject = new JSONObject();
+
+            jsonObject.put("Group", paintView.getGroup());
+            jsonObject.put("Part", "fault");
+
+            photoJsonObject.put("type", posEntity.getType());
+            photoJsonObject.put("startX", startX);
+            photoJsonObject.put("startY", startY);
+            photoJsonObject.put("endX", endX);
+            photoJsonObject.put("endY", endY);
+            photoJsonObject.put("radius", radius);
+
+            jsonObject.put("PhotoData", photoJsonObject);
+            jsonObject.put("UniqueId", BasicInfoLayout.carId);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+        } catch (Exception e) {
+            Log.d("DFCarChecker", "Json组织错误：" + e.getMessage());
+        }
+
+        // 组建PhotoEntity
+        PhotoEntity photoEntity = new PhotoEntity();
+
+        photoEntity.setName(paintView.getGroup());
+        photoEntity.setFileName(posEntity.getImageFileName());
+
+        //TODO 这里添加comment
+        photoEntity.setComment("");
+        photoEntity.setJsonString(jsonObject.toString());
+
+        return photoEntity;
+    }
+
+    // 用不到这种方法了，最后获取时直接从PhotoListAdapter那里拿
     private void generatePhotoEntities() {
         int startX, startY, endX, endY;
         int radius = 0;

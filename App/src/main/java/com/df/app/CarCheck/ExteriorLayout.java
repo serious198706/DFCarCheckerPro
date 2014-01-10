@@ -75,6 +75,9 @@ public class ExteriorLayout extends LinearLayout {
     // 记录螺丝
     private String screwResult = "";
 
+    // 记录破损
+    private String brokenResult = "";
+
     // 承载所有的checkbox
     private TableLayout root;
 
@@ -126,6 +129,14 @@ public class ExteriorLayout extends LinearLayout {
             }
         });
 
+        Button brokenButton = (Button)findViewById(R.id.broken_button);
+        brokenButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseBroken();
+            }
+        });
+
         MyScrollView scrollView = (MyScrollView)findViewById(R.id.root);
         scrollView.setListener(new MyScrollView.ScrollViewListener() {
             @Override
@@ -155,7 +166,7 @@ public class ExteriorLayout extends LinearLayout {
             public void onClick(View view) {
                 Intent intent = new Intent(context, PaintActivity.class);
                 intent.putExtra("PAINT_TYPE", "EX_PAINT");
-                ((Activity) rootView.getContext()).startActivityForResult(intent, Common.EXTERIOR);
+                ((Activity) rootView.getContext()).startActivityForResult(intent, Common.ENTER_EXTERIOR_PAINT);
             }
         });
     }
@@ -196,7 +207,7 @@ public class ExteriorLayout extends LinearLayout {
                 Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 
                 currentTimeMillis = System.currentTimeMillis();
-                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis)); //
+                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg"); //
                 // create a
                 // file to save the image
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
@@ -225,6 +236,11 @@ public class ExteriorLayout extends LinearLayout {
                 getResources().getStringArray(R.array.screw_item));
     }
 
+    private void chooseBroken() {
+        showPopupWindow("broken", getResources().getString(R.string.ex_broken),
+                getResources().getStringArray(R.array.ex_broken_item));
+    }
+
     private void showPopupWindow(final String type, String title, String array[]) {
         View view = getPopupView(type, title, array);
 
@@ -236,9 +252,12 @@ public class ExteriorLayout extends LinearLayout {
                         if (type.equals("glass")) {
                             glassResult = getPopupResult();
                             setEditViewText(rootView, R.id.glass_edit, glassResult);
-                        } else {
+                        } else if (type.equals("screw")) {
                             screwResult = getPopupResult();
                             setEditViewText(rootView, R.id.screw_edit, screwResult);
+                        } else {
+                            brokenResult = getPopupResult();
+                            setEditViewText(rootView, R.id.broken_edit, brokenResult);
                         }
                     }
                 })
@@ -273,8 +292,12 @@ public class ExteriorLayout extends LinearLayout {
                     if(glassResult.contains(array[i * 2 + j])) {
                         checkBox.setChecked(true);
                     }
-                } else {
+                } else if(type.equals("screw")) {
                     if(screwResult.contains(array[i * 2 + j])) {
+                        checkBox.setChecked(true);
+                    }
+                } else {
+                    if(brokenResult.contains(array[i * 2 + j])) {
                         checkBox.setChecked(true);
                     }
                 }
@@ -311,12 +334,20 @@ public class ExteriorLayout extends LinearLayout {
         return result;
     }
 
-    public List<PhotoEntity> generatePhotoEntities() {
-        photoEntities.addAll(standardPhotoEntities);
-        return photoEntities;
+    public void saveExteriorStandardPhoto() {
+        Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
+
+        PhotoEntity photoEntity = generatePhotoEntity();
+
+        PhotoExteriorLayout.photoListAdapter.addItem(photoEntity);
+        PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
+
+        photoShotCount[currentShotPart]++;
+
+        starCamera();
     }
 
-    public void saveExteriorStandardPhoto() {
+    private PhotoEntity generatePhotoEntity() {
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
 
@@ -366,19 +397,7 @@ public class ExteriorLayout extends LinearLayout {
         String group = getResources().getStringArray(R.array.exterior_camera_item)[currentShotPart];
         photoEntity.setName(group);
 
-        Helper.setPhotoSize(Long.toString(currentTimeMillis), 800);
-
-        standardPhotoEntities.add(photoEntity);
-
-        PhotoExteriorLayout.photoListAdapter.setItems(
-                (ArrayList<PhotoEntity>)standardPhotoEntities);
-        PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
-        // 立刻上传
-        //imageUploadQueue.addImage(photoEntity);
-
-        photoShotCount[currentShotPart]++;
-
-        starCamera();
+        return photoEntity;
     }
 
     private Bitmap getBitmapFromFigure(int figure) {

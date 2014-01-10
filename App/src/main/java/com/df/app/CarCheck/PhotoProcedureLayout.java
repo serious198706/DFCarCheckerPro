@@ -12,6 +12,7 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.service.PhotoListAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by 岩 on 13-12-26.
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 public class PhotoProcedureLayout extends LinearLayout {
     private View rootView;
     private Context context;
+
+    public static PhotoListAdapter photoListAdapter;
 
     public PhotoProcedureLayout(Context context) {
         super(context);
@@ -40,17 +43,11 @@ public class PhotoProcedureLayout extends LinearLayout {
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.photo_procedure_list, this);
 
-        ArrayList<PhotoEntity> photoEntities = generateDummyPhoto();
+        List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
+        photoListAdapter = new PhotoListAdapter(context, R.id.photo_procedure_list, photoEntities);
 
         ListView procedureList = (ListView) findViewById(R.id.photo_procedure_list);
-        procedureList.setAdapter(new PhotoListAdapter(context, R.id.photo_procedure_list, photoEntities));
-    }
-
-    public void updateUi() {
-        ArrayList<PhotoEntity> photoEntities = generateDummyPhoto();
-
-        ListView procedureList = (ListView) findViewById(R.id.photo_procedure_list);
-        procedureList.setAdapter(new PhotoListAdapter(this.context, R.id.photo_procedure_list, photoEntities));
+        procedureList.setAdapter(photoListAdapter);
     }
 
     private ArrayList<PhotoEntity> generateDummyPhoto() {

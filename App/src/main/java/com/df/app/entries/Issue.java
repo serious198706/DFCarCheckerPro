@@ -8,17 +8,23 @@ public class Issue {
     private String desc;
     private String popup;
     private String view;
+    private String summary;
+    private String serious;
+    private String select;
 
     public Issue() {
         super();
     }
 
-    public Issue(int id, String desc, String popup, String view) {
+    public Issue(int id, String desc, String popup, String view, String summary, String serious, String select) {
         super();
         this.id = id;
         this.desc = desc;
         this.popup = popup;
         this.view = view;
+        this.summary = summary;
+        this.serious = serious;
+        this.select = select;
     }
 
     public int getId() {
@@ -51,5 +57,29 @@ public class Issue {
 
     public void setView(String view) {
         this.view = view;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public String getSerious() {
+        return serious;
+    }
+
+    public void setSerious(String serious) {
+        this.serious = serious;
+    }
+
+    public String getSelect() {
+        return select;
+    }
+
+    public void setSelect(String select) {
+        this.select = select;
     }
 }

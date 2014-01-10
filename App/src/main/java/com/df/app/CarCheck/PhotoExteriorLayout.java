@@ -45,16 +45,10 @@ public class PhotoExteriorLayout extends LinearLayout {
         rootView = LayoutInflater.from(context).inflate(R.layout.photo_exterior_list, this);
         ListView exteriorList = (ListView) findViewById(R.id.photo_exterior_list);
 
-        ArrayList<PhotoEntity> photoEntities = generateDummyPhoto();
+        List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
+
         photoListAdapter = new PhotoListAdapter(context, R.id.photo_exterior_list, photoEntities);
         exteriorList.setAdapter(photoListAdapter);
-    }
-
-    public void updateUi() {
-        ArrayList<PhotoEntity> photoEntities = generateDummyPhoto();
-
-        ListView exteriorList = (ListView) findViewById(R.id.photo_exterior_list);
-        exteriorList.setAdapter(new PhotoListAdapter(this.context, R.id.photo_exterior_list, photoEntities));
     }
 
     private ArrayList<PhotoEntity> generateDummyPhoto() {

@@ -1,6 +1,7 @@
 package com.df.app.CarsWaiting;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +29,7 @@ public class CarsWaitingActivity extends Activity {
     public static String manufacturerId;
     public static String seriesId;
     public static String modelId;
+    public static ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +84,9 @@ public class CarsWaitingActivity extends Activity {
                 manufacturerId = data.get(position).getManufacturerId();
                 seriesId = data.get(position).getSeriesId();
                 modelId = data.get(position).getModelId();
+
+                progressDialog = ProgressDialog.show(CarsWaitingActivity.this, null,
+                        "正在获取车辆信息，请稍候。。", false, false);
 
                 Intent intent = new Intent(CarsWaitingActivity.this, CarCheckActivity.class);
                 startActivity(intent);

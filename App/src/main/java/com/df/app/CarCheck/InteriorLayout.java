@@ -152,7 +152,7 @@ public class InteriorLayout extends LinearLayout {
             public void onClick(View view) {
                 Intent intent = new Intent(context, PaintActivity.class);
                 intent.putExtra("PAINT_TYPE", "IN_PAINT");
-                ((Activity)getContext()).startActivityForResult(intent, Common.INTERIOR);
+                ((Activity)getContext()).startActivityForResult(intent, Common.ENTER_INTERIOR_PAINT);
             }
         });
     }
@@ -198,7 +198,7 @@ public class InteriorLayout extends LinearLayout {
                 Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 
                 currentTimeMillis = System.currentTimeMillis();
-                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis));
+                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
                 // create a file to save the image
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
@@ -226,8 +226,8 @@ public class InteriorLayout extends LinearLayout {
     }
 
     private void chooseBroken() {
-        showPopupWindow("broken", getResources().getString(R.string.broken),
-                getResources().getStringArray(R.array.broken_item));
+        showPopupWindow("broken", getResources().getString(R.string.in_broken),
+                getResources().getStringArray(R.array.in_broken_item));
     }
 
     private void showPopupWindow(final String type, String title, String array[]) {
@@ -331,6 +331,19 @@ public class InteriorLayout extends LinearLayout {
     }
 
     public void saveInteriorStandardPhoto() {
+        Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
+
+        PhotoEntity photoEntity = generatePhotoEntity();
+
+        PhotoInteriorLayout.photoListAdapter.addItem(photoEntity);
+        PhotoInteriorLayout.photoListAdapter.notifyDataSetChanged();
+
+        photoShotCount[currentShotPart]++;
+
+        startCamera();
+    }
+
+    private PhotoEntity generatePhotoEntity() {
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
 
@@ -380,20 +393,7 @@ public class InteriorLayout extends LinearLayout {
         String group = getResources().getStringArray(R.array.interior_camera_item)[currentShotPart];
         photoEntity.setName(group);
 
-        Helper.setPhotoSize(Long.toString(currentTimeMillis), 800);
-
-        standardPhotoEntities.add(photoEntity);
-
-        PhotoInteriorLayout.photoListAdapter.setItems(
-                (ArrayList<PhotoEntity>)standardPhotoEntities);
-        PhotoInteriorLayout.photoListAdapter.notifyDataSetChanged();
-
-        // 立刻上传
-        //imageUploadQueue.addImage(photoEntity);
-
-        photoShotCount[currentShotPart]++;
-
-        startCamera();
+        return photoEntity;
     }
 
     private Bitmap getBitmapFromFigure(int figure) {

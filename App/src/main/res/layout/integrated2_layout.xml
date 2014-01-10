@@ -45,7 +45,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/cigarLighter_spinner"
                         android:layout_width="0dp"
@@ -64,7 +64,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/seatBelts_spinner"
                         android:layout_width="0dp"
@@ -83,7 +83,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/ashtray_spinner"
                         android:layout_width="0dp"
@@ -102,7 +102,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/rearSeats_spinner"
                         android:layout_width="0dp"
@@ -121,7 +121,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/spareTireGroove_spinner"
                         android:layout_width="0dp"
@@ -140,7 +140,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/trunkCorner_spinner"
                         android:layout_width="0dp"
@@ -159,7 +159,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/audio_spinner"
                         android:layout_width="0dp"
@@ -178,7 +178,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/seatSlide_spinner"
                         android:layout_width="0dp"
@@ -197,7 +197,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/ecu_spinner"
                         android:layout_width="0dp"
@@ -216,7 +216,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/it_water_back_corner_spinner"
                         android:layout_width="0dp"
@@ -235,7 +235,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/backCorner_spinner"
                         android:layout_width="0dp"
@@ -254,7 +254,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/discBox_spinner"
                         android:layout_width="0dp"
@@ -273,7 +273,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/storageCorner_spinner"
                         android:layout_width="0dp"
@@ -292,7 +292,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/newFuse_spinner"
                         android:layout_width="0dp"
@@ -311,7 +311,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/fuse_spinner"
                         android:layout_width="0dp"
@@ -330,7 +330,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <Spinner
                         android:id="@+id/engineRoom_spinner"
                         android:layout_width="0dp"
@@ -355,12 +355,71 @@
                     android:layout_marginTop="5dp"
                     android:background="#AA030A"/>
 
+                <TableRow android:layout_marginTop="15dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tireFormatMatch"
+                        android:layout_weight="1"
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
+                    <Spinner android:id="@+id/formatMatch_spinner"
+                             android:layout_width="0dp"
+                             android:layout_height="wrap_content"
+                             android:layout_weight="1"
+                             android:text="@string/tire"
+                             android:entries="@array/yesornot"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
+                </TableRow>
+                <TableRow android:layout_marginTop="5dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tirePatternMatch"
+                        android:layout_weight="1"
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
+                    <Spinner android:id="@+id/patternMatch_spinner"
+                             android:layout_width="0dp"
+                             android:layout_height="wrap_content"
+                             android:layout_weight="1"
+                             android:text="@string/tire"
+                             android:entries="@array/yesornot"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
+                </TableRow>
+                <TableRow android:layout_marginTop="5dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/spareTire"
+                        android:layout_weight="1"
+                        android:textSize="22sp"
+                        android:textColor="#555"
+                        android:textStyle="bold"
+                        android:gravity="right"/>
+                    <Spinner android:id="@+id/spareTire_spinner"
+                             android:layout_width="0dp"
+                             android:layout_height="wrap_content"
+                             android:layout_weight="1"
+                             android:text="@string/tire"
+                             android:entries="@array/existornot"
+                             android:popupBackground="@drawable/spinner_bg"
+                             android:background="@drawable/spinner_selector"/>
+                </TableRow>
+
                 <RelativeLayout android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp">
                     <ImageView android:id="@+id/tire_image"
                                android:layout_width="300dp"
                                android:layout_height="421dp"
-                               android:layout_centerInParent="true"/>
+                               android:layout_centerHorizontal="true"/>
 
                     <EditText android:id="@+id/leftFront_edit"
                               android:layout_width="100dp"
@@ -403,6 +462,16 @@
                               android:layout_marginBottom="90dp"
                               android:background="@drawable/edittext_border"
                               android:paddingLeft="10dp"/>
+
+                    <EditText android:id="@+id/spare_edit"
+                              android:layout_width="100dp"
+                              android:layout_height="40dp"
+                              android:layout_centerHorizontal="true"
+                              android:layout_below="@id/tire_image"
+                              android:maxLength="4"
+                              android:inputType="number"
+                              android:background="@drawable/edittext_border"
+                              android:paddingLeft="10dp"/>
                 </RelativeLayout>
 
                 <TableRow android:layout_marginTop="5dp">
@@ -414,7 +483,7 @@
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
-                        android:gravity="left"/>
+                        android:gravity="right"/>
                     <EditText
                         android:id="@+id/it2_comment_edit"
                         android:layout_width="0dp"

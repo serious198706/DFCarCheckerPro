@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="exteriorFault">外观缺陷：</string>
+    <string name="interiorFault">内室缺陷：</string>
+    <string name="frameFault">结构缺陷：</string>
+
+    <string name="takePhotoForProcedures">拍摄手续组照片</string>
+    <string name="takePhotoForEngine">拍摄机舱组照片</string>
+    <string name="takePhotoForOther">拍摄其他组照片</string>
+</resources>

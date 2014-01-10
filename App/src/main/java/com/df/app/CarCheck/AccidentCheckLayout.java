@@ -152,8 +152,8 @@ public class AccidentCheckLayout extends LinearLayout{
         return accidentResultLayout.getPosEntity(flag);
     }
 
-    public List<PhotoEntity> generatePhotoEntities() {
-        return accidentResultLayout.generatePhotoEntities();
+    public void saveAccidentPhoto(int flag) {
+        accidentResultLayout.saveAccidentPhoto(flag);
     }
 
     public String generateJsonString() {

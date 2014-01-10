@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +34,7 @@ import java.util.List;
  * Created by 岩 on 13-12-24.
  */
 public class IssueListAdapter extends BaseAdapter {
-    private ArrayList<Issue> items;
+    private List<Issue> items;
     private Context context;
 
     private AlertDialog mPictureDialog;
@@ -40,12 +42,14 @@ public class IssueListAdapter extends BaseAdapter {
     private View rootView;
     private List<PosEntity> posEntitiesFront;
     private List<PosEntity> posEntitiesRear;
-    private List<PhotoEntity> photoEntitiesFront;
-    private List<PhotoEntity> photoEntitiesRear;
 
-    public IssueListAdapter(Context context, ArrayList<Issue> items) {
+    public IssueListAdapter(Context context, List<Issue> items) {
         this.context = context;
         this.items = items;
+    }
+
+    public List<Issue> getItems() {
+        return items;
     }
 
     @Override
@@ -84,8 +88,11 @@ public class IssueListAdapter extends BaseAdapter {
                         if(b && issue.getPopup().equals("Y")) {
                             // 弹出绘制界面
                             Toast.makeText(context, "此项需要绘制", Toast.LENGTH_SHORT).show();
-                            drawIssuePoint(issue.getView(), issue.getId(), issue.getDesc());
+                            drawIssuePoint(issue);
                         }
+
+                        // 选择完成后，将对应问题的select更新
+                        issue.setSelect(b ? "否" : "是");
                     }
                 });
             }
@@ -98,14 +105,55 @@ public class IssueListAdapter extends BaseAdapter {
         return view;
     }
 
-    private void drawIssuePoint(String sight, int issueId, String comment) {
+    private void drawIssuePoint(final Issue issue) {
         rootView = LayoutInflater.from(context).inflate(R.layout.issue_paint_layout, null);
 
         posEntitiesFront = AccidentResultLayout.posEntitiesFront;
         posEntitiesRear = AccidentResultLayout.posEntitiesRear;
 
-        photoEntitiesFront = AccidentResultLayout.photoEntitiesFront;
-        photoEntitiesRear = AccidentResultLayout.photoEntitiesRear;
+        // 初始化绘图View
+        framePaintView = (FramePaintView) rootView.findViewById(R.id.image);
+
+        if(issue.getView().equals("F")) {
+            framePaintView.init(AccidentResultLayout.previewBitmapFront, posEntitiesFront, "F", issue.getId(), issue.getDesc());
+        } else {
+            framePaintView.init(AccidentResultLayout.previewBitmapRear, posEntitiesRear, "R", issue.getId(), issue.getDesc());
+        }
+
+        // 选择当前绘图类型（结构检查只有一个）
+        framePaintView.setType(Common.COLOR_DIFF);
+
+        mPictureDialog = new AlertDialog.Builder(context)
+                .setView(rootView)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        RadioGroup radioGroup = (RadioGroup)rootView.findViewById(R.id.serious);
+
+                        RadioButton radioButton = (RadioButton)rootView.findViewById(radioGroup
+                                .getCheckedRadioButtonId());
+
+                        issue.setSerious(radioButton.getText().toString());
+                    }
+                })
+                .setCancelable(false)
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        AccidentResultLayout.framePaintPreviewViewFront.invalidate();
+                        AccidentResultLayout.framePaintPreviewViewRear.invalidate();
+                    }
+                })
+                .create();
+
+        mPictureDialog.show();
+    }
+
+    private void drawIssuePoint(String sight, int issueId, String comment) {
+        rootView = LayoutInflater.from(context).inflate(R.layout.issue_paint_layout, null);
+
+        posEntitiesFront = AccidentResultLayout.posEntitiesFront;
+        posEntitiesRear = AccidentResultLayout.posEntitiesRear;
 
         // 初始化绘图View
         framePaintView = (FramePaintView) rootView.findViewById(R.id.image);
@@ -126,10 +174,16 @@ public class IssueListAdapter extends BaseAdapter {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        PhotoFaultLayout.updateUi();
                     }
                 })
                 .setCancelable(false)
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        AccidentResultLayout.framePaintPreviewViewFront.invalidate();
+                        AccidentResultLayout.framePaintPreviewViewRear.invalidate();
+                    }
+                })
                 .create();
 
         mPictureDialog.show();

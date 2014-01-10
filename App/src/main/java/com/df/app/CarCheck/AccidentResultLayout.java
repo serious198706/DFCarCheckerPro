@@ -31,16 +31,14 @@ import java.util.List;
 public class AccidentResultLayout extends LinearLayout {
     private View rootView;
 
-    private static FramePaintPreviewView framePaintPreviewViewFront;
-    private static FramePaintPreviewView framePaintPreviewViewRear;
+    public static FramePaintPreviewView framePaintPreviewViewFront;
+    public static FramePaintPreviewView framePaintPreviewViewRear;
 
     public static Bitmap previewBitmapFront;
     public static Bitmap previewBitmapRear;
 
     public static List<PosEntity> posEntitiesFront;
     public static List<PosEntity> posEntitiesRear;
-    public static List<PhotoEntity> photoEntitiesFront;
-    public static List<PhotoEntity> photoEntitiesRear;
 
     public AccidentResultLayout(Context context) {
         super(context);
@@ -63,9 +61,6 @@ public class AccidentResultLayout extends LinearLayout {
         posEntitiesFront = new ArrayList<PosEntity>();
         posEntitiesRear = new ArrayList<PosEntity>();
 
-        photoEntitiesFront = new ArrayList<PhotoEntity>();
-        photoEntitiesRear = new ArrayList<PhotoEntity>();
-
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
@@ -87,27 +82,18 @@ public class AccidentResultLayout extends LinearLayout {
                 posEntitiesFront.get(posEntitiesFront.size() - 1) : posEntitiesRear.get(posEntitiesRear.size() - 1);
     }
 
-    public List<PhotoEntity> generatePhotoEntities() {
-        for(PosEntity posEntity : posEntitiesFront) {
-            PhotoEntity photoEntity = generatePhotoEntity(posEntity, "front");
-            photoEntitiesFront.add(photoEntity);
-        }
-
-        for(PosEntity posEntity : posEntitiesRear) {
-            PhotoEntity photoEntity = generatePhotoEntity(posEntity, "rear");
-            photoEntitiesRear.add(photoEntity);
-        }
-
-        photoEntitiesFront.addAll(photoEntitiesRear);
-
-        return photoEntitiesFront;
+    private String getPart(int flag) {
+        return (flag == Common.ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO) ? "front" : "rear";
     }
 
-    public void uploadPictures() {
+    public void saveAccidentPhoto(int flag) {
+        PhotoEntity photoEntity = generatePhotoEntity(flag);
 
+        PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+        PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }
 
-    private PhotoEntity generatePhotoEntity(PosEntity posEntity, String part) {
+    private PhotoEntity generatePhotoEntity(int flag) {
         PhotoEntity photoEntity = new PhotoEntity();
 
         JSONObject jsonObject = new JSONObject();
@@ -115,7 +101,9 @@ public class AccidentResultLayout extends LinearLayout {
             JSONObject photoJsonObject = new JSONObject();
 
             jsonObject.put("Group", "frame");
-            jsonObject.put("Part", part);
+            jsonObject.put("Part", getPart(flag));
+
+            PosEntity posEntity = getPosEntity(flag);
 
             photoJsonObject.put("x", posEntity.getStartX());
             photoJsonObject.put("y", posEntity.getStartY());
@@ -128,6 +116,7 @@ public class AccidentResultLayout extends LinearLayout {
 
             photoEntity.setName("缺陷");
             photoEntity.setFileName(posEntity.getImageFileName());
+            photoEntity.setComment(posEntity.getComment());
             photoEntity.setJsonString(jsonObject.toString());
         } catch (JSONException e) {
             Log.d(Common.TAG, e.getMessage());

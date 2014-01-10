@@ -8,20 +8,28 @@
         android:layout_height="335dp"
         android:layout_centerHorizontal="true"/>
 
-    <RadioGroup
+    <RadioGroup android:id="@+id/serious"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_below="@id/image">
         <RadioButton android:id="@+id/light"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:checked="true"
-            android:text="@string/light"/>
+            android:text="@string/light"
+            android:textColor="#555"
+            android:textSize="18sp"
+            android:button="@drawable/radio_button"/>
         <RadioButton android:id="@+id/heavy"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/heavy"/>
+            android:text="@string/heavy"
+            android:textColor="#555"
+            android:textSize="18sp"
+            android:button="@drawable/radio_button"/>
     </RadioGroup>
 </RelativeLayout>

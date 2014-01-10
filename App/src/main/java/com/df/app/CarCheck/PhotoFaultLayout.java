@@ -21,6 +21,8 @@ public class PhotoFaultLayout extends LinearLayout {
     private static View rootView;
     private static Context context;
 
+    public static PhotoListAdapter photoListAdapter;
+
     public PhotoFaultLayout(Context context) {
         super(context);
 
@@ -41,19 +43,12 @@ public class PhotoFaultLayout extends LinearLayout {
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.photo_fault_list, this);
 
-        ArrayList<PhotoEntity> photoEntities = generateDummyPhoto();
+        List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
+        photoListAdapter = new PhotoListAdapter(context, R.id.photo_fault_list, photoEntities);
 
         ListView faultList = (ListView) findViewById(R.id.photo_fault_list);
-        faultList.setAdapter(new PhotoListAdapter(context, R.id.photo_fault_list, photoEntities));
-    }
-
-    public static void updateUi() {
-        List<PhotoEntity> photoEntities = AccidentResultLayout.photoEntitiesFront;
-        photoEntities.addAll(AccidentResultLayout.photoEntitiesRear);
-
-        ListView faultList = (ListView) rootView.findViewById(R.id.photo_fault_list);
-        faultList.setAdapter(new PhotoListAdapter(context, R.id.photo_fault_list, photoEntities));
+        faultList.setAdapter(photoListAdapter);
     }
 
     private ArrayList<PhotoEntity> generateDummyPhoto() {

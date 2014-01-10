@@ -12,6 +12,7 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.service.PhotoListAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by 岩 on 13-12-26.
@@ -43,17 +44,10 @@ public class PhotoInteriorLayout extends LinearLayout {
         rootView = LayoutInflater.from(context).inflate(R.layout.photo_interior_list, this);
         ListView interiorList = (ListView) findViewById(R.id.photo_interior_list);
 
-        ArrayList<PhotoEntity> photoEntities = generateDummyPhoto();
+        List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
         photoListAdapter = new PhotoListAdapter(context, R.id.photo_interior_list, photoEntities);
         interiorList.setAdapter(photoListAdapter);
-    }
-
-    public void updateUi() {
-        ArrayList<PhotoEntity> photoEntities = generateDummyPhoto();
-
-        ListView interiorList = (ListView) findViewById(R.id.photo_interior_list);
-        interiorList.setAdapter(new PhotoListAdapter(this.context, R.id.photo_interior_list, photoEntities));
     }
 
     private ArrayList<PhotoEntity> generateDummyPhoto() {

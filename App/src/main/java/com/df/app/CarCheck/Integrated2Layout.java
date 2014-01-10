@@ -88,6 +88,19 @@ public class Integrated2Layout extends LinearLayout {
         for(int i = 0; i < spinnerIds.length; i++) {
             setSpinnerColor(spinnerIds[i], Color.RED);
         }
+
+        Spinner spareSpinner = (Spinner)findViewById(R.id.spareTire_spinner);
+        spareSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                findViewById(R.id.spare_edit).setVisibility(i == 0 ? View.VISIBLE : View.INVISIBLE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     private static void setSpinnerColor(int spinnerId, int color) {

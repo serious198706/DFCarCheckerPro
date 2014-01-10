@@ -1,28 +1,21 @@
 package com.df.app.CarCheck;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.service.UploadPictureTask;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +28,7 @@ public class CarCheckActivity extends Activity {
     private BasicInfoLayout basicInfoLayout;
     private AccidentCheckLayout accidentCheckLayout;
     private IntegratedCheckLayout integratedCheckLayout;
+    private Button naviButton;
     private Button basicInfoButton;
     private Button accidentCheckButton;
     private Button integratedButton;
@@ -43,6 +37,7 @@ public class CarCheckActivity extends Activity {
     private List<PhotoEntity> photoEntities;
 
     private boolean showMenu = false;
+
     Map<Integer, String> tabMap = new HashMap<Integer, String>();
 
     @Override
@@ -56,6 +51,15 @@ public class CarCheckActivity extends Activity {
         tabMap.put(R.id.accidentCheck, "事故排查");
         tabMap.put(R.id.integratedCheck, "综合检查");
         tabMap.put(R.id.photo, "照片拍摄");
+
+        naviButton = (Button)findViewById(R.id.buttonNavi);
+        naviButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showMenu = !showMenu;
+                showNaviMenu(showMenu);
+            }
+        });
 
         basicInfoButton = (Button)findViewById(R.id.buttonBasicInfo);
         basicInfoButton.setOnClickListener(new View.OnClickListener() {
@@ -93,14 +97,7 @@ public class CarCheckActivity extends Activity {
         photoButton.setVisibility(View.GONE);
         photoButton.setEnabled(false);
 
-        Button naviButton = (Button)findViewById(R.id.buttonNavi);
-        naviButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showMenu = !showMenu;
-                showNaviMenu(showMenu);
-            }
-        });
+
 
         // 基本信息模块
         basicInfoLayout = (BasicInfoLayout)findViewById(R.id.basicInfo);
@@ -128,27 +125,7 @@ public class CarCheckActivity extends Activity {
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
-                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-                TextView content = new TextView(view1.getContext());
-                content.setText(R.string.quitCheckMsg);
-                content.setTextSize(22f);
-                contentArea.addView(content);
-
-                setTextView(view1, R.id.title, getResources().getString(R.string.alert));
-
-                AlertDialog dialog = new AlertDialog.Builder(CarCheckActivity.this)
-                        .setView(view1)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finish();
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, null)
-                        .create();
-
-                dialog.show();
+                quitConfirm();
             }
         });
 
@@ -209,6 +186,15 @@ public class CarCheckActivity extends Activity {
             }
         }
 
+        basicInfoButton.setBackgroundResource(layoutId == R.id.basicInfo ?
+                R.drawable.basic_info_active : R.drawable.basic_info);
+        accidentCheckButton.setBackgroundResource(layoutId == R.id.accidentCheck ?
+                R.drawable.accident_active : R.drawable.accident);
+        integratedButton.setBackgroundResource(layoutId == R.id.integratedCheck ?
+                R.drawable.integrated_active : R.drawable.integrated);
+        photoButton.setBackgroundResource(layoutId == R.id.photo ?
+                R.drawable.photo_active : R.drawable.photo);
+
         showMenu = !showMenu;
         showNaviMenu(false);
     }
@@ -216,10 +202,10 @@ public class CarCheckActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
         switch (requestCode) {
-            case Common.EXTERIOR:
+            case Common.ENTER_EXTERIOR_PAINT:
                 integratedCheckLayout.updateExteriorPreview();
                 break;
-            case Common.INTERIOR:
+            case Common.ENTER_INTERIOR_PAINT:
                 integratedCheckLayout.updateInteriorPreview();
                 break;
             case Common.PHOTO_FOR_EXTERIOR_STANDARD:
@@ -234,22 +220,63 @@ public class CarCheckActivity extends Activity {
                 break;
             case Common.PHOTO_FOR_ACCIDENT_FRONT:
             case Common.PHOTO_FOR_ACCIDENT_REAR:
+            {
+                requestCode = (requestCode == Common.PHOTO_FOR_ACCIDENT_FRONT) ?
+                        Common.ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO : Common.ADD_COMMENT_FOR_ACCIDENT_REAR_PHOTO;
+
                 PosEntity posEntity = accidentCheckLayout.getPosEntity(requestCode);
 
                 if(resultCode == Activity.RESULT_OK) {
                     // 如果确定拍摄了照片，则缩小照片尺寸
                     Helper.setPhotoSize(posEntity.getImageFileName(), 800);
+
+                    Intent intent = new Intent(CarCheckActivity.this, AddPhotoCommentActivity.class);
+                    intent.putExtra("fileName", posEntity.getImageFileName());
+                    startActivityForResult(intent, requestCode);
                 } else {
-                    // 如果取消了拍摄，则至照片名为空
+                    // 如果取消了拍摄，则置照片名为空
                     posEntity.setImageFileName("");
+                    accidentCheckLayout.saveAccidentPhoto(requestCode);
                 }
+            }
+                break;
+            case Common.ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO:
+            case Common.ADD_COMMENT_FOR_ACCIDENT_REAR_PHOTO:
+            {
+                Bundle bundle = data.getExtras();
+
+                PosEntity posEntity = accidentCheckLayout.getPosEntity(requestCode);
+                posEntity.setComment(bundle.getString("comment"));
+
+                accidentCheckLayout.saveAccidentPhoto(requestCode);
+            }
+                break;
+            case Common.ADD_COMMENT_FOR_EXTERIOR_PHOTO:
+                break;
+            case Common.ADD_COMMENT_FOR_INTERIOR_PHOTO:
                 break;
         }
     }
 
+    // 添加所有的photoEntity
     private void generatePhotoEntities() {
-        photoEntities.addAll(accidentCheckLayout.generatePhotoEntities());
-        photoEntities.addAll(integratedCheckLayout.generatePhotoEntities());
+        // 外观标准组
+        photoEntities.addAll(PhotoExteriorLayout.photoListAdapter.getItems());
+
+        // 内饰标准组
+        photoEntities.addAll(PhotoInteriorLayout.photoListAdapter.getItems());
+
+        // 缺陷组，包含外观缺陷、内饰缺陷、结构缺陷
+        photoEntities.addAll(PhotoFaultLayout.photoListAdapter.getItems());
+
+        // 手续组
+        photoEntities.addAll(PhotoProcedureLayout.photoListAdapter.getItems());
+
+        // 机舱组
+        photoEntities.addAll(PhotoEngineLayout.photoListAdapter.getItems());
+
+        // 其他组
+        photoEntities.addAll(PhotoOtherLayout.photoListAdapter.getItems());
     }
 
     private void uploadPictures() {
@@ -269,5 +296,34 @@ public class CarCheckActivity extends Activity {
 
     private void commitData() {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        quitConfirm();
+    }
+
+    private void quitConfirm() {
+        View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        TextView content = new TextView(view1.getContext());
+        content.setText(R.string.quitCheckMsg);
+        content.setTextSize(22f);
+        contentArea.addView(content);
+
+        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+        AlertDialog dialog = new AlertDialog.Builder(CarCheckActivity.this)
+                .setView(view1)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .create();
+
+        dialog.show();
     }
 }

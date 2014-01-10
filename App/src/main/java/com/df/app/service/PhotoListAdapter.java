@@ -36,8 +36,16 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
         this.items = items;
     }
 
-    public void setItems(ArrayList<PhotoEntity> items) {
+    public void setItems(List<PhotoEntity> items) {
         this.items = items;
+    }
+
+    public void addItem(PhotoEntity item) {
+        this.items.add(item);
+    }
+
+    public List<PhotoEntity> getItems() {
+        return items;
     }
 
     @Override

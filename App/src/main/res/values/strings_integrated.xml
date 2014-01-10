@@ -25,14 +25,14 @@
         <item>很差</item>
     </string-array>
 
-    <string name="glass">前后风挡玻璃晚于出厂年份的有：</string>
+    <string name="glass">前后风挡玻璃晚于\n出厂年份的有：</string>
 
     <string-array name="glass_item">
         <item>前挡风玻璃</item>
         <item>后挡风玻璃</item>
     </string-array>
 
-    <string name="screw">车身覆盖件螺丝存在松动的部位有：</string>
+    <string name="screw">车身覆盖件螺丝存\n在松动的部位有：</string>
 
     <string-array name="screw_item">
         <item>右前翼子板</item>
@@ -43,6 +43,45 @@
         <item>行李箱盖</item>
         <item>右后门</item>
         <item>右前门</item>
+    </string-array>
+
+    <string name="ex_broken">表面有破损的零部件：</string>
+
+    <string-array name="ex_broken_item">
+        <item>前保险杠</item>
+        <item>后保险杠</item>
+        <item>左前门拉手</item>
+        <item>右前门拉手</item>
+        <item>左后门拉手</item>
+        <item>右后门拉手</item>
+        <item>左反光镜</item>
+        <item>右反光镜</item>
+        <item>左前照灯总成</item>
+        <item>右前照灯总成</item>
+        <item>左前转向灯总成</item>
+        <item>右前转向灯总成</item>
+        <item>左后组合灯</item>
+        <item>右后组合灯</item>
+        <item>左侧边灯总成</item>
+        <item>右侧边灯总成</item>
+        <item>前风挡玻璃</item>
+        <item>后风挡玻璃</item>
+        <item>左前门玻璃</item>
+        <item>右前门玻璃</item>
+        <item>左后门玻璃</item>
+        <item>右后门玻璃</item>
+        <item>后三角窗玻璃总成</item>
+        <item>左前门门锁</item>
+        <item>右前门门锁</item>
+        <item>后备箱销</item>
+        <item>进气格栅</item>
+        <item>车门防护条</item>
+        <item>天线</item>
+        <item>轮毂盖</item>
+        <item>左前雾灯</item>
+        <item>右前雾灯</item>
+        <item>左后雾灯</item>
+        <item>右后雾灯</item>
     </string-array>
 
     <string name="needRepair">车身覆盖件有需要修复的部位</string>
@@ -79,9 +118,9 @@
 
     <string name="sealingStrip">门窗密封条良好无老化、破损：</string>
 
-    <string name="broken">车内部件破损部位：</string>
+    <string name="in_broken">车内部件破损部位：</string>
 
-    <string-array name="broken_item">
+    <string-array name="in_broken_item">
         <item>仪表台</item>
         <item>方向盘</item>
         <item>车内后视镜</item>
@@ -157,18 +196,18 @@
     <string name="fluid">发动机无漏液现象：</string>
     <string name="pipe">舱内的线路及管路无老化的现象：</string>
 
-    <string name="gear">变速箱检查</string>
+    <string name="gear">变速箱检查：</string>
     <string name="Mt">手动档：</string>
     <string name="MtClutch">离合器踩踏轻便，无异常沉重感：</string>
-    <string name="MtShiftEasy">各档位切换清晰、轻便，无涩滞感：</string>
+    <string name="MtShiftEasy">档位切换清晰、轻便，无涩滞感：</string>
     <string name="MtShiftSpace">档把的晃动间隙在合理范围内：</string>
     <string name="At">自动档</string>
     <string name="AtShiftShock">原地挂档的冲击感在合理范围内：</string>
     <string name="AtShiftNoise">各档位切换时无异响：</string>
-    <string name="AtShiftEasy">各档位切换清晰、轻便，无涩滞感：</string>
+    <string name="AtShiftEasy">档位切换清晰、轻便，无涩滞感：</string>
 
     <!-- 功能检查 -->
-    <string name="function">功能检查</string>
+    <string name="function">功能检查：</string>
 
     <string-array name="function_item">
         <item>正常</item>
@@ -208,6 +247,8 @@
     <string name="engineRoom">发动机舱内清洁程度正常：</string>
 
     <string name="tire">轮胎检查</string>
+    <string name="tireFormatMatch">轮胎与登记证规格相符：</string>
+    <string name="tirePatternMatch">同轴轮胎花纹相符：</string>
     <string name="it2_comment">综合检查二备注：</string>
 
     <!-- 分数 -->

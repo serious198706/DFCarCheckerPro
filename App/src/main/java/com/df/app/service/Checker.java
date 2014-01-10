@@ -38,6 +38,10 @@ public class Checker {
 		serialNumbers = new ArrayList<SerialNumber>();
 	}
 
+    public String getSerialNumber() {
+        return Long.toString(m_SerialNum.getSerialNumber());
+    }
+
 	/**
 	 * 搜索检测设备，可能有多个设备
 	 */

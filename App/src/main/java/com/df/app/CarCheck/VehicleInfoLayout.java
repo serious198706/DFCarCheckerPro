@@ -81,6 +81,7 @@ public class VehicleInfoLayout extends LinearLayout {
     private String modelId;
 
     private UpdateUi mCallback;
+    private ProgressDialog progressDialog;
 
     public VehicleInfoLayout(Context context, UpdateUi listener) {
         super(context);
@@ -100,6 +101,7 @@ public class VehicleInfoLayout extends LinearLayout {
 
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.vehicle_info_layout, this);
+
         brandEdit = (EditText) rootView.findViewById(R.id.brand_edit);
         vehicleModel = MainActivity.vehicleModel;
 
@@ -385,6 +387,7 @@ public class VehicleInfoLayout extends LinearLayout {
             mGetCarSettingsTask = null;
 
             mProgressDialog.dismiss();
+            CarsWaitingActivity.progressDialog.dismiss();
 
             String result = soapService.getResultMessage();
 

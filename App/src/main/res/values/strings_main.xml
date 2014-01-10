@@ -4,4 +4,5 @@
     <string name="quitMsg">确定退出？</string>
     <string name="quitCheckMsg">确定放弃此次检测？</string>
     <string name="commitMsg">确定提交检测信息？</string>
+    <string name="inputComment">填写备注信息：</string>
 </resources>

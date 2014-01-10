@@ -85,8 +85,12 @@
             android:label="@string/title_activity_cars_waiting" >
         </activity>
         <activity
-            android:name=".Procedures.InputProceduresActivity"
+            android:name="com.df.app.Procedures.InputProceduresActivity"
             android:label="@string/title_activity_procedures" >
+        </activity>
+        <activity
+            android:name="com.df.app.CarCheck.AddPhotoCommentActivity"
+            android:label="@string/title_activity_add_photo_comment" >
         </activity>
     </application>
 

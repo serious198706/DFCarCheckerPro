@@ -95,6 +95,10 @@ public class Integrated1Layout extends LinearLayout{
         findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
+    public void updateUi() {
+
+    }
+
     public static void setGearType(String gearType) {
         Integrated1Layout.gearType = gearType;
 

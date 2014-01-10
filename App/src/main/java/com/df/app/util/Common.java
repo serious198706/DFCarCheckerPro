@@ -9,6 +9,8 @@ import com.df.app.R;
  */
 public class Common {
 
+
+
     public static String utilDirectory = Environment.getExternalStorageDirectory().getPath() +
             "/.cheyipaiPro/";
     public static String photoDirectory = Environment.getExternalStorageDirectory().getPath() +
@@ -73,13 +75,17 @@ public class Common {
     public static final int DIRTY = 6;      // 脏污
     public static final int BROKEN = 7;     // 破损
 
-    public static final int EXTERIOR = 0;
-    public static final int INTERIOR = 1;
+    public static final int ENTER_EXTERIOR_PAINT = 0;
+    public static final int ENTER_INTERIOR_PAINT = 1;
 
     public static final int PHOTO_FOR_EXTERIOR_STANDARD = 2;
     public static final int PHOTO_FOR_INTERIOR_STANDARD = 3;
     public static final int PHOTO_FOR_ACCIDENT_FRONT = 4;
     public static final int PHOTO_FOR_ACCIDENT_REAR = 5;
     public static final int PHOTO_FOR_EXTERIOR_FAULT = 6;
-    public static final int PHOTO_FOR_INTERIOR_FAULT = 6;
+    public static final int PHOTO_FOR_INTERIOR_FAULT = 7;
+    public static final int ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO = 8;
+    public static final int ADD_COMMENT_FOR_ACCIDENT_REAR_PHOTO = 9;
+    public static final int ADD_COMMENT_FOR_EXTERIOR_PHOTO = 10;
+    public static final int ADD_COMMENT_FOR_INTERIOR_PHOTO = 11;
 }

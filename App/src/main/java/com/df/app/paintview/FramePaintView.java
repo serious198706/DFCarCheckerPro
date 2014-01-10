@@ -48,8 +48,6 @@ public class FramePaintView extends PaintView {
     private String comment;
 
     private long currentTimeMillis;
-    private List<PhotoEntity> photoEntitiesFront = AccidentResultLayout.photoEntitiesFront;
-    private List<PhotoEntity> photoEntitiesRear = AccidentResultLayout.photoEntitiesRear;
 
     public long getCurrentTimeMillis() {return currentTimeMillis;}
 
@@ -196,10 +194,7 @@ public class FramePaintView extends PaintView {
     }
 
     public List<PhotoEntity> getPhotoEntities(String sight) {
-        if(sight.equals("FRONT"))
-            return photoEntitiesFront;
-        else
-            return photoEntitiesRear;
+        return null;
     }
 
     public List<PosEntity> getNewPosEntities() {return thisTimeNewData;}
