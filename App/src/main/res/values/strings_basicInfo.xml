@@ -18,7 +18,7 @@
     <string name="procedure_input">手续录入</string>
     <string name="procedures">手续</string>
     <string name="ci">车辆信息</string>
-    <string name="licenceModel">品牌型号：</string>
+    <string name="licenseModel">品牌型号：</string>
     <string name="vehicleType">车辆类型：</string>
     <string-array name="vehicleType_items">
         <item>小型客车、轿车</item>
@@ -343,6 +343,7 @@
         <item>12个以上</item>
         <item>无</item>
     </string-array>
+    <string name="airBagIndicator">气囊灯：</string>
 
     <string name="abs">ABS：</string>
     <string-array name="abs_items">
@@ -459,4 +460,7 @@
         <item>有</item>
         <item>无</item>
     </string-array>
+
+    <string name="airConditioningTemp">空调出风口温度：</string>
+    <string name="degree">℃</string>
 </resources>

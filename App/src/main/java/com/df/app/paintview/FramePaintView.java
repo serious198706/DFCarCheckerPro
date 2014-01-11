@@ -15,16 +15,23 @@ import android.graphics.Canvas;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.df.app.CarCheck.AccidentResultLayout;
+import com.df.app.CarCheck.BasicInfoLayout;
+import com.df.app.CarCheck.PhotoFaultLayout;
+import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +146,9 @@ public class FramePaintView extends PaintView {
         this.currentType = type;
     }
     public int getType() {return this.currentType;}
+    public String getTypeName() {
+        return "结构缺陷";
+    }
 
     private void paint(Canvas canvas) {
         for (PosEntity entity : data) {
@@ -171,11 +181,48 @@ public class FramePaintView extends PaintView {
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                // 如果点击了取消，则直接将此点对应的文件名设置为""
-                data.get(data.size() - 1).setImageFileName("");
+                // 如果点击了取消，则直接将此点对应的文件名设置为""，并且生成PhotoEntity
+                getPosEntity().setImageFileName("");
+                getPosEntity().setComment("");
+
+                PhotoEntity photoEntity = generatePhotoEntity();
+                PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
             }
         });
         builder.show();
+    }
+
+    private PhotoEntity generatePhotoEntity() {
+        PhotoEntity photoEntity = new PhotoEntity();
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            JSONObject photoJsonObject = new JSONObject();
+
+            jsonObject.put("Group", "frame");
+            jsonObject.put("Part", sight.equals("F") ? "front" : "rear");
+
+            PosEntity posEntity = getPosEntity();
+
+            photoJsonObject.put("x", posEntity.getStartX());
+            photoJsonObject.put("y", posEntity.getStartY());
+            photoJsonObject.put("issueId", posEntity.getIssueId());
+            photoJsonObject.put("comment", posEntity.getComment());
+
+            jsonObject.put("PhotoData", photoJsonObject);
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+
+            photoEntity.setName("结构缺陷");
+            photoEntity.setFileName(posEntity.getImageFileName());
+            photoEntity.setJsonString(jsonObject.toString());
+        } catch (JSONException e) {
+            Log.d(Common.TAG, e.getMessage());
+        }
+
+        return photoEntity;
     }
 
     public PosEntity getPosEntity(){

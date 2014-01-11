@@ -41,6 +41,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.df.app.util.Helper.getEditViewText;
+import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
 
 /**
@@ -386,7 +388,7 @@ public class ExteriorLayout extends LinearLayout {
             jsonObject.put("PhotoData", photoJsonObject);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
-            jsonObject.put("UniqueId", BasicInfoLayout.carId);
+            jsonObject.put("CarId", BasicInfoLayout.carId);
         } catch (JSONException e) {
 
         }
@@ -445,5 +447,20 @@ public class ExteriorLayout extends LinearLayout {
         }
 
         return name;
+    }
+
+    public JSONObject generateJSONObject() throws JSONException{
+        JSONObject exterior = new JSONObject();
+
+        exterior.put("smooth", getSpinnerSelectedText(rootView, R.id.smooth_spinner));
+        exterior.put("comment", getEditViewText(rootView, R.id.exterior_comment_edit));
+        exterior.put("glass", getEditViewText(rootView, R.id.glass_edit));
+        exterior.put("screw", getEditViewText(rootView, R.id.screw_edit));
+        exterior.put("broken", getEditViewText(rootView, R.id.broken_edit));
+
+        CheckBox checkBox = (CheckBox)findViewById(R.id.needRepair);
+        exterior.put("needRepair", checkBox.isChecked() ? "是" : "否");
+
+        return exterior;
     }
 }

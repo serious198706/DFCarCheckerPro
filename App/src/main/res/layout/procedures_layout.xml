@@ -71,7 +71,7 @@
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
-                    android:text="@string/licenceModel"
+                    android:text="@string/licenseModel"
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"

@@ -21,6 +21,9 @@ import com.df.app.entries.PosEntity;
 import com.df.app.service.MyOnClick;
 import com.df.app.service.MyViewPagerAdapter;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,7 +159,22 @@ public class AccidentCheckLayout extends LinearLayout{
         accidentResultLayout.saveAccidentPhoto(flag);
     }
 
-    public String generateJsonString() {
-        return null;
+    public JSONObject generateJSONObject() {
+        JSONObject accident = new JSONObject();
+
+        try {
+            // 测量数据
+            JSONObject data = collectDataLayout.generateJSONObject();
+
+            // 问题查勘
+            JSONObject issue = issueLayout.generateJSONObject();
+
+            accident.put("data", data);
+            accident.put("issue", issue);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return accident;
     }
 }

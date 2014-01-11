@@ -17,6 +17,9 @@ import com.df.app.service.UploadPictureTask;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -246,20 +249,25 @@ public class CarCheckActivity extends Activity {
                 Bundle bundle = data.getExtras();
 
                 PosEntity posEntity = accidentCheckLayout.getPosEntity(requestCode);
-                posEntity.setComment(bundle.getString("comment"));
+                posEntity.setComment(bundle.getString("COMMENT"));
 
                 accidentCheckLayout.saveAccidentPhoto(requestCode);
             }
                 break;
-            case Common.ADD_COMMENT_FOR_EXTERIOR_PHOTO:
+            case Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO:
                 break;
             case Common.ADD_COMMENT_FOR_INTERIOR_PHOTO:
+                break;
+            case Common.PHOTO_FOR_TIRES:
+                integratedCheckLayout.saveTirePhoto();
                 break;
         }
     }
 
     // 添加所有的photoEntity
     private void generatePhotoEntities() {
+        photoEntities.clear();
+
         // 外观标准组
         photoEntities.addAll(PhotoExteriorLayout.photoListAdapter.getItems());
 
@@ -285,13 +293,20 @@ public class CarCheckActivity extends Activity {
     }
 
     private void generateJsonString() {
-//        try {
-//            JSONObject features = new JSONObject(basicInfoLayout.generateJsonString());
-//            JSONObject accident = new JSONObject(accidentCheckLayout.generateJsonString());
-//            JSONObject conditions = new JSONObject(integratedCheckLayout.generateJsonString());
-//        } catch (JSONException e) {
-//
-//        }
+        try {
+            JSONObject jsonObject = new JSONObject();
+            JSONObject features = basicInfoLayout.generateJSONObject();
+            JSONObject accident = accidentCheckLayout.generateJSONObject();
+            JSONObject conditions = integratedCheckLayout.generateJSONObject();
+
+            jsonObject.put("features", features);
+            jsonObject.put("accident", accident);
+            jsonObject.put("conditions", conditions);
+
+            jsonObject.toString();
+        } catch (JSONException e) {
+
+        }
     }
 
     private void commitData() {
@@ -308,7 +323,7 @@ public class CarCheckActivity extends Activity {
         TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
         TextView content = new TextView(view1.getContext());
         content.setText(R.string.quitCheckMsg);
-        content.setTextSize(22f);
+        content.setTextSize(20f);
         contentArea.addView(content);
 
         setTextView(view1, R.id.title, getResources().getString(R.string.alert));

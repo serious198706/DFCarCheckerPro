@@ -14,6 +14,9 @@ import com.df.app.R;
 import com.df.app.entries.Issue;
 import com.df.app.service.IssueListAdapter;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,5 +76,21 @@ public class IssueLayout extends LinearLayout {
 
     public long getCurrentTimeMillis() {
         return adapter.getCurrentTimeMillis();
+    }
+
+    public JSONObject generateJSONObject() throws JSONException {
+        // 问题查勘
+        JSONObject issue = new JSONObject();
+
+        // 示例图
+        JSONObject sketch = new JSONObject();
+
+        // 问题条目
+        JSONObject issueItem = new JSONObject();
+
+        issue.put("sketch", sketch);
+        issue.put("issueItem", issueItem);
+
+        return issue;
     }
 }

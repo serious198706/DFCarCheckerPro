@@ -33,6 +33,15 @@
                   android:inputType="textMultiLine"
                   android:background="@drawable/edittext_border"
                   android:paddingLeft="10dp"/>
+
+            <Button android:id="@+id/ok"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginTop="15dp"
+                android:textColor="#FFF"
+                android:background="@drawable/button_custom"
+                android:padding="-5dp"
+                android:text="@string/ok"/>
     </LinearLayout>
 
 </RelativeLayout>

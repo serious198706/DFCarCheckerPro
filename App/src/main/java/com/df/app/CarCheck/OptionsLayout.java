@@ -13,7 +13,13 @@ import com.df.app.Procedures.InputProceduresLayout;
 import com.df.app.R;
 import com.df.app.entries.CarSettings;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import static com.df.app.util.Helper.getEditViewText;
+import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setTextView;
 
@@ -93,5 +99,68 @@ public class OptionsLayout extends LinearLayout {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {}
         });
+    }
+
+    public JSONObject generateJSONObject() {
+        JSONObject options = new JSONObject();
+
+        try {
+            //options.put("vin", mC.getText().toString());
+            options.put("country", mCarSettings.getCountry().name);
+            options.put("countryId", Integer.parseInt(mCarSettings.getCountry().id));
+            options.put("brand", mCarSettings.getBrand().name);
+            options.put("brandId", Integer.parseInt(mCarSettings.getBrand().id));
+            options.put("manufacturer", mCarSettings.getManufacturer().name);
+            options.put("manufacturerId", Integer.parseInt(mCarSettings.getManufacturer().id));
+            options.put("series", mCarSettings.getSeries().name);
+            options.put("seriesId", Integer.parseInt(mCarSettings.getSeries().id));
+            options.put("model", mCarSettings.getModel().name);
+            options.put("modelId", Integer.parseInt(mCarSettings.getModel().id));
+            options.put("displacement", getEditViewText(rootView, R.id.displacement_edit));
+            options.put("category", mCarSettings.getCategory());
+            options.put("driveType", getSpinnerSelectedText(rootView, R.id.driveType_spinner));
+            options.put("transmission", getEditViewText(rootView, R.id.transmission_edit));
+            options.put("airBags", getSpinnerSelectedText(rootView, R.id.airBag_spinner));
+
+            // 有则放入无则无视
+            if(!getSpinnerSelectedText(rootView, R.id.abs_spinner).equals("无"))
+                options.put("abs", getSpinnerSelectedText(rootView, R.id.abs_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.powerSteering_spinner).equals("无"))
+                options.put("powerSteering", getSpinnerSelectedText(rootView, R.id.powerSteering_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.powerWindows_spinner).equals("无"))
+                options.put("powerWindows", getSpinnerSelectedText(rootView, R.id.powerWindows_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.sunroof_spinner).equals("无"))
+                options.put("sunroof", getSpinnerSelectedText(rootView, R.id.sunroof_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.airConditioning_spinner).equals("无"))
+                options.put("airConditioning", getSpinnerSelectedText(rootView, R.id.airConditioning_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.leatherSeats_spinner).equals("无"))
+                options.put("leatherSeats", getSpinnerSelectedText(rootView, R.id.leatherSeats_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.powerSeats_spinner).equals("无"))
+                options.put("powerSeats", getSpinnerSelectedText(rootView, R.id.powerSeats_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.powerMirror_spinner).equals("无"))
+                options.put("powerMirror", getSpinnerSelectedText(rootView, R.id.powerMirror_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.reversingRadar_spinner).equals("无"))
+                options.put("reversingRadar", getSpinnerSelectedText(rootView, R.id.reversingRadar_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.reversingCamera_spinner).equals("无"))
+                options.put("reversingCamera", getSpinnerSelectedText(rootView, R.id.reversingCamera_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.ccs_spinner).equals("无"))
+                options.put("ccs", getSpinnerSelectedText(rootView, R.id.ccs_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.softCloseDoors_spinner).equals("无"))
+                options.put("softCloseDoors", getSpinnerSelectedText(rootView, R.id.softCloseDoors_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.rearPowerSeats_spinner).equals("无"))
+                options.put("rearPowerSeats", getSpinnerSelectedText(rootView, R.id.rearPowerSeats_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.ahc_spinner).equals("无"))
+                options.put("ahc", getSpinnerSelectedText(rootView, R.id.ahc_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.parkAssist_spinner).equals("无"))
+                options.put("parkAssist", getSpinnerSelectedText(rootView, R.id.parkAssist_spinner));
+            if(!getSpinnerSelectedText(rootView, R.id.clapboard_spinner).equals("无"))
+                options.put("clapboard", getSpinnerSelectedText(rootView, R.id.clapboard_spinner));
+
+            options.put("spareTire", Integrated2Layout.getSpareTireSelction());
+        } catch (JSONException e) {
+
+        }
+
+        return options;
     }
 }

@@ -42,8 +42,8 @@ public class InputProceduresActivity extends Activity {
                 View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
                 TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
                 TextView content = new TextView(view1.getContext());
-                content.setText(R.string.quitCheckMsg);
-                content.setTextSize(22f);
+                content.setText(R.string.quitInputProcedures);
+                content.setTextSize(20f);
                 contentArea.addView(content);
 
                 setTextView(view1, R.id.title, getResources().getString(R.string.alert));

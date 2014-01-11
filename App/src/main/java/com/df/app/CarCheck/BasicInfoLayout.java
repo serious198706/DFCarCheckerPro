@@ -14,10 +14,18 @@ import com.df.app.entries.CarSettings;
 import com.df.app.service.MyViewPagerAdapter;
 import com.df.app.service.MyOnClick;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.jar.JarOutputStream;
+
+import static com.df.app.util.Helper.getDateString;
+import static com.df.app.util.Helper.getEditViewText;
+import static com.df.app.util.Helper.getSpinnerSelectedText;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -128,8 +136,18 @@ public class BasicInfoLayout extends LinearLayout {
         optionsTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
     }
 
-    public String generateJsonString() {
-        return null;
+    public JSONObject generateJSONObject() {
+
+        JSONObject features = new JSONObject();
+
+        try {
+            features.put("procedures", vehicleInfoLayout.generateJSONObject());
+            features.put("options", optionsLayout.generateJSONObject());
+        } catch (JSONException e) {
+
+        }
+
+        return features;
     }
 
     // CarCheckActivity必须实现此接口

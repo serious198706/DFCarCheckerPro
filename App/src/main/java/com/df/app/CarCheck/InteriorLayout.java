@@ -41,6 +41,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.df.app.util.Helper.getEditViewText;
+import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
 
 /**
@@ -382,7 +384,7 @@ public class InteriorLayout extends LinearLayout {
             jsonObject.put("PhotoData", photoJsonObject);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
-            jsonObject.put("UniqueId", BasicInfoLayout.carId);
+            jsonObject.put("CarId", BasicInfoLayout.carId);
         } catch (JSONException e) {
 
         }
@@ -442,5 +444,16 @@ public class InteriorLayout extends LinearLayout {
         }
 
         return name;
+    }
+
+    public JSONObject generateJSONObject() throws JSONException{
+        JSONObject interior = new JSONObject();
+
+        interior.put("sealingStrip", getSpinnerSelectedText(rootView, R.id.sealingStrip_spinner));
+        interior.put("comment", getEditViewText(rootView, R.id.interior_comment_edit));
+        interior.put("dirty", getEditViewText(rootView, R.id.dirty_edit));
+        interior.put("broken", getEditViewText(rootView, R.id.broken_edit));
+
+        return interior;
     }
 }

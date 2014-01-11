@@ -1,25 +1,46 @@
 package com.df.app.CarCheck;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.MyScrollView;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.df.app.util.Helper.getEditViewText;
+import static com.df.app.util.Helper.getSpinnerSelectedText;
+import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 13-12-25.
@@ -27,8 +48,12 @@ import java.util.List;
 public class Integrated2Layout extends LinearLayout {
     private static View rootView;
 
-    // 轮胎照片
-    private List<PhotoEntity> photoEntities;
+    long currentTimeMillis;
+
+    // 正在拍摄的轮胎
+    private String currentTire;
+
+    private int[] photoShotCount = {0, 0, 0, 0};
 
     private int[] spinnerIds = {
             R.id.cigarLighter_spinner,
@@ -37,16 +62,27 @@ public class Integrated2Layout extends LinearLayout {
             R.id.rearSeats_spinner,
             R.id.spareTireGroove_spinner,
             R.id.trunkCorner_spinner,
-            R.id.audio_spinner,
+            R.id.audioHorn_spinner,
             R.id.seatSlide_spinner,
             R.id.ecu_spinner,
-            R.id.it_water_back_corner_spinner,
+            R.id.roof_spinner,
             R.id.backCorner_spinner,
             R.id.discBox_spinner,
             R.id.storageCorner_spinner,
             R.id.newFuse_spinner,
             R.id.fuse_spinner,
             R.id.engineRoom_spinner};
+
+    private static Map<String, Integer> tireMap;
+    static {
+        tireMap = new HashMap<String, Integer>();
+        tireMap.put("leftFront", 0);
+        tireMap.put("rightFront", 1);
+        tireMap.put("leftRear", 2);
+        tireMap.put("rightRear", 3);
+    }
+
+    private Map<String, PhotoEntity> photoEntityMap;
 
     public Integrated2Layout(Context context) {
         super(context);
@@ -66,7 +102,7 @@ public class Integrated2Layout extends LinearLayout {
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.integrated2_layout, this);
 
-        photoEntities = new ArrayList<PhotoEntity>();
+        photoEntityMap = new HashMap<String, PhotoEntity>();
 
         ImageView tireImage = (ImageView)findViewById(R.id.tire_image);
 
@@ -101,6 +137,137 @@ public class Integrated2Layout extends LinearLayout {
 
             }
         });
+
+        Button leftFrontButton = (Button)findViewById(R.id.leftFront_button);
+        leftFrontButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentTire = "leftFront";
+                takePhotoForTires("左前");
+            }
+        });
+
+        Button rightFrontButton = (Button)findViewById(R.id.rightFront_button);
+        rightFrontButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentTire = "rightFront";
+                takePhotoForTires("右前");
+            }
+        });
+
+        Button leftRearButton = (Button)findViewById(R.id.leftRear_button);
+        leftRearButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentTire = "leftRear";
+                takePhotoForTires("左后");
+            }
+        });
+
+        Button rightRearButton = (Button)findViewById(R.id.rightRear_button);
+        rightRearButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentTire = "rightRear";
+                takePhotoForTires("右后");
+            }
+        });
+    }
+
+    private void takePhotoForTires(String tire) {
+        Toast.makeText(rootView.getContext(), "正在拍摄" + tire + "轮", Toast.LENGTH_LONG).show();
+
+        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+        currentTimeMillis = System.currentTimeMillis();
+        Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg"); //
+        // create a file to save the image
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+
+        ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_TIRES);
+    }
+
+    public void saveTirePhoto() {
+        Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
+
+        PhotoEntity photoEntity = generatePhotoEntity();
+
+        // 如果此轮胎已经有照片，则替换之
+        if(photoShotCount[tireMap.get(currentTire)] == 1) {
+            View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+            TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+            TextView content = new TextView(view1.getContext());
+            content.setText(R.string.tireReplace);
+            content.setTextSize(20f);
+            contentArea.addView(content);
+
+            setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+            AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
+                    .setView(view1)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // 确定替换，将之前的全部清除，再重新添加一遍
+                            PhotoOtherLayout.photoListAdapter.clear();
+
+                            for(PhotoEntity photoEntity1 : photoEntityMap.values()) {
+                                PhotoOtherLayout.photoListAdapter.addItem(photoEntity1);
+                            }
+
+                            PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // 不替换，则无视这张图片
+                        }
+                    })
+                    .create();
+
+            dialog.show();
+        } else {
+            if(photoEntityMap.containsKey(currentTire))
+                photoEntityMap.remove(currentTire);
+            else
+                photoEntityMap.put(currentTire, photoEntity);
+
+            PhotoOtherLayout.photoListAdapter.addItem(photoEntity);
+            PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
+            photoShotCount[tireMap.get(currentTire)]++;
+        }
+    }
+
+    private PhotoEntity generatePhotoEntity() {
+        // 组织JsonString
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            JSONObject photoJsonObject = new JSONObject();
+
+            photoJsonObject.put("part", currentTire);
+
+            jsonObject.put("Group", "tire");
+            jsonObject.put("PhotoData", photoJsonObject);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+        } catch (JSONException e) {
+
+        }
+
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
+        photoEntity.setJsonString(jsonObject.toString());
+        photoEntity.setName(currentTire);
+
+        return photoEntity;
+    }
+
+    public static String getSpareTireSelction() {
+        return getSpinnerSelectedText(rootView, R.id.spareTire_spinner);
     }
 
     private static void setSpinnerColor(int spinnerId, int color) {
@@ -131,8 +298,44 @@ public class Integrated2Layout extends LinearLayout {
         findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
+    public JSONObject generateFloodedJSONObject() throws JSONException {
+        JSONObject flooded = new JSONObject();
 
-    public List<PhotoEntity> generatePhotoEntities() {
-        return photoEntities;
+        flooded.put("cigarLighter", getSpinnerSelectedText(rootView, R.id.cigarLighter_spinner));
+        flooded.put("seatBelts", getSpinnerSelectedText(rootView, R.id.seatBelts_spinner));
+        flooded.put("ashtray", getSpinnerSelectedText(rootView, R.id.ashtray_spinner));
+        flooded.put("rearSeats", getSpinnerSelectedText(rootView, R.id.rearSeats_spinner));
+        flooded.put("spareTireGroove", getSpinnerSelectedText(rootView, R.id.spareTireGroove_spinner));
+        flooded.put("trunkCorner", getSpinnerSelectedText(rootView, R.id.trunkCorner_spinner));
+        flooded.put("audioHorn", getSpinnerSelectedText(rootView, R.id.audioHorn_spinner));
+        flooded.put("seatSlide", getSpinnerSelectedText(rootView, R.id.seatSlide_spinner));
+        flooded.put("ecu", getSpinnerSelectedText(rootView, R.id.ecu_spinner));
+        flooded.put("roof", getSpinnerSelectedText(rootView, R.id.roof_spinner));
+        flooded.put("backCorner", getSpinnerSelectedText(rootView, R.id.backCorner_spinner));
+        flooded.put("discBox", getSpinnerSelectedText(rootView, R.id.discBox_spinner));
+        flooded.put("storageCorner", getSpinnerSelectedText(rootView, R.id.storageCorner_spinner));
+        flooded.put("newFuse", getSpinnerSelectedText(rootView, R.id.newFuse_spinner));
+        flooded.put("fuse", getSpinnerSelectedText(rootView, R.id.fuse_spinner));
+        flooded.put("engineRoom", getSpinnerSelectedText(rootView, R.id.engineRoom_spinner));
+
+        return flooded;
+    }
+
+    public JSONObject generateTiresJSONObject() throws JSONException{
+        JSONObject tires = new JSONObject();
+
+        tires.put("leftFront", getEditViewText(rootView, R.id.leftFront_edit));
+        tires.put("rightFront", getEditViewText(rootView, R.id.rightFront_edit));
+        tires.put("leftRear", getEditViewText(rootView, R.id.leftRear_edit));
+        tires.put("rightRear", getEditViewText(rootView, R.id.rightRear_edit));
+        tires.put("spare", getEditViewText(rootView, R.id.spare_edit));
+        tires.put("formatMatch", getSpinnerSelectedText(rootView, R.id.formatMatch_spinner));
+        tires.put("patternMatch", getSpinnerSelectedText(rootView, R.id.patternMatch_spinner));
+
+        return tires;
+    }
+
+    public String generateCommentString() {
+        return getEditViewText(rootView, R.id.it2_comment_edit);
     }
 }

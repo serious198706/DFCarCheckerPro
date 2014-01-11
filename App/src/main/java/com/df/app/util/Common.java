@@ -41,7 +41,7 @@ public class Common {
     public static final String USER_LOGIN = "UserLogin";
     public static final String GET_APP_NEW_VERSION = "GetAppNewVersion";
     public static final String GET_STANDARD_REMARKS = "GetStandardRemarks";
-    public static final String UPLOAD_PICTURE = "SaveCarPictureTagKey";
+    public static final String UPLOAD_PICTURE = "UploadPictureTagKey";
 
     // 配置信息页与综合检查页spinner的联动关系
     public static final int[][] carSettingsSpinnerMap = {
@@ -86,6 +86,8 @@ public class Common {
     public static final int PHOTO_FOR_INTERIOR_FAULT = 7;
     public static final int ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO = 8;
     public static final int ADD_COMMENT_FOR_ACCIDENT_REAR_PHOTO = 9;
-    public static final int ADD_COMMENT_FOR_EXTERIOR_PHOTO = 10;
+    public static final int ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO = 10;
     public static final int ADD_COMMENT_FOR_INTERIOR_PHOTO = 11;
+    public static final int PHOTO_COMMENT_ADDED = 12;
+    public static final int PHOTO_FOR_TIRES = 13;
 }

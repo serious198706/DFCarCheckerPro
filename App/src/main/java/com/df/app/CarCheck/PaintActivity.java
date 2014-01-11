@@ -26,14 +26,13 @@ import com.df.app.paintview.ExteriorPaintView;
 import com.df.app.paintview.InteriorPaintView;
 import com.df.app.paintview.PaintView;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.df.app.util.Helper.setPhotoSize;
 
 
 public class PaintActivity extends Activity {
@@ -153,7 +152,6 @@ public class PaintActivity extends Activity {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                generatePhotoEntities();
                 finish();
             }
         });
@@ -372,21 +370,40 @@ public class PaintActivity extends Activity {
         // 获取绘图父类实体
         paintView = (PaintView)map.get(currentPaintView);
 
-        switch (resultCode) {
-            case Activity.RESULT_OK:
-                // 对拍摄的照片做缩小化处理
-                setPhotoSize(paintView.getPosEntity().getImageFileName(), 800);
+        PosEntity posEntity = paintView.getPosEntity();
+
+        switch (requestCode) {
+            case Common.PHOTO_FOR_EXTERIOR_FAULT:
+            case Common.PHOTO_FOR_INTERIOR_FAULT:
+                if(resultCode == Activity.RESULT_OK) {
+                    // 如果确定拍摄了照片，则缩小照片尺寸
+                    Helper.setPhotoSize(posEntity.getImageFileName(), 800);
+
+                    // 进入备注界面
+                    Intent intent = new Intent(PaintActivity.this, AddPhotoCommentActivity.class);
+                    intent.putExtra("fileName", posEntity.getImageFileName());
+                    startActivityForResult(intent, Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO);
+                } else {
+                    // 如果取消了拍摄，将照片名称置空
+                    paintView.getPosEntity().setImageFileName("");
+
+                    // 生成PhotoEntity
+                    generatePhotoEntityAndNotifyPhotoList();
+                }
+
                 break;
-            case Activity.RESULT_CANCELED:
-                // 如果取消了拍摄，将照片名称置空
-                paintView.getPosEntity().setImageFileName("");
+            case Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO:
+                // 从备注界面返回时，先添加备注
+                Bundle bundle = data.getExtras();
+                posEntity.setComment(bundle.getString("COMMENT"));
+
+                // 再生成PhotoEntity
+                generatePhotoEntityAndNotifyPhotoList();
                 break;
             default:
                 Log.d("DFCarChecker", "拍摄故障！！");
                 break;
         }
-
-        generatePhotoEntityAndNotifyPhotoList();
     }
 
     private void generatePhotoEntityAndNotifyPhotoList() {
@@ -440,9 +457,10 @@ public class PaintActivity extends Activity {
             photoJsonObject.put("endX", endX);
             photoJsonObject.put("endY", endY);
             photoJsonObject.put("radius", radius);
+            photoJsonObject.put("comment", posEntity.getComment());
 
             jsonObject.put("PhotoData", photoJsonObject);
-            jsonObject.put("UniqueId", BasicInfoLayout.carId);
+            jsonObject.put("CarId", BasicInfoLayout.carId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
         } catch (Exception e) {
@@ -452,18 +470,16 @@ public class PaintActivity extends Activity {
         // 组建PhotoEntity
         PhotoEntity photoEntity = new PhotoEntity();
 
-        photoEntity.setName(paintView.getGroup());
+        photoEntity.setName(paintView.getTypeName());
         photoEntity.setFileName(posEntity.getImageFileName());
-
-        //TODO 这里添加comment
-        photoEntity.setComment("");
+        photoEntity.setComment(posEntity.getComment());
         photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;
     }
 
     // 用不到这种方法了，最后获取时直接从PhotoListAdapter那里拿
-    private void generatePhotoEntities() {
+   /* private void generatePhotoEntities() {
         int startX, startY, endX, endY;
         int radius = 0;
 
@@ -518,9 +534,10 @@ public class PaintActivity extends Activity {
                 photoJsonObject.put("endX", endX);
                 photoJsonObject.put("endY", endY);
                 photoJsonObject.put("radius", radius);
+                photoJsonObject.put("comment", posEntity.getComment());
 
                 jsonObject.put("PhotoData", photoJsonObject);
-                jsonObject.put("UniqueId", BasicInfoLayout.carId);
+                jsonObject.put("CarId", BasicInfoLayout.carId);
                 jsonObject.put("UserId", MainActivity.userInfo.getId());
                 jsonObject.put("Key", MainActivity.userInfo.getKey());
             } catch (Exception e) {
@@ -541,7 +558,7 @@ public class PaintActivity extends Activity {
             photoEntities.add(photoEntity);
         }
     }
-
+*/
 
     // 根据不同的检测步骤和figure，返回不同的图片
     private Bitmap getBitmapFromFigure(int figure, String step) {

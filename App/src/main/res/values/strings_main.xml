@@ -3,6 +3,7 @@
     <string name="title_activity_main">268V检测端专业版</string>
     <string name="quitMsg">确定退出？</string>
     <string name="quitCheckMsg">确定放弃此次检测？</string>
+    <string name="quitInputProcedures">确定放弃录入手续？</string>
     <string name="commitMsg">确定提交检测信息？</string>
     <string name="inputComment">填写备注信息：</string>
 </resources>

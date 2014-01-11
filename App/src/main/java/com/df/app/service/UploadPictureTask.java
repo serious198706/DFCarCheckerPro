@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.df.app.entries.PhotoEntity;
 import com.df.app.util.Common;
@@ -57,8 +58,6 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
         // 设置soap的配置
         soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.UPLOAD_PICTURE);
 
-        Log.d(Common.TAG, "正在上传...");
-
         for(int i = 0; i < photoEntityList.size(); i++) {
             PhotoEntity photoEntity = photoEntityList.get(i);
 
@@ -67,6 +66,7 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
             String path = Common.photoDirectory;
             String fileName = photoEntity.getFileName();
 
+            Log.d(Common.TAG, "正在上传...");
             Log.d(Common.TAG, photoEntity.getJsonString());
 
             // 如果照片名为空串，表示要上传空照片
@@ -80,6 +80,7 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
 
             if(success) {
                 // 如果成功上传，推动进度条
+                Log.d(Common.TAG, "上传成功！");
                 publishProgress(i);
             } else {
                i--;
@@ -99,9 +100,13 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
     @Override
     protected void onPostExecute(final Boolean success) {
         if(success) {
+            progressDialog.dismiss();
+            Toast.makeText(context, "全部上传成功！！", Toast.LENGTH_SHORT).show();
             Log.d(Common.TAG, "全部上传成功！");
         } else {
-            Log.d(Common.TAG, "上伟图片失败！");
+            progressDialog.dismiss();
+            Toast.makeText(context, "上传失败！！", Toast.LENGTH_SHORT).show();
+            Log.d(Common.TAG, "上传图片失败！");
         }
 
     }

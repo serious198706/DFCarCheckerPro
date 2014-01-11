@@ -17,17 +17,25 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.df.app.CarCheck.BasicInfoLayout;
 import com.df.app.CarCheck.InteriorLayout;
+import com.df.app.CarCheck.PhotoFaultLayout;
+import com.df.app.MainActivity;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InteriorPaintView extends PaintView {
 
@@ -45,6 +53,9 @@ public class InteriorPaintView extends PaintView {
     private int max_x, max_y;
 
     private long currentTimeMillis;
+
+    private Map<Integer, String> typeNameMap;
+
     public long getCurrentTimeMillis() {return currentTimeMillis;}
 
     public InteriorPaintView(Context context, AttributeSet attrs, int defStyle) {
@@ -63,6 +74,10 @@ public class InteriorPaintView extends PaintView {
     }
 
     public void init(Bitmap bitmap, List<PosEntity> entities) {
+        typeNameMap = new HashMap<Integer, String>();
+        typeNameMap.put(Common.DIRTY, "脏污");
+        typeNameMap.put(Common.BROKEN, "破损");
+
         this.bitmap = bitmap;
         data = entities;
 
@@ -141,6 +156,10 @@ public class InteriorPaintView extends PaintView {
     }
     public int getType() {return this.currentType;}
 
+    public String getTypeName() {
+        return typeNameMap.get(getType());
+    }
+
     private Paint getPaint(int type) {
         Paint paint = new Paint();
         paint.setAntiAlias(true);
@@ -213,9 +232,79 @@ public class InteriorPaintView extends PaintView {
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                getPosEntity().setImageFileName("");
+                getPosEntity().setComment("");
+
+                PhotoEntity photoEntity = generatePhotoEntity();
+                PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
             }
         });
         builder.show();
+    }
+
+    private PhotoEntity generatePhotoEntity() {
+        PosEntity posEntity = getPosEntity();
+
+        int startX, startY, endX, endY;
+        int radius = 0;
+
+        startX = posEntity.getStartX();
+        startY = posEntity.getStartY();
+        endX = posEntity.getEndX();
+        endY = posEntity.getEndY();
+
+        // 如果是“变形”，即圆
+        if(posEntity.getType() == 3) {
+            // 计算半径
+            int dx = Math.abs(endX - startX);
+            int dy = Math.abs(endY- startY);
+            int dr = (int)Math.sqrt(dx * dx + dy * dy);
+
+            // 计算圆心
+            int x0 = (startX + endX) / 2;
+            int y0 = (startY + endY) / 2;
+
+            startX = x0;
+            startY = y0;
+            endX = endY = 0;
+            radius = dr / 2;
+        }
+
+        // 组织JsonString
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            JSONObject photoJsonObject = new JSONObject();
+
+            jsonObject.put("Group", "interior");
+            jsonObject.put("Part", "fault");
+
+            photoJsonObject.put("type", posEntity.getType());
+            photoJsonObject.put("startX", startX);
+            photoJsonObject.put("startY", startY);
+            photoJsonObject.put("endX", endX);
+            photoJsonObject.put("endY", endY);
+            photoJsonObject.put("radius", radius);
+            photoJsonObject.put("comment", posEntity.getComment());
+
+            jsonObject.put("PhotoData", photoJsonObject);
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+        } catch (Exception e) {
+            Log.d("DFCarChecker", "Json组织错误：" + e.getMessage());
+        }
+
+        // 组建PhotoEntity
+        PhotoEntity photoEntity = new PhotoEntity();
+
+        photoEntity.setName(getTypeName());
+        photoEntity.setFileName(posEntity.getImageFileName());
+        photoEntity.setComment(posEntity.getComment());
+        photoEntity.setJsonString(jsonObject.toString());
+
+        return photoEntity;
     }
 
     public PosEntity getPosEntity(){

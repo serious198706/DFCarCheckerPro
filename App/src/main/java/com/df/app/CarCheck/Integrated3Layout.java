@@ -8,6 +8,8 @@ import android.widget.LinearLayout;
 
 import com.df.app.R;
 
+import static com.df.app.util.Helper.getEditViewText;
+
 /**
  * Created by 岩 on 13-12-25.
  */
@@ -31,5 +33,9 @@ public class Integrated3Layout extends LinearLayout {
 
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.integrated3_layout, this);
+    }
+
+    public String generateCommentString() {
+        return "";
     }
 }

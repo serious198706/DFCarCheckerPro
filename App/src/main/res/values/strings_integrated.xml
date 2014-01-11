@@ -249,6 +249,7 @@
     <string name="tire">轮胎检查</string>
     <string name="tireFormatMatch">轮胎与登记证规格相符：</string>
     <string name="tirePatternMatch">同轴轮胎花纹相符：</string>
+    <string name="tireReplace">此轮胎已有照片，确定替换？</string>
     <string name="it2_comment">综合检查二备注：</string>
 
     <!-- 分数 -->

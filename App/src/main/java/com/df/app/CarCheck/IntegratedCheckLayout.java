@@ -131,6 +131,10 @@ public class IntegratedCheckLayout extends LinearLayout {
         integrated1Layout.updateUi();
     }
 
+    public void saveTirePhoto() {
+        integrated2Layout.saveTirePhoto();
+    }
+
     public void updateExteriorPreview() {
         exteriorLayout.updateExteriorPreview();
     }
@@ -147,8 +151,54 @@ public class IntegratedCheckLayout extends LinearLayout {
         interiorLayout.saveInteriorStandardPhoto();
     }
 
-    public String generateJsonString() {
-        return null;
+    public JSONObject generateJSONObject() {
+        JSONObject conditions = new JSONObject();
+
+        try {
+            JSONObject exterior = exteriorLayout.generateJSONObject();
+            JSONObject interior = interiorLayout.generateJSONObject();
+            JSONObject engine = integrated1Layout.generateEngineJSONObject();
+            JSONObject gearbox = integrated1Layout.generateGearboxJSONObject();
+            JSONObject function = integrated1Layout.generateFunctionJSONObject();
+            JSONObject flooded = integrated2Layout.generateFloodedJSONObject();
+            JSONObject tires = integrated2Layout.generateTiresJSONObject();
+
+            // 综合检查 - 外观
+            conditions.put("exterior", exterior);
+
+            // 综合检查 - 内饰
+            conditions.put("interior", interior);
+
+            // 综合检查 - 发动机检查
+            conditions.put("engine", engine);
+
+            // 综合检查 - 变速箱检查
+            conditions.put("gearbox", gearbox);
+
+            // 综合检查 - 功能检查
+            conditions.put("function",function);
+
+            // 综合检查 - 泡水检查
+            conditions.put("flooded", flooded);
+
+            // 综合检查 - 轮胎
+            conditions.put("tires", tires);
+
+            // 综合检查 - 备注
+            String comment1 = integrated1Layout.generateCommentString();
+            String comment2 = integrated2Layout.generateCommentString();
+            String comment3 = integrated3Layout.generateCommentString();
+
+            conditions.put("comment1", comment1);
+            conditions.put("comment2", comment2);
+            conditions.put("comment3", comment3);
+
+            conditions.put("comment", comment1 + ";" + comment2 + ";" + comment3);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return conditions;
     }
 
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener

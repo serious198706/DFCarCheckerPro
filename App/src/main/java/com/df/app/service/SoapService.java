@@ -18,6 +18,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 public class SoapService implements ISoapService {
     private String errorMessage;
@@ -208,10 +210,10 @@ public class SoapService implements ISoapService {
         // 将图片流复制到新的byte数组中
         int length = byteArray.length;
 
-        newByteArray = new byte[length + jsonString.length()];
+        newByteArray = new byte[length + jsonString.getBytes().length];
         System.arraycopy(byteArray, 0, newByteArray, 0, length);
 
-        for(int i = 0; i < jsonString.length(); i++) {
+        for(int i = 0; i < jsonString.getBytes().length; i++) {
             newByteArray[length + i] = jsonString.getBytes()[i];
         }
 
@@ -280,10 +282,10 @@ public class SoapService implements ISoapService {
         // 将图片流复制到新的byte数组中
         int length = byteArray.length;
 
-        newByteArray = new byte[length + jsonString.length()];
+        newByteArray = new byte[length + jsonString.getBytes().length];
         System.arraycopy(byteArray, 0, newByteArray, 0, length);
 
-        for(int i = 0; i < jsonString.length(); i++) {
+        for(int i = 0; i < jsonString.getBytes().length; i++) {
             newByteArray[length + i] = jsonString.getBytes()[i];
         }
 

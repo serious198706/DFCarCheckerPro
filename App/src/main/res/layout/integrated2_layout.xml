@@ -161,7 +161,7 @@
                         android:textStyle="bold"
                         android:gravity="right"/>
                     <Spinner
-                        android:id="@+id/audio_spinner"
+                        android:id="@+id/audioHorn_spinner"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -218,7 +218,7 @@
                         android:textStyle="bold"
                         android:gravity="right"/>
                     <Spinner
-                        android:id="@+id/it_water_back_corner_spinner"
+                        android:id="@+id/roof_spinner"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -431,6 +431,12 @@
                               android:background="@drawable/edittext_border"
                               android:paddingLeft="10dp"/>
 
+                    <Button android:id="@+id/leftFront_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@id/leftFront_edit"
+                        android:layout_alignTop="@id/leftFront_edit"/>
+
                     <EditText android:id="@+id/leftRear_edit"
                               android:layout_width="100dp"
                               android:layout_height="40dp"
@@ -442,6 +448,12 @@
                               android:background="@drawable/edittext_border"
                               android:paddingLeft="10dp"/>
 
+                    <Button android:id="@+id/leftRear_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@id/leftRear_edit"
+                            android:layout_alignTop="@id/leftRear_edit"/>
+
                     <EditText android:id="@+id/rightFront_edit"
                               android:layout_width="100dp"
                               android:layout_height="40dp"
@@ -451,6 +463,14 @@
                               android:layout_marginTop="75dp"
                               android:background="@drawable/edittext_border"
                               android:paddingLeft="10dp"/>
+
+                    <Button android:id="@+id/rightFront_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@id/rightFront_edit"
+                            android:layout_alignTop="@id/rightFront_edit"/>
+
+
 
                     <EditText android:id="@+id/rightRear_edit"
                               android:layout_width="100dp"
@@ -463,6 +483,12 @@
                               android:background="@drawable/edittext_border"
                               android:paddingLeft="10dp"/>
 
+                    <Button android:id="@+id/rightRear_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@id/rightRear_edit"
+                            android:layout_alignTop="@id/rightRear_edit"/>
+
                     <EditText android:id="@+id/spare_edit"
                               android:layout_width="100dp"
                               android:layout_height="40dp"
@@ -472,6 +498,12 @@
                               android:inputType="number"
                               android:background="@drawable/edittext_border"
                               android:paddingLeft="10dp"/>
+
+                    <Button android:id="@+id/spare_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_above="@id/spare_edit"
+                            android:layout_centerHorizontal="true"/>
                 </RelativeLayout>
 
                 <TableRow android:layout_marginTop="5dp">

@@ -78,7 +78,7 @@ public class AccidentResultLayout extends LinearLayout {
     }
 
     public PosEntity getPosEntity(int flag) {
-        return (flag == Common.PHOTO_FOR_ACCIDENT_FRONT) ?
+        return (flag == Common.ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO) ?
                 posEntitiesFront.get(posEntitiesFront.size() - 1) : posEntitiesRear.get(posEntitiesRear.size() - 1);
     }
 
@@ -108,13 +108,14 @@ public class AccidentResultLayout extends LinearLayout {
             photoJsonObject.put("x", posEntity.getStartX());
             photoJsonObject.put("y", posEntity.getStartY());
             photoJsonObject.put("issueId", posEntity.getIssueId());
+            photoJsonObject.put("comment", posEntity.getComment());
 
             jsonObject.put("PhotoData", photoJsonObject);
             jsonObject.put("CarId", BasicInfoLayout.carId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
 
-            photoEntity.setName("缺陷");
+            photoEntity.setName("结构缺陷");
             photoEntity.setFileName(posEntity.getImageFileName());
             photoEntity.setComment(posEntity.getComment());
             photoEntity.setJsonString(jsonObject.toString());

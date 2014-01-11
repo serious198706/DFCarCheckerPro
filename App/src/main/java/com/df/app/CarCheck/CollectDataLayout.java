@@ -27,9 +27,14 @@ import com.df.app.service.MyScrollView;
 import com.df.app.util.Common;
 import com.xinque.android.serial.driver.UsbSerialDriver;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.df.app.util.Helper.getEditViewText;
+import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.showView;
 
@@ -51,8 +56,7 @@ public class CollectDataLayout extends LinearLayout {
     MyScrollView scrollView;
 
     private static Map<int[], String> overIdMap ;
-    static
-    {
+    static {
         overIdMap = new HashMap<int[], String>();
         overIdMap.put(new int[]{R.id.L_edit,    R.id.L_N,   1},     "L");
         overIdMap.put(new int[]{R.id.M_edit,    R.id.M_N,   2},     "M");
@@ -78,20 +82,37 @@ public class CollectDataLayout extends LinearLayout {
     // 2. CheckBox的id
 
 
-    private int[] enhanceIdMap = {
-            R.id.M1_edit,
-            R.id.D1_edit,
-            R.id.D2_edit,
-            R.id.M3_edit,
-            R.id.M5_edit,
-            R.id.F1_edit,
-            R.id.M2_edit,
-            R.id.L1_edit,
-            R.id.L2_edit,
-            R.id.M4_edit,
-            R.id.H1_edit,
-            R.id.J1_edit
-    };
+    private static Map<Integer, String> enhanceIdMap;
+    static {
+        enhanceIdMap = new HashMap<Integer, String>();
+        enhanceIdMap.put(R.id.M1_edit, "M1");
+        enhanceIdMap.put(R.id.D1_edit, "D1");
+        enhanceIdMap.put(R.id.D2_edit, "D2");
+        enhanceIdMap.put(R.id.M3_edit, "M3");
+        enhanceIdMap.put(R.id.M5_edit, "M5");
+        enhanceIdMap.put(R.id.F1_edit, "F1");
+        enhanceIdMap.put(R.id.M2_edit, "M2");
+        enhanceIdMap.put(R.id.L1_edit, "L1");
+        enhanceIdMap.put(R.id.L2_edit, "L2");
+        enhanceIdMap.put(R.id.M4_edit, "M4");
+        enhanceIdMap.put(R.id.H1_edit, "H1");
+        enhanceIdMap.put(R.id.J1_edit, "J1");
+    }
+
+//    private int[] enhanceIdMap = {
+//            R.id.M1_edit,
+//            R.id.D1_edit,
+//            R.id.D2_edit,
+//            R.id.M3_edit,
+//            R.id.M5_edit,
+//            R.id.F1_edit,
+//            R.id.M2_edit,
+//            R.id.L1_edit,
+//            R.id.L2_edit,
+//            R.id.M4_edit,
+//            R.id.H1_edit,
+//            R.id.J1_edit
+//    };
 
     public CollectDataLayout(Context context, OnGetIssueData listener) {
         super(context);
@@ -170,6 +191,17 @@ public class CollectDataLayout extends LinearLayout {
                 } else {
                     showShadow(false);
                 }
+            }
+        });
+
+        CheckBox cannotMeasureB = (CheckBox)findViewById(R.id.bn);
+        cannotMeasureB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                findViewById(R.id.LB_edit).setVisibility(b ? INVISIBLE : VISIBLE);
+                findViewById(R.id.LB_N).setVisibility(b ? INVISIBLE : VISIBLE);
+                findViewById(R.id.RB_edit).setVisibility(b ? INVISIBLE : VISIBLE);
+                findViewById(R.id.RB_N).setVisibility(b ? INVISIBLE : VISIBLE);
             }
         });
 
@@ -320,12 +352,12 @@ public class CollectDataLayout extends LinearLayout {
                                         for(int[] n : overIdMap.keySet()) {
                                             if(n[2] == measurement.getBlockId()) {
                                                 setEditViewText(rootView, n[0], values);
-                                                scrollView.smoothScrollTo(0, findViewById(n[0]).getBottom());
+                                              //  scrollView.smoothScrollTo(0, findViewById(n[0]).getBottom());
                                             }
                                         }
                                     } else {
                                         setEditViewText(rootView,
-                                                enhanceIdMap[measurement.getBlockId() - 18],
+                                                enhanceIdMap.keySet().toArray(new Integer[0])[measurement.getBlockId() - 18],
                                                 values);
                                     }
 
@@ -354,5 +386,78 @@ public class CollectDataLayout extends LinearLayout {
                 }
             }.start();
         }
+    }
+
+
+    public JSONObject generateJSONObject() throws JSONException {
+        JSONObject data = new JSONObject();
+
+        // 覆盖件数据
+        JSONObject overlap = new JSONObject();
+
+        for(int[] n : overIdMap.keySet()) {
+            overlap.put(overIdMap.get(n), getEditViewText(rootView, n[0]));
+        }
+
+        // 当B柱无法测量时
+        CheckBox bn = (CheckBox)findViewById(R.id.bn);
+        if(bn.isChecked()) {
+            overlap.put("LB", "");
+            overlap.put("RB", "");
+        }
+
+        // 加强件数据
+        JSONObject enhance = new JSONObject();
+
+        for(int n : enhanceIdMap.keySet()) {
+            enhance.put(enhanceIdMap.get(n), getEditViewText(rootView, n));
+        }
+
+        // 选项
+        JSONObject options = new JSONObject();
+
+        String cannotMeasure = "";
+        for(int[] n : overIdMap.keySet()) {
+            CheckBox checkBox = (CheckBox)findViewById(n[1]);
+            if(checkBox.isChecked()) {
+                cannotMeasure += overIdMap.get(n);
+                cannotMeasure += ",";
+            }
+        }
+
+        if(cannotMeasure.length() > 0) {
+            cannotMeasure = cannotMeasure.substring(0, cannotMeasure.length() - 1);
+        }
+
+        options.put("cannotMeasure", cannotMeasure);
+
+        String hide = "";
+        CheckBox ra = (CheckBox)findViewById(R.id.a);
+        if(ra.isChecked()) {
+            hide += "LA,RA";
+        }
+
+        CheckBox rb = (CheckBox)findViewById(R.id.b);
+        if(rb.isChecked()) {
+            if(hide.equals(""))
+                hide += "LB,RB";
+            else
+                hide += ",LB,RB";
+        }
+
+        options.put("hide", hide);
+
+        // 设备信息
+        JSONObject device = new JSONObject();
+
+        device.put("type", getSpinnerSelectedText(rootView, R.id.device_type));
+        device.put("serial", checker.getSerialNumber());
+
+        data.put("overlap", overlap);
+        data.put("enhance", enhance);
+        data.put("options", options);
+        data.put("device", device);
+
+        return data;
     }
 }

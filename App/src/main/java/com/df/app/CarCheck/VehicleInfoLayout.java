@@ -606,6 +606,27 @@ public class VehicleInfoLayout extends LinearLayout {
     }
     // </editor-fold>
 
+
+    public JSONObject generateJSONObject() {
+        JSONObject procedures = new JSONObject();
+
+        try {
+            procedures.put("vin", getEditViewText(rootView, R.id.vin_edit));
+            procedures.put("engineSerial", getEditViewText(rootView, R.id.engineSerial_edit));
+            procedures.put("plateNumber", getEditViewText(rootView, R.id.plateNumber_edit));
+            procedures.put("licenseModel", getEditViewText(rootView, R.id.licenseModel_edit));
+            procedures.put("vehicleType", getEditViewText(rootView, R.id.vehicleType_edit));
+            procedures.put("mileage", getEditViewText(rootView, R.id.mileage_edit));
+            procedures.put("exteriorColor", getEditViewText(rootView, R.id.exteriorColor_edit));
+            procedures.put("regDate", getEditViewText(rootView, R.id.regDate_edit));
+            procedures.put("builtDate", getEditViewText(rootView, R.id.builtDate_edit));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return procedures;
+    }
+
     public interface UpdateUi {
         public void updateUi();
     }
