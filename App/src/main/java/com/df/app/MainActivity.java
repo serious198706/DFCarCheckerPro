@@ -19,6 +19,7 @@ import com.df.app.Procedures.InputProceduresActivity;
 import com.df.app.entries.UserInfo;
 import com.df.app.entries.VehicleModel;
 import com.df.app.service.EncryptDecryptFile;
+import com.df.app.service.AsyncTask.LogoutTask;
 import com.df.app.service.VehicleModelParser;
 import com.df.app.service.XmlHandler;
 import com.df.app.util.Common;
@@ -76,6 +77,8 @@ public class MainActivity extends Activity {
             userInfo = new UserInfo();
             userInfo.setId(bundle.getString("UserId"));
             userInfo.setKey(bundle.getString("Key"));
+            userInfo.setName(bundle.getString("UserName"));
+            userInfo.setOrid(bundle.getString("Orid"));
         }
     }
 
@@ -101,13 +104,30 @@ public class MainActivity extends Activity {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
+                        logout();
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .create();
 
         dialog.show();
+    }
+
+    private void logout() {
+        LogoutTask logoutTask = new LogoutTask(this, new LogoutTask.OnLogoutFinished() {
+            @Override
+            public void onFinished() {
+                Toast.makeText(MainActivity.this, "注销成功！", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailed() {
+                Toast.makeText(MainActivity.this, "注销失败！", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+        logoutTask.execute();
     }
 
     // 解析车型XML

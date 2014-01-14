@@ -307,7 +307,6 @@ public class CarRecogniseLayout extends LinearLayout {
 
         // 其他页面的显示与ui更新
         mShowContentCallback.showContent();
-        mShowContentCallback.updateUi();
     }
 
     // 更新车辆配置信息
@@ -856,7 +855,6 @@ public class CarRecogniseLayout extends LinearLayout {
     // 显示手续信息与基本信息的内容
     public interface OnShowContentListener {
         public void showContent();
-        public void updateUi();
     }
 
     // IntegratedCheckLayout必须实现此方法

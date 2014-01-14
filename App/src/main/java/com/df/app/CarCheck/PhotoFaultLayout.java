@@ -9,7 +9,7 @@ import android.widget.ListView;
 
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
-import com.df.app.service.PhotoListAdapter;
+import com.df.app.service.Adapter.PhotoListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

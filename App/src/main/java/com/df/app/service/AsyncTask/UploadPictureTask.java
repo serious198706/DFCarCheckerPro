@@ -1,19 +1,17 @@
-package com.df.app.service;
+package com.df.app.service.AsyncTask;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.df.app.entries.PhotoEntity;
+import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,17 +19,24 @@ import java.util.List;
  */
 // 上传图片
 public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
+    public interface UploadFinished {
+        public void OnFinish();
+    }
+
     private SoapService soapService;
     private int total;
     private int complete;
     private Context context;
     private List<PhotoEntity> photoEntityList;
 
+    private UploadFinished mCallback;
+
     private ProgressDialog progressDialog;
 
-    public UploadPictureTask(Context context, List<PhotoEntity> photoEntityList) {
+    public UploadPictureTask(Context context, List<PhotoEntity> photoEntityList, UploadFinished listener) {
         this.photoEntityList = photoEntityList;
         this.context = context;
+        this.mCallback = listener;
 
         total = photoEntityList.size();
         complete = 0;
@@ -103,6 +108,8 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
             progressDialog.dismiss();
             Toast.makeText(context, "全部上传成功！！", Toast.LENGTH_SHORT).show();
             Log.d(Common.TAG, "全部上传成功！");
+
+            mCallback.OnFinish();
         } else {
             progressDialog.dismiss();
             Toast.makeText(context, "上传失败！！", Toast.LENGTH_SHORT).show();

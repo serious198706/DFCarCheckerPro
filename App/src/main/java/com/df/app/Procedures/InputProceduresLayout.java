@@ -9,11 +9,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.df.app.CarCheck.OptionsLayout;
 import com.df.app.R;
 import com.df.app.entries.CarSettings;
 import com.df.app.service.MyOnClick;
-import com.df.app.service.MyViewPagerAdapter;
+import com.df.app.service.Adapter.MyViewPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ public class InputProceduresLayout extends LinearLayout {
     private boolean loaded = false;
 
     private CarRecogniseLayout carRecogniseLayout;
-    private ProceduresLayout proceduresLayout;
+    private ProceduresWebLayout proceduresWebLayout;
 
     public static CarSettings mCarSettings;
 
@@ -72,7 +71,7 @@ public class InputProceduresLayout extends LinearLayout {
             public void showContent() {
                 // 当VIN确定后，出现另外两个页面
                 if(!loaded) {
-                    views.add(proceduresLayout);
+                    views.add(proceduresWebLayout);
 
                     proceduresTab.setVisibility(VISIBLE);
 
@@ -83,17 +82,10 @@ public class InputProceduresLayout extends LinearLayout {
                     loaded = true;
                 }
             }
-
-            @Override
-            public void updateUi() {
-                proceduresLayout.updateUi();
-
-                // TODO 删！！！
-                //mUpdateUiCallback.updateUi();
-            }
         });
 
-        proceduresLayout = new ProceduresLayout(context);
+        proceduresWebLayout = new ProceduresWebLayout(context);
+        //proceduresLayout = new ProceduresLayout(context);
 
         InitViewPager(context);
         InitTextView();

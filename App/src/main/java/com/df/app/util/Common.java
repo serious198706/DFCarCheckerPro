@@ -9,8 +9,6 @@ import com.df.app.R;
  */
 public class Common {
 
-
-
     public static String utilDirectory = Environment.getExternalStorageDirectory().getPath() +
             "/.cheyipaiPro/";
     public static String photoDirectory = Environment.getExternalStorageDirectory().getPath() +
@@ -39,9 +37,17 @@ public class Common {
     public static final String GET_OPTIONS_BY_SERIESIDANDMODELID = "GetOptionsBySeriesIdAndModelId";
     public static final String GET_OPTIONS_BY_VIN = "GetCarConfigInfoByVin";
     public static final String USER_LOGIN = "UserLogin";
+    public static final String USER_LOGOUT = "UserLogout";
     public static final String GET_APP_NEW_VERSION = "GetAppNewVersion";
     public static final String GET_STANDARD_REMARKS = "GetStandardRemarks";
     public static final String UPLOAD_PICTURE = "UploadPictureTagKey";
+    public static final String AYALYSIS_ACCIDENT_DATA = "AnalysisAccidentData";
+    public static final String COMMIT_DATA = "SubmitCarCheckData";
+    public static final String SAVE_DATA = "SaveCarCheckData";
+    public static final String GET_COOPERATORS = "GetCheckCooperates";
+    public static final String GET_CHECKED_CARS = "ListCheckedCarsByUserId";
+    public static final String GET_WAITING_CARS = "ListPendingCarsByUserId";
+    public static final String GET_CAR_DETAIL = "GetCheckedCarDetailByCarId";
 
     // 配置信息页与综合检查页spinner的联动关系
     public static final int[][] carSettingsSpinnerMap = {
@@ -90,4 +96,7 @@ public class Common {
     public static final int ADD_COMMENT_FOR_INTERIOR_PHOTO = 11;
     public static final int PHOTO_COMMENT_ADDED = 12;
     public static final int PHOTO_FOR_TIRES = 13;
+    public static final int PHOTO_FOR_PROCEDURES_STANDARD = 14;
+    public static final int PHOTO_FOR_ENGINE_STANDARD = 15;
+    public static final int PHOTO_FOR_OTHER_STANDARD = 16;
 }

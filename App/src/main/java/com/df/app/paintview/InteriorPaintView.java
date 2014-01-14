@@ -239,7 +239,8 @@ public class InteriorPaintView extends PaintView {
                 PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
                 PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
             }
-        });
+        }).setCancelable(false);
+
         builder.show();
     }
 

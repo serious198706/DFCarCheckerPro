@@ -189,7 +189,8 @@ public class FramePaintView extends PaintView {
                 PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
                 PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
             }
-        });
+        }).setCancelable(false);
+
         builder.show();
     }
 

@@ -288,4 +288,8 @@ public class Integrated1Layout extends LinearLayout{
     public String generateCommentString() {
         return getEditViewText(rootView, R.id.it1_comment_edit);
     }
+
+    public void fillInData(JSONObject engine, JSONObject gearbox, JSONObject function, String comment1) {
+
+    }
 }

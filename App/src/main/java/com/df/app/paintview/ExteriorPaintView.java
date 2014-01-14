@@ -268,10 +268,10 @@ public class ExteriorPaintView extends PaintView {
                 // create a file to save the image
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
-                ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_FAULT);
+                ((Activity) getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_FAULT);
             }
-        });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+        })
+        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 getPosEntity().setImageFileName("");
@@ -281,7 +281,7 @@ public class ExteriorPaintView extends PaintView {
                 PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
                 PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
             }
-        });
+        }).setCancelable(false);
         builder.show();
     }
 

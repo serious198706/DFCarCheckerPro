@@ -2,6 +2,7 @@ package com.df.app.CarCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -20,9 +21,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.df.app.R;
+import com.df.app.service.AsyncTask.GetIssueItemsTask;
 import com.df.app.service.Checker;
 import com.df.app.service.DeviceListDialog;
-import com.df.app.service.Measurement;
+import com.df.app.entries.Measurement;
 import com.df.app.service.MyScrollView;
 import com.df.app.util.Common;
 import com.xinque.android.serial.driver.UsbSerialDriver;
@@ -218,11 +220,6 @@ public class CollectDataLayout extends LinearLayout {
         findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
-    // AccidentCheckLayout 必须实现此接口
-    public interface OnGetIssueData {
-        public void showContent();
-        public void updateUi();
-    }
 
     // 填入假数据
     private void fillInDummyData() {
@@ -265,8 +262,7 @@ public class CollectDataLayout extends LinearLayout {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        mCallback.showContent();
-                        mCallback.updateUi();
+                        getIssueItems();
                     }
                 }).create();
 
@@ -368,13 +364,11 @@ public class CollectDataLayout extends LinearLayout {
                                                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                                        mCallback.showContent();
-                                                        mCallback.updateUi();
-
-                                                        startButton.setText(R.string.start);
-                                                        startButton.setEnabled(true);
+                                                        getIssueItems();
                                                     }
-                                                }).create();
+                                                })
+                                                .setCancelable(false)
+                                                .create();
 
                                         dialog.show();
                                     }
@@ -388,6 +382,30 @@ public class CollectDataLayout extends LinearLayout {
         }
     }
 
+    private void getIssueItems() {
+        // 启动获取issue数据线程
+        try {
+            GetIssueItemsTask getIssueItemsTask = new GetIssueItemsTask(rootView.getContext(),
+                    generateJSONObject(), new GetIssueItemsTask.OnGetIssueItemsFinished() {
+                @Override
+                public void onFinish(String result, ProgressDialog progressDialog) {
+                    mCallback.showContent();
+                    mCallback.updateUi(result, progressDialog);
+
+                    startButton.setText(R.string.start);
+                    startButton.setEnabled(true);
+                }
+
+                @Override
+                public void onFailed() {
+
+                }
+            });
+            getIssueItemsTask.execute();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     public JSONObject generateJSONObject() throws JSONException {
         JSONObject data = new JSONObject();
@@ -451,7 +469,13 @@ public class CollectDataLayout extends LinearLayout {
         JSONObject device = new JSONObject();
 
         device.put("type", getSpinnerSelectedText(rootView, R.id.device_type));
-        device.put("serial", checker.getSerialNumber());
+
+        if(checker == null)
+        {
+            device.put("serial", "");
+        } else {
+            device.put("serial", checker.getSerialNumber());
+        }
 
         data.put("overlap", overlap);
         data.put("enhance", enhance);
@@ -459,5 +483,15 @@ public class CollectDataLayout extends LinearLayout {
         data.put("device", device);
 
         return data;
+    }
+
+    public void fillInData(JSONObject data) {
+
+    }
+
+    // AccidentCheckLayout 必须实现此接口
+    public interface OnGetIssueData {
+        public void showContent();
+        public void updateUi(String result, ProgressDialog progressDialog);
     }
 }

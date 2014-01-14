@@ -451,9 +451,13 @@ public class InteriorLayout extends LinearLayout {
 
         interior.put("sealingStrip", getSpinnerSelectedText(rootView, R.id.sealingStrip_spinner));
         interior.put("comment", getEditViewText(rootView, R.id.interior_comment_edit));
-        interior.put("dirty", getEditViewText(rootView, R.id.dirty_edit));
-        interior.put("broken", getEditViewText(rootView, R.id.broken_edit));
+        //interior.put("dirty", getEditViewText(rootView, R.id.dirty_edit));
+        //interior.put("broken", getEditViewText(rootView, R.id.broken_edit));
 
         return interior;
+    }
+
+    public void fillInData(JSONObject interior) {
+
     }
 }

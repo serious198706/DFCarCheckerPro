@@ -1,4 +1,4 @@
-package com.df.app.service;
+package com.df.app.service.Adapter;
 
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -33,13 +33,11 @@ public class MyViewPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
         return listViews.size();
     }
 
     @Override
     public boolean isViewFromObject(View arg0, Object arg1) {
-        // TODO Auto-generated method stub
         return arg0 == arg1;
     }
 

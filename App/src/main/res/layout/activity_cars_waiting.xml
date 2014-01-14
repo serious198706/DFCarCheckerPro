@@ -25,15 +25,14 @@
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_margin="8dp"
-                android:background="@drawable/scan"
+                android:background="@drawable/refresh"
                 android:layout_alignParentRight="true"/>
 
         <Button android:id="@+id/buttonHome"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_margin="8dp"
-                android:background="@drawable/home"
-                android:layout_toLeftOf="@id/buttonSave"/>
+                android:background="@drawable/back"/>
     </RelativeLayout>
 
     <com.fortysevendeg.android.swipelistview.SwipeListView

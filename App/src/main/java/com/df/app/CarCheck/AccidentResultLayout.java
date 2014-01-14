@@ -14,10 +14,7 @@ import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintview.FramePaintPreviewView;
-import com.df.app.service.Command;
-import com.df.app.service.UploadPictureTask;
 import com.df.app.util.Common;
-import com.df.app.util.Helper;
 
 import org.json.JSONException;
 import org.json.JSONObject;

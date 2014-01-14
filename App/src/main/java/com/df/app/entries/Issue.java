@@ -6,7 +6,6 @@ package com.df.app.entries;
 public class Issue {
     private int id;
     private String desc;
-    private String popup;
     private String view;
     private String summary;
     private String serious;
@@ -16,11 +15,10 @@ public class Issue {
         super();
     }
 
-    public Issue(int id, String desc, String popup, String view, String summary, String serious, String select) {
+    public Issue(int id, String desc, String view, String summary, String serious, String select) {
         super();
         this.id = id;
         this.desc = desc;
-        this.popup = popup;
         this.view = view;
         this.summary = summary;
         this.serious = serious;
@@ -41,14 +39,6 @@ public class Issue {
 
     public void setDesc(String desc) {
         this.desc = desc;
-    }
-
-    public String getPopup() {
-        return popup;
-    }
-
-    public void setPopup(String popup) {
-        this.popup = popup;
     }
 
     public String getView() {

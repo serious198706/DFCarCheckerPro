@@ -1,14 +1,9 @@
 package com.df.app.CarCheck;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.renderscript.Int3;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -20,17 +15,14 @@ import android.widget.TextView;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
-import com.df.app.entries.PhotoEntity;
-import com.df.app.entries.UserInfo;
 import com.df.app.service.MyOnClick;
-import com.df.app.service.MyViewPagerAdapter;
+import com.df.app.service.Adapter.MyViewPagerAdapter;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,6 +143,40 @@ public class IntegratedCheckLayout extends LinearLayout {
         interiorLayout.saveInteriorStandardPhoto();
     }
 
+    public int getCooperatorId() {
+        return integrated3Layout.getCooperatorId();
+    }
+
+    public String getCooperatorName() {
+        return integrated3Layout.getCooperatorName();
+    }
+
+    class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
+    {
+        @Override
+        public void onPageScrollStateChanged(int arg0) {
+
+        }
+
+        @Override
+        public void onPageScrolled(int arg0, float arg1, int arg2) {
+
+        }
+
+        @Override
+        public void onPageSelected(int arg0) {
+            selectTab(arg0);
+        }
+    }
+
+    private void selectTab(int currIndex) {
+        exteriorTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
+        interiorTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
+        itTab1.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
+        itTab2.setTextColor(currIndex == 3 ? selectedColor : unselectedColor);
+        itTab3.setTextColor(currIndex == 4 ? selectedColor : unselectedColor);
+    }
+
     public JSONObject generateJSONObject() {
         JSONObject conditions = new JSONObject();
 
@@ -201,31 +227,31 @@ public class IntegratedCheckLayout extends LinearLayout {
         return conditions;
     }
 
-    class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
-    {
-        @Override
-        public void onPageScrollStateChanged(int arg0) {
+    public void fillInData(JSONObject conditions) {
+        try {
+            JSONObject exterior = conditions.getJSONObject("exterior");
+            JSONObject interior = conditions.getJSONObject("interior");
+            JSONObject engine = conditions.getJSONObject("engine");
+            JSONObject gearbox = conditions.getJSONObject("gearbox");
+            JSONObject function = conditions.getJSONObject("function");
+            JSONObject flooded = conditions.getJSONObject("flooded");
+            JSONObject tires = conditions.getJSONObject("tires");
 
-        }
+            // 综合检查 - 备注
+            String comment1 = conditions.getString("commont1");
+            String comment2 = conditions.getString("commont2");
+            String comment3 = conditions.getString("commont3");
 
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
+            exteriorLayout.fillInData(exterior);
+            interiorLayout.fillInData(interior);
+            integrated1Layout.fillInData(engine, gearbox, function, comment1);
+            integrated2Layout.fillInData(flooded, tires, comment2);
 
-        }
-
-        @Override
-        public void onPageSelected(int arg0) {
-            selectTab(arg0);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-    private void selectTab(int currIndex) {
-        exteriorTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
-        interiorTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
-        itTab1.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
-        itTab2.setTextColor(currIndex == 3 ? selectedColor : unselectedColor);
-        itTab3.setTextColor(currIndex == 4 ? selectedColor : unselectedColor);
-    }
 
     public class GetStandardRemarksTask extends AsyncTask<Void, Void, Boolean> {
         private Context context;

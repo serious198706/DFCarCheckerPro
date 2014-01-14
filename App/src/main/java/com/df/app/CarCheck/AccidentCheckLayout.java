@@ -1,25 +1,20 @@
 package com.df.app.CarCheck;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.df.app.R;
-import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.service.MyOnClick;
-import com.df.app.service.MyViewPagerAdapter;
+import com.df.app.service.Adapter.MyViewPagerAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,8 +83,8 @@ public class AccidentCheckLayout extends LinearLayout{
             }
 
             @Override
-            public void updateUi() {
-                issueLayout.updateUi();
+            public void updateUi(String result, ProgressDialog progressDialog) {
+                issueLayout.updateUi(result, progressDialog);
                 accidentResultLayout.updateUi();
             }
         });
@@ -124,6 +119,7 @@ public class AccidentCheckLayout extends LinearLayout{
 
         collectTab.setOnClickListener(new MyOnClick(viewPager, 0));
     }
+
 
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
     {
@@ -176,5 +172,21 @@ public class AccidentCheckLayout extends LinearLayout{
         }
 
         return accident;
+    }
+
+    public void fillInData(JSONObject accident) {
+        try {
+            // 测量数据
+            JSONObject data = accident.getJSONObject("data");
+
+            // 问题查勘
+            JSONObject issue = accident.getJSONObject("issue");
+
+            collectDataLayout.fillInData(data);
+
+            issueLayout.fillInData(issue);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

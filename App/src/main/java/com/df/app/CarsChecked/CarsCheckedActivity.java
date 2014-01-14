@@ -1,25 +1,26 @@
 package com.df.app.CarsChecked;
 
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
-import android.widget.AbsListView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.df.app.R;
 import com.df.app.entries.CarsCheckedItem;
-import com.df.app.service.CarsCheckedListAdapter;
+import com.df.app.service.Adapter.CarsCheckedListAdapter;
+import com.df.app.service.AsyncTask.GetCarsCheckedListTask;
 import com.fortysevendeg.android.swipelistview.BaseSwipeListViewListener;
 import com.fortysevendeg.android.swipelistview.SwipeListView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,9 @@ public class CarsCheckedActivity extends Activity {
     private ArrayList<CarsCheckedItem> data;
     private CarsCheckedListAdapter adapter;
     private int lastPos;
+
+    private int startNumber = 1;
+    private View footerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,59 +42,14 @@ public class CarsCheckedActivity extends Activity {
 
         data = new ArrayList<CarsCheckedItem>();
 
-        fillInDummyData();
-
         adapter = new CarsCheckedListAdapter(this, data);
 
         swipeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
             @Override
-            public void onOpened(int position, boolean toRight) {
-            }
-
-            @Override
-            public void onClosed(int position, boolean fromRight) {
-            }
-
-            @Override
-            public void onListChanged() {
-            }
-
-            @Override
-            public void onMove(int position, float x) {
-            }
-
-            @Override
-            public void onStartOpen(int position, int action, boolean right) {
-                swipeListView.closeAnimate(lastPos);
-                Log.d("swipe", String.format("onStartOpen %d - action %d", position, action));
-
-                lastPos = position;
-            }
-
-            @Override
-            public void onStartClose(int position, boolean right) {
-                Log.d("swipe", String.format("onStartClose %d", position));
-            }
-
-            @Override
             public void onClickFrontView(int position) {
                 Log.d("swipe", String.format("onClickFrontView %d", position));
             }
-
-            @Override
-            public void onClickBackView(int position) {
-                Log.d("swipe", String.format("onClickBackView %d", position));
-            }
-
-            @Override
-            public void onDismiss(int[] reverseSortedPositions) {
-                for (int position : reverseSortedPositions) {
-                    data.remove(position);
-                }
-                adapter.notifyDataSetChanged();
-            }
-
         });
 
         swipeListView.setSwipeMode(SwipeListView.SWIPE_MODE_LEFT);
@@ -98,6 +57,40 @@ public class CarsCheckedActivity extends Activity {
         swipeListView.setOffsetLeft(620);
         swipeListView.setAnimationTime(300);
         swipeListView.setAdapter(adapter);
+        footerView =  ((LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.footer, null, false);
+
+        swipeListView.addFooterView(footerView);
+
+        Button homeButton = (Button)findViewById(R.id.buttonHome);
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+
+        Button loadMoreButton = (Button) findViewById(R.id.loadMore);
+        loadMoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                refresh();
+            }
+        });
+
+        Button refreshButton = (Button)findViewById(R.id.buttonRefresh);
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startNumber = 1;
+                data.clear();
+                adapter.notifyDataSetChanged();
+                refresh();
+            }
+        });
+
+        refresh();
     }
 
 
@@ -121,6 +114,48 @@ public class CarsCheckedActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void refresh() {
+        GetCarsCheckedListTask getCarsCheckedListTask = new GetCarsCheckedListTask(CarsCheckedActivity.this, startNumber,
+                new GetCarsCheckedListTask.OnGetListFinish() {
+                    @Override
+                    public void onFinish(String result) {
+                        fillInData(result);
+                    }
+                    @Override
+                    public void onFailed() {
+                        // TODO 删掉这儿！
+                        fillInDummyData();
+                    }
+                });
+        getCarsCheckedListTask.execute();
+    }
+
+    private void fillInData(String result) {
+        try {
+            JSONArray jsonArray = new JSONArray(result);
+
+            for(int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                CarsCheckedItem item = new CarsCheckedItem();
+                item.setPlateNumber(jsonObject.getString("PlateNumber"));
+                item.setExteriorColor(jsonObject.getString("ExteriorColor"));
+                item.setCarType(jsonObject.getString("Model"));
+                item.setLevel(jsonObject.getString("Score"));
+                item.setStatus(jsonObject.getString("Status"));
+                item.setDate(jsonObject.getString("CreatedDate"));
+
+                data.add(item);
+            }
+
+            adapter.notifyDataSetChanged();
+
+            startNumber = data.size() + 1;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void fillInDummyData() {
         for(int i = 0; i < 5; i++) {
             CarsCheckedItem item = new CarsCheckedItem();
@@ -133,5 +168,7 @@ public class CarsCheckedActivity extends Activity {
 
             data.add(item);
         }
+
+        adapter.notifyDataSetChanged();
     }
 }

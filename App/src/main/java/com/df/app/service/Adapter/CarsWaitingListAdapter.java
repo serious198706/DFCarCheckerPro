@@ -1,6 +1,8 @@
-package com.df.app.service;
+package com.df.app.service.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.df.app.Procedures.InputProceduresActivity;
 import com.df.app.R;
 import com.df.app.entries.CarsCheckedItem;
 import com.df.app.entries.CarsWaitingItem;
@@ -55,12 +58,12 @@ public class CarsWaitingListAdapter extends BaseAdapter {
         final CarsWaitingItem carsWaitingItem = items.get(position);
 
         if (carsWaitingItem != null) {
-            setTextView(view, R.id.car_number, carsWaitingItem.getPlateNumber());
-            setTextView(view, R.id.car_type, carsWaitingItem.getCarType());
-            setTextView(view, R.id.car_color, carsWaitingItem.getExteriorColor());
-            setTextView(view, R.id.car_status, carsWaitingItem.getStatus());
-            setTextView(view, R.id.car_date, carsWaitingItem.getDate());
+            setTextView(view, R.id.car_number, "车牌号码：" + carsWaitingItem.getPlateNumber());
+            setTextView(view, R.id.car_type, "型号：" + carsWaitingItem.getCarType());
+            setTextView(view, R.id.car_color, "颜色：" + carsWaitingItem.getExteriorColor());
+            setTextView(view, R.id.car_date, "创建日期：" + carsWaitingItem.getDate());
             view.findViewById(R.id.car_level).setVisibility(View.GONE);
+            view.findViewById(R.id.car_status).setVisibility(View.GONE);
         }
 
         Button button1 = (Button)view.findViewById(R.id.example_row_b_action_1);
@@ -69,6 +72,11 @@ public class CarsWaitingListAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 Toast.makeText(view.getContext(), "修改手续信息", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, InputProceduresActivity.class);
+                intent.putExtra("edit", true);
+                intent.putExtra("CarId", carsWaitingItem.getCarId());
+                // TODO 添加一个获取车辆详细信息的流程
+                context.startActivity(intent);
             }
         });
 

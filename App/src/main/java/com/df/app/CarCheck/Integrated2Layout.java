@@ -40,6 +40,7 @@ import java.util.Map;
 
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
+import static com.df.app.util.Helper.setSpinnerSelectionWithString;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -247,10 +248,8 @@ public class Integrated2Layout extends LinearLayout {
         try {
             JSONObject photoJsonObject = new JSONObject();
 
-            photoJsonObject.put("part", currentTire);
-
             jsonObject.put("Group", "tire");
-            jsonObject.put("PhotoData", photoJsonObject);
+            jsonObject.put("Part", currentTire);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
@@ -266,8 +265,12 @@ public class Integrated2Layout extends LinearLayout {
         return photoEntity;
     }
 
-    public static String getSpareTireSelction() {
+    public static String getSpareTireSelection() {
         return getSpinnerSelectedText(rootView, R.id.spareTire_spinner);
+    }
+
+    public static void setSpareTireSelection(String selction) {
+        setSpinnerSelectionWithString(rootView, R.id.spareTire_spinner, selction);
     }
 
     private static void setSpinnerColor(int spinnerId, int color) {
@@ -337,5 +340,9 @@ public class Integrated2Layout extends LinearLayout {
 
     public String generateCommentString() {
         return getEditViewText(rootView, R.id.it2_comment_edit);
+    }
+
+    public void fillInData(JSONObject flooded, JSONObject tires, String comment2) {
+
     }
 }

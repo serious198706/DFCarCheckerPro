@@ -1,4 +1,4 @@
-package com.df.app.service;
+package com.df.app.service.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -52,12 +52,35 @@ public class CarsCheckedListAdapter extends BaseAdapter {
         final CarsCheckedItem carsCheckedItem = items.get(position);
 
         if (carsCheckedItem != null) {
-            setTextView(view, R.id.car_number, carsCheckedItem.getPlateNumber());
-            setTextView(view, R.id.car_type, carsCheckedItem.getCarType());
-            setTextView(view, R.id.car_color, carsCheckedItem.getExteriorColor());
-            setTextView(view, R.id.car_level, carsCheckedItem.getLevel());
-            setTextView(view, R.id.car_status, carsCheckedItem.getStatus());
-            setTextView(view, R.id.car_date, carsCheckedItem.getDate());
+            setTextView(view, R.id.car_number, "车牌号码：" + carsCheckedItem.getPlateNumber());
+            setTextView(view, R.id.car_type, "车型：" + carsCheckedItem.getCarType());
+            setTextView(view, R.id.car_color, "颜色：" + carsCheckedItem.getExteriorColor());
+            setTextView(view, R.id.car_level, "分数：" + carsCheckedItem.getLevel());
+
+            String carStatus = "";
+            switch (Integer.parseInt(carsCheckedItem.getStatus())){
+                case 0:
+                    carStatus = "未完成";
+                    break;
+                case 1:
+                    carStatus = "已提交";
+                    break;
+                case 2:
+                    carStatus = "已导入";
+                    break;
+                case 3:
+                    carStatus = "已参拍";
+                    break;
+                case 4:
+                    carStatus = "已过期";
+                    break;
+                case 5:
+                    carStatus = "已退回";
+                    break;
+            }
+
+            setTextView(view, R.id.car_status, "状态：" + carStatus);
+            setTextView(view, R.id.car_date, "创建日期：" + carsCheckedItem.getDate());
         }
 
         return view;

@@ -1,4 +1,4 @@
-package com.df.app.service;
+package com.df.app.entries;
 
 import java.util.ArrayList;
 import java.util.List;

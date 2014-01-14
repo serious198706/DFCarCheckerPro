@@ -9,11 +9,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.df.app.CarsWaiting.CarsWaitingActivity;
+import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
-import com.df.app.service.UploadPictureTask;
+import com.df.app.service.AsyncTask.CommitDataTask;
+import com.df.app.service.AsyncTask.SaveDataTask;
+import com.df.app.service.AsyncTask.UploadPictureTask;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
@@ -31,6 +36,7 @@ public class CarCheckActivity extends Activity {
     private BasicInfoLayout basicInfoLayout;
     private AccidentCheckLayout accidentCheckLayout;
     private IntegratedCheckLayout integratedCheckLayout;
+    private PhotoLayout photoLayout;
     private Button naviButton;
     private Button basicInfoButton;
     private Button accidentCheckButton;
@@ -42,6 +48,11 @@ public class CarCheckActivity extends Activity {
     private boolean showMenu = false;
 
     Map<Integer, String> tabMap = new HashMap<Integer, String>();
+
+    private String jsonString;
+
+    // 最终json串
+    private JSONObject jsonObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +111,6 @@ public class CarCheckActivity extends Activity {
         photoButton.setVisibility(View.GONE);
         photoButton.setEnabled(false);
 
-
-
         // 基本信息模块
         basicInfoLayout = (BasicInfoLayout)findViewById(R.id.basicInfo);
         basicInfoLayout.setUpdateUiListener(new BasicInfoLayout.OnUpdateUiListener() {
@@ -119,6 +128,9 @@ public class CarCheckActivity extends Activity {
 
         // 综合检查模块
         integratedCheckLayout = (IntegratedCheckLayout)findViewById(R.id.integratedCheck);
+
+        // 拍摄照片模块
+        photoLayout = (PhotoLayout)findViewById(R.id.photo);
 
         // 设置当前标题
         setTextView(getWindow().getDecorView(), R.id.currentItem, getString(R.string.title_basicInfo));
@@ -156,10 +168,6 @@ public class CarCheckActivity extends Activity {
                                 generatePhotoEntities();
                                 // 2.上传图片
                                 uploadPictures();
-                                // 3.生成所有检测信息的Json数据
-                                generateJsonString();
-                                // 4.提交检测信息
-                                commitData();
                             }
                         })
                         .setNegativeButton(R.string.cancel, null)
@@ -168,6 +176,93 @@ public class CarCheckActivity extends Activity {
                 dialog.show();
             }
         });
+
+        Button saveButton = (Button)findViewById(R.id.buttonSave);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
+                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+                TextView content = new TextView(view1.getContext());
+                content.setText(R.string.saveMsg);
+                content.setTextSize(22f);
+                contentArea.addView(content);
+
+                setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+                AlertDialog dialog = new AlertDialog.Builder(CarCheckActivity.this)
+                        .setView(view1)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // 3.生成所有检测信息的Json数据
+                                generateJsonString();
+                                // 4.提交检测信息
+                                saveData();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .create();
+
+                dialog.show();
+            }
+        });
+
+
+        // 填充各部分的内容
+        Bundle bundle = getIntent().getExtras();
+
+        // 获取车辆详细信息
+        String jsonString = bundle.getString("jsonString");
+        int carId = bundle.getInt("carId");
+
+        // 填充
+        fillInData(carId, jsonString);
+    }
+
+    private void uploadPictures() {
+        UploadPictureTask uploadPictureTask = new UploadPictureTask(CarCheckActivity.this, photoEntities, new UploadPictureTask.UploadFinished() {
+            @Override
+            public void OnFinish() {
+                // 3.生成所有检测信息的Json数据
+                generateJsonString();
+                // 4.提交检测信息
+                commitData();
+            }
+        });
+        uploadPictureTask.execute();
+    }
+
+    private void commitData() {
+        CommitDataTask commitDataTask = new CommitDataTask(CarCheckActivity.this, new CommitDataTask.OnCommitDataFinished() {
+            @Override
+            public void onFinished(String result) {
+                Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailed(String result) {
+                Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
+            }
+        });
+        commitDataTask.execute(jsonObject);
+    }
+
+    private void saveData() {
+        SaveDataTask saveDataTask = new SaveDataTask(CarCheckActivity.this, new SaveDataTask.OnSaveDataFinished() {
+            @Override
+            public void onFinished(String result) {
+                Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailed(String result) {
+                Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
+            }
+        });
+        saveDataTask.execute(jsonObject);
     }
 
     private void showNaviMenu(boolean show) {
@@ -261,6 +356,15 @@ public class CarCheckActivity extends Activity {
             case Common.PHOTO_FOR_TIRES:
                 integratedCheckLayout.saveTirePhoto();
                 break;
+            case Common.PHOTO_FOR_PROCEDURES_STANDARD:
+                photoLayout.saveProceduresStandardPhoto();
+                break;
+            case Common.PHOTO_FOR_ENGINE_STANDARD:
+                photoLayout.saveEngineStandardPhoto();
+                break;
+            case Common.PHOTO_FOR_OTHER_STANDARD:
+                photoLayout.saveOtherStandardPhoto();
+                break;
         }
     }
 
@@ -287,14 +391,9 @@ public class CarCheckActivity extends Activity {
         photoEntities.addAll(PhotoOtherLayout.photoListAdapter.getItems());
     }
 
-    private void uploadPictures() {
-        UploadPictureTask uploadPictureTask = new UploadPictureTask(CarCheckActivity.this, photoEntities);
-        uploadPictureTask.execute();
-    }
-
     private void generateJsonString() {
         try {
-            JSONObject jsonObject = new JSONObject();
+            jsonObject = new JSONObject();
             JSONObject features = basicInfoLayout.generateJSONObject();
             JSONObject accident = accidentCheckLayout.generateJSONObject();
             JSONObject conditions = integratedCheckLayout.generateJSONObject();
@@ -302,6 +401,10 @@ public class CarCheckActivity extends Activity {
             jsonObject.put("features", features);
             jsonObject.put("accident", accident);
             jsonObject.put("conditions", conditions);
+            jsonObject.put("checkUserId", MainActivity.userInfo.getId());
+            jsonObject.put("checkUserName", MainActivity.userInfo.getName());
+            jsonObject.put("checkCooperatorId", integratedCheckLayout.getCooperatorId());
+            jsonObject.put("checkCooperatorName", integratedCheckLayout.getCooperatorName());
 
             jsonObject.toString();
         } catch (JSONException e) {
@@ -309,8 +412,31 @@ public class CarCheckActivity extends Activity {
         }
     }
 
-    private void commitData() {
+    // 将所有数据填充到所有检测模块中
+    private void fillInData(int carId, String jsonString) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
 
+            // 更新手续页面（一定会有）
+            JSONObject features = jsonObject.getJSONObject("features");
+            basicInfoLayout.fillInData(carId, features);
+
+            // 如果有事故节点，则更新事故页面
+            if(jsonObject.has("accident")) {
+                JSONObject accident = jsonObject.getJSONObject("accident");
+                accidentCheckLayout.fillInData(accident);
+            }
+
+            // 如果有综合检查节点，则更新事故检查页面
+            if(jsonObject.has("conditions")) {
+                JSONObject conditions = jsonObject.getJSONObject("conditions");
+                integratedCheckLayout.fillInData(conditions);
+            }
+
+
+        } catch (JSONException e) {
+
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.df.app.service;
+package com.df.app.service.Adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -85,7 +85,11 @@ public class IssueListAdapter extends BaseAdapter {
                 issueSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        if(b && issue.getPopup().equals("Y")) {
+                        if(b == issue.getSelect().equals("否")) {
+                            return;
+                        }
+
+                        if(b && !issue.getView().equals("")) {
                             // 弹出绘制界面
                             Toast.makeText(context, "此项需要绘制", Toast.LENGTH_SHORT).show();
                             drawIssuePoint(issue);
@@ -95,6 +99,9 @@ public class IssueListAdapter extends BaseAdapter {
                         issue.setSelect(b ? "否" : "是");
                     }
                 });
+
+                // 为了防止缓存现象，要重设置一下switch
+                issueSwitch.setChecked(issue.getSelect().equals("否"));
             }
 
             if(issueDesc != null){

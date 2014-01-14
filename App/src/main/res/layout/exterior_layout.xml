@@ -123,7 +123,8 @@
                         android:layout_margin="5dp"/>
             </TableRow>
 
-            <TableRow android:layout_marginTop="15dp">
+            <TableRow android:layout_marginTop="15dp"
+                android:visibility="gone">
                 <TextView android:layout_width="0dp"
                           android:layout_height="wrap_content"
                           android:text="@string/ex_broken"

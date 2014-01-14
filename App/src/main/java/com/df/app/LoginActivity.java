@@ -1,17 +1,11 @@
 package com.df.app;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -19,26 +13,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.df.app.entries.UserInfo;
-import com.df.app.service.CheckUpdateTask;
-import com.df.app.service.SoapService;
-import com.df.app.util.Common;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Method;
+import com.df.app.service.AsyncTask.CheckUpdateTask;
+import com.df.app.service.AsyncTask.LoginTask;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
 public class LoginActivity extends Activity {
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
-
-    // Values for email and password at the time of the login attempt.
+    // 用户名及密码
     private String mUserName;
     private String mPassword;
 
@@ -46,8 +29,7 @@ public class LoginActivity extends Activity {
     private EditText mUserNameView;
     private EditText mPasswordView;
 
-    // 用户信息：id、key
-    public static UserInfo userInfo;
+    private LoginTask mLoginTask = null;
     private CheckUpdateTask mCheckUpdateTask;
 
     @Override
@@ -56,7 +38,7 @@ public class LoginActivity extends Activity {
 
         setContentView(R.layout.activity_login);
 
-        // Set up the login form.
+        // 配置输入框
         mUserNameView = (EditText) findViewById(R.id.username);
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -98,7 +80,7 @@ public class LoginActivity extends Activity {
      * errors are presented and no actual login attempt is made.
      */
     public void attemptLogin() {
-        if (mAuthTask != null) {
+        if (mLoginTask != null) {
             return;
         }
 
@@ -133,111 +115,28 @@ public class LoginActivity extends Activity {
             focusView.requestFocus();
         } else {
             //kick off a background task to perform the user login attempt.
-            mAuthTask = new UserLoginTask(LoginActivity.this);
-            mAuthTask.execute((Void) null);
-        }
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-        private ProgressDialog progressDialog;
-        private Context context;
-        private SoapService soapService;
-
-        public UserLoginTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(context, null, "正在登录，请稍候...", false, false);
-            progressDialog.setCancelable(false);
-            progressDialog.setCanceledOnTouchOutside(false);
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            boolean success = false;
-
-            WifiManager wifiMan = (WifiManager) context.getSystemService(
-                    Context.WIFI_SERVICE);
-            WifiInfo wifiInf = wifiMan.getConnectionInfo();
-            String macAddr = wifiInf.getMacAddress();
-
-            String serialNumber = null;
-
-            try {
-                Class<?> c = Class.forName("android.os.SystemProperties");
-                Method get = c.getMethod("get", String.class);
-                serialNumber = (String) get.invoke(c, "ro.serialno");
-            } catch (Exception ignored) {
-                Log.d(Common.TAG, "无法获取序列号！");
-            }
-
-
-            try {
-                // 登录
-                JSONObject jsonObject = new JSONObject();
-
-                jsonObject.put("UserName", mUserName);
-                jsonObject.put("Password", mPassword);
-                jsonObject.put("Key", macAddr);
-                jsonObject.put("SerialNumber", serialNumber);
-
-                soapService = new SoapService();
-
-                // 设置soap的配置
-                soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.USER_LOGIN);
-
-                success = soapService.login(context, jsonObject.toString());
-
-                // 登录失败，获取错误信息并显示
-                if(!success) {
-                    Log.d("DFCarChecker", "Login error:" + soapService.getErrorMessage());
-                } else {
-                    userInfo = new UserInfo();
-
-                    try {
-                        JSONObject userJsonObject = new JSONObject(soapService.getResultMessage());
-
-                        // 保存用户的UserId和此次登陆的Key
-                        userInfo.setId(userJsonObject.getString("UserId"));
-                        userInfo.setKey(userJsonObject.getString("Key"));
-                        userInfo.setName(userJsonObject.getString("UserName"));
-                        userInfo.setOrid(userJsonObject.getString("Orid"));
-                    } catch (Exception e) {
-                        Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
-                        return false;
-                    }
+            mLoginTask = new LoginTask(LoginActivity.this, new LoginTask.OnLoginFinished() {
+                @Override
+                public void onFinished(UserInfo userinfo) {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("UserId", userinfo.getId());
+                    intent.putExtra("Key", userinfo.getKey());
+                    intent.putExtra("UserName", userinfo.getName());
+                    intent.putExtra("Orid", userinfo.getName());
+                    mLoginTask = null;
+                    startActivity(intent);
+                    finish();
                 }
-            } catch (JSONException e) {
-                Log.d("DFCarChecker", "Json解析错误: " + e.getMessage());
-            }
 
-            return success;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            progressDialog.dismiss();
-            mAuthTask = null;
-
-            if (success) {
-                Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra("UserId", userInfo.getId());
-                intent.putExtra("Key", userInfo.getKey());
-                startActivity(intent);
-                finish();
-            } else {
-                mPasswordView.setError(soapService.getErrorMessage());
-                mPasswordView.requestFocus();
-            }
+                @Override
+                public void onFailed(String errorMsg) {
+                    mPasswordView.setError(errorMsg);
+                    mPasswordView.requestFocus();
+                    mLoginTask = null;
+                }
+            }, mUserName, mPassword);
+            mLoginTask.execute((Void) null);
         }
     }
-
-
 
 }

@@ -1,4 +1,4 @@
-package com.df.app.service;
+package com.df.app.service.AsyncTask;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.df.app.R;
+import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 
 import org.json.JSONObject;

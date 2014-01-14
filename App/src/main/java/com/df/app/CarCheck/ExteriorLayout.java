@@ -456,11 +456,15 @@ public class ExteriorLayout extends LinearLayout {
         exterior.put("comment", getEditViewText(rootView, R.id.exterior_comment_edit));
         exterior.put("glass", getEditViewText(rootView, R.id.glass_edit));
         exterior.put("screw", getEditViewText(rootView, R.id.screw_edit));
-        exterior.put("broken", getEditViewText(rootView, R.id.broken_edit));
+        //exterior.put("broken", getEditViewText(rootView, R.id.broken_edit));
 
         CheckBox checkBox = (CheckBox)findViewById(R.id.needRepair);
         exterior.put("needRepair", checkBox.isChecked() ? "是" : "否");
 
         return exterior;
+    }
+
+    public void fillInData(JSONObject exterior) {
+
     }
 }

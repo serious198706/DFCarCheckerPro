@@ -5,6 +5,23 @@
     <string name="frameFault">结构缺陷：</string>
 
     <string name="takePhotoForProcedures">拍摄手续组照片</string>
+    <string-array name="photoForProceduresItems">
+        <item>铭牌</item>
+        <item>手续</item>
+        <item>钥匙</item>
+        <item>其他</item>
+    </string-array>
+
     <string name="takePhotoForEngine">拍摄机舱组照片</string>
+    <string-array name="photoForEngineItems">
+        <item>机舱全景</item>
+        <item>左部</item>
+        <item>右部</item>
+        <item>其他</item>
+    </string-array>
+
     <string name="takePhotoForOther">拍摄其他组照片</string>
+    <string-array name="photoForOtherItems">
+        <item>其他</item>
+    </string-array>
 </resources>

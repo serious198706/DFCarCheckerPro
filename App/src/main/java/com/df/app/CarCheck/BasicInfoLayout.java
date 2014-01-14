@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.df.app.R;
 import com.df.app.entries.CarSettings;
-import com.df.app.service.MyViewPagerAdapter;
+import com.df.app.service.Adapter.MyViewPagerAdapter;
 import com.df.app.service.MyOnClick;
 
 import org.json.JSONException;
@@ -21,11 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.jar.JarOutputStream;
-
-import static com.df.app.util.Helper.getDateString;
-import static com.df.app.util.Helper.getEditViewText;
-import static com.df.app.util.Helper.getSpinnerSelectedText;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -72,18 +67,25 @@ public class BasicInfoLayout extends LinearLayout {
     public void init(Context context){
         rootView = LayoutInflater.from(context).inflate(R.layout.basic_info_layout, this);
 
-        // TODO carId由运营处获取
-        UUID uuid = UUID.randomUUID();
-        carId = new Random().nextInt(10);
-
         mCarSettings = new CarSettings();
 
         optionsLayout = new OptionsLayout(context);
         vehicleInfoLayout = new VehicleInfoLayout(context, new VehicleInfoLayout.UpdateUi() {
             @Override
             public void updateUi() {
-                optionsLayout.updateUi();
+                // optionsLayout介个页面只添加一次就好了，多添加就出事了
+                if(views.size() == 1) {
+                    views.add(optionsLayout);
+                    optionsTab.setVisibility(VISIBLE);
+                    optionsTab.setOnClickListener(new MyOnClick(viewPager, 1));
+                    viewPager.setAdapter(new MyViewPagerAdapter(views));
+                }
+
+                // 更新外观、内饰
                 mUpdateUiCallback.updateUi();
+
+                // 更新配置信息页面
+                optionsLayout.updateUi();
             }
         });
 
@@ -96,7 +98,6 @@ public class BasicInfoLayout extends LinearLayout {
         views = new ArrayList<View>();
 
         views.add(vehicleInfoLayout);
-        views.add(optionsLayout);
 
         viewPager.setAdapter(new MyViewPagerAdapter(views));
         viewPager.setCurrentItem(0);
@@ -106,11 +107,11 @@ public class BasicInfoLayout extends LinearLayout {
     private void InitTextView() {
         vehicleInfoTab = (TextView) rootView.findViewById(R.id.vehicleInfoTab);
         optionsTab = (TextView) rootView.findViewById(R.id.optionsTab);
+        optionsTab.setVisibility(INVISIBLE);
 
         selectTab(0);
 
         vehicleInfoTab.setOnClickListener(new MyOnClick(viewPager, 0));
-        optionsTab.setOnClickListener(new MyOnClick(viewPager, 1));
     }
 
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
@@ -148,6 +149,25 @@ public class BasicInfoLayout extends LinearLayout {
         }
 
         return features;
+    }
+
+    public void fillInData(int carId, JSONObject features) {
+        try {
+            this.carId = carId;
+
+            JSONObject procedures = features.getJSONObject("procedures");
+
+            if(features.has("options")) {
+                JSONObject options = features.getJSONObject("options");
+                optionsLayout.fillInData(options);
+                vehicleInfoLayout.fillInData(procedures, options.getString("countryId"), options.getString("brandId"),
+                        options.getString("manufacturerId"), options.getString("seriesId"), options.getString("modelId"));
+            } else {
+                vehicleInfoLayout.fillInData(procedures);
+            }
+        } catch (JSONException e) {
+
+        }
     }
 
     // CarCheckActivity必须实现此接口

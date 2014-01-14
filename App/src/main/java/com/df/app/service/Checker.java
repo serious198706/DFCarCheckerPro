@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 import android.util.Log;
 
+import com.df.app.entries.Measurement;
+import com.df.app.entries.SerialNumber;
 import com.df.app.filter.GaugeInfoFilter;
 import com.df.app.filter.ProbeSerialNumberFilter;
 import com.df.app.filter.TransmitValueFilter;
 import com.df.app.service.Command.QNC_TRANSMITVALUES;
-import com.df.app.util.Common;
 import com.xinque.android.serial.driver.UsbSerialDriver;
 
 public class Checker {
@@ -95,7 +96,7 @@ public class Checker {
 		
 		// 需多次获取
 		for (int iTry = 0; iTry < 5; iTry++) {
-			Log.d(Common.TAG, "GetQuaNixSN " + (iTry + 1) + " times");
+			//Log.d(Common.TAG, "GetQuaNixSN " + (iTry + 1) + " times");
 			bufRecive = new byte[MAX_DATABUF_LEN];
 //			if (WriteData(cmd.getData(), 8)) {
 				try {
@@ -116,7 +117,7 @@ public class Checker {
 					gaugeInfoFilter.receive(temp);
 
 					final String message = "Read " + size + " bytes: \n" + Decoder.dumpHexString(temp) + "\n\n";
-					Log.d("GetQuaNixSN", message);
+					//Log.d("GetQuaNixSN", message);
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -161,7 +162,7 @@ public class Checker {
 		
 		// 需多次获取
 		for (int iTry = 0; iTry < 5; iTry++) {
-			Log.d(Common.TAG, "CheckQuaNixSN " + (iTry + 1) + " times");
+			//Log.d(Common.TAG, "CheckQuaNixSN " + (iTry + 1) + " times");
 
 			byte[] buf = new byte[MAX_DATABUF_LEN];
 			int len;
@@ -174,7 +175,7 @@ public class Checker {
 				byte[] data = new byte[len];
 				System.arraycopy(buf, 0, data, 0, len);
 				probeSerialNumberFilter.receive(data);
-				Log.d("CheckQuaNixSN Read bytes:", Decoder.dumpHexString(data));
+				//Log.d("CheckQuaNixSN Read bytes:", Decoder.dumpHexString(data));
 
 			} catch (Exception e) {
 				close();
@@ -221,7 +222,7 @@ public class Checker {
                     Thread.sleep(100);
 					
 					final String message = "read " + len + " bytes: \n" + Decoder.dumpHexString(temp);
-					Log.d("GetTransmitValue " + iTry, message);
+					//Log.d("GetTransmitValue " + iTry, message);
 				}
 				
 				int[] bRet = transmitValueFilter.doFilter();
@@ -272,7 +273,7 @@ public class Checker {
 				transmitValueFilter.receive(temp);
 				
 				final String message = "read " + len + " bytes: \n" + Decoder.dumpHexString(temp);
-				Log.d("GetTransmitValue " + iTry, message);
+				//Log.d("GetTransmitValue " + iTry, message);
 			}
 		} catch (Exception e) {
 			close();
@@ -296,7 +297,7 @@ public class Checker {
 		try {
 			byte[] sendData = new byte[size];
 			System.arraycopy(data, 0, sendData, 0, size);
-			Log.d("WriteData", Decoder.dumpHexString(sendData));
+			//Log.d("WriteData", Decoder.dumpHexString(sendData));
 			int len = sDriver.write(sendData, 1000);
 			synchronized (mWriteBufferLock) {
 				mWriteBufferLock.wait(1500);

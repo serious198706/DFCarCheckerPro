@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ import com.df.app.entries.Manufacturer;
 import com.df.app.entries.Model;
 import com.df.app.entries.Series;
 import com.df.app.entries.VehicleModel;
+import com.df.app.service.AsyncTask.GetCarSettingsTask;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
@@ -45,7 +47,7 @@ import static com.df.app.util.Helper.setEditViewText;
  * Created by 岩 on 14-1-8.
  */
 public class VehicleInfoLayout extends LinearLayout {
-    private View rootView;
+    private static View rootView;
 
     private CarSettings mCarSettings;
 
@@ -107,12 +109,6 @@ public class VehicleInfoLayout extends LinearLayout {
 
         mCarSettings = BasicInfoLayout.mCarSettings;
 
-        countryId = CarsWaitingActivity.countryId;
-        brandId = CarsWaitingActivity.brandId;
-        manufacturerId = CarsWaitingActivity.manufacturerId;
-        seriesId = CarsWaitingActivity.seriesId;
-        modelId = CarsWaitingActivity.modelId;
-
         // 点击品牌选择按钮
         Button brandSelectButton = (Button) rootView.findViewById(R.id.brand_select_button);
         brandSelectButton.setOnClickListener(new OnClickListener() {
@@ -121,14 +117,35 @@ public class VehicleInfoLayout extends LinearLayout {
                 selectCarManually();
             }
         });
-
-        getCarSettingsFromServer(CarsWaitingActivity.seriesId + "," + CarsWaitingActivity.modelId);
     }
 
     // 从服务器获取车辆配置
     private void getCarSettingsFromServer(String seriesId) {
-        mGetCarSettingsTask = new GetCarSettingsTask(rootView.getContext());
-        mGetCarSettingsTask.execute(seriesId);
+        mGetCarSettingsTask = new GetCarSettingsTask(rootView.getContext(), seriesId, new GetCarSettingsTask.OnGetCarSettingsFinished() {
+            @Override
+            public void onFinished(String result) {
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+
+                    updateCarSettings(jsonObject.getString("config"),
+                            jsonObject.getString("category"), jsonObject.getString("figure"));
+
+                    // 更新UI
+                    updateUi();
+                } catch (JSONException e) {
+                    Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailed(String result) {
+                // 传输失败，获取错误信息并显示
+                Log.d("DFCarChecker", "获取车辆配置信息失败：" + result);
+                Toast.makeText(rootView.getContext(), result, Toast.LENGTH_LONG).show();
+                ((Activity)getContext()).finish();
+            }
+        });
+        mGetCarSettingsTask.execute();
     }
 
     // 手动选择车型
@@ -168,15 +185,16 @@ public class VehicleInfoLayout extends LinearLayout {
                         }
 
                         Country country = vehicleModel.countries.get(lastCountryIndex - 1);
-                        countryId = country.id;
                         Brand brand = country.brands.get(lastBrandIndex - 1);
-                        brandId = brand.id;
                         Manufacturer manufacturer = brand.manufacturers.get(lastManufacturerIndex - 1);
-                        manufacturerId = manufacturer.id;
                         Series series = manufacturer.serieses.get(lastSeriesIndex - 1);
-                        seriesId = series.id;
                         Model model = series.models.get(lastModelIndex - 1);
-                        modelId = model.id;
+
+                        mCarSettings.setCountry(country);
+                        mCarSettings.setBrand(brand);
+                        mCarSettings.setManufacturer(manufacturer);
+                        mCarSettings.setSeries(series);
+                        mCarSettings.setModel(model);
 
                         // 根据seriesId和modelId从服务器获取车辆配置信息  config:powerWindows,powerSeats...
                         getCarSettingsFromServer(series.id + "," + model.id);
@@ -215,16 +233,15 @@ public class VehicleInfoLayout extends LinearLayout {
         // 设置厂牌型号的EditText
         setEditViewText(rootView, R.id.brand_edit, mCarSettings.getBrandString());
 
+        // 更新配置界面、外观、内饰界面
         mCallback.updateUi();
     }
 
     // 更新车辆配置信息
     private void updateCarSettings(String config, String category, String figure) {
-        Country country = vehicleModel.getCountryById(countryId);
-        Brand brand = country.getBrandById(brandId);
-        Manufacturer manufacturer = brand.getManufacturerById(manufacturerId);
-        Series series = manufacturer.getSeriesById(seriesId);
-        Model model = series.getModelById(modelId);
+        Manufacturer manufacturer = mCarSettings.getManufacturer();
+        Series series = mCarSettings.getSeries();
+        Model model = mCarSettings.getModel();
 
         // 车型
         String brandString = manufacturer.name + " " + series.name + " " + model.name;
@@ -238,11 +255,6 @@ public class VehicleInfoLayout extends LinearLayout {
         // 更新配置信息类
         mCarSettings.setBrandString(brandString);
         mCarSettings.setDisplacement(displacementString);
-        mCarSettings.setCountry(country);
-        mCarSettings.setBrand(brand);
-        mCarSettings.setManufacturer(manufacturer);
-        mCarSettings.setSeries(series);
-        mCarSettings.setModel(model);
 
         String modelString = model.getName();
 
@@ -286,146 +298,6 @@ public class VehicleInfoLayout extends LinearLayout {
 
         mCarSettings.setFigure(figure);
     }
-
-    // <editor-fold defaultstate="collapsed" desc="获取车辆配置信息的Task">
-
-    private class GetCarSettingsTask extends AsyncTask<String, Void, Boolean> {
-        Context context;
-        String seriesId;
-        String modelId;
-
-        String modelName = "";
-        List<String> modelNames;
-        JSONObject jsonObject;
-        List<JSONObject> jsonObjects;
-
-        Model model = null;
-        String config = null;
-        String category = null;
-        String figure = null;
-
-        ProgressDialog mProgressDialog;
-
-        private GetCarSettingsTask(Context context) {
-            this.context = context;
-            this.seriesId = null;
-        }
-
-        @Override
-        protected void onPreExecute()
-        {
-            mProgressDialog = ProgressDialog.show(rootView.getContext(), null,
-                    "正在获取车辆信息，请稍候。。", false, false);
-            model = null;
-            modelName = "";
-            modelNames = null;
-            jsonObject = null;
-            jsonObjects = null;
-        }
-
-
-        @Override
-        protected Boolean doInBackground(String... params) {
-            boolean success = false;
-
-            // 传输seriesId和modelId
-            if(!params[0].equals("")) {
-                // 从传入的参数中解析出seriesId和modelId
-                String temp[] = params[0].split(",");
-                seriesId = temp[0];
-                modelId = temp[1];
-
-                try {
-                    JSONObject jsonObject = new JSONObject();
-
-                    // SeriesId + userID + key
-                    jsonObject.put("SeriesId", seriesId);
-                    jsonObject.put("ModelId", modelId);
-                    jsonObject.put("UserId", MainActivity.userInfo.getId());
-                    jsonObject.put("Key", MainActivity.userInfo.getKey());
-
-                    soapService = new SoapService();
-
-                    // 设置soap的配置
-                    soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE,
-                            Common.GET_OPTIONS_BY_SERIESIDANDMODELID);
-
-                    success = soapService.communicateWithServer(jsonObject.toString());
-                } catch (JSONException e) {
-                    Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
-                    return false;
-                }
-            }
-            // 传输VIN
-            else {
-                try {
-                    JSONObject jsonObject = new JSONObject();
-
-                    // vin + userID + key
-                    jsonObject.put("Vin", getEditViewText(rootView, R.id.vin_edit));
-                    jsonObject.put("UserId", MainActivity.userInfo.getId());
-                    jsonObject.put("Key", MainActivity.userInfo.getKey());
-
-                    soapService = new SoapService();
-
-                    // 设置soap的配置
-                    soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE,
-                            Common.GET_OPTIONS_BY_VIN);
-
-                    success = soapService.communicateWithServer(jsonObject.toString());
-                } catch (JSONException e) {
-                    Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
-                    return false;
-                }
-            }
-
-            return success;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mGetCarSettingsTask = null;
-
-            mProgressDialog.dismiss();
-            CarsWaitingActivity.progressDialog.dismiss();
-
-            String result = soapService.getResultMessage();
-
-            // 如果成功通信
-            if (success) {
-                try {
-
-                    JSONObject jsonObject = new JSONObject(result);
-                    config = jsonObject.getString("config");
-                    category = jsonObject.getString("category");
-                    figure = jsonObject.getString("figure");
-
-                    // 更新配置信息
-                    updateCarSettings(config, category, figure);
-
-                    // 更新UI
-                    updateUi();
-                } catch (JSONException e) {
-                    Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
-                }
-            }
-            // 如果失败
-            else {
-                // 传输失败，获取错误信息并显示
-                Log.d("DFCarChecker", "获取车辆配置信息失败：" + soapService.getErrorMessage());
-
-                Toast.makeText(context, soapService.getErrorMessage(), Toast.LENGTH_LONG).show();
-
-                ((Activity)getContext()).finish();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mGetCarSettingsTask = null;
-        }
-    }
-    // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="设置各种Spinner">
     // 设置国家Spinner
@@ -625,6 +497,60 @@ public class VehicleInfoLayout extends LinearLayout {
         }
 
         return procedures;
+    }
+
+    // 更新页面，顺带更新车辆信息
+    public void fillInData(JSONObject procedures, String countryId, String brandId, String manufacturerId,
+                           String seriesId, String modelId) {
+        try {
+            setEditViewText(rootView, R.id.vin_edit, procedures.getString("vin"));
+            setEditViewText(rootView, R.id.engineSerial_edit, procedures.getString("engineSerial"));
+            setEditViewText(rootView, R.id.plateNumber_edit, procedures.getString("plateNumber"));
+            setEditViewText(rootView, R.id.licenseModel_edit, procedures.getString("licenseModel"));
+            setEditViewText(rootView, R.id.vehicleType_edit, procedures.getString("vehicleType"));
+            setEditViewText(rootView, R.id.mileage_edit, procedures.getString("mileage"));
+            setEditViewText(rootView, R.id.exteriorColor_edit, procedures.getString("exteriorColor"));
+            setEditViewText(rootView, R.id.regDate_edit, procedures.getString("regDate"));
+            setEditViewText(rootView, R.id.builtDate_edit, procedures.getString("builtDate"));
+
+            // 更新配置信息
+            Country country = vehicleModel.getCountryById(countryId);
+            Brand brand = country.getBrandById(brandId);
+            Manufacturer manufacturer = brand.getManufacturerById(manufacturerId);
+            Series series = manufacturer.getSeriesById(seriesId);
+            Model model = series.getModelById(modelId);
+
+            mCarSettings.setCountry(country);
+            mCarSettings.setBrand(brand);
+            mCarSettings.setManufacturer(manufacturer);
+            mCarSettings.setSeries(series);
+            mCarSettings.setModel(model);
+
+            getCarSettingsFromServer(seriesId + "," + modelId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 只更新页面
+    public void fillInData(JSONObject procedures) {
+        try {
+            setEditViewText(rootView, R.id.vin_edit, procedures.getString("vin"));
+            setEditViewText(rootView, R.id.engineSerial_edit, procedures.getString("engineSerial"));
+            setEditViewText(rootView, R.id.plateNumber_edit, procedures.getString("plateNumber"));
+            setEditViewText(rootView, R.id.licenseModel_edit, procedures.getString("licenseModel"));
+            setEditViewText(rootView, R.id.vehicleType_edit, procedures.getString("vehicleType"));
+            setEditViewText(rootView, R.id.mileage_edit, procedures.getString("mileage"));
+            setEditViewText(rootView, R.id.exteriorColor_edit, procedures.getString("exteriorColor"));
+            setEditViewText(rootView, R.id.regDate_edit, procedures.getString("regDate"));
+            setEditViewText(rootView, R.id.builtDate_edit, procedures.getString("builtDate"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getVin() {
+        return getEditViewText(rootView, R.id.vin_edit);
     }
 
     public interface UpdateUi {

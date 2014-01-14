@@ -10,6 +10,7 @@ import java.util.ArrayList;
  * Created by 岩 on 14-1-8.
  */
 public class CarsWaitingItem {
+    int carId;
     String plateNumber;
     String carType;
     String exteriorColor;
@@ -20,6 +21,26 @@ public class CarsWaitingItem {
     String manufacturerId;
     String seriesId;
     String modelId;
+
+//    "CarId": 2,
+//            "Vin": "15844",
+//            "EngineSerial": "发动机号",
+//            "VehicleType": "行驶证车辆类型",
+//            "Mileage": "表征里程",
+//            "PlateNumber": "京A2548",
+//            "LicenseModel": "行驶证品牌型号",
+//            "ExteriorColor": "红色",
+//            "RegDate": "2012-12-03",
+//            "BuildDate": "2012-12-03",
+//            "CreateDate": "2013-01-01"
+
+    public int getCarId() {
+        return carId;
+    }
+
+    public void setCarId(int carId) {
+        this.carId = carId;
+    }
 
     public String getCountryId() {
         return countryId;

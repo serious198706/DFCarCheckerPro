@@ -33,33 +33,11 @@ public class InputProceduresActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_procedures);
 
-        //inputProceduresLayout = (InputProceduresLayout)findViewById(R.id.inputProcedures);
-
         Button homeButton = (Button) findViewById(R.id.buttonHome);
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
-                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-                TextView content = new TextView(view1.getContext());
-                content.setText(R.string.quitInputProcedures);
-                content.setTextSize(20f);
-                contentArea.addView(content);
-
-                setTextView(view1, R.id.title, getResources().getString(R.string.alert));
-
-                AlertDialog dialog = new AlertDialog.Builder(InputProceduresActivity.this)
-                        .setView(view1)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finish();
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, null)
-                        .create();
-
-                dialog.show();
+                quitConfirm();
             }
         });
     }
@@ -83,5 +61,34 @@ public class InputProceduresActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        quitConfirm();
+    }
+
+    private void quitConfirm() {
+        View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        TextView content = new TextView(view1.getContext());
+        content.setText(R.string.quitInputProcedures);
+        content.setTextSize(20f);
+        contentArea.addView(content);
+
+        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+        AlertDialog dialog = new AlertDialog.Builder(InputProceduresActivity.this)
+                .setView(view1)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .create();
+
+        dialog.show();
     }
 }

@@ -20,8 +20,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TwoLineListItem;
 
-import com.df.app.CarCheck.CarCheckActivity;
 import com.df.app.R;
+import com.df.app.entries.SerialNumber;
 import com.df.app.util.Common;
 import com.xinque.android.serial.driver.UsbSerialDriver;
 import com.xinque.android.serial.driver.UsbSerialProber;
@@ -223,6 +223,8 @@ public class DeviceListDialog extends Dialog {
     }
 
     private void showConsoleActivity(UsbSerialDriver driver) {
+        mHandler.removeMessages(MESSAGE_REFRESH);
+
         this.sDriver = driver;
 
         search();

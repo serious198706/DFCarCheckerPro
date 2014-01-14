@@ -1,7 +1,7 @@
 package com.df.app.filter;
 
 import com.df.app.service.ByteBuffer;
-import com.df.app.service.SerialNumber;
+import com.df.app.entries.SerialNumber;
 
 import java.util.ArrayList;
 import java.util.Arrays;

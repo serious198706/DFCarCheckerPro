@@ -1,4 +1,7 @@
-package com.df.app.service;
+package com.df.app.entries;
+
+import com.df.app.service.Command;
+import com.df.app.service.Decoder;
 
 import java.util.List;
 
