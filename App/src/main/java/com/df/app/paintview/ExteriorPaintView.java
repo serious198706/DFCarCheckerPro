@@ -24,7 +24,6 @@ import android.view.View;
 
 import com.df.app.CarCheck.BasicInfoLayout;
 import com.df.app.CarCheck.ExteriorLayout;
-import com.df.app.CarCheck.PhotoFaultLayout;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
@@ -43,12 +42,17 @@ public class ExteriorPaintView extends PaintView {
 
     private int currentType = Common.COLOR_DIFF;
     private boolean move;
-    private List<PosEntity> data = ExteriorLayout.posEntities;
-    private List<PhotoEntity> photoEntities = ExteriorLayout.photoEntities;
 
     // 本次更新的坐标点，如果用户点击取消，则不将thisTimeNewData中的坐标加入到data中
     private List<PosEntity> thisTimeNewData;
     private List<PosEntity> undoData;
+    private List<PosEntity> data = ExteriorLayout.posEntities;
+
+    // 本次更新的照片，如果用户点击取消，则不将thisTimeNewPhoto加入照片列表中
+    private List<PhotoEntity> thisTimeNewPhoto;
+    private List<PhotoEntity> photo = ExteriorLayout.photoEntities;
+    private List<PhotoEntity> undoPhoto;
+
     private Bitmap bitmap;
     private Bitmap colorDiffBitmap;
     private Bitmap otherBitmap;
@@ -92,6 +96,9 @@ public class ExteriorPaintView extends PaintView {
 
         undoData = new ArrayList<PosEntity>();
         thisTimeNewData = new ArrayList<PosEntity>();
+
+        thisTimeNewPhoto = new ArrayList<PhotoEntity>();
+        undoPhoto = new ArrayList<PhotoEntity>();
 
         colorDiffBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.out_color_diff);
         otherBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.out_other);
@@ -278,8 +285,7 @@ public class ExteriorPaintView extends PaintView {
                 getPosEntity().setComment("");
 
                 PhotoEntity photoEntity = generatePhotoEntity();
-                PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
-                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+                photo.add(photoEntity);
             }
         }).setCancelable(false);
         builder.show();
@@ -361,7 +367,7 @@ public class ExteriorPaintView extends PaintView {
         return data;
     }
 
-    public List<PhotoEntity> getPhotoEntities() { return photoEntities; }
+    public List<PhotoEntity> getPhotoEntities() { return photo; }
     public List<PhotoEntity> getPhotoEntities(String sight) { return null; }
 
     public Bitmap getSketchBitmap() {
@@ -382,8 +388,9 @@ public class ExteriorPaintView extends PaintView {
             undoData.clear();
             invalidate();
         }
-        if(!photoEntities.isEmpty()) {
-            photoEntities.clear();
+        if(!photo.isEmpty()) {
+            photo.clear();
+            undoPhoto.clear();
         }
     }
 
@@ -394,6 +401,10 @@ public class ExteriorPaintView extends PaintView {
             data.remove(data.size() - 1);
             invalidate();
         }
+        if(!photo.isEmpty()) {
+            undoPhoto.add(photo.get(photo.size() - 1));
+            photo.remove(photo.size() - 1);
+        }
     }
 
     @Override
@@ -403,6 +414,10 @@ public class ExteriorPaintView extends PaintView {
             undoData.remove(undoData.size() - 1);
             invalidate();
         }
+        if(!undoPhoto.isEmpty()) {
+            photo.add(undoPhoto.get(undoPhoto.size() - 1));
+            undoPhoto.remove(undoPhoto.size() - 1);
+        }
     }
 
     @Override
@@ -410,6 +425,11 @@ public class ExteriorPaintView extends PaintView {
         if(!thisTimeNewData.isEmpty()) {
             for(int i = 0; i < thisTimeNewData.size(); i++) {
                 data.remove(thisTimeNewData.get(i));
+            }
+        }
+        if(!thisTimeNewPhoto.isEmpty()) {
+            for(int i = 0; i < thisTimeNewPhoto.size(); i++) {
+                photo.remove(thisTimeNewPhoto.get(i));
             }
         }
     }

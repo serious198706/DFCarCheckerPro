@@ -3,11 +3,16 @@ package com.df.app.CarCheck;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -19,14 +24,18 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.df.app.R;
 import com.df.app.service.AsyncTask.GetIssueItemsTask;
-import com.df.app.service.Checker;
-import com.df.app.service.DeviceListDialog;
+import com.df.app.service.DF3000Service;
+import com.df.app.service.DF5000Service;
+import com.df.app.service.Device3000ListDialog;
 import com.df.app.entries.Measurement;
+import com.df.app.service.Device5000ListDialog;
 import com.df.app.service.MyScrollView;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
 import com.xinque.android.serial.driver.UsbSerialDriver;
 
 import org.json.JSONException;
@@ -44,12 +53,16 @@ import static com.df.app.util.Helper.showView;
  * Created by 岩 on 13-12-20.
  */
 public class CollectDataLayout extends LinearLayout {
+    public static boolean hasRequestCmd;
+    public static String requestCmd;
     private View rootView;
     private OnGetIssueData mCallback;
 
     private static UsbSerialDriver sDriver = null;
-    private Checker checker = null;
+    private DF3000Service DF3000Service = null;
     private boolean isOpen; // 是否打开设备
+
+    private int currentDeviceType = Common.DF3000;
 
     private Button startButton;
 
@@ -79,6 +92,26 @@ public class CollectDataLayout extends LinearLayout {
         overIdMap.put(new int[]{R.id.N_edit,    R.id.N_N,   17},    "N");
     }
 
+    private static int[] overIds = {
+            R.id.L_edit,
+            R.id.M_edit,
+            R.id.D_edit,
+            R.id.LA_edit,
+            R.id.E_edit,
+            R.id.LB_edit,
+            R.id.F_edit,
+            R.id.LC_edit,
+            R.id.G_edit,
+            R.id.H_edit,
+            R.id.I_edit,
+            R.id.RC_edit,
+            R.id.J_edit,
+            R.id.RB_edit,
+            R.id.K_edit,
+            R.id.RA_edit,
+            R.id.N_edit
+    };
+
     // 数据采集的控件map
     // 1. EditText的id
     // 2. CheckBox的id
@@ -100,6 +133,14 @@ public class CollectDataLayout extends LinearLayout {
         enhanceIdMap.put(R.id.H1_edit, "H1");
         enhanceIdMap.put(R.id.J1_edit, "J1");
     }
+
+    private BluetoothAdapter mBluetoothAdapter;
+    private DF5000Service DF5000Service = null;
+    private Device3000ListDialog df3000Dialog;
+    private Device5000ListDialog df5000Dialog;
+
+    // 连接上的设备，包含设备的所有信息
+    private static BluetoothDevice device;
 
 //    private int[] enhanceIdMap = {
 //            R.id.M1_edit,
@@ -139,17 +180,46 @@ public class CollectDataLayout extends LinearLayout {
         searchDeviceButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                DeviceListDialog dialog = new DeviceListDialog(rootView.getContext());
+                String deviceType = getSpinnerSelectedText(rootView, R.id.device_type_spinner);
 
-                dialog.setDialogResult(new DeviceListDialog.OnMyDialogResult() {
-                    @Override
-                    public void onMyDialogResult(UsbSerialDriver sDriver) {
-                        CollectDataLayout.sDriver = sDriver;
-                        showView(rootView, R.id.start_button, true);
-                    }
-                });
+                if(deviceType.equals("DF3000")) {
+                    currentDeviceType = Common.DF3000;
+                    df3000Dialog = new Device3000ListDialog(rootView.getContext(), new Device3000ListDialog.OnSelectDeviceFinished() {
+                        @Override
+                        public void onFinished(UsbSerialDriver sDriver) {
+                            CollectDataLayout.sDriver = sDriver;
+                            showView(rootView, R.id.start_button, true);
+                        }
+                    });
+                    df3000Dialog.show();
+                } else {
+                    currentDeviceType = Common.DF5000;
+                    df5000Dialog = new Device5000ListDialog((Activity) rootView.getContext(), rootView.getContext(), new Device5000ListDialog.OnSelectDeviceFinished() {
+                        @Override
+                        public void onFinished(String address) {
 
-                dialog.show();
+                            // 使用默认蓝牙适配器
+                            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+                            // 初始化Socket
+                            if (mBluetoothAdapter == null) {
+                                Toast.makeText(rootView.getContext(), R.string.not_connected, Toast.LENGTH_LONG).show();
+                                showView(rootView, R.id.start_button, false);
+                            }
+
+                            // 根据设备地址连接设备
+                            device = mBluetoothAdapter.getRemoteDevice(address);
+                            if(DF5000Service == null) {
+                                DF5000Service = new DF5000Service(getContext(), mHandler);
+                            }
+
+                            DF5000Service.connect(device);
+                        }
+                    });
+                    df5000Dialog.show();
+                }
+
+
             }
         });
 
@@ -157,7 +227,15 @@ public class CollectDataLayout extends LinearLayout {
         startButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                open();
+                switch (currentDeviceType) {
+                    case Common.DF3000:
+                        collectData();
+                        break;
+                    case Common.DF5000:
+                        collectData(requestCmd);
+                        break;
+                }
+
                 startButton.setText(R.string.collecting);
                 startButton.setEnabled(false);
 
@@ -324,19 +402,19 @@ public class CollectDataLayout extends LinearLayout {
         }
     }
 
-    private void open() {
+    private void collectData() {
         if (sDriver == null) {
             Log.d(Common.TAG, "连接设备失败！！");
         }
         else {
-            checker = Checker.instance(sDriver);
+            DF3000Service = DF3000Service.instance(sDriver);
             new Thread() {
                 @Override
                 public void run() {
-                isOpen = checker.connection();
+                isOpen = DF3000Service.connection();
 
                 if (isOpen) {
-                    checker.measurement(new Checker.OnReceiveData() {
+                    DF3000Service.measurement(new DF3000Service.OnReceiveData() {
                         @Override
                         public void onReceiveData(final Measurement measurement) {
                             final String values = measurement.toValueString();
@@ -345,12 +423,15 @@ public class CollectDataLayout extends LinearLayout {
                                 @Override
                                 public void run() {
                                     if(measurement.getBlockId() <= 17) {
-                                        for(int[] n : overIdMap.keySet()) {
-                                            if(n[2] == measurement.getBlockId()) {
-                                                setEditViewText(rootView, n[0], values);
-                                              //  scrollView.smoothScrollTo(0, findViewById(n[0]).getBottom());
-                                            }
-                                        }
+
+                                        setEditViewText(rootView, overIds[measurement.getBlockId() - 1], values);
+
+//                                        for(int[] n : overIdMap.keySet()) {
+//                                            if(n[2] == measurement.getBlockId()) {
+//                                                setEditViewText(rootView, n[0], values);
+//                                              //  scrollView.smoothScrollTo(0, findViewById(n[0]).getBottom());
+//                                            }
+//                                        }
                                     } else {
                                         setEditViewText(rootView,
                                                 enhanceIdMap.keySet().toArray(new Integer[0])[measurement.getBlockId() - 18],
@@ -404,6 +485,159 @@ public class CollectDataLayout extends LinearLayout {
             getIssueItemsTask.execute();
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void setupBluetoothService() {
+        // 初始化BluetoothService
+        DF5000Service = new DF5000Service(rootView.getContext(), mHandler);
+    }
+
+    public void stopBluetoothService() {
+        df5000Dialog.dismiss();
+    }
+
+    // 是否已连接的标志符
+    private boolean isConnected;
+
+    // 线程句柄
+    private Thread t = null;
+
+    // 是否已经获取到序列号
+    private boolean hasSerial;
+
+    // 处理消息
+    private final Handler mHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                // 状态发生改变，比如失去连接
+                case Common.MESSAGE_STATE_CHANGE:
+
+                    Log.d(Common.TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+
+                    switch (msg.arg1) {
+                        // 已连接
+                        case com.df.app.service.DF5000Service.STATE_CONNECTED:
+                            showView(rootView, R.id.start_button, true);
+                            isConnected = true;
+                            break;
+                        // 正在连接
+                        case com.df.app.service.DF5000Service.STATE_CONNECTING:
+                            break;
+                        // 监听中
+                        case com.df.app.service.DF5000Service.STATE_LISTEN:
+                            break;
+                        // 待机
+                        case com.df.app.service.DF5000Service.STATE_NONE:
+                            break;
+                        // 失去连接
+                        case com.df.app.service.DF5000Service.STATE_CONNECTION_LOST:
+                            Toast.makeText(rootView.getContext(), R.string.lost_connection, Toast.LENGTH_LONG).show();
+                            showView(rootView, R.id.start_button, false);
+                            isConnected = false;
+                            // 关闭蓝牙
+                            DF5000Service.stop();
+                            break;
+                    }
+                    break;
+                // 写数据
+                case Common.MESSAGE_WRITE:
+                    break;
+                // 读数据
+                case Common.MESSAGE_READ:
+                    String array[] = (String[]) msg.obj;
+
+                    // 将接收的数据填入EditText
+                    if (!TextUtils.isEmpty(array[1]) && !TextUtils.isEmpty(array[0])) {
+                        int name = Integer.parseInt(array[0], 16);
+                        setEditViewText(rootView, overIds[name - 1], array[1]);
+                    }
+
+                    break;
+                // 数据读取完毕
+                case Common.MESSAGE_READ_OVER:
+                    AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
+                            .setTitle(R.string.alert)
+                            .setMessage(R.string.collect_finished)
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    getIssueItems();
+                                }
+                            })
+                            .setCancelable(false)
+                            .create();
+
+                    dialog.show();
+                    break;
+                // 获取设备名称
+                case Common.MESSAGE_DEVICE_NAME:
+                    // 保存设备的名称
+                    String mConnectedDeviceName = msg.getData().getString("device_name");
+                    Toast.makeText(rootView.getContext(), "已连接 " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+
+                    if (!isConnected) {
+                        if (t == null) {
+                            t = new Thread() {
+                                public void run() {
+                                    try {
+                                        sleep(700);
+                                        Message msg = Message.obtain();
+                                        msg.what = Common.MESSAGE_GET_SERIAL;
+                                        sendMessage(msg);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            };
+                            t.start();
+                        }
+                    }
+
+                    isConnected = true;
+                    break;
+                // 显示Toast信息
+                case Common.MESSAGE_TOAST:
+                    Toast.makeText(rootView.getContext(), msg.getData().getString("toast"), Toast.LENGTH_SHORT).show();
+
+                    hasRequestCmd = false;
+                    hasSerial = false;
+                    t = null;
+                    isConnected = false;
+
+                    showView(rootView, R.id.start_button, false);
+                    break;
+                // 获取序列号
+                case Common.MESSAGE_GET_SERIAL:
+                    if (!hasSerial) {
+                        collectData(Common.CMD_GET_SERIAL);
+                        hasSerial = true;
+                    }
+                    // 已经获取了序列号
+                    else {
+                        showView(rootView, R.id.start_button, true);
+                    }
+
+                    break;
+            }
+        }
+    };
+
+    private void collectData(String message) {
+        // 是否已经连接到设备
+        if (DF5000Service.getState() != DF5000Service.STATE_CONNECTED) {
+            Toast.makeText(rootView.getContext(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 发送数据
+        if (!TextUtils.isEmpty(message) && message.length() > 0) {
+            byte[] send = Helper.hexStr2Bytes(message);
+
+            // 向设备写数据
+            DF5000Service.write(send);
         }
     }
 
@@ -468,13 +702,25 @@ public class CollectDataLayout extends LinearLayout {
         // 设备信息
         JSONObject device = new JSONObject();
 
-        device.put("type", getSpinnerSelectedText(rootView, R.id.device_type));
+        device.put("type", getSpinnerSelectedText(rootView, R.id.device_type_spinner));
 
-        if(checker == null)
-        {
-            device.put("serial", "");
-        } else {
-            device.put("serial", checker.getSerialNumber());
+        switch (currentDeviceType) {
+            case Common.DF3000:
+                if(DF3000Service == null)
+                {
+                    device.put("serial", "");
+                } else {
+                    device.put("serial", DF3000Service.getSerialNumber());
+                }
+                break;
+            case Common.DF5000:
+                if(DF5000Service == null)
+                {
+                    device.put("serial", "");
+                } else {
+                    device.put("serial", CollectDataLayout.device.getName());
+                }
+                break;
         }
 
         data.put("overlap", overlap);
@@ -488,6 +734,9 @@ public class CollectDataLayout extends LinearLayout {
     public void fillInData(JSONObject data) {
 
     }
+
+
+
 
     // AccidentCheckLayout 必须实现此接口
     public interface OnGetIssueData {

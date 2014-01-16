@@ -17,8 +17,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.Issue;
+import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.IssueListAdapter;
 import com.df.app.util.Common;
 
@@ -26,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,7 +125,7 @@ public class IssueLayout extends LinearLayout {
                 JSONObject issueObject = jsonArray.getJSONObject(i);
 
                 Issue issue = new Issue(issueObject.getInt("issueId"),
-                        issueObject.getString("desc"), issueObject.getString("view"), "", "轻微", "是");
+                        issueObject.getString("desc"), issueObject.getString("view"), "", "", "是");
                 issueList.add(issue);
             }
 
@@ -223,8 +226,6 @@ public class IssueLayout extends LinearLayout {
             issueObject.put("summary", "");
             issueObject.put("serious", temp.getSerious());
             issueObject.put("view", temp.getView());
-
-            // TODO 这儿的Select，来自collectLayout, 不来自issue，要改！！！！！！！
             issueObject.put("select", temp.getSelect());
 
             issueItem.put(issueObject);
@@ -234,6 +235,44 @@ public class IssueLayout extends LinearLayout {
         issue.put("issueItem", issueItem);
 
         return issue;
+    }
+
+
+    public PhotoEntity generateSketch() {
+        Bitmap bitmap = null;
+
+        try {
+            bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+            FileOutputStream out = new FileOutputStream(Common.photoDirectory + "accident_sketch");
+            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            JSONObject photoJsonObject = new JSONObject();
+
+            photoJsonObject.put("width", bitmap.getWidth());
+            photoJsonObject.put("height", bitmap.getHeight());
+
+            jsonObject.put("Group", "accident");
+            jsonObject.put("Part", "sketch");
+            jsonObject.put("PhotoData", photoJsonObject);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+        } catch (JSONException e) {
+
+        }
+
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("accident_sketch");
+        photoEntity.setJsonString(jsonObject.toString());
+
+        return photoEntity;
     }
 
     // 进入检测车辆时填充的数据

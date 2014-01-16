@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
@@ -39,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.df.app.util.Helper.getEditViewText;
@@ -462,6 +464,49 @@ public class ExteriorLayout extends LinearLayout {
         exterior.put("needRepair", checkBox.isChecked() ? "是" : "否");
 
         return exterior;
+    }
+
+    public PhotoEntity generateSketch() {
+        Bitmap bitmap = null;
+        Canvas c;
+
+        try {
+            bitmap = Bitmap.createBitmap(exteriorPaintPreviewView.getWidth(),exteriorPaintPreviewView.getHeight(),
+                    Bitmap.Config.ARGB_8888);
+            c = new Canvas(bitmap);
+            exteriorPaintPreviewView.draw(c);
+
+            FileOutputStream out = new FileOutputStream(Common.photoDirectory + "exterior");
+            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 组织jsonString
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("Group", "exterior");
+            jsonObject.put("Part", "sketch");
+
+            JSONObject photoData = new JSONObject();
+            photoData.put("height", bitmap.getHeight());
+            photoData.put("width", bitmap.getWidth());
+
+            jsonObject.put("PhotoData", photoData);
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+        } catch (JSONException e) {
+
+        }
+
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("exterior");
+        photoEntity.setJsonString(jsonObject.toString());
+
+        return photoEntity;
     }
 
     public void fillInData(JSONObject exterior) {

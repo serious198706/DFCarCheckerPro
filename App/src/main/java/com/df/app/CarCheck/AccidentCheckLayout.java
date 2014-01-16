@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.df.app.R;
+import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.service.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
@@ -25,16 +26,12 @@ import java.util.List;
 /**
  * Created by 岩 on 13-12-20.
  */
-public class AccidentCheckLayout extends LinearLayout{
+public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPageChangeListener{
     private View rootView;
 
     private ViewPager viewPager;
-    private ImageView imageView;
     private TextView collectTab, issueTab, resultTab;
     private List<View> views;
-    private int offset =0;
-    private int currIndex = 0;
-    private int bmpW;
 
     private CollectDataLayout collectDataLayout;
     private IssueLayout issueLayout;
@@ -104,7 +101,7 @@ public class AccidentCheckLayout extends LinearLayout{
 
         viewPager.setAdapter(new MyViewPagerAdapter(views));
         viewPager.setCurrentItem(0);
-        viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
+        viewPager.setOnPageChangeListener(this);
     }
 
     private void InitTextView() {
@@ -120,25 +117,40 @@ public class AccidentCheckLayout extends LinearLayout{
         collectTab.setOnClickListener(new MyOnClick(viewPager, 0));
     }
 
+    public void updatePreviews() {
+        accidentResultLayout.updateUi();
+    }
 
-    class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
-    {
-        int one = offset * 2 + bmpW ;
+    public List<PhotoEntity> generateSketches() {
+        List<PhotoEntity> temp = new ArrayList<PhotoEntity>();
 
-        @Override
-        public void onPageScrollStateChanged(int arg0) {
+        temp.add(issueLayout.generateSketch());
+        temp.addAll(accidentResultLayout.generateSketches());
 
-        }
+        return temp;
+    }
 
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
+    public void setupBluetoothService() {
+        collectDataLayout.setupBluetoothService();
+    }
 
-        }
+    public void stopBluetoothService() {
+        collectDataLayout.stopBluetoothService();
+    }
 
-        @Override
-        public void onPageSelected(int arg0) {
-            selectTab(arg0);
-        }
+    @Override
+    public void onPageScrollStateChanged(int arg0) {
+
+    }
+
+    @Override
+    public void onPageScrolled(int arg0, float arg1, int arg2) {
+
+    }
+
+    @Override
+    public void onPageSelected(int arg0) {
+        selectTab(arg0);
     }
 
     private void selectTab(int currIndex) {

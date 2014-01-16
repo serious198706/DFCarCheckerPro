@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/white" >
+
+    <LinearLayout android:id="@+id/title"
+                  android:layout_width="match_parent"
+                  android:layout_height="40dp"
+                  android:background="#AA030A"
+                  android:orientation="vertical">
+
+        <TextView android:id="@+id/progressBarTitle"
+                  android:layout_width="wrap_content"
+                  android:layout_height="40dp"
+                  android:layout_marginLeft="10dp"
+                  android:textColor="#FFF"
+                  android:textSize="22sp"
+                  android:layout_gravity="left"
+                  android:gravity="center_vertical"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:indeterminate="true"
+            android:padding="8dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:id="@+id/title_paired_devices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:text="@string/paired_devices"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="5dp"
+                android:background="#AA030A"/>
+
+            <ListView
+                android:id="@+id/paired_devices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stackFromBottom="true" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:id="@+id/title_new_devices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:text="@string/scanned_devices"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="5dp"
+                android:background="#AA030A"/>
+
+            <ListView
+                android:id="@+id/new_devices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

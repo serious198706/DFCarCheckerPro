@@ -8,7 +8,6 @@ import com.df.app.R;
  * Created by 岩 on 13-12-18.
  */
 public class Common {
-
     public static String utilDirectory = Environment.getExternalStorageDirectory().getPath() +
             "/.cheyipaiPro/";
     public static String photoDirectory = Environment.getExternalStorageDirectory().getPath() +
@@ -84,6 +83,7 @@ public class Common {
     public static final int ENTER_EXTERIOR_PAINT = 0;
     public static final int ENTER_INTERIOR_PAINT = 1;
 
+    // 拍摄照片的request code
     public static final int PHOTO_FOR_EXTERIOR_STANDARD = 2;
     public static final int PHOTO_FOR_INTERIOR_STANDARD = 3;
     public static final int PHOTO_FOR_ACCIDENT_FRONT = 4;
@@ -99,4 +99,25 @@ public class Common {
     public static final int PHOTO_FOR_PROCEDURES_STANDARD = 14;
     public static final int PHOTO_FOR_ENGINE_STANDARD = 15;
     public static final int PHOTO_FOR_OTHER_STANDARD = 16;
+
+    // DF5000消息代码
+    // 为BluetoothService处理程序定义的消息类型
+    public static final int MESSAGE_STATE_CHANGE = 101;
+    public static final int MESSAGE_READ = 102;
+    public static final int MESSAGE_WRITE = 103;
+    public static final int MESSAGE_DEVICE_NAME = 104;
+    public static final int MESSAGE_TOAST = 105;
+    public static final int MESSAGE_READ_OVER = 106;
+    public static final int MESSAGE_GET_SERIAL = 107;
+
+    // 提供给系统蓝牙activity的标志值
+    public static final int REQUEST_CONNECT_DEVICE = 108;
+    public static final int REQUEST_ENABLE_BT = 109;
+
+    //
+    public static final String CMD_GET_SERIAL = "aa057f012e";
+
+    // 设备类型代码
+    public static final int DF3000 = 200;
+    public static final int DF5000 = 201;
 }

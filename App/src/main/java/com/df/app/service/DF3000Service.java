@@ -13,7 +13,7 @@ import com.df.app.filter.TransmitValueFilter;
 import com.df.app.service.Command.QNC_TRANSMITVALUES;
 import com.xinque.android.serial.driver.UsbSerialDriver;
 
-public class Checker {
+public class DF3000Service {
 	protected int MAX_DATABUF_LEN = 1024;
 	// 指令byte[] 数组的下标
 	protected final Object mReadBufferLock = new Object();
@@ -25,17 +25,17 @@ public class Checker {
 	private List<SerialNumber> serialNumbers;// 所有设备代码
 	private boolean isClosed = true;
 
-	private static Checker checker;
+	private static DF3000Service DF3000Service;
 
-	public static Checker instance(UsbSerialDriver sDriver) {
-		if (checker == null || Checker.sDriver == null) {
-			checker = new Checker(sDriver);
+	public static DF3000Service instance(UsbSerialDriver sDriver) {
+		if (DF3000Service == null || DF3000Service.sDriver == null) {
+			DF3000Service = new DF3000Service(sDriver);
 		}
-		return checker;
+		return DF3000Service;
 	}
 
-	private Checker(UsbSerialDriver sDriver) {
-		Checker.sDriver = sDriver;
+	private DF3000Service(UsbSerialDriver sDriver) {
+		DF3000Service.sDriver = sDriver;
 		serialNumbers = new ArrayList<SerialNumber>();
 	}
 
@@ -85,7 +85,7 @@ public class Checker {
 	private boolean GetQuaNixSN() {
 		boolean bRet = false;
 
-		byte bufRecive[] = new byte[MAX_DATABUF_LEN];
+		byte bufReceive[] = new byte[MAX_DATABUF_LEN];
 		int size = 0;
 		Command cmd = new Command.QNC_GETGAUGEINFO();
 		GaugeInfoFilter gaugeInfoFilter = new GaugeInfoFilter();
@@ -96,33 +96,28 @@ public class Checker {
 		
 		// 需多次获取
 		for (int iTry = 0; iTry < 5; iTry++) {
-			//Log.d(Common.TAG, "GetQuaNixSN " + (iTry + 1) + " times");
-			bufRecive = new byte[MAX_DATABUF_LEN];
-//			if (WriteData(cmd.getData(), 8)) {
-				try {
-					size = ReceiveData(bufRecive);
+			bufReceive = new byte[MAX_DATABUF_LEN];
 
-					// 等待
-					synchronized (mReadBufferLock) {
-						try {
-							mReadBufferLock.wait(300);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
+            try {
+                size = ReceiveData(bufReceive);
 
-					byte[] temp = new byte[size];
-					System.arraycopy(bufRecive, 0, temp, 0, size);
+                // 等待
+                synchronized (mReadBufferLock) {
+                    try {
+                        mReadBufferLock.wait(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-					gaugeInfoFilter.receive(temp);
+                byte[] temp = new byte[size];
+                System.arraycopy(bufReceive, 0, temp, 0, size);
 
-					final String message = "Read " + size + " bytes: \n" + Decoder.dumpHexString(temp) + "\n\n";
-					//Log.d("GetQuaNixSN", message);
+                gaugeInfoFilter.receive(temp);
 
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-//			}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 		}
 		serialNumbers = gaugeInfoFilter.getSerialNumbers();
 

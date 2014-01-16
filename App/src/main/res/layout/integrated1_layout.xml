@@ -718,6 +718,7 @@
                           android:layout_weight="1"
                           android:singleLine="true"
                           android:inputType="numberDecimal"
+                          android:text="0"
                           android:maxLength="10"
                           android:background="@drawable/edittext_border"
                           android:paddingLeft="10dp"/>

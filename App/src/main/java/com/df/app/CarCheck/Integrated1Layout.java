@@ -98,32 +98,6 @@ public class Integrated1Layout extends LinearLayout{
         }
 
         EditText AirConditioningTempEdit = (EditText) rootView.findViewById(R.id.airConditioningTemp_edit);
-
-        // 公里数只允许小数点后两位，并且小数点前只能有2位
-        AirConditioningTempEdit.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable edt) {
-                String temp = edt.toString();
-
-                if (temp.contains(".")) {
-                    int posDot = temp.indexOf(".");
-                    if (posDot <= 0) return;
-                    if (temp.length() - posDot - 1 > 2) {
-                        edt.delete(posDot + 3, posDot + 4);
-                    }
-                } else {
-                    if (temp.length() > 2) {
-                        edt.clear();
-                        edt.append(temp.substring(0, 2));
-                    }
-                }
-            }
-
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-            }
-
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-            }
-        });
     }
 
     private void showShadow(boolean show) {
@@ -263,7 +237,7 @@ public class Integrated1Layout extends LinearLayout{
             function.put("sunroof", getSpinnerSelectedText(rootView, R.id.sunroof_spinner));
         if(!getSpinnerSelectedText(rootView, R.id.airConditioning_spinner).equals("无")) {
             function.put("airConditioning", getSpinnerSelectedText(rootView, R.id.airConditioning_spinner));
-            function.put("airConditioningTemp", getEditViewText(rootView, R.id.airConditioningTemp_edit));
+            function.put("airConditioningTemp", Integer.parseInt(getEditViewText(rootView, R.id.airConditioningTemp_edit)));
         }
         if(!getSpinnerSelectedText(rootView, R.id.powerSeats_spinner).equals("无"))
             function.put("powerSeats", getSpinnerSelectedText(rootView, R.id.powerSeats_spinner));

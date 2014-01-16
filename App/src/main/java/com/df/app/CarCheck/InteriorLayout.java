@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
@@ -456,6 +457,51 @@ public class InteriorLayout extends LinearLayout {
 
         return interior;
     }
+
+
+    public PhotoEntity generateSketch() {
+        Bitmap bitmap = null;
+        Canvas c;
+
+        try {
+            bitmap = Bitmap.createBitmap(interiorPaintPreviewView.getWidth(),interiorPaintPreviewView.getHeight(),
+                    Bitmap.Config.ARGB_8888);
+            c = new Canvas(bitmap);
+            interiorPaintPreviewView.draw(c);
+
+            FileOutputStream out = new FileOutputStream(Common.photoDirectory + "interior");
+            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 组织jsonString
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("Group", "interior");
+            jsonObject.put("Part", "sketch");
+
+            JSONObject photoData = new JSONObject();
+            photoData.put("height", bitmap.getHeight());
+            photoData.put("width", bitmap.getWidth());
+
+            jsonObject.put("PhotoData", photoData);
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+        } catch (JSONException e) {
+
+        }
+
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("interior");
+        photoEntity.setJsonString(jsonObject.toString());
+
+        return photoEntity;
+    }
+
 
     public void fillInData(JSONObject interior) {
 

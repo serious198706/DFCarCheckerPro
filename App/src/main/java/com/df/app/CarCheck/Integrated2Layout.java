@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
@@ -33,6 +34,7 @@ import com.df.app.util.Helper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +56,7 @@ public class Integrated2Layout extends LinearLayout {
     // 正在拍摄的轮胎
     private String currentTire;
 
-    private int[] photoShotCount = {0, 0, 0, 0};
+    private int[] photoShotCount = {0, 0, 0, 0, 0};
 
     private int[] spinnerIds = {
             R.id.cigarLighter_spinner,
@@ -81,6 +83,27 @@ public class Integrated2Layout extends LinearLayout {
         tireMap.put("rightFront", 1);
         tireMap.put("leftRear", 2);
         tireMap.put("rightRear", 3);
+        tireMap.put("spare", 4);
+    }
+
+    private Button leftFrontButton;
+    private Button rightFrontButton;
+    private Button leftRearButton;
+    private Button rightRearButton;
+    private Button spareButton;
+
+    public enum PaintType {
+        leftFront, rightFront, leftRear, rightRear, spare, NOVALUE;
+
+        public static PaintType paintType(String str)
+        {
+            try {
+                return valueOf(str);
+            }
+            catch (Exception ex) {
+                return NOVALUE;
+            }
+        }
     }
 
     private Map<String, PhotoEntity> photoEntityMap;
@@ -131,6 +154,7 @@ public class Integrated2Layout extends LinearLayout {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 findViewById(R.id.spare_edit).setVisibility(i == 0 ? View.VISIBLE : View.INVISIBLE);
+                findViewById(R.id.spare_button).setVisibility(i == 0 ? View.VISIBLE : View.INVISIBLE);
             }
 
             @Override
@@ -139,7 +163,7 @@ public class Integrated2Layout extends LinearLayout {
             }
         });
 
-        Button leftFrontButton = (Button)findViewById(R.id.leftFront_button);
+        leftFrontButton = (Button)findViewById(R.id.leftFront_button);
         leftFrontButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,7 +172,7 @@ public class Integrated2Layout extends LinearLayout {
             }
         });
 
-        Button rightFrontButton = (Button)findViewById(R.id.rightFront_button);
+        rightFrontButton = (Button)findViewById(R.id.rightFront_button);
         rightFrontButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -157,7 +181,7 @@ public class Integrated2Layout extends LinearLayout {
             }
         });
 
-        Button leftRearButton = (Button)findViewById(R.id.leftRear_button);
+        leftRearButton = (Button)findViewById(R.id.leftRear_button);
         leftRearButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -166,12 +190,21 @@ public class Integrated2Layout extends LinearLayout {
             }
         });
 
-        Button rightRearButton = (Button)findViewById(R.id.rightRear_button);
+        rightRearButton = (Button)findViewById(R.id.rightRear_button);
         rightRearButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 currentTire = "rightRear";
                 takePhotoForTires("右后");
+            }
+        });
+
+        spareButton = (Button)findViewById(R.id.spare_button);
+        spareButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentTire = "spare";
+                takePhotoForTires("备胎");
             }
         });
     }
@@ -248,8 +281,34 @@ public class Integrated2Layout extends LinearLayout {
         try {
             JSONObject photoJsonObject = new JSONObject();
 
+            Button button;
+            switch(PaintType.paintType(currentTire)) {
+                case leftFront:
+                    button = leftFrontButton;
+                    break;
+                case rightFront:
+                    button = rightFrontButton;
+                    break;
+                case leftRear:
+                    button = leftRearButton;
+                    break;
+                case rightRear:
+                    button = rightRearButton;
+                    break;
+                case spare:
+                    button = spareButton;
+                    break;
+                default:
+                    button = null;
+                    break;
+            }
+
+            photoJsonObject.put("x", button.getX());
+            photoJsonObject.put("y", button.getY());
+
             jsonObject.put("Group", "tire");
             jsonObject.put("Part", currentTire);
+            jsonObject.put("PhotoData", photoJsonObject);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
@@ -341,6 +400,46 @@ public class Integrated2Layout extends LinearLayout {
     public String generateCommentString() {
         return getEditViewText(rootView, R.id.it2_comment_edit);
     }
+
+    public PhotoEntity generateSketch() {
+        ImageView imageView = (ImageView)findViewById(R.id.tire_image);
+
+        Bitmap bitmap = null;
+
+        try {
+            bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+            FileOutputStream out = new FileOutputStream(Common.photoDirectory + "tire_sketch");
+            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            JSONObject photoJsonObject = new JSONObject();
+
+            photoJsonObject.put("width", bitmap.getWidth());
+            photoJsonObject.put("height", bitmap.getHeight());
+
+            jsonObject.put("Group", "tire");
+            jsonObject.put("Part", "sketch");
+            jsonObject.put("PhotoData", photoJsonObject);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+        } catch (JSONException e) {
+
+        }
+
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("tire_sketch");
+        photoEntity.setJsonString(jsonObject.toString());
+
+        return photoEntity;
+    }
+
 
     public void fillInData(JSONObject flooded, JSONObject tires, String comment2) {
 

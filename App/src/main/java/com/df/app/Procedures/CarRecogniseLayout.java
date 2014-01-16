@@ -1,5 +1,6 @@
 package com.df.app.Procedures;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,13 +8,16 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +45,7 @@ import static com.df.app.util.Helper.enableView;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.isVin;
 import static com.df.app.util.Helper.setEditViewText;
+import static com.df.app.util.Helper.setTextView;
 import static com.df.app.util.Helper.showView;
 
 /**
@@ -153,12 +158,63 @@ public class CarRecogniseLayout extends LinearLayout {
         plateNumberEdit = (EditText) rootView.findViewById(R.id.plateNumber_edit);
         licenceModelEdit = (EditText) rootView.findViewById(R.id.licenseModel_edit);
         vehicleTypeEdit = (EditText) rootView.findViewById(R.id.vehicleType_edit);
+        vehicleTypeEdit.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_UP:
+                            choose(R.array.vehicleType_items, R.id.vehicleType_edit);
+                            break;
+                    }
+                return false;
+            }
+        });
+
         useCharacterEdit = (EditText) rootView.findViewById(R.id.useCharacter_edit);
+        useCharacterEdit.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_UP:
+                        choose(R.array.useCharacter_items, R.id.useCharacter_edit);
+                        break;
+                }
+                return false;
+            }
+        });
+
         engineSerailEdit = (EditText) rootView.findViewById(R.id.engineSerial_edit);
         brandEdit = (EditText) rootView.findViewById(R.id.brand_edit);
 
         vehicleModel = MainActivity.vehicleModel;
     }
+
+    private void choose(final int arrayId, final int editViewId) {
+        View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(view1)
+                .create();
+
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        final ListView listView = new ListView(view1.getContext());
+        listView.setAdapter(new ArrayAdapter<String>(view1.getContext(), android.R.layout.simple_list_item_1,
+                view1.getResources().getStringArray(arrayId)));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                dialog.dismiss();
+                String temp = (String)listView.getItemAtPosition(i);
+                setEditViewText(rootView, editViewId, temp);
+            }
+        });
+        contentArea.addView(listView);
+
+        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+        dialog.show();
+    }
+
 
     // 检查VIN并获取车辆配置
     private void checkVinAndGetCarSettings() {

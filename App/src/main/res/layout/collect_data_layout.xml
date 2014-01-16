@@ -28,8 +28,7 @@
                    android:layout_height="match_parent"
                    android:layout_marginTop="5dp"
                    android:scaleType="centerCrop"
-                   android:adjustViewBounds="true"
-                   android:src="@drawable/l"/>
+                   android:adjustViewBounds="true"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -99,7 +98,7 @@
                 android:textColor="#555"
                 android:textStyle="bold"
                 android:text="@string/device_type"/>
-            <Spinner android:id="@+id/device_type"
+            <Spinner android:id="@+id/device_type_spinner"
                      android:layout_width="0dp"
                      android:layout_height="40dp"
                      android:layout_weight="2"

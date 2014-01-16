@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.PhotoEntity;
 import com.df.app.service.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
 import com.df.app.service.SoapService;
@@ -149,6 +150,16 @@ public class IntegratedCheckLayout extends LinearLayout {
 
     public String getCooperatorName() {
         return integrated3Layout.getCooperatorName();
+    }
+
+    public List<PhotoEntity> generateSketches() {
+        List<PhotoEntity> temp = new ArrayList<PhotoEntity>();
+
+        temp.add(exteriorLayout.generateSketch());
+        temp.add(interiorLayout.generateSketch());
+        temp.add(integrated2Layout.generateSketch());
+
+        return temp;
     }
 
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener

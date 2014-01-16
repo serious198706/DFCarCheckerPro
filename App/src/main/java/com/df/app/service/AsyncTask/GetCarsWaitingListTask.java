@@ -74,6 +74,8 @@ public class GetCarsWaitingListTask extends AsyncTask<Void, Void, Boolean> {
         } catch (JSONException e) {
             Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
             return false;
+        } catch (NullPointerException e) {
+            return false;
         }
 
         return success;

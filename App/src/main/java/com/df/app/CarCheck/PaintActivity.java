@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
@@ -31,7 +33,6 @@ import com.df.app.util.Helper;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -48,12 +49,6 @@ public class PaintActivity extends Activity {
 
     // 绘图类的父类
     PaintView paintView;
-
-    // 当用户退出时，进行的选择
-    boolean choise = false;
-
-    // 标志是否修改过
-    boolean modified = false;
 
     public enum PaintType {
         FRAME_PAINT, EX_PAINT, IN_PAINT, NOVALUE;
@@ -78,19 +73,27 @@ public class PaintActivity extends Activity {
         int figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
         Bitmap bitmap = getBitmapFromFigure(figure, "IN");
 
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight());
+        layoutParams.gravity = Gravity.CENTER;
+
         // 初始化绘图View
         interiorPaintView = (InteriorPaintView) findViewById(R.id.interior_paint_view);
         interiorPaintView.init(bitmap, InteriorLayout.posEntities);
         interiorPaintView.setType(Common.DIRTY);
+        interiorPaintView.setLayoutParams(layoutParams);
 
         // 根据CarSettings的figure设定图片
         figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
         bitmap = getBitmapFromFigure(figure, "EX");
 
+        layoutParams = new LinearLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight());
+        layoutParams.gravity = Gravity.CENTER;
+
         // 初始化绘图View
         exteriorPaintView = (ExteriorPaintView) findViewById(R.id.exterior_paint_view);
         exteriorPaintView.init(bitmap, ExteriorLayout.posEntities);
         exteriorPaintView.setType(Common.COLOR_DIFF);
+        exteriorPaintView.setLayoutParams(layoutParams);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -107,9 +110,6 @@ public class PaintActivity extends Activity {
                     break;
             }
         }
-
-
-        //sketchPhotoEntities = CarCheckBasicInfoFragment.sketchPhotoEntities;
 
         map.put("EX_PAINT", exteriorPaintView);
         map.put("IN_PAINT", interiorPaintView);
@@ -152,6 +152,7 @@ public class PaintActivity extends Activity {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                notifyPhotoList();
                 finish();
             }
         });
@@ -247,17 +248,16 @@ public class PaintActivity extends Activity {
         radioGroup.addView(scrapeRadio, 3);
         radioGroup.addView(otherRadio, 4);
         radioGroup.setOrientation(LinearLayout.HORIZONTAL);
-        radioGroup.setLayoutParams(new RadioGroup.LayoutParams(ViewGroup.LayoutParams
-                .MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         radioGroup.check(colorDiffRadio.getId());
 
-        LinearLayout paintMenu = new LinearLayout(this);
-        paintMenu.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams
-                .MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        // 设置绘图类型按钮居中
+        RadioGroup.LayoutParams layoutParams = new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT,
+                RadioGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+        radioGroup.setLayoutParams(layoutParams);
+        
+        LinearLayout paintMenu = (LinearLayout) findViewById(R.id.paintType);
         paintMenu.addView(radioGroup);
-
-        LinearLayout root = (LinearLayout) findViewById(R.id.root);
-        root.addView(paintMenu);
     }
 
     // 设置为内饰图布局
@@ -293,51 +293,16 @@ public class PaintActivity extends Activity {
         radioGroup.setOrientation(LinearLayout.HORIZONTAL);
         radioGroup.check(dirtyRadio.getId());
 
-        LinearLayout paintMenu = new LinearLayout(this);
-        paintMenu.setLayoutParams(new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-        paintMenu.addView(radioGroup);
+        // 设置绘图类型按钮居中
+        RadioGroup.LayoutParams layoutParams = new RadioGroup.LayoutParams(RadioGroup.LayoutParams.MATCH_PARENT,
+                RadioGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+        radioGroup.setLayoutParams(layoutParams);
 
-        LinearLayout root = (LinearLayout) findViewById(R.id.root);
-        root.addView(paintMenu);
+        LinearLayout paintMenu = (LinearLayout) findViewById(R.id.paintType);
+        paintMenu.addView(radioGroup);
     }
 
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        paintView = (PaintView)map.get(currentPaintView);
-//
-//        switch (item.getItemId()) {
-//            case android.R.id.home:
-//                // 用户确认返回上一层
-//                alertUser(R.string.out_cancel_confirm);
-//                return true;
-//            case R.id.action_done:
-//                // 提交数据
-//                captureResultImage();
-//                break;
-//            case R.id.action_cancel:
-//                // 用户确认放弃更改
-//                alertUser(R.string.out_cancel_confirm);
-//                break;
-//            case R.id.action_clear:
-//                // 用户确认清除数据
-//                alertUser(R.string.out_clear_confirm);
-//                modified = true;
-//                break;
-//            case R.id.action_undo:
-//                // 回退
-//                paintView.undo();
-//                modified = true;
-//                break;
-//            case R.id.action_redo:
-//                // 重做
-//                paintView.redo();
-//                modified = true;
-//                break;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 
     // 提醒用户
     private void alertUser(final int msgId) {
@@ -388,7 +353,7 @@ public class PaintActivity extends Activity {
                     paintView.getPosEntity().setImageFileName("");
 
                     // 生成PhotoEntity
-                    generatePhotoEntityAndNotifyPhotoList();
+                    addPhotoToList();
                 }
 
                 break;
@@ -397,8 +362,8 @@ public class PaintActivity extends Activity {
                 Bundle bundle = data.getExtras();
                 posEntity.setComment(bundle.getString("COMMENT"));
 
-                // 再生成PhotoEntity
-                generatePhotoEntityAndNotifyPhotoList();
+                // 再生成PhotoEntity，并添加到列表
+                addPhotoToList();
                 break;
             default:
                 Log.d("DFCarChecker", "拍摄故障！！");
@@ -406,10 +371,18 @@ public class PaintActivity extends Activity {
         }
     }
 
-    private void generatePhotoEntityAndNotifyPhotoList() {
+    private void addPhotoToList() {
         PhotoEntity photoEntity = generatePhotoEntity(paintView.getPosEntity());
 
-        PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+        paintView.getPhotoEntities().add(photoEntity);
+    }
+
+    // 通知照片列表，有照片更新
+    private void notifyPhotoList() {
+        for(PhotoEntity photoEntity : paintView.getPhotoEntities()) {
+            PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+        }
+
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }
 

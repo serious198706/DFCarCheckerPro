@@ -25,7 +25,7 @@ import java.util.UUID;
 /**
  * Created by 岩 on 13-12-20.
  */
-public class BasicInfoLayout extends LinearLayout {
+public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageChangeListener{
     private View rootView;
 
     private ViewPager viewPager;
@@ -81,7 +81,7 @@ public class BasicInfoLayout extends LinearLayout {
                     viewPager.setAdapter(new MyViewPagerAdapter(views));
                 }
 
-                // 更新外观、内饰
+                // 更新结构、外观、内饰
                 mUpdateUiCallback.updateUi();
 
                 // 更新配置信息页面
@@ -101,7 +101,7 @@ public class BasicInfoLayout extends LinearLayout {
 
         viewPager.setAdapter(new MyViewPagerAdapter(views));
         viewPager.setCurrentItem(0);
-        viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
+        viewPager.setOnPageChangeListener(this);
     }
 
     private void InitTextView() {
@@ -114,22 +114,19 @@ public class BasicInfoLayout extends LinearLayout {
         vehicleInfoTab.setOnClickListener(new MyOnClick(viewPager, 0));
     }
 
-    class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
-    {
-        @Override
-        public void onPageScrollStateChanged(int arg0) {
+    @Override
+    public void onPageScrollStateChanged(int arg0) {
 
-        }
+    }
 
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
+    @Override
+    public void onPageScrolled(int arg0, float arg1, int arg2) {
 
-        }
+    }
 
-        @Override
-        public void onPageSelected(int arg0) {
-            selectTab(arg0);
-        }
+    @Override
+    public void onPageSelected(int arg0) {
+        selectTab(arg0);
     }
 
     private void selectTab(int currIndex) {

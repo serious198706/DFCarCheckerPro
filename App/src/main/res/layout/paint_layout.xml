@@ -1,28 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical"
               android:id="@+id/root">
 
-    <include layout="@layout/paint_menu"/>
+    <RelativeLayout android:id="@+id/naviBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+        <ImageView android:id="@+id/banner"
+                   android:layout_width="match_parent"
+                   android:layout_height="52dp"
+                   android:background="#AA030A"/>
+
+        <TextView android:id="@+id/currentItem"
+                  android:layout_width="wrap_content"
+                  android:layout_height="36dp"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginTop="6dp"
+                  android:textColor="#FFF"
+                  android:textSize="28sp"/>
+
+        <Button android:id="@+id/done"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/commit"/>
+        <Button android:id="@+id/cancel"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="8dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/cancel"
+                android:layout_toLeftOf="@id/done"/>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/titleLy"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:layout_below="@id/naviBar">
 
         <com.df.app.paintview.ExteriorPaintView
             android:id="@+id/exterior_paint_view"
             android:layout_width="500dp"
-            android:layout_height="703dp" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
 
         <com.df.app.paintview.InteriorPaintView
             android:id="@+id/interior_paint_view"
             android:layout_width="500dp"
-            android:layout_height="691dp" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
 
+        <LinearLayout android:id="@+id/paintType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp">
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp">
+            <include layout="@layout/paint_menu"/>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

@@ -69,17 +69,8 @@ public class OptionsLayout extends LinearLayout {
         setTextView(rootView, R.id.brandText, "车辆型号：" +
             VehicleInfoLayout.brandEdit.getText().toString());
 
-//        // 改动“车体结构检查”里显示的图片
-//        if(!mCarSettings.getFigure().equals(""))
-//            CarCheckFrameFragment.setFigureImage(Integer.parseInt(mCarSettings.getFigure()));
-
         // 改动“综合检查”里的档位类型选项
         Integrated1Layout.setGearType(mCarSettings.getTransmissionText());
-
-//        // 修改模式时，要手动填写牌照号码
-//        if(!jsonData.equals("")) {
-//            mShowContentCallback.onUpdateIntegratedUi();
-//        }
     }
 
     // 设置配置信息中的Spinner，并与综合检查中的Spinner产生联动

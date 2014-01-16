@@ -61,15 +61,11 @@ public class AddPhotoCommentActivity extends Activity {
     }
 
     private void saveResult() {
-        if(getEditViewText(getWindow().getDecorView(), R.id.comment).trim().equals("")) {
-            Toast.makeText(this, "备注内容不能为空！", Toast.LENGTH_LONG).show();
-        } else {
-            String commentString = getEditViewText(getWindow().getDecorView(), R.id.comment).trim();
+        String commentString = getEditViewText(getWindow().getDecorView(), R.id.comment).trim();
 
-            Intent intent = new Intent();
-            intent.putExtra("COMMENT", commentString);
-            setResult(Activity.RESULT_OK, intent);
-            finish();
-        }
+        Intent intent = new Intent();
+        intent.putExtra("COMMENT", commentString);
+        setResult(Activity.RESULT_OK, intent);
+        finish();
     }
 }

@@ -120,6 +120,8 @@ public class CarCheckActivity extends Activity {
                 integratedButton.setEnabled(true);
                 integratedCheckLayout.updateUi();
                 photoButton.setEnabled(true);
+
+                accidentCheckLayout.updatePreviews();
             }
         });
 
@@ -354,17 +356,35 @@ public class CarCheckActivity extends Activity {
             case Common.ADD_COMMENT_FOR_INTERIOR_PHOTO:
                 break;
             case Common.PHOTO_FOR_TIRES:
-                integratedCheckLayout.saveTirePhoto();
+                if(resultCode == Activity.RESULT_OK) {
+                    integratedCheckLayout.saveTirePhoto();
+                }
                 break;
             case Common.PHOTO_FOR_PROCEDURES_STANDARD:
-                photoLayout.saveProceduresStandardPhoto();
+                if(resultCode == Activity.RESULT_OK) {
+                    photoLayout.saveProceduresStandardPhoto();
+                }
                 break;
             case Common.PHOTO_FOR_ENGINE_STANDARD:
-                photoLayout.saveEngineStandardPhoto();
+                if(resultCode == Activity.RESULT_OK) {
+                    photoLayout.saveEngineStandardPhoto();
+                }
                 break;
             case Common.PHOTO_FOR_OTHER_STANDARD:
-                photoLayout.saveOtherStandardPhoto();
+                if(resultCode == Activity.RESULT_OK) {
+                    photoLayout.saveOtherStandardPhoto();
+                }
                 break;
+            case Common.REQUEST_ENABLE_BT:
+                // 如果允许打开蓝牙
+                if (resultCode == Activity.RESULT_OK) {
+                    accidentCheckLayout.setupBluetoothService();
+                }
+                // 不允许打开蓝牙（真是有病。。）
+                else {
+                    Toast.makeText(CarCheckActivity.this, R.string.need_bluetooth, Toast.LENGTH_SHORT).show();
+                    accidentCheckLayout.stopBluetoothService();
+                }
         }
     }
 
@@ -389,6 +409,19 @@ public class CarCheckActivity extends Activity {
 
         // 其他组
         photoEntities.addAll(PhotoOtherLayout.photoListAdapter.getItems());
+
+        // 所有草图
+        // 事故3张，外观1张，内饰1张，轮胎1张，共6张
+        photoEntities.addAll(generateSketches());
+    }
+
+    private List<PhotoEntity> generateSketches() {
+        List<PhotoEntity> temp = new ArrayList<PhotoEntity>();
+
+        temp.addAll(accidentCheckLayout.generateSketches());
+        temp.addAll(integratedCheckLayout.generateSketches());
+
+        return temp;
     }
 
     private void generateJsonString() {

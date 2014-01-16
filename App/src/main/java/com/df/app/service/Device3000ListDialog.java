@@ -33,10 +33,7 @@ import java.util.List;
 /**
  * Created by 岩 on 14-1-6.
  */
-public class DeviceListDialog extends Dialog {
-
-    private OnMyDialogResult mDialogResult;
-
+public class Device3000ListDialog extends Dialog {
     private static class DeviceEntry {
         public UsbDevice device;
         public UsbSerialDriver driver;
@@ -48,7 +45,8 @@ public class DeviceListDialog extends Dialog {
     }
 
     private static UsbSerialDriver sDriver;
-    private static Context context;
+    private Context context;
+    private OnSelectDeviceFinished mCallback;
 
     private UsbManager mUsbManager;
     private ListView mDeviceListView;
@@ -59,7 +57,7 @@ public class DeviceListDialog extends Dialog {
     private static final int MESSAGE_REFRESH = 101;
     private final static int SEARCH = 102;
     private static final long REFRESH_TIMEOUT_MILLIS = 5000;
-    private Checker checker;
+    private DF3000Service DF3000Service;
 
     private List<DeviceEntry> mEntries = new ArrayList<DeviceEntry>();
     private List<SerialNumber> mSerialNumbers = new ArrayList<SerialNumber>();
@@ -77,7 +75,7 @@ public class DeviceListDialog extends Dialog {
                     break;
                 case SEARCH:
                     mSerialNumbers.clear();
-                    mSerialNumbers.addAll(checker.getSerialNumbers());
+                    mSerialNumbers.addAll(DF3000Service.getSerialNumbers());
                     mSerialNumberAdapter.notifyDataSetChanged();
 
                     mProgressBarTitle.setText(String.format("找到  %d 台检测设备",
@@ -104,16 +102,18 @@ public class DeviceListDialog extends Dialog {
         mHandler.removeMessages(MESSAGE_REFRESH);
     }
 
-    public DeviceListDialog(Context context) {
+    public Device3000ListDialog(Context context, OnSelectDeviceFinished listener) {
         super(context);
 
-        DeviceListDialog.context = context;
+        this.context = context;
+        this.mCallback = listener;
+
         init();
     }
 
     private void init() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.device_list);
+        setContentView(R.layout.df3000_device_list);
 
         mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
         mDeviceListView = (ListView) findViewById(R.id.deviceList);
@@ -264,8 +264,8 @@ public class DeviceListDialog extends Dialog {
         mGaugeListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                checker.selectSerial(position);
-                mDialogResult.onMyDialogResult(sDriver);
+                DF3000Service.selectSerial(position);
+                mCallback.onFinished(sDriver);
                 dismiss();
             }
         });
@@ -278,21 +278,17 @@ public class DeviceListDialog extends Dialog {
             return;
         }
 
-        checker = Checker.instance(sDriver);
+        DF3000Service = DF3000Service.instance(sDriver);
         new Thread() {
             @Override
             public void run() {
-                checker.search();
+                DF3000Service.search();
                 mHandler.sendEmptyMessage(SEARCH);
             }
         }.start();
     }
 
-    public interface OnMyDialogResult {
-        public void onMyDialogResult(UsbSerialDriver sDriver);
-    }
-
-    public void setDialogResult(OnMyDialogResult dialogResult){
-        mDialogResult = dialogResult;
+    public interface OnSelectDeviceFinished {
+        public void onFinished(UsbSerialDriver sDriver);
     }
 }

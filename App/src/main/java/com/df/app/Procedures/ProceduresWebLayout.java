@@ -1,5 +1,6 @@
 package com.df.app.Procedures;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -39,30 +40,30 @@ public class ProceduresWebLayout extends LinearLayout {
         super(context, attrs, defStyle);
     }
 
+    @JavascriptInterface
+    @SuppressLint("SetJavaScriptEnabled")
     private void init(Context context) {
         this.context = context;
 
         rootView = LayoutInflater.from(context).inflate(R.layout.procedures_web_layout, this);
 
-        Button button = new Button(context);
-
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            @JavascriptInterface
-            public void onClick(View view) {
-                Toast.makeText(rootView.getContext(), "clicked!", Toast.LENGTH_LONG).show();
-            }
-        });
-
         WebView proceduresWeb = (WebView)findViewById(R.id.proceduresWeb);
         proceduresWeb.loadUrl("http://192.168.8.200:9901/Function/CarDetection/index.html");
         proceduresWeb.setWebViewClient(new WebViewClient());
-        proceduresWeb.addJavascriptInterface(new WebAppInterface(rootView.getContext()), "clicked!");
+        proceduresWeb.getSettings().setJavaScriptEnabled(true);
+        proceduresWeb.addJavascriptInterface(this, "android");
         proceduresWeb.setInitialScale(getScale());
+    }
 
-        WebSettings webSettings = proceduresWeb.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-//        proceduresWeb.addJavascriptInterface(button, "button");
+    @JavascriptInterface
+    public void commit() {
+        Toast.makeText(rootView.getContext(), "提交成功！", Toast.LENGTH_SHORT).show();
+        ((Activity)getContext()).finish();
+    }
+
+    @JavascriptInterface
+    public void commit(final String result) {
+        Toast.makeText(rootView.getContext(), result, Toast.LENGTH_SHORT).show();
     }
 
     private int getScale(){

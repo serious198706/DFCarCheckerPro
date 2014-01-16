@@ -17,6 +17,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.crypto.BadPaddingException;
@@ -286,5 +288,71 @@ public class Helper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static String hexString = "0123456789ABCDEF";
+
+    /*
+     *  将字符串编码成16进制数字,适用于所有字符（包括中文）
+     */
+    public static String encode(String str) {
+        // 根据默认编码获取字节数组
+        byte[] bytes = str.getBytes();
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        // 将字节数组中每个字节拆解成2位16进制整数
+        for (int i = 0; i < bytes.length; i++) {
+            sb.append(hexString.charAt((bytes[i] & 0xf0) >> 4));
+            sb.append(hexString.charAt((bytes[i] & 0x0f) >> 0) + " ");
+        }
+
+        return sb.toString();
+    }
+
+    /*
+     *  将16进制数字解码成字符串,适用于所有字符（包括中文）
+     */
+    public static String decode(String bytes) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(
+                bytes.length() / 2);
+        // 将每2位16进制整数组装成一个字节
+        for (int i = 0; i < bytes.length(); i += 2)
+            baos.write((hexString.indexOf(bytes.charAt(i)) << 4 | hexString
+                    .indexOf(bytes.charAt(i + 1))));
+        return new String(baos.toByteArray());
+
+    }
+
+    /*
+     *  将byte转换成int，然后利用Integer.toHexString(int)来转换成16进制字符串
+     */
+    public static byte[] hexStr2Bytes(String paramString) {
+        String str = paramString.trim().replace(" ", "").toUpperCase(Locale.US);
+        int i = str.length() / 2;
+        byte[] arrayOfByte = new byte[i];
+        for (int j = 0;; ++j) {
+            if (j >= i)
+                return arrayOfByte;
+            int k = 1 + j * 2;
+            int l = k + 1;
+            arrayOfByte[j] = (byte) (0xFF & Integer.decode(
+                    "0x" + str.substring(j * 2, k) + str.substring(k, l))
+                    .intValue());
+        }
+    }
+
+    /*
+     *  把字节数组转换成16进制字符串
+     */
+    public static final String bytesToHexString(byte[] bArray, int count) {
+        StringBuffer sb = new StringBuffer(bArray.length);
+
+        String sTemp;
+        for (int i = 0; i < count; i++) {
+            sTemp = Integer.toHexString(0xFF & bArray[i]);
+            if (sTemp.length() < 2)
+                sb.append(0);
+            sb.append(sTemp.toUpperCase());
+        }
+        return sb.toString();
     }
 }
