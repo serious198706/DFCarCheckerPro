@@ -3,37 +3,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_height="200dp">
+              android:layout_height="160dp">
     <ImageView android:id="@+id/photo"
-        android:layout_margin="25dp"
-        android:layout_width="150dp"
-        android:layout_height="150dp"/>
+        android:layout_margin="10dp"
+        android:layout_width="120dp"
+        android:layout_height="160dp"
+        android:background="#EEE"
+        android:padding="2dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="25dp">
+        android:layout_margin="15dp">
 
         <TextView android:id="@+id/photo_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="外观组 - 前45度"/>
-        <TextView
+            android:text="外观组 - 前45度"
+            android:textSize="22sp"
+            android:textColor="#555"
+            android:textStyle="bold"/>
+        <TextView android:id="@+id/comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/photo_name"
             android:layout_marginTop="10dp"
-            android:text="备注："/>
+            android:text="备注："
+            android:textSize="22sp"
+            android:textColor="#555"
+            android:textStyle="bold"/>
         <EditText android:id="@+id/photo_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:lines="5"/>
+            android:layout_below="@id/comment"
+            android:layout_marginTop="10dp"
+            android:inputType="textMultiLine"
+            android:minHeight="95dp"
+            android:background="@drawable/edittext_border"
+            android:paddingLeft="10dp"/>
 
         <Button android:id="@+id/reTake"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:background="@drawable/button_custom"
-            android:drawableLeft="@drawable/camera"/>
+            android:background="@drawable/camera1"/>
     </RelativeLayout>
 </LinearLayout>

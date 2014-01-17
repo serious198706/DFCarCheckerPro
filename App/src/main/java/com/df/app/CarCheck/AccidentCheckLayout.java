@@ -25,6 +25,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 事故排查页面，包含数据采集、问题查勘、查勘结果三个子页面
  */
 public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPageChangeListener{
     private View rootView;
@@ -59,11 +61,14 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.accident_check_layout, this);
 
+        // 采集数据页面
         collectDataLayout = new CollectDataLayout(context, new CollectDataLayout.OnGetIssueData() {
             @Override
             public void showContent() {
-                // 当VIN确定后，出现另外两个页面
-                if(!loaded) {
+                // 当确定车辆配置后，出现另外两个页面
+                // 但车辆配置可能会更新，这时就不需要再次添加了
+                if (!loaded) {
+
                     views.add(issueLayout);
                     views.add(accidentResultLayout);
 
@@ -86,13 +91,19 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
             }
         });
 
+        // 问题查勘页面
         issueLayout = new IssueLayout(context);
+
+        // 查勘结果页面
         accidentResultLayout = new AccidentResultLayout(context);
 
         InitViewPager(context);
         InitTextView();
     }
 
+    /**
+     * 初始化viewPager，用来承载各个模块，可以通过滑动切换
+     */
     private void InitViewPager(Context context) {
         viewPager = (ViewPager) rootView.findViewById(R.id.vPager);
         views = new ArrayList<View>();
@@ -104,6 +115,9 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         viewPager.setOnPageChangeListener(this);
     }
 
+    /**
+     * 初始化标签，用来标识当前模块，可以点击
+     */
     private void InitTextView() {
         collectTab = (TextView) rootView.findViewById(R.id.collect);
         issueTab = (TextView) rootView.findViewById(R.id.issue);
@@ -117,10 +131,16 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         collectTab.setOnClickListener(new MyOnClick(viewPager, 0));
     }
 
+    /**
+     * 更新勘查结果的两张图片（前后视角）
+     */
     public void updatePreviews() {
         accidentResultLayout.updateUi();
     }
 
+    /**
+     * 生成草图（问题查勘x1，查勘结果x2）
+     */
     public List<PhotoEntity> generateSketches() {
         List<PhotoEntity> temp = new ArrayList<PhotoEntity>();
 
@@ -130,6 +150,9 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         return temp;
     }
 
+    /**
+     * 当确定蓝牙设备后，更新蓝牙连接信息
+     */
     public void setupBluetoothService() {
         collectDataLayout.setupBluetoothService();
     }
@@ -137,6 +160,7 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
     public void stopBluetoothService() {
         collectDataLayout.stopBluetoothService();
     }
+
 
     @Override
     public void onPageScrollStateChanged(int arg0) {
@@ -159,14 +183,25 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         resultTab.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
     }
 
+    /**
+     * 获取事故的最后一张图片
+     * 参数：flag 视角
+     */
     public PosEntity getPosEntity(int flag) {
         return accidentResultLayout.getPosEntity(flag);
     }
 
+    /**
+     * 储存事故图片
+     * 参数：flag 视角
+     */
     public void saveAccidentPhoto(int flag) {
         accidentResultLayout.saveAccidentPhoto(flag);
     }
 
+    /**
+     * 生成事故排查的JSON串
+     */
     public JSONObject generateJSONObject() {
         JSONObject accident = new JSONObject();
 
@@ -186,6 +221,9 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         return accident;
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     */
     public void fillInData(JSONObject accident) {
         try {
             // 测量数据

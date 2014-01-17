@@ -61,11 +61,10 @@
         android:id="@+id/vPager"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal"
         android:layout_weight="1.0"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp"
         android:flipInterval="30"
         android:persistentDrawingCache="animation" />
 </LinearLayout>

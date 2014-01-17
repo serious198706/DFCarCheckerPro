@@ -105,6 +105,11 @@ public class ExteriorPaintView extends PaintView {
         this.setOnTouchListener(onTouchListener);
     }
 
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+        invalidate();
+    }
+
     @Override
     public void onDraw(Canvas canvas) {
         canvas.drawBitmap(bitmap, 0, 0, null);
@@ -176,14 +181,6 @@ public class ExteriorPaintView extends PaintView {
             return true;
         }
     };
-
-    public void setType(int type) {
-        this.currentType = type;
-    }
-    public int getType() {return this.currentType;}
-    public String getTypeName() {
-        return typeNameMap.get(getType());
-    }
 
     private Paint getPaint(int type) {
         Paint paint = new Paint();
@@ -355,30 +352,32 @@ public class ExteriorPaintView extends PaintView {
         return photoEntity;
     }
 
-
+    // 获取该paintView的一些内容
     public PosEntity getPosEntity(){
         if(data.isEmpty()){
             return null;
         }
         return data.get(data.size()-1);
     }
-
     public List<PosEntity> getPosEntities() {
         return data;
     }
-
     public List<PhotoEntity> getPhotoEntities() { return photo; }
     public List<PhotoEntity> getPhotoEntities(String sight) { return null; }
-
+    public List<PhotoEntity> getNewPhotoEntities() {return thisTimeNewPhoto;}
     public Bitmap getSketchBitmap() {
         return this.bitmap;
     }
-
     public List<PosEntity> getNewPosEntities() {return thisTimeNewData;}
-
-
     public String getGroup() {
         return "exterior";
+    }
+    public void setType(int type) {
+        this.currentType = type;
+    }
+    public int getType() {return this.currentType;}
+    public String getTypeName() {
+        return typeNameMap.get(getType());
     }
 
     @Override

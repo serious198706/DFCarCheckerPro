@@ -35,6 +35,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.df.app.util.Helper.setTextView;
+
 
 public class PaintActivity extends Activity {
     private ExteriorPaintView exteriorPaintView;
@@ -163,6 +165,8 @@ public class PaintActivity extends Activity {
         interiorPaintView.setVisibility(View.GONE);
         exteriorPaintView.setVisibility(View.VISIBLE);
 
+        setTextView(getWindow().getDecorView(), R.id.currentItem, getResources().getString(R.string.exterior));
+
         // 选择当前绘图类型
         RadioGroup radioGroup = new RadioGroup(this);
 
@@ -265,6 +269,8 @@ public class PaintActivity extends Activity {
         interiorPaintView.setVisibility(View.VISIBLE);
         exteriorPaintView.setVisibility(View.GONE);
 
+        setTextView(getWindow().getDecorView(), R.id.currentItem, getResources().getString(R.string.interior));
+
         // 选择当前绘图类型
         RadioGroup radioGroup = new RadioGroup(this);
 
@@ -343,6 +349,7 @@ public class PaintActivity extends Activity {
                 if(resultCode == Activity.RESULT_OK) {
                     // 如果确定拍摄了照片，则缩小照片尺寸
                     Helper.setPhotoSize(posEntity.getImageFileName(), 800);
+                    Helper.generatePhotoThumbnail(posEntity.getImageFileName(), 400);
 
                     // 进入备注界面
                     Intent intent = new Intent(PaintActivity.this, AddPhotoCommentActivity.class);
@@ -379,6 +386,7 @@ public class PaintActivity extends Activity {
 
     // 通知照片列表，有照片更新
     private void notifyPhotoList() {
+        // 这儿是将新更新的照片添加进去,而不是一全部添加
         for(PhotoEntity photoEntity : paintView.getPhotoEntities()) {
             PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
         }
@@ -445,6 +453,7 @@ public class PaintActivity extends Activity {
 
         photoEntity.setName(paintView.getTypeName());
         photoEntity.setFileName(posEntity.getImageFileName());
+        photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length()) + "_t.jpg");
         photoEntity.setComment(posEntity.getComment());
         photoEntity.setJsonString(jsonObject.toString());
 

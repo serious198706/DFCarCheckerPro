@@ -130,6 +130,12 @@ public class CarsCheckedActivity extends Activity {
             adapter.notifyDataSetChanged();
 
             startNumber = data.size() + 1;
+
+            if(data.size() == 0) {
+                footerView.setVisibility(View.GONE);
+            } else {
+                footerView.setVisibility(View.VISIBLE);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -22,6 +22,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.df.app.CarCheck.BasicInfoLayout;
+import com.df.app.CarCheck.ExteriorLayout;
 import com.df.app.CarCheck.InteriorLayout;
 import com.df.app.CarCheck.PhotoFaultLayout;
 import com.df.app.MainActivity;
@@ -41,22 +42,23 @@ public class InteriorPaintView extends PaintView {
 
     private int currentType = Common.DIRTY;
     private boolean move;
-    private List<PosEntity> data = InteriorLayout.posEntities;
-    private List<PhotoEntity> photoEntities = InteriorLayout.photoEntities;
-
     // 本次更新的坐标点，如果用户点击取消，则不将thisTimeNewData中的坐标加入到data中
     private List<PosEntity> thisTimeNewData;
     private List<PosEntity> undoData;
+    private List<PosEntity> data = ExteriorLayout.posEntities;
+
+    // 本次更新的照片，如果用户点击取消，则不将thisTimeNewPhoto加入照片列表中
+    private List<PhotoEntity> thisTimeNewPhoto;
+    private List<PhotoEntity> photo = InteriorLayout.photoEntities;
+    private List<PhotoEntity> undoPhoto;
+
     private Bitmap bitmap;
-    private Bitmap colorDiffBitmap;
 
     private int max_x, max_y;
 
     private long currentTimeMillis;
 
     private Map<Integer, String> typeNameMap;
-
-    public long getCurrentTimeMillis() {return currentTimeMillis;}
 
     public InteriorPaintView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -86,6 +88,9 @@ public class InteriorPaintView extends PaintView {
 
         undoData = new ArrayList<PosEntity>();
         thisTimeNewData = new ArrayList<PosEntity>();
+
+        thisTimeNewPhoto = new ArrayList<PhotoEntity>();
+        undoPhoto = new ArrayList<PhotoEntity>();
 
         this.setOnTouchListener(onTouchListener);
     }
@@ -150,15 +155,6 @@ public class InteriorPaintView extends PaintView {
             return true;
         }
     };
-
-    public void setType(int type) {
-        this.currentType = type;
-    }
-    public int getType() {return this.currentType;}
-
-    public String getTypeName() {
-        return typeNameMap.get(getType());
-    }
 
     private Paint getPaint(int type) {
         Paint paint = new Paint();
@@ -236,8 +232,7 @@ public class InteriorPaintView extends PaintView {
                 getPosEntity().setComment("");
 
                 PhotoEntity photoEntity = generatePhotoEntity();
-                PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
-                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+                photo.add(photoEntity);
             }
         }).setCancelable(false);
 
@@ -308,35 +303,45 @@ public class InteriorPaintView extends PaintView {
         return photoEntity;
     }
 
+    // 获取该paintView的一些内容
+    public long getCurrentTimeMillis() {return currentTimeMillis;}
     public PosEntity getPosEntity(){
         if(data.isEmpty()){
             return null;
         }
         return data.get(data.size()-1);
     }
-
     public List<PosEntity> getPosEntities() {
         return data;
     }
-
-    public List<PhotoEntity> getPhotoEntities() { return photoEntities; }
+    public List<PhotoEntity> getPhotoEntities() { return photo; }
     public List<PhotoEntity> getPhotoEntities(String sight) { return null; }
-
+    public List<PhotoEntity> getNewPhotoEntities() {return thisTimeNewPhoto;}
     public List<PosEntity> getNewPosEntities() {return thisTimeNewData;}
-
     public Bitmap getSketchBitmap() {
         return this.bitmap;
     }
-
     public String getGroup() {
         return "interior";
     }
+    public void setType(int type) {
+        this.currentType = type;
+    }
+    public int getType() {return this.currentType;}
+    public String getTypeName() {
+        return typeNameMap.get(getType());
+    }
+
 
     public void clear() {
         if(!data.isEmpty()) {
             data.clear();
             undoData.clear();
             invalidate();
+        }
+        if(!photo.isEmpty()) {
+            photo.clear();
+            undoPhoto.clear();
         }
     }
 
@@ -346,6 +351,10 @@ public class InteriorPaintView extends PaintView {
             data.remove(data.size() - 1);
             invalidate();
         }
+        if(!photo.isEmpty()) {
+            undoPhoto.add(photo.get(photo.size() - 1));
+            photo.remove(photo.size() - 1);
+        }
     }
 
     public void redo() {
@@ -354,12 +363,21 @@ public class InteriorPaintView extends PaintView {
             undoData.remove(undoData.size() - 1);
             invalidate();
         }
+        if(!undoPhoto.isEmpty()) {
+            photo.add(undoPhoto.get(undoPhoto.size() - 1));
+            undoPhoto.remove(undoPhoto.size() - 1);
+        }
     }
 
     public void cancel() {
         if(!thisTimeNewData.isEmpty()) {
             for(int i = 0; i < thisTimeNewData.size(); i++) {
                 data.remove(thisTimeNewData.get(i));
+            }
+        }
+        if(!thisTimeNewPhoto.isEmpty()) {
+            for(int i = 0; i < thisTimeNewPhoto.size(); i++) {
+                photo.remove(thisTimeNewPhoto.get(i));
             }
         }
     }

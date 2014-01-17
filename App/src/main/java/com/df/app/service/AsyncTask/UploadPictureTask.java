@@ -106,7 +106,7 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
     protected void onPostExecute(final Boolean success) {
         if(success) {
             progressDialog.dismiss();
-            Toast.makeText(context, "全部上传成功！！", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "全部上传成功！！", Toast.LENGTH_SHORT).show();
             Log.d(Common.TAG, "全部上传成功！");
 
             mCallback.OnFinish();

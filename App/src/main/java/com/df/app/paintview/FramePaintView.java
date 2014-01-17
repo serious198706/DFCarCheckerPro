@@ -91,7 +91,6 @@ public class FramePaintView extends PaintView {
     }
 
     public void setBitmap(Bitmap bitmap) {
-
     }
 
     @Override
@@ -141,14 +140,6 @@ public class FramePaintView extends PaintView {
             return true;
         }
     };
-
-    public void setType(int type) {
-        this.currentType = type;
-    }
-    public int getType() {return this.currentType;}
-    public String getTypeName() {
-        return "结构缺陷";
-    }
 
     private void paint(Canvas canvas) {
         for (PosEntity entity : data) {
@@ -226,35 +217,38 @@ public class FramePaintView extends PaintView {
         return photoEntity;
     }
 
+    // 获取该paintView的一些内容
     public PosEntity getPosEntity(){
         if(data.isEmpty()){
             return null;
         }
         return data.get(data.size()-1);
     }
-
     public List<PosEntity> getPosEntities() {
         return data;
     }
-
     public List<PhotoEntity> getPhotoEntities() {
         return null;
     }
-
     public List<PhotoEntity> getPhotoEntities(String sight) {
         return null;
     }
-
+    public List<PhotoEntity> getNewPhotoEntities() {return null;}
     public List<PosEntity> getNewPosEntities() {return thisTimeNewData;}
-
     public Bitmap getSketchBitmap() {
         return this.bitmap;
     }
-
-
     public String getGroup() {
         return "frame";
     }
+    public void setType(int type) {
+        this.currentType = type;
+    }
+    public int getType() {return this.currentType;}
+    public String getTypeName() {
+        return "结构缺陷";
+    }
+
 
     public void clear() {
         if(!data.isEmpty()) {

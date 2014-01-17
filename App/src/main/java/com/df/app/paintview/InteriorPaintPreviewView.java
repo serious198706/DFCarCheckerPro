@@ -54,7 +54,6 @@ public class InteriorPaintPreviewView extends ImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //data = CarCheckInteriorActivity.posEntities;
         canvas.drawBitmap(bitmap, 0, 0, null);
         paint(canvas);
     }

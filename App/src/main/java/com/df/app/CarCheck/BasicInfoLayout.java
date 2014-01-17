@@ -24,6 +24,8 @@ import java.util.UUID;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 基本信息页面，包括车辆信息、配置信息两个子页面
  */
 public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageChangeListener{
     private View rootView;
@@ -60,10 +62,6 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
         init(context);
     }
 
-    public void setUpdateUiListener(OnUpdateUiListener listener) {
-        this.mUpdateUiCallback = listener;
-    }
-
     public void init(Context context){
         rootView = LayoutInflater.from(context).inflate(R.layout.basic_info_layout, this);
 
@@ -93,6 +91,9 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
         InitTextView();
     }
 
+    /**
+     * 初始化viewPager，用来承载各个模块，可以通过滑动切换
+     */
     private void InitViewPager(Context context) {
         viewPager = (ViewPager) rootView.findViewById(R.id.vPager);
         views = new ArrayList<View>();
@@ -104,6 +105,9 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
         viewPager.setOnPageChangeListener(this);
     }
 
+    /**
+     * 初始化标签，用来标识当前模块，可以点击
+     */
     private void InitTextView() {
         vehicleInfoTab = (TextView) rootView.findViewById(R.id.vehicleInfoTab);
         optionsTab = (TextView) rootView.findViewById(R.id.optionsTab);
@@ -134,6 +138,9 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
         optionsTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
     }
 
+    /**
+     * 生成基本信息的JSON串
+     */
     public JSONObject generateJSONObject() {
 
         JSONObject features = new JSONObject();
@@ -148,6 +155,9 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
         return features;
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     */
     public void fillInData(int carId, JSONObject features) {
         try {
             this.carId = carId;
@@ -167,8 +177,17 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
         }
     }
 
-    // CarCheckActivity必须实现此接口
+    /**
+     * CarCheckActivity来实现此接口，当确定车辆配置信息后，需要更新事故、外观、内饰页面
+     */
     public interface OnUpdateUiListener {
         public void updateUi();
+    }
+
+    /**
+     * 因为基本信息页是在xml中静态生成的，所以要手动设置回调的监听者
+     */
+    public void setUpdateUiListener(OnUpdateUiListener listener) {
+        this.mUpdateUiCallback = listener;
     }
 }

@@ -23,13 +23,16 @@ import com.df.app.util.Common;
 
 import static com.df.app.util.Helper.getEditViewText;
 
+/**
+ * Created by 岩 on 14-01-13.
+ *
+ * 添加照片备注页面
+ */
 public class AddPhotoCommentActivity extends Activity {
 
     private String fileName;
     private Bitmap bitmap;
 
-
-    // TODO 完善填写备注的界面
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +63,9 @@ public class AddPhotoCommentActivity extends Activity {
         saveResult();
     }
 
+    /**
+     * 保存备注信息，并返回主activity
+     */
     private void saveResult() {
         String commentString = getEditViewText(getWindow().getDecorView(), R.id.comment).trim();
 

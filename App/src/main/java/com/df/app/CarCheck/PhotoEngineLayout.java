@@ -120,6 +120,7 @@ public class PhotoEngineLayout extends LinearLayout {
 
     public void saveExteriorStandardPhoto() {
         Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
+        Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
 
         PhotoEntity photoEntity = generatePhotoEntity();
 
@@ -168,6 +169,7 @@ public class PhotoEngineLayout extends LinearLayout {
 
         PhotoEntity photoEntity = new PhotoEntity();
         photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
+        photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
         photoEntity.setJsonString(jsonObject.toString());
         String group = getResources().getStringArray(R.array.photoForEngineItems)[currentShotPart];
         photoEntity.setName(group);

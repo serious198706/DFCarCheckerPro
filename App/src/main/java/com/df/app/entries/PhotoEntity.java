@@ -6,6 +6,7 @@ package com.df.app.entries;
 // 照片实体类，拍摄完成的照片都以此种方式保存，并加入池中
 public class PhotoEntity {
     private String fileName;
+    private String thumbFileName;
     private String jsonString;
     private String comment;
     private String name;
@@ -16,6 +17,14 @@ public class PhotoEntity {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getThumbFileName() {
+        return thumbFileName;
+    }
+
+    public void setThumbFileName(String thumbFileName) {
+        this.thumbFileName = thumbFileName;
     }
 
     public String getJsonString() {

@@ -32,6 +32,11 @@ import java.util.Map;
 
 import static com.df.app.util.Helper.setTextView;
 
+/**
+ * Created by 岩 on 13-12-20.
+ *
+ * 主activity，承载基本信息、事故排查、综合检查、拍摄照片四个模块
+ */
 public class CarCheckActivity extends Activity {
     private BasicInfoLayout basicInfoLayout;
     private AccidentCheckLayout accidentCheckLayout;
@@ -179,6 +184,7 @@ public class CarCheckActivity extends Activity {
             }
         });
 
+        // 保存按钮
         Button saveButton = (Button)findViewById(R.id.buttonSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,7 +216,6 @@ public class CarCheckActivity extends Activity {
             }
         });
 
-
         // 填充各部分的内容
         Bundle bundle = getIntent().getExtras();
 
@@ -222,6 +227,9 @@ public class CarCheckActivity extends Activity {
         fillInData(carId, jsonString);
     }
 
+    /**
+     *
+     */
     private void uploadPictures() {
         UploadPictureTask uploadPictureTask = new UploadPictureTask(CarCheckActivity.this, photoEntities, new UploadPictureTask.UploadFinished() {
             @Override
@@ -235,6 +243,9 @@ public class CarCheckActivity extends Activity {
         uploadPictureTask.execute();
     }
 
+    /**
+     *
+     */
     private void commitData() {
         CommitDataTask commitDataTask = new CommitDataTask(CarCheckActivity.this, new CommitDataTask.OnCommitDataFinished() {
             @Override
@@ -251,6 +262,9 @@ public class CarCheckActivity extends Activity {
         commitDataTask.execute(jsonObject);
     }
 
+    /**
+     *
+     */
     private void saveData() {
         SaveDataTask saveDataTask = new SaveDataTask(CarCheckActivity.this, new SaveDataTask.OnSaveDataFinished() {
             @Override
@@ -267,6 +281,9 @@ public class CarCheckActivity extends Activity {
         saveDataTask.execute(jsonObject);
     }
 
+    /**
+     *
+     */
     private void showNaviMenu(boolean show) {
         basicInfoButton.setVisibility(show ? View.VISIBLE : View.GONE);
         accidentCheckButton.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -274,6 +291,9 @@ public class CarCheckActivity extends Activity {
         photoButton.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * 根据选择的按钮，切换不同的模块
+     */
     private void selectTab(int layoutId) {
         String title = tabMap.get(layoutId);
         setTextView(getWindow().getDecorView(), R.id.currentItem, title);
@@ -299,25 +319,33 @@ public class CarCheckActivity extends Activity {
         showNaviMenu(false);
     }
 
+    /**
+     * 处理子页面启动activity时的返回值，主要处理拍摄照片的返回值、添加照片备注页面、蓝牙请求页面的返回值
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
         switch (requestCode) {
+            // 外观缺陷照
             case Common.ENTER_EXTERIOR_PAINT:
                 integratedCheckLayout.updateExteriorPreview();
                 break;
+            // 内饰缺陷照
             case Common.ENTER_INTERIOR_PAINT:
                 integratedCheckLayout.updateInteriorPreview();
                 break;
+            // 外观标准照
             case Common.PHOTO_FOR_EXTERIOR_STANDARD:
                 if(resultCode == Activity.RESULT_OK) {
                     integratedCheckLayout.saveExteriorStandardPhoto();
                 }
                 break;
+            // 内饰标准照
             case Common.PHOTO_FOR_INTERIOR_STANDARD:
                 if(resultCode == Activity.RESULT_OK) {
                     integratedCheckLayout.saveInteriorStandardPhoto();
                 }
                 break;
+            // 事故查勘照片拍摄
             case Common.PHOTO_FOR_ACCIDENT_FRONT:
             case Common.PHOTO_FOR_ACCIDENT_REAR:
             {
@@ -329,6 +357,7 @@ public class CarCheckActivity extends Activity {
                 if(resultCode == Activity.RESULT_OK) {
                     // 如果确定拍摄了照片，则缩小照片尺寸
                     Helper.setPhotoSize(posEntity.getImageFileName(), 800);
+                    Helper.generatePhotoThumbnail(posEntity.getImageFileName(), 400);
 
                     Intent intent = new Intent(CarCheckActivity.this, AddPhotoCommentActivity.class);
                     intent.putExtra("fileName", posEntity.getImageFileName());
@@ -340,6 +369,7 @@ public class CarCheckActivity extends Activity {
                 }
             }
                 break;
+            // 事故查勘照片添加备注
             case Common.ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO:
             case Common.ADD_COMMENT_FOR_ACCIDENT_REAR_PHOTO:
             {
@@ -351,30 +381,34 @@ public class CarCheckActivity extends Activity {
                 accidentCheckLayout.saveAccidentPhoto(requestCode);
             }
                 break;
+            // 外观内饰照片备注
             case Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO:
                 break;
-            case Common.ADD_COMMENT_FOR_INTERIOR_PHOTO:
-                break;
+            // 轮胎照片
             case Common.PHOTO_FOR_TIRES:
                 if(resultCode == Activity.RESULT_OK) {
                     integratedCheckLayout.saveTirePhoto();
                 }
                 break;
+            // 手续组照片
             case Common.PHOTO_FOR_PROCEDURES_STANDARD:
                 if(resultCode == Activity.RESULT_OK) {
                     photoLayout.saveProceduresStandardPhoto();
                 }
                 break;
+            // 机舱组照片
             case Common.PHOTO_FOR_ENGINE_STANDARD:
                 if(resultCode == Activity.RESULT_OK) {
                     photoLayout.saveEngineStandardPhoto();
                 }
                 break;
+            // 其他组照片
             case Common.PHOTO_FOR_OTHER_STANDARD:
                 if(resultCode == Activity.RESULT_OK) {
                     photoLayout.saveOtherStandardPhoto();
                 }
                 break;
+            // 打开蓝牙请求页面的返回值
             case Common.REQUEST_ENABLE_BT:
                 // 如果允许打开蓝牙
                 if (resultCode == Activity.RESULT_OK) {
@@ -388,6 +422,10 @@ public class CarCheckActivity extends Activity {
         }
     }
 
+
+    /**
+     * 将所有的照片实体进行聚合
+     */
     // 添加所有的photoEntity
     private void generatePhotoEntities() {
         photoEntities.clear();
@@ -411,10 +449,12 @@ public class CarCheckActivity extends Activity {
         photoEntities.addAll(PhotoOtherLayout.photoListAdapter.getItems());
 
         // 所有草图
-        // 事故3张，外观1张，内饰1张，轮胎1张，共6张
         photoEntities.addAll(generateSketches());
     }
 
+    /**
+     * 生成草图（事故排查x3，综合检查x3）
+     */
     private List<PhotoEntity> generateSketches() {
         List<PhotoEntity> temp = new ArrayList<PhotoEntity>();
 
@@ -424,6 +464,9 @@ public class CarCheckActivity extends Activity {
         return temp;
     }
 
+    /**
+     * 生成最终的JSON串
+     */
     private void generateJsonString() {
         try {
             jsonObject = new JSONObject();
@@ -445,6 +488,9 @@ public class CarCheckActivity extends Activity {
         }
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     */
     // 将所有数据填充到所有检测模块中
     private void fillInData(int carId, String jsonString) {
         try {
@@ -477,6 +523,9 @@ public class CarCheckActivity extends Activity {
         quitConfirm();
     }
 
+    /**
+     * 退出前的确认，如果确定退出，关闭activity，并做一些销毁的操作
+     */
     private void quitConfirm() {
         View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
         TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
@@ -492,6 +541,7 @@ public class CarCheckActivity extends Activity {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        // TODO 做一些销毁的操作
                         finish();
                     }
                 })

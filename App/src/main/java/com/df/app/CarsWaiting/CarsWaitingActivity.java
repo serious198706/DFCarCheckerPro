@@ -115,7 +115,8 @@ public class CarsWaitingActivity extends Activity {
                 new GetCarsWaitingListTask.OnGetListFinish() {
                     @Override
                     public void onFinish(String result) {
-                        fillInData(result);
+                        //fillInData(result);
+                        fillInDummyData();
                     }
                     @Override
                     public void onFailed() {
@@ -171,6 +172,12 @@ public class CarsWaitingActivity extends Activity {
         adapter.notifyDataSetChanged();
 
         startNumber = data.size() + 1;
+
+        if(data.size() == 0) {
+            footerView.setVisibility(View.GONE);
+        } else {
+            footerView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void getCarDetail(final int carId) {

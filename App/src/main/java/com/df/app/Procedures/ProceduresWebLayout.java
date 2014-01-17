@@ -48,11 +48,11 @@ public class ProceduresWebLayout extends LinearLayout {
         rootView = LayoutInflater.from(context).inflate(R.layout.procedures_web_layout, this);
 
         WebView proceduresWeb = (WebView)findViewById(R.id.proceduresWeb);
-        proceduresWeb.loadUrl("http://192.168.8.200:9901/Function/CarDetection/index.html");
+        proceduresWeb.loadUrl("http://192.168.8.200:9901/Function/CarDetection2/Default.aspx");
         proceduresWeb.setWebViewClient(new WebViewClient());
         proceduresWeb.getSettings().setJavaScriptEnabled(true);
         proceduresWeb.addJavascriptInterface(this, "android");
-        proceduresWeb.setInitialScale(getScale());
+        //proceduresWeb.setInitialScale(getScale());
     }
 
     @JavascriptInterface

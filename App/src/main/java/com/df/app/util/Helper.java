@@ -282,7 +282,49 @@ public class Helper {
 
         try {
             FileOutputStream ostream = new FileOutputStream(file);
-            newBitmap.compress(Bitmap.CompressFormat.JPEG, 90, ostream);
+            newBitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
+
+            ostream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 生成缩略图
+    public static void generatePhotoThumbnail(String fileName, int max) {
+        String path = Common.photoDirectory;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(path + fileName);
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        Bitmap newBitmap = null;
+
+        float ratio;
+        float newWidth;
+        float newHeight;
+
+        // 如果宽度小于800, 无视
+        if(width > max) {
+            ratio = (float)width / (float)max;
+            newWidth = max;
+            newHeight = height / ratio;
+        } else if(height > max) {
+            ratio = (float)height / (float)max;
+            newWidth = width / ratio;
+            newHeight = max;
+        } else {
+            newWidth = width;
+            newHeight = height;
+        }
+
+        newBitmap = Bitmap.createScaledBitmap(bitmap, (int)newWidth, (int)newHeight, true);
+
+        try {
+            String thumbFile = path + fileName.substring(0, fileName.length() - 4) + "_t.jpg";
+            FileOutputStream ostream = new FileOutputStream(thumbFile);
+            newBitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
 
             ostream.close();
         } catch (IOException e) {

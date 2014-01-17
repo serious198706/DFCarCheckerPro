@@ -29,6 +29,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 查勘结果页面
  */
 public class AccidentResultLayout extends LinearLayout {
     private View rootView;
@@ -81,19 +83,37 @@ public class AccidentResultLayout extends LinearLayout {
         framePaintPreviewViewRear.setLayoutParams(layoutParams);
     }
 
+    /**
+     * 更新界面，主要是更新车型图片
+     */
     public void updateUi() {
         setFigureImage(Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure()));
     }
 
+    /**
+     * 获取该视角下的最后一个点的位置信息
+     *
+     * 参数：视角
+     */
     public PosEntity getPosEntity(int flag) {
         return (flag == Common.ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO) ?
                 posEntitiesFront.get(posEntitiesFront.size() - 1) : posEntitiesRear.get(posEntitiesRear.size() - 1);
     }
 
+    /**
+     * 获取当前视角的全称，用于组织JSON串
+     *
+     * 参数：视角
+     */
     private String getPart(int flag) {
         return (flag == Common.ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO) ? "front" : "rear";
     }
 
+    /**
+     * 保存事故图片
+     *
+     * 参数：视角
+     */
     public void saveAccidentPhoto(int flag) {
         PhotoEntity photoEntity = generatePhotoEntity(flag);
 
@@ -101,6 +121,11 @@ public class AccidentResultLayout extends LinearLayout {
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * 生成图片的实体
+     *
+     * 参数：视角
+     */
     private PhotoEntity generatePhotoEntity(int flag) {
         PhotoEntity photoEntity = new PhotoEntity();
 
@@ -125,6 +150,7 @@ public class AccidentResultLayout extends LinearLayout {
 
             photoEntity.setName("结构缺陷");
             photoEntity.setFileName(posEntity.getImageFileName());
+            photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
             photoEntity.setComment(posEntity.getComment());
             photoEntity.setJsonString(jsonObject.toString());
         } catch (JSONException e) {
@@ -134,6 +160,11 @@ public class AccidentResultLayout extends LinearLayout {
         return photoEntity;
     }
 
+    /**
+     * 根据车型信息调用不同的预览图
+     *
+     * 参数：车辆类型代码
+     */
     private void setFigureImage(int figure) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -166,6 +197,9 @@ public class AccidentResultLayout extends LinearLayout {
         framePaintPreviewViewRear.setLayoutParams(layoutParams);
     }
 
+    /**
+     * 生成草图（前视角x1，后视角x1）
+     */
     public List<PhotoEntity> generateSketches() {
         List<PhotoEntity> temp = new ArrayList<PhotoEntity>();
 
@@ -175,6 +209,11 @@ public class AccidentResultLayout extends LinearLayout {
         return temp;
     }
 
+    /**
+     * 根据视角生成不同草图
+     *
+     * 参数:1.视角 2.草图名称
+     */
     private PhotoEntity generateSketch(View view, String sketchName) {
         Bitmap bitmap = null;
         Canvas c;
