@@ -24,6 +24,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.R;
@@ -47,10 +49,13 @@ import java.util.Map;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
+import static com.df.app.util.Helper.setTextView;
 import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 数据采集模块
  */
 public class CollectDataLayout extends LinearLayout {
     public static boolean hasRequestCmd;
@@ -58,8 +63,6 @@ public class CollectDataLayout extends LinearLayout {
     private View rootView;
     private OnGetIssueData mCallback;
 
-    private static UsbSerialDriver sDriver = null;
-    private DF3000Service DF3000Service = null;
     private boolean isOpen; // 是否打开设备
 
     private int currentDeviceType = Common.DF3000;
@@ -70,6 +73,11 @@ public class CollectDataLayout extends LinearLayout {
 
     MyScrollView scrollView;
 
+    // 覆盖件map
+    // 1. EditText的id
+    // 2. CheckBox的id
+    // 3. 序号
+    // 4. 名称
     private static Map<int[], String> overIdMap ;
     static {
         overIdMap = new HashMap<int[], String>();
@@ -92,6 +100,7 @@ public class CollectDataLayout extends LinearLayout {
         overIdMap.put(new int[]{R.id.N_edit,    R.id.N_N,   17},    "N");
     }
 
+    // 覆盖件edit id
     private static int[] overIds = {
             R.id.L_edit,
             R.id.M_edit,
@@ -112,11 +121,9 @@ public class CollectDataLayout extends LinearLayout {
             R.id.N_edit
     };
 
-    // 数据采集的控件map
+    // 加强件控件map
     // 1. EditText的id
-    // 2. CheckBox的id
-
-
+    // 2. 此部位的名称
     private static Map<Integer, String> enhanceIdMap;
     static {
         enhanceIdMap = new HashMap<Integer, String>();
@@ -134,8 +141,17 @@ public class CollectDataLayout extends LinearLayout {
         enhanceIdMap.put(R.id.J1_edit, "J1");
     }
 
+    // 蓝牙适配器
     private BluetoothAdapter mBluetoothAdapter;
+
+    // USB驱动
+    private static UsbSerialDriver sDriver = null;
+
+    // 与设备进行交互的服务
+    private DF3000Service DF3000Service = null;
     private DF5000Service DF5000Service = null;
+
+    // 选择设备的界面
     private Device3000ListDialog df3000Dialog;
     private Device5000ListDialog df5000Dialog;
 
@@ -176,6 +192,7 @@ public class CollectDataLayout extends LinearLayout {
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.collect_data_layout, this);
 
+        // 查找设备按钮
         Button searchDeviceButton = (Button) rootView.findViewById(R.id.searchDevices_button);
         searchDeviceButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -223,6 +240,7 @@ public class CollectDataLayout extends LinearLayout {
             }
         });
 
+        // 开始采集数据按钮
         startButton = (Button) rootView.findViewById(R.id.start_button);
         startButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -239,6 +257,7 @@ public class CollectDataLayout extends LinearLayout {
                 startButton.setText(R.string.collecting);
                 startButton.setEnabled(false);
 
+                // 清空已填写的数据
                 clearData();
             }
         });
@@ -258,10 +277,12 @@ public class CollectDataLayout extends LinearLayout {
             });
         }
 
+        // 初始化基准点图片
         carImg = (ImageView)findViewById(R.id.standard_image);
+        Bitmap bitmap = BitmapFactory.decodeFile(Common.utilDirectory + "L");
+        carImg.setImageBitmap(bitmap);
 
-        initEdits();
-
+        // 显示阴影
         scrollView = (MyScrollView) findViewById(R.id.root);
         scrollView.setListener(new MyScrollView.ScrollViewListener() {
             @Override
@@ -274,6 +295,7 @@ public class CollectDataLayout extends LinearLayout {
             }
         });
 
+        // 点击无法测量CheckBox时
         CheckBox cannotMeasureB = (CheckBox)findViewById(R.id.bn);
         cannotMeasureB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -285,6 +307,11 @@ public class CollectDataLayout extends LinearLayout {
             }
         });
 
+
+        // 初始化所有的EditText控件
+        initEdits();
+
+        // 填写测试数据
         Button dummyRecordButton = (Button)findViewById(R.id.dummyRecord);
         dummyRecordButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -294,12 +321,17 @@ public class CollectDataLayout extends LinearLayout {
         });
     }
 
+    /**
+     * 显示阴影
+     */
     private void showShadow(boolean show) {
         findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
 
-    // 填入假数据
+    /**
+     * 填入测试数据
+     */
     private void fillInDummyData() {
         for(final int[] n : overIdMap.keySet()) {
             int randomNum1 = 100 + (int)(Math.random() * 300);
@@ -347,6 +379,9 @@ public class CollectDataLayout extends LinearLayout {
         dialog.show();
     }
 
+    /**
+     * 清空已填入的数据
+     */
     private void clearData() {
         for(final int[] n : overIdMap.keySet()) {
             EditText editText = (EditText) rootView.findViewById(n[0]);
@@ -354,6 +389,9 @@ public class CollectDataLayout extends LinearLayout {
         }
     }
 
+    /**
+     * 初始化所有EditText
+     */
     private void initEdits() {
         for(final int[] n : overIdMap.keySet()) {
 
@@ -382,6 +420,7 @@ public class CollectDataLayout extends LinearLayout {
                 }
             });
 
+            // 点击某个EditText时，显示对应的基准点图片
             editText.setOnFocusChangeListener(new OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean b) {
@@ -402,67 +441,90 @@ public class CollectDataLayout extends LinearLayout {
         }
     }
 
+    /**
+     * 采集线程
+     */
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            isOpen = DF3000Service.connection();
+
+            // 当接收到数据时的回调方法
+            com.df.app.service.DF3000Service.OnReceiveData onReceiveData = new DF3000Service.OnReceiveData() {
+                @Override
+                public void onReceiveData(final Measurement measurement) {
+                    final String values = measurement.toValueString();
+
+                    ((Activity)getContext()).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(measurement.getBlockId() <= 17) {
+                                setEditViewText(rootView,
+                                        overIds[measurement.getBlockId() - 1], values);
+                            } else {
+                                setEditViewText(rootView,
+                                        enhanceIdMap.keySet().toArray(new Integer[0])[measurement.getBlockId() - 18], values);
+                            }
+
+                            // 当数据全部采集完毕后，弹出完成提示
+                            if(measurement.getBlockId() == 29) {
+                                View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+                                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+                                TextView content = new TextView(view1.getContext());
+                                content.setText(R.string.collect_finished);
+                                content.setTextSize(22f);
+                                contentArea.addView(content);
+
+                                setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+                                AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
+                                        .setView(view1)
+
+                                        // 当点击弹出的确定按钮后，获取问题查勘的内容
+                                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                getIssueItems();
+                                            }
+                                        })
+                                        .setCancelable(false)
+                                        .create();
+
+                                dialog.show();
+                            }
+                        }
+                    });
+                }
+            };
+
+            // 如果没有连接设备，则返回
+            if(!isOpen) {
+                return;
+            } else {
+                DF3000Service.startCollect(onReceiveData);
+            }
+        }
+    };
+
+    /**
+     * 采集数据（DF3000）
+     */
     private void collectData() {
+
         if (sDriver == null) {
             Log.d(Common.TAG, "连接设备失败！！");
         }
         else {
             DF3000Service = DF3000Service.instance(sDriver);
-            new Thread() {
-                @Override
-                public void run() {
-                isOpen = DF3000Service.connection();
 
-                if (isOpen) {
-                    DF3000Service.measurement(new DF3000Service.OnReceiveData() {
-                        @Override
-                        public void onReceiveData(final Measurement measurement) {
-                            final String values = measurement.toValueString();
-
-                            ((Activity)getContext()).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if(measurement.getBlockId() <= 17) {
-
-                                        setEditViewText(rootView, overIds[measurement.getBlockId() - 1], values);
-
-//                                        for(int[] n : overIdMap.keySet()) {
-//                                            if(n[2] == measurement.getBlockId()) {
-//                                                setEditViewText(rootView, n[0], values);
-//                                              //  scrollView.smoothScrollTo(0, findViewById(n[0]).getBottom());
-//                                            }
-//                                        }
-                                    } else {
-                                        setEditViewText(rootView,
-                                                enhanceIdMap.keySet().toArray(new Integer[0])[measurement.getBlockId() - 18],
-                                                values);
-                                    }
-
-                                    if(measurement.getBlockId() == 29) {
-                                        AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
-                                                .setTitle(R.string.alert)
-                                                .setMessage(R.string.collect_finished)
-                                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                                        getIssueItems();
-                                                    }
-                                                })
-                                                .setCancelable(false)
-                                                .create();
-
-                                        dialog.show();
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
-                }
-            }.start();
+            Thread collectThread = new Thread(runnable);
+            collectThread.start();
         }
     }
 
+    /**
+     * 获取问题查勘的内容
+     */
     private void getIssueItems() {
         // 启动获取issue数据线程
         try {
@@ -488,14 +550,21 @@ public class CollectDataLayout extends LinearLayout {
         }
     }
 
+    /**
+     * 初始化BluetoothService
+     */
     public void setupBluetoothService() {
-        // 初始化BluetoothService
+
         DF5000Service = new DF5000Service(rootView.getContext(), mHandler);
     }
 
+    /**
+     * 停止BluetoothService
+     */
     public void stopBluetoothService() {
         df5000Dialog.dismiss();
     }
+
 
     // 是否已连接的标志符
     private boolean isConnected;
@@ -625,6 +694,9 @@ public class CollectDataLayout extends LinearLayout {
         }
     };
 
+    /**
+     * 采集数据（DF5000）
+     */
     private void collectData(String message) {
         // 是否已经连接到设备
         if (DF5000Service.getState() != DF5000Service.STATE_CONNECTED) {

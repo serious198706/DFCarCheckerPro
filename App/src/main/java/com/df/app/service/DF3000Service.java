@@ -184,7 +184,7 @@ public class DF3000Service {
 	}
 	
 	
-	public List<Measurement> measurement(OnReceiveData onReceiveData){
+	public List<Measurement> startCollect(OnReceiveData onReceiveData){
 		List<Measurement> measurements = new ArrayList<Measurement>();
 
 		if (sDriver == null) {

@@ -228,7 +228,7 @@ public class CarCheckActivity extends Activity {
     }
 
     /**
-     *
+     * 上传所有照片
      */
     private void uploadPictures() {
         UploadPictureTask uploadPictureTask = new UploadPictureTask(CarCheckActivity.this, photoEntities, new UploadPictureTask.UploadFinished() {
@@ -244,7 +244,7 @@ public class CarCheckActivity extends Activity {
     }
 
     /**
-     *
+     * 提交检测数据
      */
     private void commitData() {
         CommitDataTask commitDataTask = new CommitDataTask(CarCheckActivity.this, new CommitDataTask.OnCommitDataFinished() {
@@ -263,7 +263,7 @@ public class CarCheckActivity extends Activity {
     }
 
     /**
-     *
+     * 临时保存
      */
     private void saveData() {
         SaveDataTask saveDataTask = new SaveDataTask(CarCheckActivity.this, new SaveDataTask.OnSaveDataFinished() {
@@ -282,7 +282,7 @@ public class CarCheckActivity extends Activity {
     }
 
     /**
-     *
+     * 按下导航按钮，显示菜单
      */
     private void showNaviMenu(boolean show) {
         basicInfoButton.setVisibility(show ? View.VISIBLE : View.GONE);
