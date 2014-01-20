@@ -40,11 +40,23 @@ public class InputProceduresActivity extends Activity {
                 quitConfirm();
             }
         });
+
+        inputProceduresLayout = (InputProceduresLayout)findViewById(R.id.inputProcedures);
+
+        Bundle bundle = getIntent().getExtras();
+
+        if(bundle != null) {
+            inputProceduresLayout.fillInData(bundle.getString("jsonString"));
+        }
     }
 
     @Override
     public void onBackPressed() {
-        quitConfirm();
+        if(inputProceduresLayout.canGoBack()) {
+            inputProceduresLayout.goBack();
+        } else {
+            quitConfirm();
+        }
     }
 
     private void quitConfirm() {

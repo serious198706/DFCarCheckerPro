@@ -436,6 +436,21 @@ public class CarRecogniseLayout extends LinearLayout {
         enableView(rootView, R.id.brand_select_button, true);
     }
 
+    public void fillInData(String jsonString) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+
+            setEditViewText(rootView, R.id.plateNumber_edit, jsonObject.getString("plateNumber"));
+            setEditViewText(rootView, R.id.licenseModel_edit, jsonObject.getString("licenseModel"));
+            setEditViewText(rootView, R.id.vehicleType_edit, jsonObject.getString("vehicleType"));
+            setEditViewText(rootView, R.id.useCharacter_edit, jsonObject.getString("useCharacter"));
+            setEditViewText(rootView, R.id.engineSerial_edit, jsonObject.getString("engineSerial"));
+            setEditViewText(rootView, R.id.vin_edit, jsonObject.getString("vin"));
+        } catch (JSONException e) {
+
+        }
+    }
+
     // <editor-fold defaultstate="collapsed" desc="获取车辆配置信息的Task">
 
     private class GetCarSettingsTask extends AsyncTask<String, Void, Boolean> {

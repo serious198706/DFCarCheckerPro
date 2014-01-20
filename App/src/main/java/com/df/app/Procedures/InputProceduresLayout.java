@@ -11,12 +11,19 @@ import android.widget.TextView;
 
 import com.df.app.R;
 import com.df.app.entries.CarSettings;
+import com.df.app.service.AsyncTask.GetCarDetailTask;
 import com.df.app.service.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
+import com.df.app.util.Helper;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.df.app.util.Helper.setEditViewText;
 
 /**
  * Created by 岩 on 14-1-8.
@@ -71,10 +78,10 @@ public class InputProceduresLayout extends LinearLayout {
             public void showContent() {
                 // 当VIN确定后，出现另外两个页面
                 if(!loaded) {
+                    proceduresWebLayout.updateUi();
                     views.add(proceduresWebLayout);
 
                     proceduresTab.setVisibility(VISIBLE);
-
                     proceduresTab.setOnClickListener(new MyOnClick(viewPager, 1));
 
                     viewPager.setAdapter(new MyViewPagerAdapter(views));
@@ -85,7 +92,6 @@ public class InputProceduresLayout extends LinearLayout {
         });
 
         proceduresWebLayout = new ProceduresWebLayout(context);
-        //proceduresLayout = new ProceduresLayout(context);
 
         InitViewPager(context);
         InitTextView();
@@ -113,6 +119,17 @@ public class InputProceduresLayout extends LinearLayout {
         carRecogniseTab.setOnClickListener(new MyOnClick(viewPager, 0));
     }
 
+    public boolean canGoBack() {
+        if(proceduresWebLayout.canGoBack())
+            return true;
+        else
+            return false;
+    }
+
+    public void goBack() {
+        proceduresWebLayout.goBack();
+    }
+
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
     {
         @Override
@@ -135,6 +152,11 @@ public class InputProceduresLayout extends LinearLayout {
         carRecogniseTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
         proceduresTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
     }
+
+    public void fillInData(String jsonString) {
+        carRecogniseLayout.fillInData(jsonString);
+    }
+
 
     // CarCheckActivity必须实现此接口
     public interface OnUpdateUiListener {

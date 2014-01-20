@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.service.SoapService;
@@ -14,32 +13,36 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by 岩 on 14-1-13.
+ * Created by 岩 on 14-1-20.
  */
-public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
-    public interface OnGetIssueItemsFinished {
-        public void onFinish(String result, ProgressDialog progressDialog);
-        public void onFailed();
+// 确认导入平台线程
+public class ImportPlatformTask extends AsyncTask<Void, Void, Boolean> {
+    public interface OnImportFinished {
+        public void onFinished(String result);
+        public void onFailed(String result);
     }
 
-    Context context;
+    private Context context;
+    private int carId;
+    private final String type;
+    private int sellerId;
     private SoapService soapService;
     private ProgressDialog progressDialog;
-    private String result;
-    private OnGetIssueItemsFinished mCallback;
-    private JSONObject accidentData;
+    private OnImportFinished mCallback;
 
-    public GetIssueItemsTask(Context context, JSONObject data, OnGetIssueItemsFinished listener) {
+    public ImportPlatformTask(Context context, int carId, String type, int sellerId, OnImportFinished listener) {
         this.context = context;
+        this.carId = carId;
+        this.type = type;
+        this.sellerId = sellerId;
         this.mCallback = listener;
-        this.accidentData = data;
     }
 
     @Override
     protected void onPreExecute()
     {
         progressDialog = ProgressDialog.show(context, null,
-                "正在处理，请稍候。。", false, false);
+                "正在导入平台，请稍候。。", false, false);
     }
 
     @Override
@@ -50,18 +53,18 @@ public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
             JSONObject jsonObject = new JSONObject();
 
             // SeriesId + userID + key
+            jsonObject.put("CarId", this.carId);
+            jsonObject.put("Type", this.type);
+            jsonObject.put("SellerId", this.sellerId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
-            jsonObject.put("SeriesId", /*CarsWaitingActivity.seriesId*/3);
-            jsonObject.put("Data", accidentData);
 
             soapService = new SoapService();
 
             // 设置soap的配置
-            soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.ANALYSIS_ACCIDENT_DATA);
+            soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.IMPORT_PLATFORM);
 
             success = soapService.communicateWithServer(jsonObject.toString());
-
         } catch (JSONException e) {
             Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
             return false;
@@ -72,12 +75,12 @@ public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected void onPostExecute(final Boolean success) {
-        if (success) {
-            mCallback.onFinish(soapService.getResultMessage(), progressDialog);
+        progressDialog.dismiss();
+
+        if(success) {
+            mCallback.onFinished(soapService.getResultMessage());
         } else {
-            mCallback.onFailed();
-            Toast.makeText(context, "连接错误！", Toast.LENGTH_SHORT).show();
-            Log.d("DFCarChecker", "连接错误: " + soapService.getErrorMessage());
+            mCallback.onFailed(soapService.getErrorMessage());
         }
     }
 

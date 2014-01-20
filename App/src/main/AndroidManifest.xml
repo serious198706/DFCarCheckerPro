@@ -82,15 +82,18 @@
         </activity>
         <activity
             android:name="com.df.app.CarsWaiting.CarsWaitingActivity"
-            android:label="@string/title_activity_cars_waiting" >
+            android:label="@string/title_activity_cars_waiting"
+            android:screenOrientation="portrait"  >
         </activity>
         <activity
             android:name="com.df.app.Procedures.InputProceduresActivity"
-            android:label="@string/title_activity_procedures" >
+            android:label="@string/title_activity_procedures"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="com.df.app.CarCheck.AddPhotoCommentActivity"
-            android:label="@string/title_activity_add_photo_comment" >
+            android:label="@string/title_activity_add_photo_comment"
+            android:screenOrientation="portrait"  >
         </activity>
     </application>
 

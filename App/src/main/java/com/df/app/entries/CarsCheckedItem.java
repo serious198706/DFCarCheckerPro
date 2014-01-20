@@ -4,12 +4,21 @@ package com.df.app.entries;
  * Created by 岩 on 14-1-7.
  */
 public class CarsCheckedItem {
+    int carId;
     String plateNumber;
     String carType;
     String exteriorColor;
     String level;
     String status;
     String date;
+
+    public int getCarId() {
+        return carId;
+    }
+
+    public void setCarId(int carId) {
+        this.carId = carId;
+    }
 
     public String getPlateNumber() {
         return plateNumber;

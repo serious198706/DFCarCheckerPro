@@ -4,6 +4,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -21,6 +23,7 @@ public class CarsWaitingItem {
     String manufacturerId;
     String seriesId;
     String modelId;
+    JSONObject jsonObject;
 
 //    "CarId": 2,
 //            "Vin": "15844",
@@ -33,6 +36,14 @@ public class CarsWaitingItem {
 //            "RegDate": "2012-12-03",
 //            "BuildDate": "2012-12-03",
 //            "CreateDate": "2013-01-01"
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
+    }
 
     public int getCarId() {
         return carId;

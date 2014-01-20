@@ -40,13 +40,15 @@ public class Common {
     public static final String GET_APP_NEW_VERSION = "GetAppNewVersion";
     public static final String GET_STANDARD_REMARKS = "GetStandardRemarks";
     public static final String UPLOAD_PICTURE = "UploadPictureTagKey";
-    public static final String AYALYSIS_ACCIDENT_DATA = "AnalysisAccidentData";
+    public static final String ANALYSIS_ACCIDENT_DATA = "AnalysisAccidentData";
     public static final String COMMIT_DATA = "SubmitCarCheckData";
     public static final String SAVE_DATA = "SaveCarCheckData";
     public static final String GET_COOPERATORS = "GetCheckCooperates";
     public static final String GET_CHECKED_CARS = "ListCheckedCarsByUserId";
     public static final String GET_WAITING_CARS = "ListPendingCarsByUserId";
     public static final String GET_CAR_DETAIL = "GetCheckedCarDetailByCarId";
+    public static final String IMPORT_PLATFORM = "ImportPlatform";
+    public static final String CHECK_SELLER_NAME = "CheckSellerName";
 
     // 配置信息页与综合检查页spinner的联动关系
     public static final int[][] carSettingsSpinnerMap = {

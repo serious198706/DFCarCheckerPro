@@ -23,12 +23,18 @@ import static com.df.app.util.Helper.setTextView;
  * Created by 岩 on 14-1-7.
  */
 public class CarsWaitingListAdapter extends BaseAdapter {
+    public interface OnModifyProcedure {
+        public void onModifyProcedure(CarsWaitingItem item);
+    }
+
     private Context context;
     private ArrayList<CarsWaitingItem> items;
+    private OnModifyProcedure mCallback;
 
-    public CarsWaitingListAdapter(Context context, ArrayList<CarsWaitingItem> objects) {
+    public CarsWaitingListAdapter(Context context, ArrayList<CarsWaitingItem> objects, OnModifyProcedure listener) {
         this.context = context;
         this.items = objects;
+        this.mCallback = listener;
     }
 
     @Override
@@ -71,12 +77,7 @@ public class CarsWaitingListAdapter extends BaseAdapter {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(), "修改手续信息", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(context, InputProceduresActivity.class);
-                intent.putExtra("edit", true);
-                intent.putExtra("CarId", carsWaitingItem.getCarId());
-                // TODO 添加一个获取车辆详细信息的流程
-                context.startActivity(intent);
+                mCallback.onModifyProcedure(carsWaitingItem);
             }
         });
 

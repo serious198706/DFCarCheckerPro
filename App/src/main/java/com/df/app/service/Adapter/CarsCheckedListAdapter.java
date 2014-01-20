@@ -1,11 +1,15 @@
 package com.df.app.service.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.df.app.Procedures.InputProceduresActivity;
 import com.df.app.R;
 import com.df.app.entries.CarsCheckedItem;
 
@@ -17,12 +21,18 @@ import static com.df.app.util.Helper.setTextView;
  * Created by 岩 on 14-1-7.
  */
 public class CarsCheckedListAdapter extends BaseAdapter {
+    public interface OnImport {
+        public void onImport(int carId);
+    }
+
     private Context context;
     private ArrayList<CarsCheckedItem> items;
+    private OnImport mCallback;
 
-    public CarsCheckedListAdapter(Context context, ArrayList<CarsCheckedItem> objects) {
+    public CarsCheckedListAdapter(Context context, ArrayList<CarsCheckedItem> objects, OnImport listener) {
         this.context = context;
         this.items = objects;
+        this.mCallback = listener;
     }
 
     @Override
@@ -81,6 +91,14 @@ public class CarsCheckedListAdapter extends BaseAdapter {
 
             setTextView(view, R.id.car_status, "状态：" + carStatus);
             setTextView(view, R.id.car_date, "创建日期：" + carsCheckedItem.getDate());
+
+            Button button2 = (Button)view.findViewById(R.id.example_row_b_action_2);
+            button2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mCallback.onImport(carsCheckedItem.getCarId());
+                }
+            });
         }
 
         return view;

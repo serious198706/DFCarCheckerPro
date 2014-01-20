@@ -122,7 +122,7 @@ public class LoginActivity extends Activity {
                     intent.putExtra("UserId", userinfo.getId());
                     intent.putExtra("Key", userinfo.getKey());
                     intent.putExtra("UserName", userinfo.getName());
-                    intent.putExtra("Orid", userinfo.getName());
+                    intent.putExtra("Orid", userinfo.getOrid());
                     mLoginTask = null;
                     startActivity(intent);
                     finish();
