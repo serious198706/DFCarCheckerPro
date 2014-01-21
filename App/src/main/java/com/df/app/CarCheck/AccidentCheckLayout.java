@@ -239,4 +239,13 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
             e.printStackTrace();
         }
     }
+
+    public boolean checkAllFields() {
+
+        return false;
+    }
+
+    public void locateEmptyField() {
+
+    }
 }

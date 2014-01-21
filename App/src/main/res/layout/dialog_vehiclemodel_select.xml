@@ -55,7 +55,7 @@
                       android:layout_weight="1"
                       android:text="厂家："
                       android:textSize="18sp"/>
-            <Spinner android:id="@+id/production_spinner"
+            <Spinner android:id="@+id/manufacturer_spinner"
                      android:layout_width="0dp"
                      android:layout_height="wrap_content"
                      android:layout_weight="3"/>
@@ -67,7 +67,7 @@
                       android:layout_weight="1"
                       android:text="车系："
                       android:textSize="18sp"/>
-            <Spinner android:id="@+id/serial_spinner"
+            <Spinner android:id="@+id/series_spinner"
                      android:layout_width="0dp"
                      android:layout_height="wrap_content"
                      android:layout_weight="3"/>
@@ -85,5 +85,4 @@
                      android:layout_weight="3"/>
         </TableRow>
     </TableLayout>
-
 </LinearLayout>

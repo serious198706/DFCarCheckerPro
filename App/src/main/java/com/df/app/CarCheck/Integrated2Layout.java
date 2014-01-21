@@ -14,7 +14,9 @@ import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -205,6 +207,18 @@ public class Integrated2Layout extends LinearLayout {
             public void onClick(View view) {
                 currentTire = "spare";
                 takePhotoForTires("备胎");
+            }
+        });
+
+        // 移除输入框的焦点，避免每次输入完成后界面滚动
+        scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        scrollView.setFocusable(true);
+        scrollView.setFocusableInTouchMode(true);
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                v.requestFocusFromTouch();
+                return false;
             }
         });
     }

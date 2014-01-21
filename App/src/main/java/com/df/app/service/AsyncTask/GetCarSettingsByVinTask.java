@@ -16,19 +16,16 @@ import org.json.JSONObject;
 import java.util.List;
 
 /**
- * Created by 岩 on 14-1-14.
- *
- * 根据vin或者seriesId + modelId获取车辆配置信息
+ * Created by 岩 on 14-1-21.
  */
-public class GetCarSettingsTask extends AsyncTask<Void, Void, Boolean> {
+public class GetCarSettingsByVinTask extends AsyncTask<Void, Void, Boolean> {
     public interface OnGetCarSettingsFinished {
         public void onFinished(String result);
         public void onFailed(String result);
     }
 
     Context context;
-    String seriesId;
-    String modelId;
+    String vin;
     String modelName = "";
     List<String> modelNames;
     JSONObject jsonObject;
@@ -40,9 +37,9 @@ public class GetCarSettingsTask extends AsyncTask<Void, Void, Boolean> {
     private SoapService soapService;
     private OnGetCarSettingsFinished mCallback;
 
-    public GetCarSettingsTask(Context context, String seriesId, OnGetCarSettingsFinished listener) {
+    public GetCarSettingsByVinTask(Context context, String vin, OnGetCarSettingsFinished listener) {
         this.context = context;
-        this.seriesId = seriesId;
+        this.vin = vin;
         this.mCallback = listener;
     }
 
@@ -58,22 +55,15 @@ public class GetCarSettingsTask extends AsyncTask<Void, Void, Boolean> {
         jsonObjects = null;
     }
 
-
     @Override
     protected Boolean doInBackground(Void... params) {
         boolean success;
-
-        // 从传入的参数中解析出seriesId和modelId
-        String temp[] = seriesId.split(",");
-        seriesId = temp[0];
-        modelId = temp[1];
 
         try {
             JSONObject jsonObject = new JSONObject();
 
             // SeriesId + userID + key
-            jsonObject.put("SeriesId", seriesId);
-            jsonObject.put("ModelId", modelId);
+            jsonObject.put("Vin", vin);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
 
@@ -81,7 +71,7 @@ public class GetCarSettingsTask extends AsyncTask<Void, Void, Boolean> {
 
             // 设置soap的配置
             soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE,
-                    Common.GET_OPTIONS_BY_SERIESIDANDMODELID);
+                    Common.GET_OPTIONS_BY_VIN);
 
             success = soapService.communicateWithServer(jsonObject.toString());
         } catch (JSONException e) {

@@ -115,6 +115,39 @@ public class PhotoLayout extends LinearLayout {
         photoOtherLayout.saveOtherStandardPhoto();
     }
 
+    public boolean checkAllFields() {
+        boolean pass;
+
+        // 外观组照片必拍
+        pass = photoExteriorLayout.check();
+
+        if(pass) {
+            // 内饰组照片必拍
+            pass = photoInteriorLayout.check();
+        }
+
+        if(pass) {
+            // 机舱组照片必拍
+            pass = photoEngineLayout.check();
+        }
+
+        if(pass) {
+            // 手续组照片不是必拍
+            pass = photoProcedureLayout.check();
+        }
+
+        if(pass) {
+            // 其他组照片不是必拍
+            pass = photoOtherLayout.check();
+        }
+
+        return false;
+    }
+
+    public void locateEmptyField() {
+
+    }
+
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
     {
         @Override

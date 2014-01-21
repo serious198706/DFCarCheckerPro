@@ -91,6 +91,22 @@ public class ProceduresWebLayout extends LinearLayout {
         url += "userName=" + MainActivity.userInfo.getName();
         url += "&";
         url += "orid=" + MainActivity.userInfo.getOrid();
+        url += "&";
+        url += "plateNumber=";
+        url += "&";
+        url += "licenseModel=";
+        url += "&";
+        url += "vehicleType=";
+        url += "&";
+        url += "useCharacter=";
+        url += "&";
+        url += "engineSerial=";
+        url += "&";
+        url += "vin=";
+        url += "&";
+        url += "seriesId=";
+        url += "&";
+        url += "modelId=";
 
         proceduresWeb = (WebView)findViewById(R.id.proceduresWeb);
         proceduresWeb.loadUrl(url);

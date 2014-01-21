@@ -170,11 +170,26 @@ public class CarCheckActivity extends Activity {
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // 提交检测信息
-                                // 1.生成所有图片的Json数据
-                                generatePhotoEntities();
-                                // 2.上传图片
-                                uploadPictures();
+                                // 如果所有项目都已经填写完毕
+                                String pass = checkAllFields();
+
+                                if(pass.equals("")) {
+                                    // 1.生成所有图片的Json数据
+                                    generatePhotoEntities();
+                                    // 2.上传图片
+                                    uploadPictures();
+                                } else {
+                                    // TODO: 定位到未填写的那个控件
+                                    Toast.makeText(CarCheckActivity.this, "未完成", Toast.LENGTH_SHORT).show();
+                                    if(pass.equals("accidentCheck")) {
+                                        accidentCheckLayout.locateEmptyField();
+                                    } else if(pass.equals("integratedCheck")) {
+                                        integratedCheckLayout.locateEmptyField();
+                                    } else {
+                                        photoLayout.locateEmptyField();
+                                    }
+
+                                }
                             }
                         })
                         .setNegativeButton(R.string.cancel, null)
@@ -225,6 +240,36 @@ public class CarCheckActivity extends Activity {
 
         // 填充
         fillInData(carId, jsonString);
+    }
+
+    /**
+     * 检查所有必填字段
+     */
+    private String checkAllFields() {
+        String currentField = "";
+
+        boolean passed;
+
+        // 检查事故检查模块
+        currentField = "accidentCheck";
+        passed = accidentCheckLayout.checkAllFields();
+
+        if(passed) {
+            currentField = "integratedCheck";
+            passed = integratedCheckLayout.checkAllFields();
+        }
+
+        if(passed) {
+            currentField = "photo";
+            passed = photoLayout.checkAllFields();
+        }
+
+        if(passed)
+        {
+            currentField = "";
+        }
+
+        return "";
     }
 
     /**

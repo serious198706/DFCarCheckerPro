@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:text="玻璃"
+            android:singleLine="true"
             android:textColor="#FFF"
             android:textSize="22sp"
             android:layout_gravity="center"/>

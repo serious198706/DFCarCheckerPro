@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +18,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.df.app.CarsWaiting.CarsWaitingActivity;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.Brand;
@@ -32,13 +29,10 @@ import com.df.app.entries.Series;
 import com.df.app.entries.VehicleModel;
 import com.df.app.service.AsyncTask.GetCarSettingsTask;
 import com.df.app.service.SoapService;
-import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.List;
 
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.setEditViewText;
@@ -158,8 +152,8 @@ public class VehicleInfoLayout extends LinearLayout {
 
         countrySpinner = (Spinner) view.findViewById(R.id.country_spinner);
         brandSpinner = (Spinner) view.findViewById(R.id.brand_spinner);
-        manufacturerSpinner = (Spinner) view.findViewById(R.id.production_spinner);
-        seriesSpinner = (Spinner) view.findViewById(R.id.serial_spinner);
+        manufacturerSpinner = (Spinner) view.findViewById(R.id.manufacturer_spinner);
+        seriesSpinner = (Spinner) view.findViewById(R.id.series_spinner);
         modelSpinner = (Spinner) view.findViewById(R.id.model_spinner);
 
         AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())

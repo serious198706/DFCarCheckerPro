@@ -196,4 +196,8 @@ public class PhotoEngineLayout extends LinearLayout {
 
         return photoEntities;
     }
+
+    public boolean check() {
+        return false;
+    }
 }

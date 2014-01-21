@@ -68,4 +68,8 @@ public class PhotoInteriorLayout extends LinearLayout {
 
         return photoEntities;
     }
+
+    public boolean check() {
+        return false;
+    }
 }

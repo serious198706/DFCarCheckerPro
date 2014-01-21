@@ -25,14 +25,14 @@
         <item>很差</item>
     </string-array>
 
-    <string name="glass">前后风挡玻璃晚于\n出厂年份的有：</string>
+    <string name="glass">前后风挡玻璃晚于出厂年份的有：</string>
 
     <string-array name="glass_item">
         <item>前挡风玻璃</item>
         <item>后挡风玻璃</item>
     </string-array>
 
-    <string name="screw">车身覆盖件螺丝存\n在松动的部位有：</string>
+    <string name="screw">车身覆盖件螺丝存在松动的部位有：</string>
 
     <string-array name="screw_item">
         <item>右前翼子板</item>

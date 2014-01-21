@@ -197,4 +197,7 @@ public class PhotoProcedureLayout extends LinearLayout {
     }
 
 
+    public boolean check() {
+        return false;
+    }
 }

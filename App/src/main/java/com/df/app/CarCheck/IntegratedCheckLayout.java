@@ -162,6 +162,14 @@ public class IntegratedCheckLayout extends LinearLayout {
         return temp;
     }
 
+    public boolean checkAllFields() {
+        return false;
+    }
+
+    public void locateEmptyField() {
+
+    }
+
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
     {
         @Override
