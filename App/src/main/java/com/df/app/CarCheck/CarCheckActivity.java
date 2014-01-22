@@ -2,23 +2,30 @@ package com.df.app.CarCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.df.app.CarsChecked.CarsCheckedActivity;
 import com.df.app.CarsWaiting.CarsWaitingActivity;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.service.AsyncTask.CommitDataTask;
+import com.df.app.service.AsyncTask.GeneratePhotoEntitiesTask;
 import com.df.app.service.AsyncTask.SaveDataTask;
 import com.df.app.service.AsyncTask.UploadPictureTask;
+import com.df.app.service.Command;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
@@ -30,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -176,8 +184,6 @@ public class CarCheckActivity extends Activity {
                                 if(pass.equals("")) {
                                     // 1.生成所有图片的Json数据
                                     generatePhotoEntities();
-                                    // 2.上传图片
-                                    uploadPictures();
                                 } else {
                                     // TODO: 定位到未填写的那个控件
                                     Toast.makeText(CarCheckActivity.this, "未完成", Toast.LENGTH_SHORT).show();
@@ -272,6 +278,30 @@ public class CarCheckActivity extends Activity {
         return "";
     }
 
+
+    /**
+     * 将所有的照片实体进行聚合
+     */
+    // 添加所有的photoEntity
+    private void generatePhotoEntities() {
+        GeneratePhotoEntitiesTask generatePhotoEntitiesTask = new GeneratePhotoEntitiesTask(this, photoEntities,
+                accidentCheckLayout, integratedCheckLayout, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
+            @Override
+            public void onFinished(List<PhotoEntity> photoEntities) {
+                // 2.上传图片
+                uploadPictures();
+            }
+
+            @Override
+            public void onFailed() {
+                Toast.makeText(CarCheckActivity.this, "处理失败！", Toast.LENGTH_SHORT).show();
+                Log.d(Common.TAG, "生成草图失败！");
+            }
+        });
+
+        generatePhotoEntitiesTask.execute();
+    }
+
     /**
      * 上传所有照片
      */
@@ -296,6 +326,8 @@ public class CarCheckActivity extends Activity {
             @Override
             public void onFinished(String result) {
                 Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(CarCheckActivity.this, CarsCheckedActivity.class);
+                startActivity(intent);
                 finish();
             }
 
@@ -467,48 +499,6 @@ public class CarCheckActivity extends Activity {
         }
     }
 
-
-    /**
-     * 将所有的照片实体进行聚合
-     */
-    // 添加所有的photoEntity
-    private void generatePhotoEntities() {
-        photoEntities.clear();
-
-        // 外观标准组
-        photoEntities.addAll(PhotoExteriorLayout.photoListAdapter.getItems());
-
-        // 内饰标准组
-        photoEntities.addAll(PhotoInteriorLayout.photoListAdapter.getItems());
-
-        // 缺陷组，包含外观缺陷、内饰缺陷、结构缺陷
-        photoEntities.addAll(PhotoFaultLayout.photoListAdapter.getItems());
-
-        // 手续组
-        photoEntities.addAll(PhotoProcedureLayout.photoListAdapter.getItems());
-
-        // 机舱组
-        photoEntities.addAll(PhotoEngineLayout.photoListAdapter.getItems());
-
-        // 其他组
-        photoEntities.addAll(PhotoOtherLayout.photoListAdapter.getItems());
-
-        // 所有草图
-        photoEntities.addAll(generateSketches());
-    }
-
-    /**
-     * 生成草图（事故排查x3，综合检查x3）
-     */
-    private List<PhotoEntity> generateSketches() {
-        List<PhotoEntity> temp = new ArrayList<PhotoEntity>();
-
-        temp.addAll(accidentCheckLayout.generateSketches());
-        temp.addAll(integratedCheckLayout.generateSketches());
-
-        return temp;
-    }
-
     /**
      * 生成最终的JSON串
      */
@@ -548,7 +538,13 @@ public class CarCheckActivity extends Activity {
             // 如果有事故节点，则更新事故页面
             if(jsonObject.has("accident")) {
                 JSONObject accident = jsonObject.getJSONObject("accident");
-                accidentCheckLayout.fillInData(accident);
+                accidentCheckLayout.fillInData(accident, new Handler(new Handler.Callback() {
+                    @Override
+                    public boolean handleMessage(Message message) {
+                        accidentCheckLayout.showIssueAndResultTabs();
+                        return true;
+                    }
+                }));
             }
 
             // 如果有综合检查节点，则更新事故检查页面
@@ -587,6 +583,8 @@ public class CarCheckActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // TODO 做一些销毁的操作
+                        Intent intent = new Intent(CarCheckActivity.this, CarsWaitingActivity.class);
+                        startActivity(intent);
                         finish();
                     }
                 })

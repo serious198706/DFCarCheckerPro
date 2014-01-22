@@ -39,7 +39,7 @@ public class GetCarsCheckedListTask extends AsyncTask<Void, Void, Boolean> {
     protected void onPreExecute()
     {
         progressDialog = ProgressDialog.show(context, null,
-                "正在获取已检车辆信息，请稍候。。", false, false);
+                "正在获取已检车辆信息，请稍候...", false, false);
     }
 
     @Override

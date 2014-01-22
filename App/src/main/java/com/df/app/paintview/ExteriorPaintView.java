@@ -385,11 +385,13 @@ public class ExteriorPaintView extends PaintView {
         if(!data.isEmpty()) {
             data.clear();
             undoData.clear();
+            thisTimeNewData.clear();
             invalidate();
         }
         if(!photo.isEmpty()) {
             photo.clear();
             undoPhoto.clear();
+            thisTimeNewPhoto.clear();
         }
     }
 

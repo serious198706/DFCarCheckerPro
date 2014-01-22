@@ -3,6 +3,7 @@ package com.df.app.CarCheck;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -67,21 +68,7 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
             public void showContent() {
                 // 当确定车辆配置后，出现另外两个页面
                 // 但车辆配置可能会更新，这时就不需要再次添加了
-                if (!loaded) {
-
-                    views.add(issueLayout);
-                    views.add(accidentResultLayout);
-
-                    issueTab.setVisibility(VISIBLE);
-                    resultTab.setVisibility(VISIBLE);
-
-                    issueTab.setOnClickListener(new MyOnClick(viewPager, 1));
-                    resultTab.setOnClickListener(new MyOnClick(viewPager, 2));
-
-                    viewPager.setAdapter(new MyViewPagerAdapter(views));
-
-                    loaded = true;
-                }
+                showIssueAndResultTabs();
             }
 
             @Override
@@ -224,19 +211,40 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
     /**
      * 修改或者半路检测时，填上已经保存的内容
      */
-    public void fillInData(JSONObject accident) {
+    public void fillInData(JSONObject accident, Handler handler) {
         try {
             // 测量数据
             JSONObject data = accident.getJSONObject("data");
 
+            collectDataLayout.fillInData(data);
+
             // 问题查勘
             JSONObject issue = accident.getJSONObject("issue");
 
-            collectDataLayout.fillInData(data);
-
-            issueLayout.fillInData(issue);
+            // 如果有sketch节点，表示已经获取过问题查勘了，直接赋值
+            if(issue.get("sketch") != null) {
+                handler.sendEmptyMessage(1);
+                issueLayout.fillInData(issue);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void showIssueAndResultTabs() {
+        if(!loaded) {
+            views.add(issueLayout);
+            views.add(accidentResultLayout);
+
+            issueTab.setVisibility(VISIBLE);
+            resultTab.setVisibility(VISIBLE);
+
+            issueTab.setOnClickListener(new MyOnClick(viewPager, 1));
+            resultTab.setOnClickListener(new MyOnClick(viewPager, 2));
+
+            viewPager.setAdapter(new MyViewPagerAdapter(views));
+
+            loaded = true;
         }
     }
 

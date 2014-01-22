@@ -179,7 +179,7 @@ public class CarsWaitingActivity extends Activity {
             item.setManufacturerId("448");
             item.setSeriesId("6735");
             item.setModelId("14302");
-            item.setCarId(i + 10);
+            item.setCarId(i + 395);
 
             String jsonString = "{\"carId\":2,\"vin\":\"15844\",\"engineSerial\":\"发动机号\",\"vehicleType\":\"行驶证车辆类型\",\"userCharacter\":\"非运营\",\"mileage\":\"表征里程\",\"plateNumber\":\"京A2548\",\"licenseModel\":\"行驶证品牌型号\",\"exteriorColor\":\"红色\",\"regDate\":\"2012-12-03\",\"buildDate\":\"2012-12-03\",\"createDate\":\"2013-01-01\"}";
 
@@ -211,6 +211,7 @@ public class CarsWaitingActivity extends Activity {
                 intent.putExtra("jsonString", result);
                 intent.putExtra("carId", carId);
                 startActivity(intent);
+                finish();
             }
 
             @Override
@@ -223,6 +224,7 @@ public class CarsWaitingActivity extends Activity {
                 intent.putExtra("jsonString", result);
                 intent.putExtra("carId", carId);
                 startActivity(intent);
+                finish();
 
                 Log.d(Common.TAG, result);
             }

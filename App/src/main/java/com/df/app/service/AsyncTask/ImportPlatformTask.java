@@ -42,7 +42,7 @@ public class ImportPlatformTask extends AsyncTask<Void, Void, Boolean> {
     protected void onPreExecute()
     {
         progressDialog = ProgressDialog.show(context, null,
-                "正在导入平台，请稍候。。", false, false);
+                "正在导入平台，请稍候...", false, false);
     }
 
     @Override

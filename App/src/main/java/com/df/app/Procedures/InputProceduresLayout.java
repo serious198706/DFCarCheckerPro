@@ -75,10 +75,10 @@ public class InputProceduresLayout extends LinearLayout {
 
         carRecogniseLayout = new CarRecogniseLayout(context, new CarRecogniseLayout.OnShowContentListener() {
             @Override
-            public void showContent() {
+            public void showContent(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial, String seriesId, String modelId) {
                 // 当VIN确定后，出现另外两个页面
                 if(!loaded) {
-                    proceduresWebLayout.updateUi();
+                    proceduresWebLayout.updateUi(vin, plateNumber, licenseModel, vehicleType, useCharacter, engineSerial, seriesId, modelId);
                     views.add(proceduresWebLayout);
 
                     proceduresTab.setVisibility(VISIBLE);

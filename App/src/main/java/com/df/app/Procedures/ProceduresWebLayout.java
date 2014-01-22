@@ -8,6 +8,8 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -83,7 +85,7 @@ public class ProceduresWebLayout extends LinearLayout {
         proceduresWeb.goBack();
     }
 
-    public void updateUi() {
+    public void updateUi(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial, String seriesId, String modelId) {
         String url = "http://192.168.8.200:9901/Function/CarDetection2/Default.aspx?";
 
         url += "userId=" + MainActivity.userInfo.getId();
@@ -92,21 +94,21 @@ public class ProceduresWebLayout extends LinearLayout {
         url += "&";
         url += "orid=" + MainActivity.userInfo.getOrid();
         url += "&";
-        url += "plateNumber=";
+        url += "plateNumber=" + plateNumber;
         url += "&";
-        url += "licenseModel=";
+        url += "licenseModel=" + licenseModel;
         url += "&";
-        url += "vehicleType=";
+        url += "vehicleType=" + vehicleType;
         url += "&";
-        url += "useCharacter=";
+        url += "useCharacter=" + useCharacter;
         url += "&";
-        url += "engineSerial=";
+        url += "engineSerial=" + engineSerial;
         url += "&";
-        url += "vin=";
+        url += "vin=" + vin;
         url += "&";
-        url += "seriesId=";
+        url += "seriesId=" + seriesId;
         url += "&";
-        url += "modelId=";
+        url += "modelId=" + modelId;
 
         proceduresWeb = (WebView)findViewById(R.id.proceduresWeb);
         proceduresWeb.loadUrl(url);
@@ -115,5 +117,6 @@ public class ProceduresWebLayout extends LinearLayout {
         proceduresWeb.getSettings().setJavaScriptEnabled(true);
         proceduresWeb.addJavascriptInterface(this, "android");
         proceduresWeb.setInitialScale(getScale());
+        proceduresWeb.clearCache(true);
     }
 }

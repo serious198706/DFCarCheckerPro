@@ -39,7 +39,7 @@ public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
     protected void onPreExecute()
     {
         progressDialog = ProgressDialog.show(context, null,
-                "正在处理，请稍候。。", false, false);
+                "正在处理，请稍候...", false, false);
     }
 
     @Override

@@ -386,7 +386,7 @@ public class PaintActivity extends Activity {
 
     // 通知照片列表，有照片更新
     private void notifyPhotoList() {
-        // 这儿是将新更新的照片添加进去,而不是一全部添加
+        // TODO 这儿是将新更新的照片添加进去,而不是一全部添加
         for(PhotoEntity photoEntity : paintView.getPhotoEntities()) {
             PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
         }

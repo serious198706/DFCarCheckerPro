@@ -47,7 +47,7 @@ public class GetCarSettingsByVinTask extends AsyncTask<Void, Void, Boolean> {
     protected void onPreExecute()
     {
         mProgressDialog = ProgressDialog.show(context, null,
-                "正在获取车辆信息，请稍候。。", false, false);
+                "正在获取车辆信息，请稍候...", false, false);
         model = null;
         modelName = "";
         modelNames = null;

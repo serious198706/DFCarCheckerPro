@@ -38,7 +38,7 @@ public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPreExecute() {
         progressDialog = ProgressDialog.show(context, null,
-                "正在获取车辆信息，请稍候。。", false, false);
+                "正在获取车辆信息，请稍候...", false, false);
     }
 
     @Override

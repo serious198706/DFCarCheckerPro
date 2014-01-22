@@ -277,6 +277,13 @@ public class IssueLayout extends LinearLayout {
 
     // 进入检测车辆时填充的数据
     public void fillInData(JSONObject issue) {
+        try {
 
+            if(issue.get("sketch") != null) {
+
+            }
+        } catch (JSONException e) {
+
+        }
     }
 }

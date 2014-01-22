@@ -18,7 +18,7 @@
     </string-array>
 
     <string name="start">开始获取数据</string>
-    <string name="collecting">正在获取，请稍候&#8320;&#8320;&#8320;</string>
+    <string name="collecting">正在获取，请稍候&#8320;</string>
     <string name="collect_finished">数据获取完成！</string>
 
     <string name="parts">部件: </string>

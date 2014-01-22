@@ -554,8 +554,9 @@ public class CollectDataLayout extends LinearLayout {
      * 初始化BluetoothService
      */
     public void setupBluetoothService() {
-
         DF5000Service = new DF5000Service(rootView.getContext(), mHandler);
+        df5000Dialog.doDiscovery();
+        df5000Dialog.showPairedDevices();
     }
 
     /**
@@ -804,11 +805,57 @@ public class CollectDataLayout extends LinearLayout {
     }
 
     public void fillInData(JSONObject data) {
+        try {
+            JSONObject overlap = data.getJSONObject("overlap");
+            JSONObject enhance = data.getJSONObject("enhance");
+            JSONObject options = data.getJSONObject("options");
 
+            String cannotMeasure = options.getString("cannotMeasure");
+
+            // 覆盖件填充数据
+            for(int[] n : overIdMap.keySet()) {
+                String s = overlap.getString(overIdMap.get(n));
+                setEditViewText(rootView, n[0], s);
+
+                // 如果无法测量部位里含有该部位，则要置相应的checkbox为checked
+                if(cannotMeasure.contains(overIdMap.get(n))) {
+                    CheckBox checkBox = (CheckBox)findViewById(n[1]);
+                    checkBox.setChecked(true);
+                }
+            }
+
+            // 加强件填充数据
+            for(int n : enhanceIdMap.keySet()) {
+                String s = enhance.getString(enhanceIdMap.get(n));
+                setEditViewText(rootView, n, s);
+            }
+
+            // 隐藏部位
+            String hide = options.getString("hide");
+
+            // 如果有LA，则置a为checked
+            if(hide.contains("LA")) {
+                CheckBox checkBox = (CheckBox)findViewById(R.id.a);
+                checkBox.setChecked(true);
+            }
+
+            // 如果有LB，则置b为checked
+            if(hide.contains("LB")) {
+                CheckBox checkBox = (CheckBox)findViewById(R.id.b);
+                checkBox.setChecked(true);
+            }
+
+            // 如果其他字段都有,但是LB与RB没有，则置bn为checked
+            if(!getEditViewText(rootView, R.id.L_edit).equals("") &&
+                    getEditViewText(rootView, R.id.LB_edit).equals("") &&
+                    getEditViewText(rootView, R.id.RB_edit).equals("")) {
+                CheckBox checkBox = (CheckBox)findViewById(R.id.bn);
+                checkBox.setChecked(true);
+            }
+        } catch(JSONException e) {
+
+        }
     }
-
-
-
 
     // AccidentCheckLayout 必须实现此接口
     public interface OnGetIssueData {

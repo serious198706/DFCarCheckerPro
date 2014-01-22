@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.df.app.util.Helper.enableView;
+import static com.df.app.util.Helper.getDateString;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.isVin;
 import static com.df.app.util.Helper.setEditViewText;
@@ -237,8 +238,8 @@ public class CarRecogniseLayout extends LinearLayout {
                             setEditViewText(rootView, R.id.brand_edit, "");
                             findViewById(R.id.brand_select_button).setEnabled(false);
 
-                            // 传参数为空，表示提交的为VIN
-                            getCarSettingsFromServer("");
+                            // 无参数，表示提交的为VIN
+                            getCarSettingsFromServer();
                         }
                     })
                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -564,7 +565,14 @@ public class CarRecogniseLayout extends LinearLayout {
         enableView(rootView, R.id.engineSerial_edit, false);
 
         // 其他页面的显示与ui更新
-        mShowContentCallback.showContent();
+        mShowContentCallback.showContent(getEditViewText(rootView, R.id.vin_edit),
+                getEditViewText(rootView, R.id.plateNumber_edit),
+                getEditViewText(rootView, R.id.licenseModel_edit),
+                getEditViewText(rootView, R.id.vehicleType_edit),
+                getEditViewText(rootView, R.id.useCharacter_edit),
+                getEditViewText(rootView, R.id.engineSerial_edit),
+                mCarSettings.getSeries().id,
+                mCarSettings.getModel().id);
     }
 
     // 更新车辆配置信息
@@ -839,7 +847,8 @@ public class CarRecogniseLayout extends LinearLayout {
     // BasicInfoLayout必须实现此方法
     // 显示手续信息与基本信息的内容
     public interface OnShowContentListener {
-        public void showContent();
+        public void showContent(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial,
+            String seriesId, String modelId);
     }
 
     // IntegratedCheckLayout必须实现此方法

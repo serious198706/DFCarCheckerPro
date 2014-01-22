@@ -507,6 +507,7 @@ public class ExteriorLayout extends LinearLayout {
             jsonObject.put("Part", "sketch");
 
             JSONObject photoData = new JSONObject();
+
             photoData.put("height", bitmap.getHeight());
             photoData.put("width", bitmap.getWidth());
 

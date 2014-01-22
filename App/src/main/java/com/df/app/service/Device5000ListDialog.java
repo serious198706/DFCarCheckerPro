@@ -93,6 +93,9 @@ public class Device5000ListDialog extends Dialog {
         // 得到目前已配对的设备
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
 
+        // 清空之前的查找记录
+        mPairedDevicesArrayAdapter.clear();
+
         // 如果发现设备，将其添加到列表
         if (pairedDevices.size() > 0) {
             findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
@@ -126,9 +129,33 @@ public class Device5000ListDialog extends Dialog {
     };
 
     /**
+     *
+     */
+    public void showPairedDevices() {
+        // 得到目前已配对的设备
+        Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+
+        // 清空之前的查找记录
+        mPairedDevicesArrayAdapter.clear();
+
+        // 如果发现设备，将其添加到列表
+        if (pairedDevices.size() > 0) {
+            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
+            for (BluetoothDevice device : pairedDevices) {
+                mPairedDevicesArrayAdapter.add(device.getName() + "\n"
+                        + device.getAddress());
+            }
+        } else {
+            // 如果未找到设备
+            String noDevices = context.getResources().getString(R.string.none_paired);
+            mPairedDevicesArrayAdapter.add(noDevices);
+        }
+    }
+
+    /**
      * 发现与bluetoothadapter启动装置
      */
-    private void doDiscovery() {
+    public void doDiscovery() {
         Log.d(Common.TAG, "doDiscovery()");
 
         // 设置标题 - 正在查找...
