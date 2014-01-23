@@ -173,5 +173,10 @@ public class PhotoLayout extends LinearLayout {
         procedureTab.setTextColor(currIndex == 3 ? selectedColor : unselectedColor);
         engineTab.setTextColor(currIndex == 4 ? selectedColor : unselectedColor);
         otherTab.setTextColor(currIndex == 5 ? selectedColor : unselectedColor);
+
+        // 缺陷组照片
+        if(currIndex == 2) {
+
+        }
     }
 }

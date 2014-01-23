@@ -237,6 +237,14 @@ public class CarCheckActivity extends Activity {
             }
         });
 
+        Button comB = (Button)findViewById(R.id.com);
+        comB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                commitData();
+            }
+        });
+
         // 填充各部分的内容
         Bundle bundle = getIntent().getExtras();
 
@@ -312,7 +320,7 @@ public class CarCheckActivity extends Activity {
                 // 3.生成所有检测信息的Json数据
                 generateJsonString();
                 // 4.提交检测信息
-                commitData();
+                //commitData();
             }
         });
         uploadPictureTask.execute();

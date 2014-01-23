@@ -494,8 +494,7 @@ public class VehicleInfoLayout extends LinearLayout {
     }
 
     // 更新页面，顺带更新车辆信息
-    public void fillInData(JSONObject procedures, String countryId, String brandId, String manufacturerId,
-                           String seriesId, String modelId) {
+    public void fillInData(JSONObject procedures, String seriesId, String modelId) {
         try {
             setEditViewText(rootView, R.id.vin_edit, procedures.getString("vin"));
             setEditViewText(rootView, R.id.engineSerial_edit, procedures.getString("engineSerial"));
@@ -508,11 +507,38 @@ public class VehicleInfoLayout extends LinearLayout {
             setEditViewText(rootView, R.id.builtDate_edit, procedures.getString("builtDate"));
 
             // 更新配置信息
-            Country country = vehicleModel.getCountryById(countryId);
-            Brand brand = country.getBrandById(brandId);
-            Manufacturer manufacturer = brand.getManufacturerById(manufacturerId);
-            Series series = manufacturer.getSeriesById(seriesId);
-            Model model = series.getModelById(modelId);
+            Country country = null;
+            Brand brand = null;
+            Manufacturer manufacturer = null;
+            Series series = null;
+            Model model = null;
+
+            boolean found = false;
+
+            for(Country country1 : vehicleModel.getCountries()) {
+                for(Brand brand1 : country1.brands) {
+                    for(Manufacturer manufacturer1 : brand1.manufacturers) {
+                        for(Series series1 : manufacturer1.serieses) {
+                            if(series1.id.equals(seriesId)) {
+                                manufacturer = manufacturer1;
+                                brand = brand1;
+                                country = country1;
+                                series = series1;
+                                model = series.getModelById(modelId);
+
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(found)
+                            break;
+                    }
+                    if(found)
+                        break;
+                }
+                if(found)
+                    break;
+            }
 
             mCarSettings.setCountry(country);
             mCarSettings.setBrand(brand);

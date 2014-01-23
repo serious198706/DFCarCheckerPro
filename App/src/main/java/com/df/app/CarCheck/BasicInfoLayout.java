@@ -167,8 +167,7 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
             if(features.has("options")) {
                 JSONObject options = features.getJSONObject("options");
                 optionsLayout.fillInData(options);
-                vehicleInfoLayout.fillInData(procedures, options.getString("countryId"), options.getString("brandId"),
-                        options.getString("manufacturerId"), options.getString("seriesId"), options.getString("modelId"));
+                vehicleInfoLayout.fillInData(procedures, options.getString("seriesId"), options.getString("modelId"));
             } else {
                 vehicleInfoLayout.fillInData(procedures);
             }

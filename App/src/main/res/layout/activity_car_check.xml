@@ -68,12 +68,21 @@
                 android:background="@drawable/save"
                 android:layout_toLeftOf="@id/buttonCommit"/>
 
+
+
         <Button android:id="@+id/buttonHome"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/home"
                 android:layout_toLeftOf="@id/buttonSave"/>
+
+        <Button android:id="@+id/com"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/buttonHome"
+                android:text="提交"
+                android:textColor="#fff"/>
 
         <Button android:id="@+id/buttonBasicInfo"
                 android:layout_width="195dp"

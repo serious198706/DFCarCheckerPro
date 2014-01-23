@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -185,6 +187,22 @@ public class CarRecogniseLayout extends LinearLayout {
 
         engineSerailEdit = (EditText) rootView.findViewById(R.id.engineSerial_edit);
         brandEdit = (EditText) rootView.findViewById(R.id.brand_edit);
+
+        // vin输入框中只允许输入大写字母与数字
+        InputFilter alphaNumericFilter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence arg0, int arg1, int arg2, Spanned arg3, int arg4, int arg5)
+            {
+                for (int k = arg1; k < arg2; k++) {
+                    if (!Character.isLetterOrDigit(arg0.charAt(k))) {
+                        return "";
+                    }
+                }
+                return null;
+            }
+        };
+        EditText vin_edit = (EditText)findViewById(R.id.vin_edit);
+        vin_edit.setFilters(new InputFilter[]{ alphaNumericFilter, new InputFilter.AllCaps()});
 
         vehicleModel = MainActivity.vehicleModel;
     }
@@ -564,15 +582,16 @@ public class CarRecogniseLayout extends LinearLayout {
         enableView(rootView, R.id.useCharacter_edit, false);
         enableView(rootView, R.id.engineSerial_edit, false);
 
-        // 其他页面的显示与ui更新
-        mShowContentCallback.showContent(getEditViewText(rootView, R.id.vin_edit),
-                getEditViewText(rootView, R.id.plateNumber_edit),
-                getEditViewText(rootView, R.id.licenseModel_edit),
-                getEditViewText(rootView, R.id.vehicleType_edit),
-                getEditViewText(rootView, R.id.useCharacter_edit),
-                getEditViewText(rootView, R.id.engineSerial_edit),
-                mCarSettings.getSeries().id,
-                mCarSettings.getModel().id);
+        if(mCarSettings.getSeries() != null)
+            // 其他页面的显示与ui更新
+            mShowContentCallback.showContent(getEditViewText(rootView, R.id.vin_edit),
+                    getEditViewText(rootView, R.id.plateNumber_edit),
+                    getEditViewText(rootView, R.id.licenseModel_edit),
+                    getEditViewText(rootView, R.id.vehicleType_edit),
+                    getEditViewText(rootView, R.id.useCharacter_edit),
+                    getEditViewText(rootView, R.id.engineSerial_edit),
+                    mCarSettings.getSeries().id,
+                    mCarSettings.getModel().id);
     }
 
     // 更新车辆配置信息

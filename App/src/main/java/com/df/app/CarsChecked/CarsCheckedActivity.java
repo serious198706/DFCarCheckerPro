@@ -126,7 +126,7 @@ public class CarsCheckedActivity extends Activity {
                     }
                     @Override
                     public void onFailed() {
-                        // TODO 删掉这儿！
+                        // TODO 删掉！！！
                         fillInDummyData();
                     }
                 });

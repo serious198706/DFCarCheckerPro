@@ -17,11 +17,11 @@ public class VehicleModel {
         countries = new ArrayList<Country>();
     }
 
-    public VehicleModel GetVehicleModelInstance() {
+    public VehicleModel getVehicleModelInstance() {
         return new VehicleModel();
     }
 
-    public List<Country> GetCountries() {
+    public List<Country> getCountries() {
         return countries;
     }
 
