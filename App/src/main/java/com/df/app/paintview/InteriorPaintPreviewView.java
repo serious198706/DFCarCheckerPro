@@ -18,7 +18,7 @@ import com.df.app.util.Common;
 
 import java.util.List;
 
-public class InteriorPaintPreviewView extends ImageView {
+public class InteriorPaintPreviewView extends PaintPreviewView {
 
     private int currentType;
     private boolean move;
@@ -49,6 +49,16 @@ public class InteriorPaintPreviewView extends ImageView {
 
         max_x = bitmap.getWidth();
         max_y = bitmap.getHeight();
+    }
+
+    @Override
+    public int getMaxWidth() {
+        return max_x;
+    }
+
+    @Override
+    public int getMaxHeight() {
+        return max_y;
     }
 
     @Override

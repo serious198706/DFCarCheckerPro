@@ -103,4 +103,8 @@ public class Integrated3Layout extends LinearLayout {
     public String getCooperatorName() {
         return getSpinnerSelectedText(rootView, R.id.cooperatorName_spinner);
     }
+
+    public String checkAllFields() {
+        return "";
+    }
 }

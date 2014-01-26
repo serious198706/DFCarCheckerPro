@@ -280,4 +280,8 @@ public class Integrated1Layout extends LinearLayout{
     public void fillInData(JSONObject engine, JSONObject gearbox, JSONObject function, String comment1) {
 
     }
+
+    public String checkAllFields() {
+        return "";
+    }
 }

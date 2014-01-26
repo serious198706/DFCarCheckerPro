@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -48,6 +49,7 @@ import java.util.List;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
+import static com.df.app.util.Helper.setSpinnerSelectionWithString;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -86,6 +88,9 @@ public class ExteriorLayout extends LinearLayout {
 
     // 承载所有的checkbox
     private TableLayout root;
+
+
+    private MyScrollView scrollView;
 
     public ExteriorLayout(Context context) {
         super(context);
@@ -143,7 +148,7 @@ public class ExteriorLayout extends LinearLayout {
             }
         });
 
-        MyScrollView scrollView = (MyScrollView)findViewById(R.id.root);
+        scrollView = (MyScrollView)findViewById(R.id.root);
         scrollView.setListener(new MyScrollView.ScrollViewListener() {
             @Override
             public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldx, int oldy) {
@@ -189,6 +194,9 @@ public class ExteriorLayout extends LinearLayout {
         });
     }
 
+    /**
+     * 获取车辆配置信息后，更新此页面
+     */
     public void updateExteriorPreview() {
         if(!posEntities.isEmpty()) {
             exteriorPaintPreviewView.setAlpha(1f);
@@ -203,6 +211,9 @@ public class ExteriorLayout extends LinearLayout {
         }
     }
 
+    /**
+     * 拍摄外观标准照
+     */
     private void starCamera() {
         String[] itemArray = getResources().getStringArray(R.array.exterior_camera_item);
 
@@ -217,19 +228,15 @@ public class ExteriorLayout extends LinearLayout {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 currentShotPart = i;
-
                 String group = getResources().getStringArray(R.array.exterior_camera_item)[currentShotPart];
-
                 Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
 
-                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
+                // 使用当前毫秒数当作照片名
                 currentTimeMillis = System.currentTimeMillis();
-                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg"); //
-                // create a
-                // file to save the image
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
 
+                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
                 ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_STANDARD);
             }
         })
@@ -244,21 +251,33 @@ public class ExteriorLayout extends LinearLayout {
         dialog.show();
     }
 
+    /**
+     * 选择玻璃生产年份不符的
+     */
     private void chooseGlass() {
         showPopupWindow("glass", getResources().getString(R.string.glass),
                 getResources().getStringArray(R.array.glass_item));
     }
 
+    /**
+     * 选择螺丝有松动的
+     */
     private void chooseScrew() {
         showPopupWindow("screw", getResources().getString(R.string.screw),
                 getResources().getStringArray(R.array.screw_item));
     }
 
+    /**
+     * 选择外观破损部位（暂扔）
+     */
     private void chooseBroken() {
         showPopupWindow("broken", getResources().getString(R.string.ex_broken),
                 getResources().getStringArray(R.array.ex_broken_item));
     }
 
+    /**
+     * 弹出窗口供用户选择
+     */
     private void showPopupWindow(final String type, String title, String array[]) {
         View view = getPopupView(type, title, array);
 
@@ -284,6 +303,9 @@ public class ExteriorLayout extends LinearLayout {
         dialog.show();
     }
 
+    /**
+     * 根据内容生成弹出窗口的内容
+     */
     private View getPopupView(String type, String title, String array[]) {
         LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
         View view = inflater.inflate(R.layout.popup_layout, null);
@@ -329,6 +351,9 @@ public class ExteriorLayout extends LinearLayout {
         return view;
     }
 
+    /**
+     * 从弹出窗口中获取用户的选择结果
+     */
     private String getPopupResult() {
         String result = "";
 
@@ -352,6 +377,9 @@ public class ExteriorLayout extends LinearLayout {
         return result;
     }
 
+    /**
+     * 保存外观标准照，并进行缩小化处理、生成缩略图
+     */
     public void saveExteriorStandardPhoto() {
         Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
         Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
@@ -366,6 +394,9 @@ public class ExteriorLayout extends LinearLayout {
         starCamera();
     }
 
+    /**
+     * 生成图片实体
+     */
     private PhotoEntity generatePhotoEntity() {
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
@@ -412,7 +443,10 @@ public class ExteriorLayout extends LinearLayout {
 
         PhotoEntity photoEntity = new PhotoEntity();
         photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
-        photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
+        if(!photoEntity.getFileName().equals(""))
+            photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
+        else
+            photoEntity.setThumbFileName("");
         photoEntity.setJsonString(jsonObject.toString());
         String group = getResources().getStringArray(R.array.exterior_camera_item)[currentShotPart];
         photoEntity.setName(group);
@@ -420,17 +454,9 @@ public class ExteriorLayout extends LinearLayout {
         return photoEntity;
     }
 
-    private Bitmap getBitmapFromFigure(int figure) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-        return BitmapFactory.decodeFile(getBitmapNameFromFigure(figure), options);
-    }
-
-    private String getBitmapNameFromFigure(int figure) {
-        return Common.utilDirectory + getNameFromFigure(figure);
-    }
-
+    /**
+     * 拷贝草图
+     */
     public static void copy(File src, File dst) throws IOException {
         InputStream in = new FileInputStream(src);
         OutputStream out = new FileOutputStream(dst);
@@ -443,6 +469,22 @@ public class ExteriorLayout extends LinearLayout {
         }
         in.close();
         out.close();
+    }
+
+    /**
+     * 根据车型信息调用不同的预览图
+     * @param figure 车辆类型代码
+     * @return 图片
+     */
+    private Bitmap getBitmapFromFigure(int figure) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+        return BitmapFactory.decodeFile(getBitmapNameFromFigure(figure), options);
+    }
+
+    private String getBitmapNameFromFigure(int figure) {
+        return Common.utilDirectory + getNameFromFigure(figure);
     }
 
     private static String getNameFromFigure(int figure) {
@@ -467,6 +509,9 @@ public class ExteriorLayout extends LinearLayout {
         return name;
     }
 
+    /**
+     * 生成外观检查JSON串
+     */
     public JSONObject generateJSONObject() throws JSONException{
         JSONObject exterior = new JSONObject();
 
@@ -482,12 +527,15 @@ public class ExteriorLayout extends LinearLayout {
         return exterior;
     }
 
+    /**
+     * 生成草图
+     */
     public PhotoEntity generateSketch() {
         Bitmap bitmap = null;
         Canvas c;
 
         try {
-            bitmap = Bitmap.createBitmap(exteriorPaintPreviewView.getWidth(),exteriorPaintPreviewView.getHeight(),
+            bitmap = Bitmap.createBitmap(exteriorPaintPreviewView.getMaxWidth(),exteriorPaintPreviewView.getMaxHeight(),
                     Bitmap.Config.ARGB_8888);
             c = new Canvas(bitmap);
             exteriorPaintPreviewView.draw(c);
@@ -526,7 +574,49 @@ public class ExteriorLayout extends LinearLayout {
         return photoEntity;
     }
 
-    public void fillInData(JSONObject exterior) {
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     */
+    public void fillInData(JSONObject exterior) throws JSONException{
+        setSpinnerSelectionWithString(rootView, R.id.smooth_spinner, exterior.getString("smooth"));
+        setEditViewText(rootView, R.id.exterior_comment_edit, exterior.getString("comment"));
+        setEditViewText(rootView, R.id.glass_edit, exterior.getString("glass"));
+        setEditViewText(rootView, R.id.screw_edit, exterior.getString("screw"));
 
+        CheckBox checkBox = (CheckBox)findViewById(R.id.needRepair);
+        checkBox.setChecked(exterior.getString("needRepair").equals("是"));
+    }
+
+    /**
+     * 检查外观必填项
+     */
+    public String checkAllFields() {
+        int sum = 0;
+
+        for(int i = 0; i < photoShotCount.length; i++) {
+            sum += photoShotCount[i];
+        }
+
+        if(sum < 1) {
+            return "exterior";
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * 提交前检查，如果没有拍标准照，则定位到此按钮
+     */
+    public void locateCameraButton() {
+        final Button button = (Button)findViewById(R.id.exterior_camera_button);
+        button.setFocusable(true);
+        button.requestFocus();
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.scrollTo(0, button.getBottom());
+            }
+        });
     }
 }

@@ -16,7 +16,7 @@ import com.df.app.entries.PosEntity;
 
 import java.util.List;
 
-public class FramePaintPreviewView extends ImageView {
+public class FramePaintPreviewView extends PaintPreviewView {
 
     private int currentType;
     private boolean move;
@@ -53,6 +53,16 @@ public class FramePaintPreviewView extends ImageView {
     }
 
     @Override
+    public int getMaxWidth() {
+        return max_x;
+    }
+
+    @Override
+    public int getMaxHeight() {
+        return max_y;
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawBitmap(bitmap, 0, 0, null);
@@ -83,5 +93,7 @@ public class FramePaintPreviewView extends ImageView {
     public void setPosEntities(List<PosEntity> entities) {
         data = entities;
     }
+
+
 }
 

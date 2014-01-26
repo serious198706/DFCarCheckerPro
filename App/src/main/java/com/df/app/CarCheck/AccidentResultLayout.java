@@ -18,6 +18,8 @@ import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintview.FramePaintPreviewView;
+import com.df.app.paintview.PaintPreviewView;
+import com.df.app.paintview.PaintView;
 import com.df.app.util.Common;
 
 import org.json.JSONException;
@@ -150,7 +152,9 @@ public class AccidentResultLayout extends LinearLayout {
 
             photoEntity.setName("结构缺陷");
             photoEntity.setFileName(posEntity.getImageFileName());
-            photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
+
+            if(!photoEntity.getFileName().equals(""))
+                photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
             photoEntity.setComment(posEntity.getComment());
             photoEntity.setJsonString(jsonObject.toString());
         } catch (JSONException e) {
@@ -214,12 +218,12 @@ public class AccidentResultLayout extends LinearLayout {
      *
      * 参数:1.视角 2.草图名称
      */
-    private PhotoEntity generateSketch(View view, String sketchName) {
+    private PhotoEntity generateSketch(PaintPreviewView view, String sketchName) {
         Bitmap bitmap = null;
         Canvas c;
 
         try {
-            bitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(),
+            bitmap = Bitmap.createBitmap(view.getMaxWidth(),view.getMaxHeight(),
                     Bitmap.Config.ARGB_8888);
             c = new Canvas(bitmap);
             view.draw(c);

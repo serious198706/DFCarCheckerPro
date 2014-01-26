@@ -136,7 +136,8 @@ public class IssueLayout extends LinearLayout {
             drawSketch(handelLevelNames(level1, 1));
             drawSketch(handelLevelNames(level2, 2));
 
-            progressDialog.dismiss();
+            if(progressDialog != null)
+                progressDialog.dismiss();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -277,13 +278,6 @@ public class IssueLayout extends LinearLayout {
 
     // 进入检测车辆时填充的数据
     public void fillInData(JSONObject issue) {
-        try {
-
-            if(issue.get("sketch") != null) {
-
-            }
-        } catch (JSONException e) {
-
-        }
+        fillInData(issue.toString(), null);
     }
 }

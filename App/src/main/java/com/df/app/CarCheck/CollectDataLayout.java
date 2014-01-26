@@ -714,6 +714,9 @@ public class CollectDataLayout extends LinearLayout {
         }
     }
 
+    /**
+     * 生成数据采集JSON串
+     */
     public JSONObject generateJSONObject() throws JSONException {
         JSONObject data = new JSONObject();
 
@@ -804,6 +807,9 @@ public class CollectDataLayout extends LinearLayout {
         return data;
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     */
     public void fillInData(JSONObject data) {
         try {
             JSONObject overlap = data.getJSONObject("overlap");
@@ -857,7 +863,9 @@ public class CollectDataLayout extends LinearLayout {
         }
     }
 
-    // AccidentCheckLayout 必须实现此接口
+    /**
+     * AccidentCheckLayout来实现此接口，当采集完数据后，需要显示并更新问题查勘和查勘结果页面
+     */
     public interface OnGetIssueData {
         public void showContent();
         public void updateUi(String result, ProgressDialog progressDialog);

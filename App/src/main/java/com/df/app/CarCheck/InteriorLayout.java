@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -84,6 +85,9 @@ public class InteriorLayout extends LinearLayout {
     // 记录破损部位
     private String brokenResult = "";
 
+
+    private MyScrollView scrollView;
+
     public InteriorLayout(Context context) {
         super(context);
         init(context);
@@ -131,7 +135,7 @@ public class InteriorLayout extends LinearLayout {
             }
         });
 
-        MyScrollView scrollView = (MyScrollView)findViewById(R.id.root);
+        scrollView = (MyScrollView)findViewById(R.id.root);
         scrollView.setListener(new MyScrollView.ScrollViewListener() {
             @Override
             public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldx, int oldy) {
@@ -406,7 +410,10 @@ public class InteriorLayout extends LinearLayout {
 
         PhotoEntity photoEntity = new PhotoEntity();
         photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
-        photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
+        if(!photoEntity.getFileName().equals(""))
+            photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
+        else
+            photoEntity.setThumbFileName("");
         photoEntity.setJsonString(jsonObject.toString());
         String group = getResources().getStringArray(R.array.interior_camera_item)[currentShotPart];
         photoEntity.setName(group);
@@ -479,7 +486,7 @@ public class InteriorLayout extends LinearLayout {
         Canvas c;
 
         try {
-            bitmap = Bitmap.createBitmap(interiorPaintPreviewView.getWidth(),interiorPaintPreviewView.getHeight(),
+            bitmap = Bitmap.createBitmap(interiorPaintPreviewView.getMaxWidth(),interiorPaintPreviewView.getMaxHeight(),
                     Bitmap.Config.ARGB_8888);
             c = new Canvas(bitmap);
             interiorPaintPreviewView.draw(c);
@@ -520,5 +527,32 @@ public class InteriorLayout extends LinearLayout {
 
     public void fillInData(JSONObject interior) {
 
+    }
+
+    public String checkAllFields() {
+        int sum = 0;
+
+        for(int i = 0; i < photoShotCount.length; i++) {
+            sum += photoShotCount[i];
+        }
+
+        if(sum < 1) {
+            return "interior";
+        } else {
+            return "";
+        }
+    }
+
+    public void locateCameraButton() {
+        final Button button = (Button)findViewById(R.id.interior_camera_button);
+        button.setFocusable(true);
+        button.requestFocus();
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.scrollTo(0, button.getBottom());
+            }
+        });
     }
 }

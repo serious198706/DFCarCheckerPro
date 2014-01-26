@@ -84,14 +84,14 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         // 查勘结果页面
         accidentResultLayout = new AccidentResultLayout(context);
 
-        InitViewPager(context);
+        InitViewPager();
         InitTextView();
     }
 
     /**
      * 初始化viewPager，用来承载各个模块，可以通过滑动切换
      */
-    private void InitViewPager(Context context) {
+    private void InitViewPager() {
         viewPager = (ViewPager) rootView.findViewById(R.id.vPager);
         views = new ArrayList<View>();
 
@@ -248,12 +248,11 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         }
     }
 
-    public boolean checkAllFields() {
+    public String checkAllFields() {
+        if(!loaded) {
+            selectTab(0);
+        }
 
-        return false;
-    }
-
-    public void locateEmptyField() {
-
+        return loaded ? "" : "accidentCheck";
     }
 }

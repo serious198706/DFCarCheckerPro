@@ -185,12 +185,13 @@ public class CarCheckActivity extends Activity {
                                     // 1.生成所有图片的Json数据
                                     generatePhotoEntities();
                                 } else {
-                                    // TODO: 定位到未填写的那个控件
-                                    Toast.makeText(CarCheckActivity.this, "未完成", Toast.LENGTH_SHORT).show();
                                     if(pass.equals("accidentCheck")) {
-                                        accidentCheckLayout.locateEmptyField();
-                                    } else if(pass.equals("integratedCheck")) {
-                                        integratedCheckLayout.locateEmptyField();
+                                        Toast.makeText(CarCheckActivity.this, "未完成事故检测！", Toast.LENGTH_SHORT).show();
+                                        selectTab(R.id.accidentCheck);
+                                    } else if(pass.equals("exterior") || pass.equals("interior") ||
+                                            pass.equals("leftFront") || pass.equals("rightFront") ||
+                                            pass.equals("leftRear") || pass.equals("rightRear")) {
+                                        selectTab(R.id.integratedCheck);
                                     } else {
                                         photoLayout.locateEmptyField();
                                     }
@@ -258,32 +259,24 @@ public class CarCheckActivity extends Activity {
 
     /**
      * 检查所有必填字段
+     *
+     * 使用字符串来定位目前的
      */
     private String checkAllFields() {
-        String currentField = "";
-
-        boolean passed;
+        String currentField;
 
         // 检查事故检查模块
-        currentField = "accidentCheck";
-        passed = accidentCheckLayout.checkAllFields();
+        currentField = accidentCheckLayout.checkAllFields();
 
-        if(passed) {
-            currentField = "integratedCheck";
-            passed = integratedCheckLayout.checkAllFields();
+        if(currentField.equals("")) {
+            currentField = integratedCheckLayout.checkAllFields();
         }
 
-        if(passed) {
-            currentField = "photo";
-            passed = photoLayout.checkAllFields();
+        if(currentField.equals("")) {
+            currentField = photoLayout.checkAllFields();
         }
 
-        if(passed)
-        {
-            currentField = "";
-        }
-
-        return "";
+        return currentField;
     }
 
 

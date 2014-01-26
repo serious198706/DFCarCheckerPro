@@ -20,7 +20,7 @@ import com.df.app.util.Common;
 
 import java.util.List;
 
-public class ExteriorPaintPreviewView extends ImageView {
+public class ExteriorPaintPreviewView extends PaintPreviewView {
 
     private int currentType;
     private boolean move;
@@ -34,6 +34,16 @@ public class ExteriorPaintPreviewView extends ImageView {
     public ExteriorPaintPreviewView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         //init();
+    }
+
+    @Override
+    public int getMaxWidth() {
+        return max_x;
+    }
+
+    @Override
+    public int getMaxHeight() {
+        return max_y;
     }
 
     public ExteriorPaintPreviewView(Context context, AttributeSet attrs) {

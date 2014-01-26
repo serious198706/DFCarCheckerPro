@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
@@ -162,12 +163,50 @@ public class IntegratedCheckLayout extends LinearLayout {
         return temp;
     }
 
-    public boolean checkAllFields() {
-        return false;
-    }
+    public String checkAllFields() {
+        String currentField;
 
-    public void locateEmptyField() {
+        // 外观照片数量检查
+        currentField = exteriorLayout.checkAllFields();
 
+        if(!currentField.equals("")) {
+            Toast.makeText(rootView.getContext(), "外观组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(0);
+            exteriorLayout.locateCameraButton();
+
+            return currentField;
+        }
+
+        // 内饰照片数量检查
+        currentField = interiorLayout.checkAllFields();
+
+        if(!currentField.equals("")) {
+            Toast.makeText(rootView.getContext(), "内饰组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(1);
+            interiorLayout.locateCameraButton();
+
+            return currentField;
+        }
+
+        // 综合检查一
+        currentField = integrated2Layout.checkAllFields();
+
+        if(!currentField.equals("")) {
+            Toast.makeText(rootView.getContext(), "轮胎照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(3);
+            integrated2Layout.locateTirePart();
+
+            return currentField;
+        }
+
+        // 综合检查三
+        if(currentField.equals("")) {
+            currentField = integrated3Layout.checkAllFields();
+
+            return currentField;
+        }
+
+        return currentField;
     }
 
     class MyOnPageChangeListener implements ViewPager.OnPageChangeListener

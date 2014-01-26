@@ -420,7 +420,7 @@
                                android:layout_width="300dp"
                                android:layout_height="421dp"
                                android:layout_centerHorizontal="true"
-                               android:alpha="0.6"/>
+                               android:alpha="0.5"/>
 
                     <EditText android:id="@+id/leftFront_edit"
                               android:layout_width="100dp"
@@ -433,13 +433,13 @@
                               android:paddingLeft="10dp"/>
 
                     <Button android:id="@+id/leftFront_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="53dp"
+                        android:layout_height="53dp"
                         android:layout_toRightOf="@id/leftFront_edit"
                         android:layout_alignTop="@id/leftFront_edit"
                         android:layout_marginLeft="5dp"
                         android:layout_marginTop="7dp"
-                        android:background="@drawable/tire"/>
+                        android:background="@drawable/button_tire"/>
 
                     <EditText android:id="@+id/leftRear_edit"
                               android:layout_width="100dp"
@@ -448,16 +448,16 @@
                               android:layout_alignBottom="@id/tire_image"
                               android:maxLength="4"
                               android:inputType="number"
-                              android:layout_marginBottom="105dp"
+                              android:layout_marginBottom="106dp"
                               android:background="@drawable/edittext_border"
                               android:paddingLeft="10dp"/>
 
                     <Button android:id="@+id/leftRear_button"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
+                            android:layout_width="53dp"
+                            android:layout_height="53dp"
                             android:layout_toRightOf="@id/leftRear_edit"
                             android:layout_alignTop="@id/leftRear_edit"
-                            android:background="@drawable/tire"/>
+                            android:background="@drawable/button_tire"/>
 
                     <EditText android:id="@+id/rightFront_edit"
                               android:layout_width="100dp"
@@ -470,13 +470,13 @@
                               android:paddingLeft="10dp"/>
 
                     <Button android:id="@+id/rightFront_button"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
+                            android:layout_width="53dp"
+                            android:layout_height="53dp"
                             android:layout_toLeftOf="@id/rightFront_edit"
                             android:layout_alignTop="@id/rightFront_edit"
                             android:layout_marginRight="5dp"
                             android:layout_marginTop="7dp"
-                            android:background="@drawable/tire"/>
+                            android:background="@drawable/button_tire"/>
 
 
                     <EditText android:id="@+id/rightRear_edit"
@@ -486,16 +486,16 @@
                               android:layout_alignBottom="@id/tire_image"
                               android:maxLength="4"
                               android:inputType="number"
-                              android:layout_marginBottom="105dp"
+                              android:layout_marginBottom="106dp"
                               android:background="@drawable/edittext_border"
                               android:paddingLeft="10dp"/>
 
                     <Button android:id="@+id/rightRear_button"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
+                            android:layout_width="53dp"
+                            android:layout_height="53dp"
                             android:layout_toLeftOf="@id/rightRear_edit"
                             android:layout_alignTop="@id/rightRear_edit"
-                            android:background="@drawable/tire"/>
+                            android:background="@drawable/button_tire"/>
 
                     <EditText android:id="@+id/spare_edit"
                               android:layout_width="100dp"
@@ -508,11 +508,11 @@
                               android:paddingLeft="10dp"/>
 
                     <Button android:id="@+id/spare_button"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
+                            android:layout_width="53dp"
+                            android:layout_height="53dp"
                             android:layout_above="@id/spare_edit"
                             android:layout_centerHorizontal="true"
-                            android:background="@drawable/tire"/>
+                            android:background="@drawable/button_tire"/>
                 </RelativeLayout>
 
                 <TableRow android:layout_marginTop="5dp">

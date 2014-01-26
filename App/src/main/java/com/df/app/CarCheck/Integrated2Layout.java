@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.util.SparseArray;
@@ -94,6 +95,8 @@ public class Integrated2Layout extends LinearLayout {
     private Button rightRearButton;
     private Button spareButton;
 
+    private MyScrollView scrollView;
+
     public enum PaintType {
         leftFront, rightFront, leftRear, rightRear, spare, NOVALUE;
 
@@ -135,7 +138,7 @@ public class Integrated2Layout extends LinearLayout {
         Bitmap bitmap = BitmapFactory.decodeFile(Common.utilDirectory + "r3d4");
         tireImage.setImageBitmap(bitmap);
 
-        MyScrollView scrollView = (MyScrollView)findViewById(R.id.root);
+        scrollView = (MyScrollView)findViewById(R.id.root);
         scrollView.setListener(new MyScrollView.ScrollViewListener() {
             @Override
             public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldx, int oldy) {
@@ -459,5 +462,38 @@ public class Integrated2Layout extends LinearLayout {
 
     public void fillInData(JSONObject flooded, JSONObject tires, String comment2) {
 
+    }
+
+    public String checkAllFields() {
+        if(photoShotCount[0] == 0) {
+            return tireMap.keySet().toArray(new String[0])[0];
+        }
+
+        if(photoShotCount[1] == 0) {
+            return tireMap.keySet().toArray(new String[0])[1];
+        }
+
+        if(photoShotCount[2] == 0) {
+            return tireMap.keySet().toArray(new String[0])[2];
+        }
+
+        if(photoShotCount[3] == 0) {
+            return tireMap.keySet().toArray(new String[0])[3];
+        }
+
+        return "";
+    }
+
+    public void locateTirePart() {
+        final Button button = (Button)findViewById(R.id.leftFront_button);
+        button.setFocusable(true);
+        button.requestFocus();
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.scrollTo(0, button.getBottom());
+            }
+        });
     }
 }

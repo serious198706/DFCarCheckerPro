@@ -72,10 +72,8 @@ public class GetCooperatorTask extends AsyncTask<JSONObject, Void, Boolean> {
 
         if(success) {
             mCallback.onFinish(soapService.getResultMessage());
-            Log.d(Common.TAG, "提交成功！" + soapService.getErrorMessage());
         } else {
             mCallback.onFailed();
-            Log.d(Common.TAG, "提交失败!" + soapService.getErrorMessage());
         }
 
     }

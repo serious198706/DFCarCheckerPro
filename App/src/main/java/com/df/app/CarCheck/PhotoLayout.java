@@ -115,33 +115,33 @@ public class PhotoLayout extends LinearLayout {
         photoOtherLayout.saveOtherStandardPhoto();
     }
 
-    public boolean checkAllFields() {
-        boolean pass;
+    public String checkAllFields() {
+        String currentField;
 
         // 外观组照片必拍
-        pass = photoExteriorLayout.check();
+        currentField = photoExteriorLayout.check();
 
-        if(pass) {
+        if(currentField.equals("")) {
             // 内饰组照片必拍
-            pass = photoInteriorLayout.check();
+            currentField = photoInteriorLayout.check();
         }
 
-        if(pass) {
+        if(currentField.equals("")) {
             // 机舱组照片必拍
-            pass = photoEngineLayout.check();
+            currentField = photoEngineLayout.check();
         }
 
-        if(pass) {
+        if(currentField.equals("")) {
             // 手续组照片不是必拍
-            pass = photoProcedureLayout.check();
+            currentField = photoProcedureLayout.check();
         }
 
-        if(pass) {
+        if(currentField.equals("")) {
             // 其他组照片不是必拍
-            pass = photoOtherLayout.check();
+            currentField = photoOtherLayout.check();
         }
 
-        return false;
+        return currentField;
     }
 
     public void locateEmptyField() {

@@ -126,19 +126,20 @@ public class CarsWaitingActivity extends Activity {
     }
 
     private void refresh() {
-        GetCarsWaitingListTask getCarsWaitingListTask = new GetCarsWaitingListTask(CarsWaitingActivity.this, startNumber,
-                new GetCarsWaitingListTask.OnGetListFinish() {
-                    @Override
-                    public void onFinish(String result) {
-                        fillInData(result);
-                    }
-                    @Override
-                    public void onFailed() {
-                        // TODO 删掉！！！
-                        fillInDummyData();
-                    }
-                });
-        getCarsWaitingListTask.execute();
+        fillInDummyData();
+//        GetCarsWaitingListTask getCarsWaitingListTask = new GetCarsWaitingListTask(CarsWaitingActivity.this, startNumber,
+//                new GetCarsWaitingListTask.OnGetListFinish() {
+//                    @Override
+//                    public void onFinish(String result) {
+//                        fillInData(result);
+//                    }
+//                    @Override
+//                    public void onFailed() {
+//                        // TODO 删掉！！！
+//                        fillInDummyData();
+//                    }
+//                });
+//        getCarsWaitingListTask.execute();
     }
 
     private void fillInData(String result) {

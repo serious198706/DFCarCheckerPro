@@ -160,7 +160,10 @@ public class PhotoOtherLayout extends LinearLayout {
 
         PhotoEntity photoEntity = new PhotoEntity();
         photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
-        photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
+        if(!photoEntity.getFileName().equals(""))
+            photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
+        else
+            photoEntity.setThumbFileName("");
         photoEntity.setJsonString(jsonObject.toString());
         String group = getResources().getStringArray(R.array.photoForOtherItems)[currentShotPart];
         photoEntity.setName(group);
@@ -187,7 +190,7 @@ public class PhotoOtherLayout extends LinearLayout {
         return photoEntities;
     }
 
-    public boolean check() {
-        return false;
+    public String check() {
+        return "";
     }
 }
