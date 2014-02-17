@@ -19,8 +19,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -41,7 +39,7 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
 
     public static int carId;
 
-    private OnUpdateUiListener mUpdateUiCallback;
+    private OnGetCarSettings mUpdateUiCallback;
 
     private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
     private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
@@ -68,9 +66,9 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
         mCarSettings = new CarSettings();
 
         optionsLayout = new OptionsLayout(context);
-        vehicleInfoLayout = new VehicleInfoLayout(context, new VehicleInfoLayout.UpdateUi() {
+        vehicleInfoLayout = new VehicleInfoLayout(context, new VehicleInfoLayout.OnGetCarSettings() {
             @Override
-            public void updateUi() {
+            public void onGetCarSettings() {
                 // optionsLayout介个页面只添加一次就好了，多添加就出事了
                 if(views.size() == 1) {
                     views.add(optionsLayout);
@@ -80,7 +78,7 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
                 }
 
                 // 更新结构、外观、内饰
-                mUpdateUiCallback.updateUi();
+                mUpdateUiCallback.onGetCarSettings();
 
                 // 更新配置信息页面
                 optionsLayout.updateUi();
@@ -177,16 +175,16 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
     }
 
     /**
-     * CarCheckActivity来实现此接口，当确定车辆配置信息后，需要更新事故、外观、内饰页面
+     * CarCheckActivity来实现此接口，当确定车辆配置信息后，需要更新事故、外观、内饰、综合检查页面
      */
-    public interface OnUpdateUiListener {
-        public void updateUi();
+    public interface OnGetCarSettings {
+        public void onGetCarSettings();
     }
 
     /**
      * 因为基本信息页是在xml中静态生成的，所以要手动设置回调的监听者
      */
-    public void setUpdateUiListener(OnUpdateUiListener listener) {
+    public void setUpdateUiListener(OnGetCarSettings listener) {
         this.mUpdateUiCallback = listener;
     }
 }

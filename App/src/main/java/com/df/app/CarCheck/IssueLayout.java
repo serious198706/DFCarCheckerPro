@@ -125,7 +125,16 @@ public class IssueLayout extends LinearLayout {
                 JSONObject issueObject = jsonArray.getJSONObject(i);
 
                 Issue issue = new Issue(issueObject.getInt("issueId"),
-                        issueObject.getString("desc"), issueObject.getString("view"), "", "", "是");
+                        issueObject.getString("desc"), issueObject.getString("view"), "", "", "");
+
+                if(issueObject.has("select")) {
+                    issue.setSelect(issueObject.getString("select"));
+                }
+
+                if(issueObject.has("serious") && !issueObject.getString("serious").equals("")) {
+                    issue.setSerious(issueObject.getString("serious"));
+                }
+
                 issueList.add(issue);
             }
 

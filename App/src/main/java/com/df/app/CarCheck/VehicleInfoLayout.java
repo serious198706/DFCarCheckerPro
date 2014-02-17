@@ -76,10 +76,10 @@ public class VehicleInfoLayout extends LinearLayout {
     private String seriesId;
     private String modelId;
 
-    private UpdateUi mCallback;
+    private OnGetCarSettings mCallback;
     private ProgressDialog progressDialog;
 
-    public VehicleInfoLayout(Context context, UpdateUi listener) {
+    public VehicleInfoLayout(Context context, OnGetCarSettings listener) {
         super(context);
         this.mCallback = listener;
         init(context);
@@ -228,7 +228,7 @@ public class VehicleInfoLayout extends LinearLayout {
         setEditViewText(rootView, R.id.brand_edit, mCarSettings.getBrandString());
 
         // 更新配置界面、外观、内饰界面
-        mCallback.updateUi();
+        mCallback.onGetCarSettings();
     }
 
     // 更新车辆配置信息
@@ -573,7 +573,7 @@ public class VehicleInfoLayout extends LinearLayout {
         return getEditViewText(rootView, R.id.vin_edit);
     }
 
-    public interface UpdateUi {
-        public void updateUi();
+    public interface OnGetCarSettings {
+        public void onGetCarSettings();
     }
 }

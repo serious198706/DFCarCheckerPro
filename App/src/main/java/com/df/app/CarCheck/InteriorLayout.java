@@ -48,6 +48,7 @@ import java.util.List;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
+import static com.df.app.util.Helper.setSpinnerSelectionWithString;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -525,8 +526,9 @@ public class InteriorLayout extends LinearLayout {
     }
 
 
-    public void fillInData(JSONObject interior) {
-
+    public void fillInData(JSONObject interior) throws JSONException{
+        setSpinnerSelectionWithString(rootView, R.id.sealingStrip_spinner, interior.getString("sealingStrip"));
+        setEditViewText(rootView, R.id.interior_comment_edit, interior.getString("comment"));
     }
 
     public String checkAllFields() {

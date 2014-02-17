@@ -126,20 +126,19 @@ public class CarsWaitingActivity extends Activity {
     }
 
     private void refresh() {
-        fillInDummyData();
-//        GetCarsWaitingListTask getCarsWaitingListTask = new GetCarsWaitingListTask(CarsWaitingActivity.this, startNumber,
-//                new GetCarsWaitingListTask.OnGetListFinish() {
-//                    @Override
-//                    public void onFinish(String result) {
-//                        fillInData(result);
-//                    }
-//                    @Override
-//                    public void onFailed() {
-//                        // TODO 删掉！！！
-//                        fillInDummyData();
-//                    }
-//                });
-//        getCarsWaitingListTask.execute();
+        GetCarsWaitingListTask getCarsWaitingListTask = new GetCarsWaitingListTask(CarsWaitingActivity.this, startNumber,
+                new GetCarsWaitingListTask.OnGetListFinish() {
+                    @Override
+                    public void onFinish(String result) {
+                        fillInData(result);
+                    }
+                    @Override
+                    public void onFailed() {
+                        // TODO 删掉！！！
+                        fillInDummyData();
+                    }
+                });
+        getCarsWaitingListTask.execute();
     }
 
     private void fillInData(String result) {
@@ -171,10 +170,10 @@ public class CarsWaitingActivity extends Activity {
     private void fillInDummyData() {
         for(int i = 0; i < 5; i++) {
             CarsWaitingItem item = new CarsWaitingItem();
-            item.setPlateNumber("车牌号：京A12345");
-            item.setExteriorColor("颜色：黑");
-            item.setCarType("型号：奥迪A100");
-            item.setDate("提交时间：2013-12-28");
+            item.setPlateNumber("京A12345");
+            item.setExteriorColor("黑");
+            item.setCarType("奥迪A100");
+            item.setDate("2013-12-28 14:01:58");
             item.setCountryId("1");
             item.setBrandId("194");
             item.setManufacturerId("448");

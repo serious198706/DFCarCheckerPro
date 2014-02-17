@@ -2,7 +2,6 @@ package com.df.app.CarCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +24,6 @@ import com.df.app.service.AsyncTask.CommitDataTask;
 import com.df.app.service.AsyncTask.GeneratePhotoEntitiesTask;
 import com.df.app.service.AsyncTask.SaveDataTask;
 import com.df.app.service.AsyncTask.UploadPictureTask;
-import com.df.app.service.Command;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
@@ -37,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -71,6 +68,13 @@ public class CarCheckActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_car_check);
+
+        // 填充各部分的内容
+        Bundle bundle = getIntent().getExtras();
+
+        // 获取车辆详细信息
+        final String jsonString = bundle.getString("jsonString");
+        int carId = bundle.getInt("carId");
 
         photoEntities = new ArrayList<PhotoEntity>();
 
@@ -126,9 +130,9 @@ public class CarCheckActivity extends Activity {
 
         // 基本信息模块
         basicInfoLayout = (BasicInfoLayout)findViewById(R.id.basicInfo);
-        basicInfoLayout.setUpdateUiListener(new BasicInfoLayout.OnUpdateUiListener() {
+        basicInfoLayout.setUpdateUiListener(new BasicInfoLayout.OnGetCarSettings() {
             @Override
-            public void updateUi() {
+            public void onGetCarSettings() {
                 accidentCheckButton.setEnabled(true);
                 integratedButton.setEnabled(true);
                 integratedCheckLayout.updateUi();
@@ -246,13 +250,6 @@ public class CarCheckActivity extends Activity {
             }
         });
 
-        // 填充各部分的内容
-        Bundle bundle = getIntent().getExtras();
-
-        // 获取车辆详细信息
-        String jsonString = bundle.getString("jsonString");
-        int carId = bundle.getInt("carId");
-
         // 填充
         fillInData(carId, jsonString);
     }
@@ -342,21 +339,43 @@ public class CarCheckActivity extends Activity {
 
     /**
      * 临时保存
+     *
+     * 临时保存的策略是将数据全部保存到本地，包括carid，包括检测信息等，还有照片与点的对应关系等等
+     *
+     * 以json形式保存成文件
      */
     private void saveData() {
-        SaveDataTask saveDataTask = new SaveDataTask(CarCheckActivity.this, new SaveDataTask.OnSaveDataFinished() {
+        GeneratePhotoEntitiesTask generatePhotoEntitiesTask = new GeneratePhotoEntitiesTask(this, photoEntities,
+                accidentCheckLayout, integratedCheckLayout, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
             @Override
-            public void onFinished(String result) {
-                Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
-                finish();
+            public void onFinished(List<PhotoEntity> photoEntities) {
+                SaveDataTask saveDataTask = new SaveDataTask(CarCheckActivity.this, photoEntities, new SaveDataTask.OnSaveDataFinished() {
+                    @Override
+                    public void onFinished() {
+                        Toast.makeText(CarCheckActivity.this, "保存成功！", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(CarCheckActivity.this, CarsWaitingActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailed() {
+                        Toast.makeText(CarCheckActivity.this, "保存失败！", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                saveDataTask.execute(jsonObject);
             }
 
             @Override
-            public void onFailed(String result) {
-                Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
+            public void onFailed() {
+                Toast.makeText(CarCheckActivity.this, "处理失败！", Toast.LENGTH_SHORT).show();
+                Log.d(Common.TAG, "生成草图失败！");
             }
         });
-        saveDataTask.execute(jsonObject);
+
+        generatePhotoEntitiesTask.execute();
+
+
     }
 
     /**
@@ -548,10 +567,15 @@ public class CarCheckActivity extends Activity {
                 }));
             }
 
-            // 如果有综合检查节点，则更新事故检查页面
+            // 如果有综合检查节点，则更新综合检查页面
             if(jsonObject.has("conditions")) {
                 JSONObject conditions = jsonObject.getJSONObject("conditions");
                 integratedCheckLayout.fillInData(conditions);
+            }
+
+            // TODO 如果有照片节点，则更新照片list
+            if(jsonObject.has("photos")) {
+
             }
 
 

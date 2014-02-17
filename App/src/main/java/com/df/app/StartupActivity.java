@@ -41,21 +41,23 @@ public class StartupActivity extends Activity {
      **/
     private void SetDirectory() {
         if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-            // 创建路径
+            // 创建utils路径
             File utilDirectory = new File(Common.utilDirectory);
             utilDirectory.mkdirs();
 
             // 将文件拷入相关路径
             CopyAssets(); // Then run the method to copy the file.
+            Log.d(Common.TAG, "路径util创建成功");
 
-            Log.d(Common.TAG, "/.cheyipaiPro created.");
+            // 创建临时保存路径
+            File savedDirectory = new File(Common.savedDirectory);
+            savedDirectory.mkdirs();
+            Log.d(Common.TAG, "路径saved创建成功");
 
             // 创建照片路径
             File photoDirectory = new File(Common.photoDirectory);
             photoDirectory.mkdirs();
-
-            Log.d(Common.TAG, "DFCarCheckerPro创建成功");
-
+            Log.d(Common.TAG, "路径photo创建成功");
         } else if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED_READ_ONLY)) {
             Log.d(Common.TAG, "未检测到SD卡");
         }

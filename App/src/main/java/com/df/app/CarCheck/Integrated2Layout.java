@@ -45,6 +45,7 @@ import java.util.Map;
 
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
+import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setSpinnerSelectionWithString;
 import static com.df.app.util.Helper.setTextView;
 
@@ -388,7 +389,7 @@ public class Integrated2Layout extends LinearLayout {
         flooded.put("rearSeats", getSpinnerSelectedText(rootView, R.id.rearSeats_spinner));
         flooded.put("spareTireGroove", getSpinnerSelectedText(rootView, R.id.spareTireGroove_spinner));
         flooded.put("trunkCorner", getSpinnerSelectedText(rootView, R.id.trunkCorner_spinner));
-        flooded.put("audioHorn", getSpinnerSelectedText(rootView, R.id.audioHorn_spinner));
+        flooded.put("audio", getSpinnerSelectedText(rootView, R.id.audioHorn_spinner));
         flooded.put("seatSlide", getSpinnerSelectedText(rootView, R.id.seatSlide_spinner));
         flooded.put("ecu", getSpinnerSelectedText(rootView, R.id.ecu_spinner));
         flooded.put("roof", getSpinnerSelectedText(rootView, R.id.roof_spinner));
@@ -400,6 +401,25 @@ public class Integrated2Layout extends LinearLayout {
         flooded.put("engineRoom", getSpinnerSelectedText(rootView, R.id.engineRoom_spinner));
 
         return flooded;
+    }
+
+    private void fillFloodWithJSONObject(JSONObject flooded) throws JSONException {
+        setSpinnerSelectionWithString(rootView, R.id.cigarLighter_spinner, flooded.getString("cigarLighter"));
+        setSpinnerSelectionWithString(rootView, R.id.seatBelts_spinner, flooded.getString("seatBelts"));
+        setSpinnerSelectionWithString(rootView, R.id.ashtray_spinner, flooded.getString("ashtray"));
+        setSpinnerSelectionWithString(rootView, R.id.rearSeats_spinner, flooded.getString("rearSeats"));
+        setSpinnerSelectionWithString(rootView, R.id.spareTireGroove_spinner, flooded.getString("spareTireGroove"));
+        setSpinnerSelectionWithString(rootView, R.id.trunkCorner_spinner, flooded.getString("trunkCorner"));
+        setSpinnerSelectionWithString(rootView, R.id.audioHorn_spinner, flooded.getString("audio"));
+        setSpinnerSelectionWithString(rootView, R.id.seatSlide_spinner, flooded.getString("seatSlide"));
+        setSpinnerSelectionWithString(rootView, R.id.ecu_spinner, flooded.getString("ecu"));
+        setSpinnerSelectionWithString(rootView, R.id.roof_spinner, flooded.getString("roof"));
+        setSpinnerSelectionWithString(rootView, R.id.backCorner_spinner, flooded.getString("backCorner"));
+        setSpinnerSelectionWithString(rootView, R.id.discBox_spinner, flooded.getString("discBox"));
+        setSpinnerSelectionWithString(rootView, R.id.storageCorner_spinner, flooded.getString("storageCorner"));
+        setSpinnerSelectionWithString(rootView, R.id.newFuse_spinner, flooded.getString("newFuse"));
+        setSpinnerSelectionWithString(rootView, R.id.fuse_spinner, flooded.getString("fuse"));
+        setSpinnerSelectionWithString(rootView, R.id.engineRoom_spinner, flooded.getString("engineRoom"));
     }
 
     public JSONObject generateTiresJSONObject() throws JSONException{
@@ -416,8 +436,22 @@ public class Integrated2Layout extends LinearLayout {
         return tires;
     }
 
+    private void fillTiresWithJSONObject(JSONObject tires) throws JSONException{
+        setEditViewText(rootView, R.id.leftFront_edit, tires.getString("leftFront"));
+        setEditViewText(rootView, R.id.rightFront_edit, tires.getString("rightFront"));
+        setEditViewText(rootView, R.id.leftRear_edit, tires.getString("leftRear"));
+        setEditViewText(rootView, R.id.rightRear_edit, tires.getString("rightRear"));
+        setEditViewText(rootView, R.id.spare_edit, tires.getString("spare"));
+        setSpinnerSelectionWithString(rootView, R.id.formatMatch_spinner, tires.getString("formatMatch"));
+        setSpinnerSelectionWithString(rootView, R.id.patternMatch_spinner, tires.getString("patternMatch"));
+    }
+
     public String generateCommentString() {
         return getEditViewText(rootView, R.id.it2_comment_edit);
+    }
+
+    private void fillCommentWithString(String comment) {
+        setEditViewText(rootView, R.id.it2_comment_edit, comment);
     }
 
     public PhotoEntity generateSketch() {
@@ -460,8 +494,10 @@ public class Integrated2Layout extends LinearLayout {
     }
 
 
-    public void fillInData(JSONObject flooded, JSONObject tires, String comment2) {
-
+    public void fillInData(JSONObject flooded, JSONObject tires, String comment2) throws JSONException {
+        fillFloodWithJSONObject(flooded);
+        fillTiresWithJSONObject(tires);
+        fillCommentWithString(comment2);
     }
 
     public String checkAllFields() {

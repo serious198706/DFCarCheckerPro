@@ -441,7 +441,7 @@
                           android:textStyle="bold"
                           android:gravity="right"
                           android:text="@string/audio"/>
-                <Spinner android:id="@+id/audioHorn_spinner"
+                <Spinner android:id="@+id/audio_spinner"
                          android:layout_width="0dp"
                          android:layout_height="wrap_content"
                          android:layout_weight="1"

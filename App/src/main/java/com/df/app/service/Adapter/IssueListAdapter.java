@@ -127,22 +127,21 @@ public class IssueListAdapter extends BaseAdapter {
             framePaintView.init(AccidentResultLayout.previewBitmapRear, posEntitiesRear, "R", issue.getId(), issue.getDesc());
         }
 
+        RadioGroup radioGroup = (RadioGroup)rootView.findViewById(R.id.serious);
+        if(issue.getSerious().equals("轻微")) {
+            radioGroup.check(R.id.light);
+        } else if (issue.getSerious().equals("严重")) {
+            radioGroup.check(R.id.heavy);
+        } else {
+            radioGroup.clearCheck();
+        }
+
         // 选择当前绘图类型（结构检查只有一个）
         framePaintView.setType(Common.COLOR_DIFF);
 
         mPictureDialog = new AlertDialog.Builder(context)
                 .setView(rootView)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        RadioGroup radioGroup = (RadioGroup)rootView.findViewById(R.id.serious);
-
-                        RadioButton radioButton = (RadioButton)rootView.findViewById(radioGroup
-                                .getCheckedRadioButtonId());
-
-                        issue.setSerious(radioButton.getText().toString());
-                    }
-                })
+                .setPositiveButton(R.string.ok, null)
                 .setCancelable(false)
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -154,6 +153,26 @@ public class IssueListAdapter extends BaseAdapter {
                 .create();
 
         mPictureDialog.show();
+
+        mPictureDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RadioGroup radioGroup = (RadioGroup)rootView.findViewById(R.id.serious);
+
+                RadioButton radioButton = (RadioButton)rootView.findViewById(radioGroup
+                        .getCheckedRadioButtonId());
+
+                // 如果未选择缺陷等级，不能关闭对话框
+                if (radioButton == null) {
+                    Toast.makeText(context, "请选择缺陷等级！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // 如果选择了，就保存
+                issue.setSerious(radioButton.getText().toString());
+                mPictureDialog.dismiss();
+            }
+        });
     }
 
     private void drawIssuePoint(String sight, int issueId, String comment) {

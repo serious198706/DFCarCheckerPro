@@ -12,6 +12,8 @@ public class Common {
             "/.cheyipaiPro/";
     public static String photoDirectory = Environment.getExternalStorageDirectory().getPath() +
             "/Pictures/DFCarCheckerPro/";
+    public static String savedDirectory = utilDirectory +
+            "saved/";
 
     public static String TAG = "DFCarCheckerPro";
 

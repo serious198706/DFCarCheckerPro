@@ -1,6 +1,5 @@
 package com.df.app.CarCheck;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -12,13 +11,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
@@ -386,7 +383,7 @@ public class PaintActivity extends Activity {
 
     // 通知照片列表，有照片更新
     private void notifyPhotoList() {
-        // TODO 这儿是将新更新的照片添加进去,而不是一全部添加
+        // TODO 这儿是将新更新的照片添加进去,而不是一全部添加,未解决
         for(PhotoEntity photoEntity : paintView.getPhotoEntities()) {
             PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
         }
@@ -453,7 +450,7 @@ public class PaintActivity extends Activity {
 
         photoEntity.setName(paintView.getTypeName());
         photoEntity.setFileName(posEntity.getImageFileName());
-        photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length()) + "_t.jpg");
+        photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
         photoEntity.setComment(posEntity.getComment());
         photoEntity.setJsonString(jsonObject.toString());
 

@@ -296,9 +296,9 @@ public class IntegratedCheckLayout extends LinearLayout {
             JSONObject tires = conditions.getJSONObject("tires");
 
             // 综合检查 - 备注
-            String comment1 = conditions.getString("commont1");
-            String comment2 = conditions.getString("commont2");
-            String comment3 = conditions.getString("commont3");
+            String comment1 = conditions.getString("comment1");
+            String comment2 = conditions.getString("comment2");
+            String comment3 = conditions.getString("comment3");
 
             exteriorLayout.fillInData(exterior);
             interiorLayout.fillInData(interior);
