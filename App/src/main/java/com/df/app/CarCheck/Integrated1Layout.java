@@ -241,13 +241,13 @@ public class Integrated1Layout extends LinearLayout{
     }
 
     private void fillGearboxWithJSONObject(JSONObject gearbox) throws JSONException {
-        if(gearbox.get("mtClutch") != null) {
+        if(gearbox.has("mtClutch")) {
             setSpinnerSelectionWithString(rootView,R.id.gearMtClutch_spinner, gearbox.getString("mtClutch"));
             setSpinnerSelectionWithString(rootView,R.id.gearMtShiftEasy_spinner, gearbox.getString("mtShiftEasy"));
             setSpinnerSelectionWithString(rootView,R.id.gearMtShiftSpace_spinner, gearbox.getString("mtShiftSpace"));
         }
 
-        if(gearbox.get("atShiftShock") != null) {
+        if(gearbox.has("atShiftShock")) {
             setSpinnerSelectionWithString(rootView,R.id.gearAtShiftShock_spinner, gearbox.getString("atShiftShock"));
             setSpinnerSelectionWithString(rootView,R.id.gearAtShiftNoise_spinner, gearbox.getString("atShiftNoise"));
             setSpinnerSelectionWithString(rootView,R.id.gearAtShiftEasy_spinner, gearbox.getString("atShiftEasy"));
@@ -322,8 +322,10 @@ public class Integrated1Layout extends LinearLayout{
             setSpinnerSelectionWithString(rootView, R.id.sunroof_spinner, function.getString("sunroof"));
         else
             enableSpinner(R.id.sunroof_spinner, false);
-        if(function.has("airConditioning"))
+        if(function.has("airConditioning")) {
             setSpinnerSelectionWithString(rootView, R.id.airConditioning_spinner, function.getString("airConditioning"));
+            setEditViewText(rootView, R.id.airConditioningTemp_edit, Integer.toString(function.getInt("airConditioningTemp")));
+        }
         else
             enableSpinner(R.id.airConditioning_spinner, false);
         if(function.has("powerSeats"))

@@ -47,6 +47,7 @@ public class SoapService implements ISoapService {
     public String getErrorMessage() { return errorMessage; }
 
     // 获取结果信息
+    public void setResultMessage(String resultMessage) { this.resultMessage = resultMessage; }
     public String getResultMessage() { return resultMessage; }
 
     // 获取用户信息

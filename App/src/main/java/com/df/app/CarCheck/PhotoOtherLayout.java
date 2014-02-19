@@ -38,7 +38,7 @@ public class PhotoOtherLayout extends LinearLayout {
     public static PhotoListAdapter photoListAdapter;
     private int currentShotPart;
     private long currentTimeMillis;
-    private int[] photoShotCount = {0};
+    private int photoShotCount = 0;
 
     public PhotoOtherLayout(Context context) {
         super(context);
@@ -77,45 +77,17 @@ public class PhotoOtherLayout extends LinearLayout {
     }
 
     private void starCamera() {
-        String[] itemArray = getResources().getStringArray(R.array.photoForOtherItems);
+        Toast.makeText(context, "正在拍摄协议组", Toast.LENGTH_LONG).show();
 
-        for(int i = 0; i < itemArray.length; i++) {
-            itemArray[i] += " (";
-            itemArray[i] += Integer.toString(photoShotCount[i]);
-            itemArray[i] += ") ";
-        }
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        AlertDialog dialog = new AlertDialog.Builder(context).setTitle(R.string.takePhotoForOther)
-                .setItems(itemArray, new DialogInterface.OnClickListener() {
+        currentTimeMillis = System.currentTimeMillis();
+        Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg"); //
+        // create a
+        // file to save the image
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        currentShotPart = i;
-
-                        String group = getResources().getStringArray(R.array.photoForOtherItems)[currentShotPart];
-
-                        Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
-
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                        currentTimeMillis = System.currentTimeMillis();
-                        Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg"); //
-                        // create a
-                        // file to save the image
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-
-                        ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_OTHER_STANDARD);
-                    }
-                })
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                })
-                .create();
-
-        dialog.show();
+        ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_OTHER_STANDARD);
     }
 
     public void saveOtherStandardPhoto() {
@@ -127,9 +99,7 @@ public class PhotoOtherLayout extends LinearLayout {
         PhotoOtherLayout.photoListAdapter.addItem(photoEntity);
         PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
 
-        photoShotCount[currentShotPart]++;
-
-        starCamera();
+        photoShotCount++;
     }
 
     private PhotoEntity generatePhotoEntity() {
@@ -140,15 +110,9 @@ public class PhotoOtherLayout extends LinearLayout {
             JSONObject photoJsonObject = new JSONObject();
             String currentPart = "";
 
-            switch (currentShotPart) {
-                case 0:
-                    currentPart = "other";
-                    break;
-            }
-
             photoJsonObject.put("part", currentPart);
 
-            jsonObject.put("Group", "other");
+            jsonObject.put("Group", "agreement");
             jsonObject.put("Part", "standard");
             jsonObject.put("PhotoData", photoJsonObject);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
@@ -165,7 +129,7 @@ public class PhotoOtherLayout extends LinearLayout {
         else
             photoEntity.setThumbFileName("");
         photoEntity.setJsonString(jsonObject.toString());
-        String group = getResources().getStringArray(R.array.photoForOtherItems)[currentShotPart];
+        String group = getResources().getStringArray(R.array.photoForOtherItems)[0];
         photoEntity.setName(group);
 
         return photoEntity;

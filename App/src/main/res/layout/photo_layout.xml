@@ -64,7 +64,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="其他组"
+            android:text="协议组"
             android:textSize="20sp" />
     </LinearLayout>
 

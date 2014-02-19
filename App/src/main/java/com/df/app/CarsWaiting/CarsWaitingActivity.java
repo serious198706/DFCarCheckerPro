@@ -29,6 +29,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class CarsWaitingActivity extends Activity {
@@ -203,6 +210,12 @@ public class CarsWaitingActivity extends Activity {
         }
     }
 
+    /**
+     * 点击待检列表中的某一项时，根据carId获取该车的详细信息
+     * 如果该carId在本地存在，则表示已经保存过，就从本地获取详细信息
+     * @param carId
+     * @param activity
+     */
     private void getCarDetail(final int carId, final Class activity) {
         GetCarDetailTask getCarDetailTask = new GetCarDetailTask(CarsWaitingActivity.this, carId, new GetCarDetailTask.OnGetDetailFinished() {
             @Override
@@ -229,6 +242,7 @@ public class CarsWaitingActivity extends Activity {
                 Log.d(Common.TAG, result);
             }
         });
+
         getCarDetailTask.execute();
     }
 }

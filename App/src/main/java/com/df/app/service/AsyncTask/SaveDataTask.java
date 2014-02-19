@@ -15,7 +15,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 /**
@@ -30,6 +32,7 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
 
     Context context;
     List<PhotoEntity> photoEntities;
+    int carId;
     private SoapService soapService;
     private ProgressDialog progressDialog;
     private OnSaveDataFinished mCallback;
@@ -39,8 +42,9 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
         this.mCallback = listener;
     }
 
-    public SaveDataTask(Context context, List<PhotoEntity> photoEntityList, OnSaveDataFinished listener) {
+    public SaveDataTask(Context context, int carId, List<PhotoEntity> photoEntityList, OnSaveDataFinished listener) {
         this.context = context;
+        this.carId = carId;
         this.photoEntities = photoEntityList;
         this.mCallback = listener;
     }
@@ -76,40 +80,23 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
 
             params[0].put("photos", photos);
         } catch (JSONException e) {
-
+            e.printStackTrace();
+            success = false;
         }
 
-        String jsonString = (params[0]).toString();
-
-        FileOutputStream outputStream;
-
         try {
-            outputStream = new FileOutputStream(Common.savedDirectory + "1");
-            outputStream.write(jsonString.getBytes());
-            outputStream.close();
+            String jsonString = (params[0]).toString();
+
+            OutputStreamWriter write = new OutputStreamWriter(
+                    new FileOutputStream(Common.savedDirectory + Integer.toString(carId)), "UTF-8");
+            BufferedWriter writer=new BufferedWriter(write);
+            writer.write(jsonString);
+            writer.close();
             success = true;
         } catch (Exception e) {
             e.printStackTrace();
             success = false;
         }
-
-//        soapService = new SoapService();
-//
-//        // 设置soap的配置
-//        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.SAVE_DATA);
-//
-//        JSONObject jsonObject = new JSONObject();
-//
-//        try {
-//            jsonObject.put("CarId", BasicInfoLayout.carId);
-//            jsonObject.put("UserId", MainActivity.userInfo.getId());
-//            jsonObject.put("Key", MainActivity.userInfo.getKey());
-//            jsonObject.put("JsonString", params[0]);
-//        } catch (JSONException e) {
-//            Log.d(Common.TAG, "生成Json失败！");
-//        }
-//
-//        success = soapService.communicateWithServer(jsonObject.toString());
 
         return success;
     }

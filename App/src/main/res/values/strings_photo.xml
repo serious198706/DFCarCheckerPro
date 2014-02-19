@@ -20,8 +20,8 @@
         <item>其他</item>
     </string-array>
 
-    <string name="takePhotoForOther">拍摄其他组照片</string>
+    <string name="takePhotoForOther">拍摄协议组照片</string>
     <string-array name="photoForOtherItems">
-        <item>其他</item>
+        <item>协议</item>
     </string-array>
 </resources>

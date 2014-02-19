@@ -54,8 +54,8 @@ import static com.df.app.util.Helper.setSpinnerSelectionWithString;
  * Created by 岩 on 13-12-20.
  */
 public class InteriorLayout extends LinearLayout {
-    private View rootView;
-    private Context context;
+    private static View rootView;
+    private static Context context;
 
     public static List<PosEntity> posEntities;
     public static List<PhotoEntity> photoEntities;
@@ -63,10 +63,10 @@ public class InteriorLayout extends LinearLayout {
 
     private Bitmap previewViewBitmap;
 
-    InteriorPaintPreviewView interiorPaintPreviewView;
+    public static InteriorPaintPreviewView interiorPaintPreviewView;
 
     // 记录已经拍摄的照片数
-    private int[] photoShotCount = {0, 0, 0, 0, 0, 0, 0};
+    public static int[] photoShotCount = {0, 0, 0, 0, 0, 0, 0};
 
     // 记录当前拍摄的文件名
     private long currentTimeMillis;
@@ -111,6 +111,7 @@ public class InteriorLayout extends LinearLayout {
         posEntities = new ArrayList<PosEntity>();
         photoEntities = new ArrayList<PhotoEntity>();
         standardPhotoEntities = new ArrayList<PhotoEntity>();
+        interiorPaintPreviewView = (InteriorPaintPreviewView) findViewById(R.id.interior_image);
 
         Button startCameraButton = (Button)findViewById(R.id.interior_camera_button);
         startCameraButton.setOnClickListener(new OnClickListener() {
@@ -182,17 +183,17 @@ public class InteriorLayout extends LinearLayout {
         findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
-    public void updateInteriorPreview() {
+    public static void updateInteriorPreview() {
         if(!posEntities.isEmpty()) {
             interiorPaintPreviewView.setAlpha(1f);
             interiorPaintPreviewView.invalidate();
-            findViewById(R.id.tipOnPreview).setVisibility(View.GONE);
+            rootView.findViewById(R.id.tipOnPreview).setVisibility(View.GONE);
         }
         // 如果没点，则将图片设为半透明，添加提示文字
         else {
             interiorPaintPreviewView.setAlpha(0.3f);
             interiorPaintPreviewView.invalidate();
-            findViewById(R.id.tipOnPreview).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.tipOnPreview).setVisibility(View.VISIBLE);
         }
     }
 

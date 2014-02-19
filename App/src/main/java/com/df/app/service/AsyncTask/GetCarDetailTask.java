@@ -13,6 +13,13 @@ import com.df.app.util.Common;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 /**
  * Created by 岩 on 14-1-13.
  */
@@ -43,24 +50,53 @@ public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        boolean success;
+        boolean success = false;
 
-        soapService = new SoapService();
+        // 如果本地存在这辆车的信息
+        File file = new File(Common.savedDirectory + Integer.toString(carId));
 
-        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_CAR_DETAIL);
+        if(file.exists()) {
+            try {
+                String result = "";
+                InputStreamReader read = new InputStreamReader(new FileInputStream(file), "UTF-8");
+                BufferedReader reader=new BufferedReader(read);
+                String line;
 
-        JSONObject jsonObject = new JSONObject();
+                while ((line = reader.readLine()) != null) {
+                    result += line;
+                }
 
-        try {
-            jsonObject.put("CarId", carId);
-            jsonObject.put("UserId", MainActivity.userInfo.getId());
-            jsonObject.put("Key", MainActivity.userInfo.getKey());
+                read.close();
 
-        } catch (JSONException e) {
+                soapService = new SoapService();
+                soapService.setResultMessage(result);
 
+                success = true;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        // 如果不存在
+        else {
+            soapService = new SoapService();
 
-        success = soapService.communicateWithServer(jsonObject.toString());
+            soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_CAR_DETAIL);
+
+            JSONObject jsonObject = new JSONObject();
+
+            try {
+                jsonObject.put("CarId", carId);
+                jsonObject.put("UserId", MainActivity.userInfo.getId());
+                jsonObject.put("Key", MainActivity.userInfo.getKey());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            success = soapService.communicateWithServer(jsonObject.toString());
+        }
 
         return success;
     }

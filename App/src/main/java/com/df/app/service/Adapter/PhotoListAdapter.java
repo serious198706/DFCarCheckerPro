@@ -3,12 +3,17 @@ package com.df.app.service.Adapter;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,7 +28,9 @@ import com.df.app.R;
 import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +94,19 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
 
             EditText photoComment = (EditText) view.findViewById(R.id.photo_comment);
             photoComment.setText(photoEntity.getComment());
+
+            Button reTakeButton = (Button)view.findViewById(R.id.reTake);
+            reTakeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // 使用当前毫秒数当作照片名
+                    Uri fileUri = Uri.fromFile(new File(photoEntity.getFileName()));
+
+                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
+                    ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_RETAKE);
+                }
+            });
         }
         return view;
     }

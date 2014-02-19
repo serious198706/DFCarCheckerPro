@@ -263,13 +263,13 @@ public class Integrated2Layout extends LinearLayout {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             // 确定替换，将之前的全部清除，再重新添加一遍
-                            PhotoOtherLayout.photoListAdapter.clear();
+                            PhotoExteriorLayout.photoListAdapter.clear();
 
                             for(PhotoEntity photoEntity1 : photoEntityMap.values()) {
-                                PhotoOtherLayout.photoListAdapter.addItem(photoEntity1);
+                                PhotoExteriorLayout.photoListAdapter.addItem(photoEntity1);
                             }
 
-                            PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
+                            PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
                         }
                     })
                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -287,8 +287,8 @@ public class Integrated2Layout extends LinearLayout {
             else
                 photoEntityMap.put(currentTire, photoEntity);
 
-            PhotoOtherLayout.photoListAdapter.addItem(photoEntity);
-            PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
+            PhotoExteriorLayout.photoListAdapter.addItem(photoEntity);
+            PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
             photoShotCount[tireMap.get(currentTire)]++;
         }
     }

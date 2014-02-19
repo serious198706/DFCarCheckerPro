@@ -43,8 +43,8 @@
             android:paddingLeft="10dp"/>
 
         <Button android:id="@+id/reTake"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
             android:layout_alignParentEnd="true"
             android:background="@drawable/camera1"/>
     </RelativeLayout>

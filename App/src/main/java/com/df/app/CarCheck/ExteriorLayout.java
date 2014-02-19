@@ -55,21 +55,21 @@ import static com.df.app.util.Helper.setSpinnerSelectionWithString;
  * Created by 岩 on 13-12-20.
  */
 public class ExteriorLayout extends LinearLayout {
-    private Context context;
-    private View rootView;
+    private static Context context;
+    private static View rootView;
 
     public static List<PosEntity> posEntities;
     public static List<PhotoEntity> photoEntities;
     public static List<PhotoEntity> standardPhotoEntities;
 
-    private ExteriorPaintPreviewView exteriorPaintPreviewView;
+    public static ExteriorPaintPreviewView exteriorPaintPreviewView;
 
     private Bitmap previewViewBitmap;
 
     private int figure;
 
     // 记录已经拍摄的照片数
-    private int[] photoShotCount = {0, 0, 0, 0, 0, 0, 0};
+    public static int[] photoShotCount = {0, 0, 0, 0, 0, 0, 0};
 
     // 记录当前拍摄的文件名
     private long currentTimeMillis;
@@ -115,6 +115,7 @@ public class ExteriorLayout extends LinearLayout {
         posEntities = new ArrayList<PosEntity>();
         photoEntities = new ArrayList<PhotoEntity>();
         standardPhotoEntities = new ArrayList<PhotoEntity>();
+        exteriorPaintPreviewView = (ExteriorPaintPreviewView) findViewById(R.id.exterior_image);
 
         Button startCameraButton = (Button)findViewById(R.id.exterior_camera_button);
         startCameraButton.setOnClickListener(new OnClickListener() {
@@ -197,17 +198,17 @@ public class ExteriorLayout extends LinearLayout {
     /**
      * 获取车辆配置信息后，更新此页面
      */
-    public void updateExteriorPreview() {
+    public static void updateExteriorPreview() {
         if(!posEntities.isEmpty()) {
             exteriorPaintPreviewView.setAlpha(1f);
             exteriorPaintPreviewView.invalidate();
-            findViewById(R.id.tipOnPreview).setVisibility(View.GONE);
+            rootView.findViewById(R.id.tipOnPreview).setVisibility(View.GONE);
         }
         // 如果没点，则将图片设为半透明，添加提示文字
         else {
             exteriorPaintPreviewView.setAlpha(0.3f);
             exteriorPaintPreviewView.invalidate();
-            findViewById(R.id.tipOnPreview).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.tipOnPreview).setVisibility(View.VISIBLE);
         }
     }
 
@@ -581,7 +582,9 @@ public class ExteriorLayout extends LinearLayout {
         setSpinnerSelectionWithString(rootView, R.id.smooth_spinner, exterior.getString("smooth"));
         setEditViewText(rootView, R.id.exterior_comment_edit, exterior.getString("comment"));
         setEditViewText(rootView, R.id.glass_edit, exterior.getString("glass"));
+        glassResult = exterior.getString("glass");
         setEditViewText(rootView, R.id.screw_edit, exterior.getString("screw"));
+        screwResult = exterior.getString("screw");
 
         CheckBox checkBox = (CheckBox)findViewById(R.id.needRepair);
         checkBox.setChecked(exterior.getString("needRepair").equals("是"));

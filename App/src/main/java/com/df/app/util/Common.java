@@ -103,6 +103,7 @@ public class Common {
     public static final int PHOTO_FOR_PROCEDURES_STANDARD = 14;
     public static final int PHOTO_FOR_ENGINE_STANDARD = 15;
     public static final int PHOTO_FOR_OTHER_STANDARD = 16;
+    public static final int PHOTO_RETAKE = 17;
 
     // DF5000消息代码
     // 为BluetoothService处理程序定义的消息类型

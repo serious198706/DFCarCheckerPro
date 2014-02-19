@@ -36,7 +36,7 @@ public class PhotoEngineLayout extends LinearLayout {
     private Context context;
 
     public static PhotoListAdapter photoListAdapter;
-    private int[] photoShotCount = {0, 0, 0, 0};
+    public static int[] photoShotCount = {0, 0, 0, 0};
     private int currentShotPart;
     private long currentTimeMillis;
 
