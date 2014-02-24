@@ -16,6 +16,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-26.
+ *
+ * 缺陷组照片列表
  */
 public class PhotoFaultLayout extends LinearLayout {
     private static View rootView;
@@ -51,6 +53,10 @@ public class PhotoFaultLayout extends LinearLayout {
         faultList.setAdapter(photoListAdapter);
     }
 
+    /**
+     * 生成测试数据
+     * @return
+     */
     private ArrayList<PhotoEntity> generateDummyPhoto() {
         ArrayList<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 

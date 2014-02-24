@@ -1,9 +1,5 @@
 package com.df.app.service.AsyncTask;
 
-/**
- * Created by 岩 on 14-1-13.
- */
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -23,24 +19,25 @@ import org.json.JSONObject;
 import java.lang.reflect.Method;
 
 /**
- * Represents an asynchronous login/registration task used to authenticate
- * the user.
+ * Created by 岩 on 14-1-13.
+ *
+ * 登录
  */
+
 public class LoginTask extends AsyncTask<Void, Void, Boolean> {
     public interface OnLoginFinished {
-        public void onFinished(UserInfo userinfo);
-        public void onFailed(String errorMsg);
+        public void onFinished(String result);
+        public void onFailed(String error);
     }
 
     private ProgressDialog progressDialog;
     private Context context;
     private SoapService soapService;
     private OnLoginFinished mCallback;
-    private UserInfo userInfo;
     private String userName;
     private String password;
 
-    public LoginTask(Context context, OnLoginFinished listener, String userName, String password) {
+    public LoginTask(Context context, String userName, String password, OnLoginFinished listener) {
         this.context = context;
         this.mCallback = listener;
         this.userName = userName;
@@ -58,8 +55,8 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
     protected Boolean doInBackground(Void... params) {
         boolean success = false;
 
-        WifiManager wifiMan = (WifiManager) context.getSystemService(
-                Context.WIFI_SERVICE);
+        // 获取mac地址
+        WifiManager wifiMan = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInf = wifiMan.getConnectionInfo();
         String macAddr = wifiInf.getMacAddress();
 
@@ -83,31 +80,9 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("SerialNumber", serialNumber);
 
             soapService = new SoapService();
-
-            // 设置soap的配置
             soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.USER_LOGIN);
 
-            success = soapService.login(context, jsonObject.toString());
-
-            // 登录失败，获取错误信息并显示
-            if(!success) {
-                Log.d("DFCarChecker", "Login error:" + soapService.getErrorMessage());
-            } else {
-                userInfo = new UserInfo();
-
-                try {
-                    JSONObject userJsonObject = new JSONObject(soapService.getResultMessage());
-
-                    // 保存用户的UserId和此次登陆的Key
-                    userInfo.setId(userJsonObject.getString("UserId"));
-                    userInfo.setKey(userJsonObject.getString("Key"));
-                    userInfo.setName(userJsonObject.getString("UserName"));
-                    userInfo.setOrid(userJsonObject.getString("Orid"));
-                } catch (Exception e) {
-                    Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
-                    return false;
-                }
-            }
+            success = soapService.communicateWithServer(jsonObject.toString());
         } catch (JSONException e) {
             Log.d("DFCarChecker", "Json解析错误: " + e.getMessage());
         }
@@ -120,7 +95,7 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
         progressDialog.dismiss();
 
         if (success) {
-            mCallback.onFinished(userInfo);
+            mCallback.onFinished(soapService.getResultMessage());
         } else {
             mCallback.onFailed(soapService.getErrorMessage());
 

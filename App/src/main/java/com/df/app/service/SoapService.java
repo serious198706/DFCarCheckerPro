@@ -21,6 +21,11 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
+/**
+ * Created by 岩 on 13-12-28.
+ *
+ * SoapService
+ */
 public class SoapService implements ISoapService {
     private String errorMessage;
     private String resultMessage;
@@ -29,11 +34,13 @@ public class SoapService implements ISoapService {
     private String soapAction;
     private String methodName;
 
-    private UserInfo userInfo;
-
     public SoapService() {}
 
-    // 设置url, soapAction, methodName
+    /**
+     * 设置url, methodName
+     * @param url
+     * @param methodName
+     */
     public void setUtils(String url, String methodName) {
         this.url = url;
         this.soapAction = Common.SOAP_ACTION + methodName;
@@ -50,70 +57,61 @@ public class SoapService implements ISoapService {
     public void setResultMessage(String resultMessage) { this.resultMessage = resultMessage; }
     public String getResultMessage() { return resultMessage; }
 
-    // 获取用户信息
-    public UserInfo getUserInfo() { return userInfo; }
-
-    // 登录
-    public boolean login(Context context, String jsonString) {
+    /**
+     * 通讯，不传递数据，比如检查更新
+     * @return 是否成功
+     */
+    public boolean communicateWithServer() {
         errorMessage = "";
         resultMessage = "";
 
-        // 建立soap请求
+        // 各种配置
         SoapObject request = new SoapObject(Common.NAMESPACE, this.methodName);
 
-        // 添加soap参数
-        request.addProperty("inputStringJson", jsonString);
-
-        // 建立信封
-        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11); // ??
-        envelope.bodyOut = request;
+        SoapSerializationEnvelope envelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
+        new MarshalBase64().register(envelope);
         envelope.dotNet = true;
         envelope.setOutputSoapObject(request);
 
-        // 建立http连接
         HttpTransportSE trans = new HttpTransportSE(this.url);
 
         try {
-            //发送请求
             trans.call(this.soapAction, envelope);
-        } catch (IOException e) {
+        } catch (Exception e) {
             if(e.getMessage() != null)
-                Log.d(Common.TAG, e.getMessage());
+                Log.d(Common.TAG, "无法连接到服务器：" + e.getMessage());
             else
-                Log.d(Common.TAG, "无法连接到服务器！");
+                Log.d(Common.TAG, "无法连接到服务器！" );
 
             errorMessage = "无法连接到服务器！";
             resultMessage = "";
-            return false;
-        } catch (XmlPullParserException e) {
 
+            return false;
         }
 
         // 收到的结果
         SoapObject soapObject = (SoapObject) envelope.bodyIn;
 
         // 成功失败标志位
-        String flag = soapObject.getProperty(0).toString();
-
-        // JSON格式数据
-        resultMessage = soapObject.getProperty(1).toString();
-
-        userInfo = new UserInfo();
+        String result = soapObject.getProperty(0).toString();
 
         // 成功
-        if(flag.equals("0")) {
-            errorMessage = "";
+        if(!result.equals("")) {
+            resultMessage = result;
             return true;
         }
         // 失败
         else {
-            errorMessage = resultMessage;
-            Log.d(Common.TAG, resultMessage);
+            Log.d(Common.TAG, "获取版本失败！");
             return false;
         }
     }
 
-    // 通讯，如提交信息等
+    /**
+     * 通讯，如登录、提交信息等
+     * @param jsonString 要通讯的数据
+     * @return 是否成功
+     */
     public boolean communicateWithServer(String jsonString) {
         errorMessage = "";
         resultMessage = "";
@@ -166,7 +164,12 @@ public class SoapService implements ISoapService {
         }
     }
 
-    // 上传照片
+    /**
+     * 上传照片
+     * @param bitmap 图片
+     * @param jsonString 图片信息
+     * @return 是否成功
+     */
     public boolean uploadPicture(Bitmap bitmap, String jsonString) {
         errorMessage = "";
         resultMessage = "";
@@ -265,7 +268,11 @@ public class SoapService implements ISoapService {
         }
     }
 
-    // 上传空照片
+    /**
+     * 上传空照片
+     * @param jsonString 图片信息
+     * @return 是否成功
+     */
     public boolean uploadPicture(String jsonString) {
         errorMessage = "";
         resultMessage = "";
@@ -336,52 +343,4 @@ public class SoapService implements ISoapService {
             return false;
         }
     }
-
-    // 检查更新
-    public boolean checkUpdate() {
-        errorMessage = "";
-        resultMessage = "";
-
-        // 各种配置
-        SoapObject request = new SoapObject(Common.NAMESPACE, this.methodName);
-
-        SoapSerializationEnvelope envelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
-        new MarshalBase64().register(envelope);
-        envelope.dotNet = true;
-        envelope.setOutputSoapObject(request);
-
-        HttpTransportSE trans = new HttpTransportSE(this.url);
-
-        try {
-            trans.call(this.soapAction, envelope);
-        } catch (Exception e) {
-            if(e.getMessage() != null)
-                Log.d(Common.TAG, "无法连接到服务器：" + e.getMessage());
-            else
-                Log.d(Common.TAG, "无法连接到服务器！" );
-
-            errorMessage = "无法连接到服务器！";
-            resultMessage = "";
-
-            return false;
-        }
-
-        // 收到的结果
-        SoapObject soapObject = (SoapObject) envelope.bodyIn;
-
-        // 成功失败标志位
-        String result = soapObject.getProperty(0).toString();
-
-        // 成功
-        if(!result.equals("")) {
-            resultMessage = result;
-            return true;
-        }
-        // 失败
-        else {
-            Log.d(Common.TAG, "获取版本失败！");
-            return false;
-        }
-    }
-
 }

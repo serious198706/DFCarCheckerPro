@@ -6,12 +6,15 @@ import org.json.JSONObject;
 
 /**
  * Created by 岩 on 13-10-16.
+ *
+ * 车辆配置信息
  */
 public class CarSettings {
     private Country country;
     private Brand brand;
     private Manufacturer manufacturer;
     private Series series;
+    private Model model;
 
     public Country getCountry() {
         return country;
@@ -53,8 +56,6 @@ public class CarSettings {
         this.model = model;
     }
 
-    private Model model;
-
     private String brandString;
     private String displacement;
     private String category;
@@ -78,11 +79,15 @@ public class CarSettings {
     private String parkAssist;
     private String clapBoard;
 
-    // 1：三厢四门车、2：三厢两门车、3：两厢两门车、4：两厢四门车:、5：面包车
-
-    // inside:      1 - d4s4,       2 - d2s4,       3 - d2s4,       4 - d4s4,       5 - van_i
-    // outside:     1 - r3d4,       2 - r3d2,       3 - r2d2,       4 - r2d4,       5 - van_o
-    // structure:   1 - d4_f/d4_r,  2 - d2_f/d2_r,  3 - d2_f/d2_r,  4 - d4_f/d4_r,  5 - d4_f/d4_r
+    /**
+     * 车辆识别代码及对应的文件名
+     *
+     * 1：三厢四门车、2：三厢两门车、3：两厢两门车、4：两厢四门车:、5：面包车
+     *
+     * inside:      1 - d4s4,       2 - d2s4,       3 - d2s4,       4 - d4s4,       5 - van_i
+     * outside:     1 - r3d4,       2 - r3d2,       3 - r2d2,       4 - r2d4,       5 - van_o
+     * structure:   1 - d4_f/d4_r,  2 - d2_f/d2_r,  3 - d2_f/d2_r,  4 - d4_f/d4_r,  5 - d4_f/d4_r
+     */
     private String figure;
 
     private String exist = "有";

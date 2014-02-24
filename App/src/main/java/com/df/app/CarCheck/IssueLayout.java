@@ -35,6 +35,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 问题查勘
  */
 public class IssueLayout extends LinearLayout {
     private View rootView;
@@ -85,11 +87,11 @@ public class IssueLayout extends LinearLayout {
 
             @Override
             public void onScroll(AbsListView absListView, int i, int i2, int i3) {
-                if(absListView.getChildAt(0) == null) {
+                if (absListView.getChildAt(0) == null) {
                     return;
                 }
 
-                if(absListView.getChildAt(0).getTop() < 0) {
+                if (absListView.getChildAt(0).getTop() < 0) {
                     showShadow(true);
                 } else {
                     showShadow(false);
@@ -106,6 +108,11 @@ public class IssueLayout extends LinearLayout {
         fillInData(result, progressDialog);
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param result
+     * @param progressDialog
+     */
     private void fillInData(String result, ProgressDialog progressDialog) {
         issueList.clear();
 
@@ -153,7 +160,10 @@ public class IssueLayout extends LinearLayout {
         }
     }
 
-    // 传入"L,E,K,LC,RB"，传出"L1, E1, K1"
+    /**
+     * 传入"L,E,K,LC,RB"，传出"L1, E1, K1"
+    *
+     */
     private String handelLevelNames(String level, int n) {
         String[] partNames = level.split(",");
 
@@ -173,6 +183,9 @@ public class IssueLayout extends LinearLayout {
         return result.length() == 0 ? result : result.substring(0, result.length() - 1);
     }
 
+    /**
+     * 绘制底图
+     */
     private void drawBase() {
         Bitmap baseBitmap = BitmapFactory.decodeFile(Common.utilDirectory + "base");
 
@@ -181,6 +194,10 @@ public class IssueLayout extends LinearLayout {
         drawableList.add(new BitmapDrawable(getResources(), baseBitmap));
     }
 
+    /**
+     * 设置漆面预览图
+     * @param level
+     */
     private void drawSketch(String level) {
         String[] partNames = level.split(",");
 
@@ -205,6 +222,10 @@ public class IssueLayout extends LinearLayout {
         imageView.setImageBitmap(bitmap);
     }
 
+    /**
+     * 填入测试数据
+     * @return
+     */
     private ArrayList<Issue> fillInDummyData() {
         issueList  = new ArrayList<Issue>();
 
@@ -219,6 +240,11 @@ public class IssueLayout extends LinearLayout {
         return issueList;
     }
 
+    /**
+     * 生成事故检查JSONObject
+     * @return
+     * @throws JSONException
+     */
     public JSONObject generateJSONObject() throws JSONException {
         // 问题查勘
         JSONObject issue = new JSONObject();
@@ -247,7 +273,10 @@ public class IssueLayout extends LinearLayout {
         return issue;
     }
 
-
+    /**
+     * 生成事故检查的漆面草图
+     * @return
+     */
     public PhotoEntity generateSketch() {
         Bitmap bitmap = null;
 
@@ -285,7 +314,10 @@ public class IssueLayout extends LinearLayout {
         return photoEntity;
     }
 
-    // 进入检测车辆时填充的数据
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param issue
+     */
     public void fillInData(JSONObject issue) {
         fillInData(issue.toString(), null);
     }

@@ -231,6 +231,9 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         }
     }
 
+    /**
+     * 显示问题查勘和查勘结果页面
+     */
     public void showIssueAndResultTabs() {
         if(!loaded) {
             views.add(issueLayout);
@@ -248,6 +251,10 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         }
     }
 
+    /**
+     * 提交前的检查
+     * @return
+     */
     public String checkAllFields() {
         if(!loaded) {
             selectTab(0);

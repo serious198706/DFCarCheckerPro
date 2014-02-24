@@ -16,9 +16,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -50,9 +53,12 @@ import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setSpinnerSelectionWithString;
+import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 外观检查模块，包括外观缺陷的绘制、标准照以及其他选项
  */
 public class ExteriorLayout extends LinearLayout {
     private static Context context;
@@ -215,7 +221,7 @@ public class ExteriorLayout extends LinearLayout {
     /**
      * 拍摄外观标准照
      */
-    private void starCamera() {
+   /* private void startCamera() {
         String[] itemArray = getResources().getStringArray(R.array.exterior_camera_item);
 
         for(int i = 0; i < itemArray.length; i++) {
@@ -248,6 +254,49 @@ public class ExteriorLayout extends LinearLayout {
             }
         })
         .create();
+
+        dialog.show();
+    }*/
+
+
+    private void starCamera() {
+        String[] itemArray = getResources().getStringArray(R.array.exterior_camera_item);
+
+        for(int i = 0; i < itemArray.length; i++) {
+            itemArray[i] += " (";
+            itemArray[i] += Integer.toString(photoShotCount[i]);
+            itemArray[i] += ") ";
+        }
+
+        View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(view1)
+                .create();
+
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        final ListView listView = new ListView(view1.getContext());
+        listView.setAdapter(new ArrayAdapter<String>(view1.getContext(), android.R.layout.simple_list_item_1, itemArray));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                dialog.dismiss();
+                currentShotPart = i;
+                String group = getResources().getStringArray(R.array.exterior_camera_item)[currentShotPart];
+                Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
+
+                // 使用当前毫秒数当作照片名
+                currentTimeMillis = System.currentTimeMillis();
+                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
+
+                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
+                ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_STANDARD);
+            }
+        });
+        contentArea.addView(listView);
+
+        setTextView(view1, R.id.title, getResources().getString(R.string.exterior_camera));
 
         dialog.show();
     }

@@ -2,8 +2,10 @@ package com.df.app.entries;
 
 /**
  * Created by 岩 on 13-12-25.
+ *
+ * 照片实体类，拍摄完成的照片都以此种方式保存
  */
-// 照片实体类，拍摄完成的照片都以此种方式保存，并加入池中
+
 public class PhotoEntity {
     private String fileName;
     private String thumbFileName;

@@ -46,6 +46,9 @@ public class AccidentResultLayout extends LinearLayout {
     public static List<PosEntity> posEntitiesFront;
     public static List<PosEntity> posEntitiesRear;
 
+    public static List<PhotoEntity> photoEntitiesFront;
+    public static List<PhotoEntity> photoEntitiesRear;
+
     public AccidentResultLayout(Context context) {
         super(context);
         init(context);
@@ -66,6 +69,9 @@ public class AccidentResultLayout extends LinearLayout {
 
         posEntitiesFront = new ArrayList<PosEntity>();
         posEntitiesRear = new ArrayList<PosEntity>();
+
+        photoEntitiesFront = new ArrayList<PhotoEntity>();
+        photoEntitiesRear = new ArrayList<PhotoEntity>();
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -119,6 +125,11 @@ public class AccidentResultLayout extends LinearLayout {
     public void saveAccidentPhoto(int flag) {
         PhotoEntity photoEntity = generatePhotoEntity(flag);
 
+        List<PhotoEntity> photoEntities = getPart(flag).equals("front") ? AccidentResultLayout.photoEntitiesFront
+                : AccidentResultLayout.photoEntitiesRear;
+
+        photoEntities.add(photoEntity);
+
         PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }
@@ -153,8 +164,11 @@ public class AccidentResultLayout extends LinearLayout {
             photoEntity.setName("结构缺陷");
             photoEntity.setFileName(posEntity.getImageFileName());
 
-            if(!photoEntity.getFileName().equals(""))
+            if(photoEntity.getFileName().equals("")) {
+                photoEntity.setThumbFileName("");
+            } else {
                 photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
+            }
             photoEntity.setComment(posEntity.getComment());
             photoEntity.setJsonString(jsonObject.toString());
         } catch (JSONException e) {

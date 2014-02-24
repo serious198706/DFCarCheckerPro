@@ -70,6 +70,7 @@
 
     <string name="light">轻微</string>
     <string name="heavy">严重</string>
+    <string name="chooseLightHeavy">请选择损伤等级：</string>
 
     <string name="refreshing">正在查找设备&#8230;&#8230;&#8230;</string>
     <string name="scanning">扫描未知设备&#8230;&#8230;&#8230;</string>

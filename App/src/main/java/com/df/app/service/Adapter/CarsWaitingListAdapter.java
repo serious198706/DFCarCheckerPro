@@ -1,8 +1,6 @@
 package com.df.app.service.Adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.df.app.Procedures.InputProceduresActivity;
 import com.df.app.R;
-import com.df.app.entries.CarsCheckedItem;
 import com.df.app.entries.CarsWaitingItem;
 
 import java.util.ArrayList;
@@ -21,6 +17,8 @@ import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 14-1-7.
+ *
+ * 待检车辆adapter
  */
 public class CarsWaitingListAdapter extends BaseAdapter {
     public interface OnModifyProcedure {

@@ -3,16 +3,18 @@ package com.df.app.CarCheck;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TableLayout;
 import android.widget.Toast;
 
 import com.df.app.MainActivity;
@@ -28,16 +30,27 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.df.app.util.Helper.setTextView;
+
 /**
  * Created by 岩 on 13-12-26.
+ *
+ * 机舱组照片列表
  */
 public class PhotoEngineLayout extends LinearLayout {
     private View rootView;
     private Context context;
 
+    // adapter
     public static PhotoListAdapter photoListAdapter;
+
+    // 已拍摄的照片数量
     public static int[] photoShotCount = {0, 0, 0, 0};
+
+    // 正在拍摄的部位
     private int currentShotPart;
+
+    // 目前的文件名
     private long currentTimeMillis;
 
     public PhotoEngineLayout(Context context) {
@@ -71,12 +84,15 @@ public class PhotoEngineLayout extends LinearLayout {
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                starCamera();
+                startCamera();
             }
         });
     }
 
-    private void starCamera() {
+    /**
+     * 拍摄机舱组照片
+     */
+    private void startCamera() {
         String[] itemArray = getResources().getStringArray(R.array.photoForEngineItems);
 
         for(int i = 0; i < itemArray.length; i++) {
@@ -85,40 +101,43 @@ public class PhotoEngineLayout extends LinearLayout {
             itemArray[i] += ") ";
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(context).setTitle(R.string.takePhotoForEngine)
-                .setItems(itemArray, new DialogInterface.OnClickListener() {
+        View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
 
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        currentShotPart = i;
-
-                        String group = getResources().getStringArray(R.array.photoForEngineItems)[currentShotPart];
-
-                        Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
-
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                        currentTimeMillis = System.currentTimeMillis();
-                        Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg"); //
-                        // create a
-                        // file to save the image
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-
-                        ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_ENGINE_STANDARD);
-                    }
-                })
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                })
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(view1)
                 .create();
+
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        final ListView listView = new ListView(view1.getContext());
+        listView.setAdapter(new ArrayAdapter<String>(view1.getContext(), android.R.layout.simple_list_item_1, itemArray));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                dialog.dismiss();
+                currentShotPart = i;
+                String group = getResources().getStringArray(R.array.photoForEngineItems)[currentShotPart];
+                Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
+
+                // 使用当前毫秒数当作照片名
+                currentTimeMillis = System.currentTimeMillis();
+                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
+
+                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
+                ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_ENGINE_STANDARD);
+            }
+        });
+        contentArea.addView(listView);
+
+        setTextView(view1, R.id.title, getResources().getString(R.string.takePhotoForEngine));
 
         dialog.show();
     }
 
-    public void saveExteriorStandardPhoto() {
+    /**
+     * 保存机舱标准照
+     */
+    public void saveEngineStandardPhoto() {
         Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
         Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
 
@@ -129,9 +148,13 @@ public class PhotoEngineLayout extends LinearLayout {
 
         photoShotCount[currentShotPart]++;
 
-        starCamera();
+        startCamera();
     }
 
+    /**
+     * 生成photoEntity
+     * @return
+     */
     private PhotoEntity generatePhotoEntity() {
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
@@ -180,7 +203,10 @@ public class PhotoEngineLayout extends LinearLayout {
         return photoEntity;
     }
 
-
+    /**
+     * 填充测试数据
+     * @return
+     */
     private ArrayList<PhotoEntity> generateDummyPhoto() {
         ArrayList<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
@@ -200,7 +226,21 @@ public class PhotoEngineLayout extends LinearLayout {
         return photoEntities;
     }
 
+    /**
+     * 提交前的检查
+     * @return
+     */
     public String check() {
-        return "";
+        int sum = 0;
+
+        for(int i = 0; i < photoShotCount.length; i++) {
+            sum += photoShotCount[i];
+        }
+
+        if(sum < 1) {
+            return "engine";
+        } else {
+            return "";
+        }
     }
 }

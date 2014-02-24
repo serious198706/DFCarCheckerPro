@@ -16,6 +16,8 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TableLayout;
+import android.widget.TextView;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
@@ -34,7 +36,11 @@ import java.util.Map;
 
 import static com.df.app.util.Helper.setTextView;
 
-
+/**
+ * Created by 岩 on 13-12-20.
+ *
+ * 绘制的activity
+ */
 public class PaintActivity extends Activity {
     private ExteriorPaintView exteriorPaintView;
     private InteriorPaintView interiorPaintView;
@@ -49,6 +55,7 @@ public class PaintActivity extends Activity {
     // 绘图类的父类
     PaintView paintView;
 
+    // 绘制类型
     public enum PaintType {
         FRAME_PAINT, EX_PAINT, IN_PAINT, NOVALUE;
 
@@ -115,6 +122,7 @@ public class PaintActivity extends Activity {
 
         paintView = (PaintView)map.get(currentPaintView);
 
+        // 撤销按钮
         Button undoButton = (Button)findViewById(R.id.undo);
         undoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +131,7 @@ public class PaintActivity extends Activity {
             }
         });
 
+        // 重做按钮
         Button redoButton = (Button)findViewById(R.id.redo);
         redoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,6 +140,7 @@ public class PaintActivity extends Activity {
             }
         });
 
+        // 清除按钮
         Button clearButton = (Button)findViewById(R.id.clear);
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,6 +149,7 @@ public class PaintActivity extends Activity {
             }
         });
 
+        // 取消按钮
         Button cancelButton = (Button)findViewById(R.id.cancel);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,6 +158,7 @@ public class PaintActivity extends Activity {
             }
         });
 
+        // 完成按钮
         Button doneButton = (Button)findViewById(R.id.done);
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,7 +169,9 @@ public class PaintActivity extends Activity {
         });
     }
 
-    // 设置为外观布局
+    /**
+     *  设置为外观布局
+     */
     private void setExPaintLayout() {
         interiorPaintView.setVisibility(View.GONE);
         exteriorPaintView.setVisibility(View.VISIBLE);
@@ -261,7 +275,9 @@ public class PaintActivity extends Activity {
         paintMenu.addView(radioGroup);
     }
 
-    // 设置为内饰图布局
+    /**
+     * 设置为内饰图布局
+     */
     private void setInPaintLayout() {
         interiorPaintView.setVisibility(View.VISIBLE);
         exteriorPaintView.setVisibility(View.GONE);
@@ -307,29 +323,39 @@ public class PaintActivity extends Activity {
     }
 
 
-    // 提醒用户
+    /**
+     * 选择取消时提醒用户
+     * @param msgId
+     */
     private void alertUser(final int msgId) {
         paintView = (PaintView)map.get(currentPaintView);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        TextView content = new TextView(view1.getContext());
+        content.setText(msgId);
+        content.setTextSize(20f);
+        contentArea.addView(content);
 
-        builder.setTitle(R.string.alert);
-        builder.setMessage(msgId);
-        builder.setNegativeButton(R.string.cancel, null);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if(msgId == R.string.cancel_confirm) {
-                    // 退出
-                    paintView.cancel();
-                    finish();
-                } else if(msgId == R.string.clear_confirm) {
-                    paintView.clear();
-                }
-            }
-        });
+        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
 
-        AlertDialog dialog = builder.create();
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(view1)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(msgId == R.string.cancel_confirm) {
+                            // 退出
+                            paintView.cancel();
+                            finish();
+                        } else if(msgId == R.string.clear_confirm) {
+                            paintView.clear();
+                        }
+                    }
+                })
+                .create();
+
         dialog.show();
     }
 
@@ -375,22 +401,44 @@ public class PaintActivity extends Activity {
         }
     }
 
+    /**
+     * 生成photoEntity，并添加到对应的列表
+     */
     private void addPhotoToList() {
         PhotoEntity photoEntity = generatePhotoEntity(paintView.getPosEntity());
 
         paintView.getPhotoEntities().add(photoEntity);
     }
 
-    // 通知照片列表，有照片更新
+    /**
+     * 完成时，将photoEntity都添加到照片list，并更新list
+     */
     private void notifyPhotoList() {
-        // TODO 这儿是将新更新的照片添加进去,而不是一全部添加,未解决
-        for(PhotoEntity photoEntity : paintView.getPhotoEntities()) {
+        // 清空，然后将各自的photoEntity加入列表
+        PhotoFaultLayout.photoListAdapter.clear();
+
+        for(PhotoEntity photoEntity : ExteriorLayout.photoEntities)
+            PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+
+        for(PhotoEntity photoEntity : InteriorLayout.photoEntities)
+            PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+
+        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesFront) {
+            PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+        }
+
+        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesRear) {
             PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
         }
 
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * 生成photoEntity
+     * @param posEntity
+     * @return
+     */
     private PhotoEntity generatePhotoEntity(PosEntity posEntity) {
         int startX, startY, endX, endY;
         int radius = 0;
@@ -449,96 +497,23 @@ public class PaintActivity extends Activity {
 
         photoEntity.setName(paintView.getTypeName());
         photoEntity.setFileName(posEntity.getImageFileName());
-        photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
+        if(photoEntity.getFileName().equals("")) {
+            photoEntity.setThumbFileName("");
+        } else {
+            photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
+        }
         photoEntity.setComment(posEntity.getComment());
         photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;
     }
 
-    // 用不到这种方法了，最后获取时直接从PhotoListAdapter那里拿
-   /* private void generatePhotoEntities() {
-        int startX, startY, endX, endY;
-        int radius = 0;
-
-        // 获取绘图父类实体
-        paintView = (PaintView)map.get(currentPaintView);
-
-        // 照片集合
-        List<PhotoEntity> photoEntities = paintView.getPhotoEntities();
-
-        photoEntities.clear();
-
-        List<PosEntity> posEntities = paintView.getPosEntities();
-
-        for(int i = 0; i < posEntities.size(); i++) {
-            // 获取坐标
-            PosEntity posEntity = posEntities.get(i);
-
-            startX = posEntity.getStartX();
-            startY = posEntity.getStartY();
-            endX = posEntity.getEndX();
-            endY = posEntity.getEndY();
-
-            // 如果是“变形”，即圆
-            if(posEntity.getType() == 3) {
-                // 计算半径
-                int dx = Math.abs(endX - startX);
-                int dy = Math.abs(endY- startY);
-                int dr = (int)Math.sqrt(dx * dx + dy * dy);
-
-                // 计算圆心
-                int x0 = (startX + endX) / 2;
-                int y0 = (startY + endY) / 2;
-
-                startX = x0;
-                startY = y0;
-                endX = endY = 0;
-                radius = dr / 2;
-            }
-
-            // 组织JsonString
-            JSONObject jsonObject = new JSONObject();
-
-            try {
-                JSONObject photoJsonObject = new JSONObject();
-
-                jsonObject.put("Group", paintView.getGroup());
-                jsonObject.put("Part", "fault");
-
-                photoJsonObject.put("type", posEntity.getType());
-                photoJsonObject.put("startX", startX);
-                photoJsonObject.put("startY", startY);
-                photoJsonObject.put("endX", endX);
-                photoJsonObject.put("endY", endY);
-                photoJsonObject.put("radius", radius);
-                photoJsonObject.put("comment", posEntity.getComment());
-
-                jsonObject.put("PhotoData", photoJsonObject);
-                jsonObject.put("CarId", BasicInfoLayout.carId);
-                jsonObject.put("UserId", MainActivity.userInfo.getId());
-                jsonObject.put("Key", MainActivity.userInfo.getKey());
-            } catch (Exception e) {
-                Log.d("DFCarChecker", "Json组织错误：" + e.getMessage());
-            }
-
-            // 组建PhotoEntity
-            PhotoEntity photoEntity = new PhotoEntity();
-
-            String fileName = (posEntity.getImageFileName() == null) ? "" : posEntity
-                    .getImageFileName();
-
-            photoEntity.setFileName(fileName);
-            photoEntity.setName(paintView.getGroup());
-            photoEntity.setJsonString(jsonObject.toString());
-
-            // 暂时不加入照片池，只放入各自的List，等保存时再提交
-            photoEntities.add(photoEntity);
-        }
-    }
-*/
-
-    // 根据不同的检测步骤和figure，返回不同的图片
+    /**
+     * 根据不同的检测步骤和figure，返回不同的图片
+     * @param figure
+     * @param step
+     * @return
+     */
     private Bitmap getBitmapFromFigure(int figure, String step) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;

@@ -6,6 +6,8 @@ import android.widget.ScrollView;
 
 /**
  * Created by 岩 on 13-12-30.
+ *
+ * 自定义scrollView
  */
 public class MyScrollView extends ScrollView {
     ScrollViewListener listener;

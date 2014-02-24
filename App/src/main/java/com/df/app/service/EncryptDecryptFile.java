@@ -13,6 +13,11 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
+/**
+ * Created by 岩 on 13-12-23.
+ *
+ * 加密解密文件
+ */
 public class EncryptDecryptFile {
     //Arbitrarily selected 8-byte salt sequence:
     private static final byte[] salt = {
@@ -21,7 +26,6 @@ public class EncryptDecryptFile {
     };
 
     private static Cipher makeCipher(String pass, Boolean decryptMode) throws GeneralSecurityException{
-
         //Use a KeyFactory to derive the corresponding key from the passphrase:
         PBEKeySpec keySpec = new PBEKeySpec(pass.toCharArray());
         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
@@ -43,8 +47,9 @@ public class EncryptDecryptFile {
         return cipher;
     }
 
-
-    /**Encrypts one file to a second file using a key derived from a passphrase:**/
+    /**
+     * Encrypts one file to a second file using a key derived from a passphrase:
+     */
     public static void encryptFile(String fileName, String pass)
             throws IOException, GeneralSecurityException{
         byte[] decData;
@@ -85,7 +90,9 @@ public class EncryptDecryptFile {
     }
 
 
-    /**Decrypts one file to a second file using a key derived from a passphrase:**/
+    /**
+     * Decrypts one file to a second file using a key derived from a passphrase:
+     */
     public static void decryptFile(String fileName, String pass)
             throws GeneralSecurityException, IOException{
         byte[] encData;

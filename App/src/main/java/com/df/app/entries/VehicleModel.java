@@ -5,6 +5,8 @@ import java.util.List;
 
 /**
  * Created by admin on 13-10-15.
+ *
+ * 解析xml文件后的实体类
  */
 
 public class VehicleModel {
@@ -25,6 +27,10 @@ public class VehicleModel {
         return countries;
     }
 
+    /**
+     * 获取所有国家名称
+     * @return
+     */
     public List<String> getCountryNames() {
         countryNames = new ArrayList<String>();
 
@@ -37,6 +43,11 @@ public class VehicleModel {
         return countryNames;
     }
 
+    /**
+     * 根据id查找国家
+     * @param id
+     * @return
+     */
     public Country getCountryById(String id) {
         Country country = null;
 

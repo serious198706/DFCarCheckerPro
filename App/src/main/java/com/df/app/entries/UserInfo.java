@@ -2,6 +2,8 @@ package com.df.app.entries;
 
 /**
  * Created by 岩 on 13-10-22.
+ *
+ * 检测员
  */
 public class UserInfo
 {

@@ -6,6 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.R;
@@ -14,9 +18,14 @@ import com.df.app.util.Common;
 
 import org.json.JSONObject;
 
+import static com.df.app.util.Helper.setTextView;
+
 /**
  * Created by 岩 on 13-12-18.
+ *
+ * 检查程序更新
  */
+
 public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
     private Context context;
     private SoapService soapService;
@@ -34,12 +43,12 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        boolean success = true;
+        boolean success;
 
         soapService = new SoapService();
         soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_APP_NEW_VERSION);
 
-        success = soapService.checkUpdate();
+        success = soapService.communicateWithServer();
 
         return success;
     }
@@ -66,9 +75,18 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
 
                 // 版本不同，升级
                 if(compareVersion(pInfo.versionName, version)) {
+                    LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+                    View view1 = inflater.inflate(R.layout.popup_layout, null);
+                    TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+                    TextView content = new TextView(view1.getContext());
+                    content.setText("检测到新版本，点击确定进行更新");
+                    content.setTextSize(20f);
+                    contentArea.addView(content);
+
+                    setTextView(view1, R.id.title, context.getResources().getString(R.string.newUpdate));
+
                     AlertDialog dialog = new AlertDialog.Builder(context)
-                            .setTitle(R.string.newUpdate)
-                            .setMessage("检测到新版本，点击确定进行更新")
+                            .setView(view1)
                             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -89,8 +107,12 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
         }
     }
 
-
-    // 比较版本号
+    /**
+     * 比较版本号
+     * @param localVersion 本地版本号
+     * @param serverVersion 服务器版本号
+     * @return 是否需要升级
+     */
     private boolean compareVersion(String localVersion, String serverVersion) {
         if(localVersion.charAt(0) < serverVersion.charAt(0))
             return true;

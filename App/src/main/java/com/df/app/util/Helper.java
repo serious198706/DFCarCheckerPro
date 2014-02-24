@@ -1,113 +1,37 @@
 package com.df.app.util;
 
-import android.app.ActionBar;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.ContentHandler;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.ShortBufferException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-
 /**
  * Created by on 13-8-30.
+ *
+ * 各种helper
  */
+
 public class Helper {
-    public static List<String> GetYearList(int count)
-    {
-        int year = Calendar.getInstance().get(Calendar.YEAR);
-
-        List<String> yearList = new ArrayList<String>();
-
-        for(int i = year - count; i <= year; i++)
-        {
-            yearList.add(Integer.toString(i));
-        }
-
-        return  yearList;
-    }
-
-    public static List<String> GetMonthList()
-    {
-        List<String> monthList = new ArrayList<String>();
-
-        for(int i = 0; i< 12; i++)
-        {
-            monthList.add(Integer.toString(i + 1));
-        }
-
-        return monthList;
-    }
-
-    public static List<String> GetNumbersList(int from, int to) {
-        if(from > to) {
-            return null;
-        }
-
-        List<String> numberList = new ArrayList<String>();
-
-        for(int i = from; i <= to; i++) {
-            numberList.add(Integer.toString(i));
-        }
-
-        return numberList;
-    }
-
-
-    public static List<String> StringArray2List(String[] array)
-    {
-        List<String> list = new ArrayList<String>();
-
-        for(int i = 0; i < array.length; i++)
-        {
-            list.add(array[i]);
-        }
-
-        return list;
-    }
-
-    public static void SetSpinnerData(View view, int redID, List<String> list)
-    {
-        Spinner spinner = (Spinner)view.findViewById(redID);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_item, list);
-
-        spinner.setAdapter(adapter);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    }
-
+    /**
+     * 只有一个""的空列表
+     * @return
+     */
     public static List<String> getEmptyStringList() {
         List<String> emptyStringList = new ArrayList<String>();
         emptyStringList.add("");
@@ -115,12 +39,18 @@ public class Helper {
         return  emptyStringList;
     }
 
-    /** Create a file Uri for saving an image*/
+    /**
+     * 创建一个文件uri
+     */
     public static Uri getOutputMediaFileUri(String fileName){
         return Uri.fromFile(getOutputMediaFile(fileName));
     }
 
-    /** Create a File for saving an image*/
+    /**
+     * 创建一个文件用于存储照片
+     * @param fileName 文件名
+     * @return
+     */
     private static File getOutputMediaFile(String fileName){
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
@@ -144,6 +74,11 @@ public class Helper {
         return mediaFile;
     }
 
+    /**
+     * 检查vin的合法性
+     * @param vin
+     * @return
+     */
     public static boolean isVin(String vin) {
         boolean find = Pattern.compile("^([0123456789ABCDEFGHJKLMNPRSTUVWXYZ]){12}(\\d){5}$").matcher(vin).find();
 
@@ -173,13 +108,24 @@ public class Helper {
         return (vin.substring(8, 9).equals(Integer.toString(value % 11).replace("10", "X")));
     }
 
-
+    /**
+     * 获取spinner当前选项的内容
+     * @param view
+     * @param spinnerId
+     * @return
+     */
     public static String getSpinnerSelectedText(View view, int spinnerId) {
         Spinner spinner = (Spinner)view.findViewById(spinnerId);
 
         return spinner.getSelectedItem().toString();
     }
 
+    /**
+     * 根据内容，设置spinner的选择项
+     * @param view
+     * @param spinnerId
+     * @param text
+     */
     public static void setSpinnerSelectionWithString(View view, int spinnerId, String text) {
         Spinner spinner = (Spinner)view.findViewById(spinnerId);
 
@@ -190,21 +136,45 @@ public class Helper {
         }
     }
 
-    public static void setSpinnerSelectionWithIndex(View view, int spinnerId, int index) {
-        Spinner spinner = (Spinner)view.findViewById(spinnerId);
-        spinner.setSelection(index);
-    }
-
+    /**
+     * 获取spinner当前选择项的index
+     * @param view
+     * @param spinnerId
+     * @return
+     */
     public static int getSpinnerSelectedIndex(View view, int spinnerId) {
         Spinner spinner = (Spinner)view.findViewById(spinnerId);
 
         return spinner.getSelectedItemPosition();
     }
 
+    /**
+     * 使用index设置spinner的选择项
+     * @param view
+     * @param spinnerId
+     * @param index
+     */
+    public static void setSpinnerSelectionWithIndex(View view, int spinnerId, int index) {
+        Spinner spinner = (Spinner)view.findViewById(spinnerId);
+        spinner.setSelection(index);
+    }
+
+    /**
+     * 获取日期串
+     * @param year
+     * @param month
+     * @return
+     */
     public static String getDateString(String year, String month) {
         return year + "-" + (month.length() == 1 ? "0" + month : month);
     }
 
+    /**
+     * 设置textView
+     * @param view
+     * @param textId
+     * @param string
+     */
     public static void setTextView(View view, int textId, String string) {
         TextView textView = (TextView)view.findViewById(textId);
 
@@ -214,41 +184,73 @@ public class Helper {
             textView.setText(string);
     }
 
+    /**
+     * 设置editView为焦点
+     * @param view
+     * @param editId
+     */
     public static void setEditFocus(View view, int editId) {
         EditText editText = (EditText)view.findViewById(editId);
         editText.requestFocus();
     }
 
+    /**
+     * 设置editView的错误信息
+     * @param view
+     * @param editId
+     */
     public static void setEditError(View view, int editId) {
         EditText editText = (EditText)view.findViewById(editId);
         editText.setError("请填写必要字段！");
     }
 
-    public static void setEditWeight(View view, int editId, float weight) {
-        EditText editText = (EditText)view.findViewById(editId);
-
-        editText.setLayoutParams(new LinearLayout.LayoutParams(0,
-                LinearLayout.LayoutParams.WRAP_CONTENT, weight));
-    }
-
+    /**
+     * 设置editView内容
+     * @param view
+     * @param textId
+     * @param text
+     */
     public static void setEditViewText(View view, int textId, String text) {
         EditText editText = (EditText)view.findViewById(textId);
         editText.setText(text);
     }
 
+    /**
+     * 获取editView内容
+     * @param view
+     * @param textId
+     * @return
+     */
     public static String getEditViewText(View view, int textId) {
         EditText editText = (EditText)view.findViewById(textId);
         return editText.getText().toString();
     }
 
+    /**
+     * 显示或者隐藏控件
+     * @param view
+     * @param viewId
+     * @param show
+     */
     public static void showView(View view, int viewId, boolean show) {
         view.findViewById(viewId).setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * 停用或启用控件
+     * @param view
+     * @param id
+     * @param enable
+     */
     public static void enableView(View view, int id, boolean enable) {
         view.findViewById(id).setEnabled(enable);
     }
 
+    /**
+     * 重
+     * @param fileName
+     * @param max
+     */
     public static void setPhotoSize(String fileName, int max) {
         String path = Common.photoDirectory;
 

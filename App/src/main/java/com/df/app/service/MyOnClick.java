@@ -5,6 +5,8 @@ import android.view.View;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * viewpager点击事件
  */
 
 public class MyOnClick implements View.OnClickListener

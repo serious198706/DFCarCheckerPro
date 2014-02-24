@@ -16,6 +16,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-26.
+ *
+ * 内饰标准照列表
  */
 public class PhotoInteriorLayout extends LinearLayout {
     private View rootView;
@@ -50,6 +52,10 @@ public class PhotoInteriorLayout extends LinearLayout {
         interiorList.setAdapter(photoListAdapter);
     }
 
+    /**
+     * 生成测试数据
+     * @return
+     */
     private ArrayList<PhotoEntity> generateDummyPhoto() {
         ArrayList<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
@@ -67,9 +73,5 @@ public class PhotoInteriorLayout extends LinearLayout {
         photoEntities.add(photoEntity2);
 
         return photoEntities;
-    }
-
-    public String check() {
-        return "";
     }
 }

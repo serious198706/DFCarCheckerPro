@@ -2,6 +2,8 @@ package com.df.app.paintview;
 
 /**
  * Created by 岩 on 13-9-26.
+ *
+ * 内饰缺陷绘制
  */
 
 import android.app.Activity;
@@ -297,6 +299,11 @@ public class InteriorPaintView extends PaintView {
 
         photoEntity.setName(getTypeName());
         photoEntity.setFileName(posEntity.getImageFileName());
+        if(photoEntity.getFileName().equals("")) {
+            photoEntity.setThumbFileName("");
+        } else {
+            photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
+        }
         photoEntity.setComment(posEntity.getComment());
         photoEntity.setJsonString(jsonObject.toString());
 

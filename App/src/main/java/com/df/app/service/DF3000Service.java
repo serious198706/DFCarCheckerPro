@@ -13,8 +13,15 @@ import com.df.app.filter.TransmitValueFilter;
 import com.df.app.service.Command.QNC_TRANSMITVALUES;
 import com.xinque.android.serial.driver.UsbSerialDriver;
 
+/**
+ * Created by zsg on 14-1-6.
+ *
+ * df3000
+ */
+
 public class DF3000Service {
 	protected int MAX_DATABUF_LEN = 1024;
+
 	// 指令byte[] 数组的下标
 	protected final Object mReadBufferLock = new Object();
 	protected final Object mWriteBufferLock = new Object();
@@ -28,14 +35,14 @@ public class DF3000Service {
 	private static DF3000Service DF3000Service;
 
 	public static DF3000Service instance(UsbSerialDriver sDriver) {
-		if (DF3000Service == null || DF3000Service.sDriver == null) {
+		if (DF3000Service == null || com.df.app.service.DF3000Service.sDriver == null) {
 			DF3000Service = new DF3000Service(sDriver);
 		}
 		return DF3000Service;
 	}
 
 	private DF3000Service(UsbSerialDriver sDriver) {
-		DF3000Service.sDriver = sDriver;
+		com.df.app.service.DF3000Service.sDriver = sDriver;
 		serialNumbers = new ArrayList<SerialNumber>();
 	}
 
@@ -56,9 +63,8 @@ public class DF3000Service {
 		try {
 			if (isClosed) {
 				sDriver.open();
-				/**
-				 * 初始化设置，不需要改变
-				 */
+
+				// 初始化设置，死的
 				sDriver.setParameters(19200, 8, UsbSerialDriver.STOPBITS_1, UsbSerialDriver.PARITY_SPACE);
 
 				// 等待
@@ -73,7 +79,6 @@ public class DF3000Service {
 			}
 
 			GetQuaNixSN();
-
 		} catch (Exception e) {
 			close();
 		}
@@ -85,8 +90,8 @@ public class DF3000Service {
 	private boolean GetQuaNixSN() {
 		boolean bRet = false;
 
-		byte bufReceive[] = new byte[MAX_DATABUF_LEN];
-		int size = 0;
+		byte bufReceive[];
+		int size;
 		Command cmd = new Command.QNC_GETGAUGEINFO();
 		GaugeInfoFilter gaugeInfoFilter = new GaugeInfoFilter();
 		
@@ -127,7 +132,7 @@ public class DF3000Service {
 	/**
 	 * 连接设备
 	 * 
-	 * @return
+	 * @return 是否成功
 	 */
 	public boolean connection() {
 		boolean bRet = false;
@@ -144,8 +149,12 @@ public class DF3000Service {
 		return bRet;
 	}
 
+    /**
+     * 检查序列号是否正确
+     * @return
+     */
 	public boolean CheckQuaNixSN() {
-		boolean bRet = false;
+		boolean bRet;
 		Command.QNC_GETPROBESN cmd = new Command.QNC_GETPROBESN(m_SerialNum.getNumber());
 		ProbeSerialNumberFilter probeSerialNumberFilter = new ProbeSerialNumberFilter(cmd);
 		
@@ -156,9 +165,7 @@ public class DF3000Service {
 		}
 		
 		// 需多次获取
-		for (int iTry = 0; iTry < 5; iTry++) {
-			//Log.d(Common.TAG, "CheckQuaNixSN " + (iTry + 1) + " times");
-
+		for (int i = 0; i < 5; i++) {
 			byte[] buf = new byte[MAX_DATABUF_LEN];
 			int len;
 			try {
@@ -170,8 +177,6 @@ public class DF3000Service {
 				byte[] data = new byte[len];
 				System.arraycopy(buf, 0, data, 0, len);
 				probeSerialNumberFilter.receive(data);
-				//Log.d("CheckQuaNixSN Read bytes:", Decoder.dumpHexString(data));
-
 			} catch (Exception e) {
 				close();
 				e.printStackTrace();
@@ -182,8 +187,12 @@ public class DF3000Service {
 
 		return bRet;
 	}
-	
-	
+
+    /**
+     * 开始采集数据
+     * @param onReceiveData
+     * @return
+     */
 	public List<Measurement> startCollect(OnReceiveData onReceiveData){
 		List<Measurement> measurements = new ArrayList<Measurement>();
 
@@ -195,7 +204,7 @@ public class DF3000Service {
 			byte[] buf = new byte[MAX_DATABUF_LEN];
 			int len;
 
-			List<QNC_TRANSMITVALUES> cmds = getAllMeasurementCommond();
+			List<QNC_TRANSMITVALUES> cmds = getAllMeasurementCommand();
 
 			for(int i = 0; i < cmds.size(); i++){
 				QNC_TRANSMITVALUES cmd = cmds.get(i);
@@ -213,18 +222,14 @@ public class DF3000Service {
 					System.arraycopy(buf, 0, temp, 0, len);
 
 					transmitValueFilter.receive(temp);
-
                     Thread.sleep(100);
-					
-					final String message = "read " + len + " bytes: \n" + Decoder.dumpHexString(temp);
-					//Log.d("GetTransmitValue " + iTry, message);
 				}
 				
 				int[] bRet = transmitValueFilter.doFilter();
+                measurements.add(new Measurement(i+1).setValue(bRet));
 
+                // 收到数据，向界面发送
                 onReceiveData.onReceiveData(new Measurement(i+1).setValue(bRet));
-
-				measurements.add(new Measurement(i+1).setValue(bRet));
 			}
 		} catch (Exception e) {
 			close();
@@ -232,56 +237,24 @@ public class DF3000Service {
 		
 		return measurements;
 	}
-	
-	private List<QNC_TRANSMITVALUES> getAllMeasurementCommond(){
-		List<QNC_TRANSMITVALUES> ALL_QNC_TRANSMITVALUES = new ArrayList<QNC_TRANSMITVALUES>();
+
+    /**
+     * 获取所有测量数据
+     * @return
+     */
+	private List<QNC_TRANSMITVALUES> getAllMeasurementCommand(){
+		List<QNC_TRANSMITVALUES> ALL_QNC_TRANSMIT_VALUES = new ArrayList<QNC_TRANSMITVALUES>();
 
         // 添加所有的传输指令，29个区
         for(int i = 1; i <= 29; i++) {
-            ALL_QNC_TRANSMITVALUES.add(new QNC_TRANSMITVALUES(m_SerialNum.getNumber(),
-                    new byte[]{0x00, (byte)i, 0, 0}));
+            ALL_QNC_TRANSMIT_VALUES.add(new QNC_TRANSMITVALUES(m_SerialNum.getNumber(),
+                    new byte[]{0x00, (byte) i, 0, 0}));
         }
-		return ALL_QNC_TRANSMITVALUES;
-	}
-
-	public int[] GetTransmitValues() {
-		int[] bRet = null;
-		QNC_TRANSMITVALUES cmd = new QNC_TRANSMITVALUES(m_SerialNum.getNumber(),new byte[]{0x00,0x02,0x00,0x00});
-		TransmitValueFilter transmitValueFilter = new TransmitValueFilter(cmd);
-		byte[] cmddata = cmd.getData();
-		
-		if (!WriteData(cmddata, cmddata.length)) {
-			return bRet;
-		}
-
-		byte[] buf;
-		int len;
-		try {
-			// 需多次获取
-			for (int iTry = 0; iTry < 5; iTry++) {
-				buf = new byte[MAX_DATABUF_LEN];
-				len = ReceiveData(buf);
-				
-				byte[] temp = new byte[len];
-				System.arraycopy(buf, 0, temp, 0, len);
-
-				transmitValueFilter.receive(temp);
-				
-				final String message = "read " + len + " bytes: \n" + Decoder.dumpHexString(temp);
-				//Log.d("GetTransmitValue " + iTry, message);
-			}
-		} catch (Exception e) {
-			close();
-			e.printStackTrace();
-		}
-
-		bRet = transmitValueFilter.doFilter();
-		
-		return bRet;
+		return ALL_QNC_TRANSMIT_VALUES;
 	}
 
 	/**
-	 * 发送数据
+	 * 写数据
 	 * 
 	 * @param data
 	 * @param size
@@ -292,7 +265,7 @@ public class DF3000Service {
 		try {
 			byte[] sendData = new byte[size];
 			System.arraycopy(data, 0, sendData, 0, size);
-			//Log.d("WriteData", Decoder.dumpHexString(sendData));
+
 			int len = sDriver.write(sendData, 1000);
 			synchronized (mWriteBufferLock) {
 				mWriteBufferLock.wait(1500);
@@ -305,10 +278,9 @@ public class DF3000Service {
 	}
 
 	/**
-	 * 接收数据
+	 * 读数据
 	 * 
-	 * @param data
-	 *            接收数组
+	 * @param data 接收数组
 	 * @return
 	 */
 	public int ReceiveData(byte[] data) {
@@ -329,15 +301,25 @@ public class DF3000Service {
 		return len;
 	}
 
+    /**
+     * 获取所有序列号
+     * @return
+     */
 	public List<SerialNumber> getSerialNumbers() {
 		return serialNumbers;
 	}
 
+    /**
+     * 获取指定序列号
+     * @param position
+     */
 	public void selectSerial(int position) {
 		m_SerialNum = serialNumbers.get(position);
-		Log.d("selectSerial", Decoder.dumpHexString(m_SerialNum.getNumber()));
 	}
 
+    /**
+     * 关闭服务
+     */
 	public void close() {
 		if (sDriver != null) {
 			try {
@@ -350,7 +332,9 @@ public class DF3000Service {
 		isClosed = true;
 	}
 
-
+    /**
+     * CollectDataLayout实现此接口，当接收到数据时调用此接口
+     */
     public interface OnReceiveData {
         public void onReceiveData(Measurement measurement);
     }

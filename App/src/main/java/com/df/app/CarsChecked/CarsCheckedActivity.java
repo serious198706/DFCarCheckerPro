@@ -19,6 +19,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.df.app.CarCheck.CarCheckActivity;
 import com.df.app.R;
 import com.df.app.entries.CarsCheckedItem;
 import com.df.app.service.Adapter.CarsCheckedListAdapter;
@@ -37,6 +38,11 @@ import java.util.ArrayList;
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setTextView;
 
+/**
+ * Created by 岩 on 14-1-2.
+ *
+ * 已检车辆列表
+ */
 public class CarsCheckedActivity extends Activity {
     private SwipeListView swipeListView;
     private ArrayList<CarsCheckedItem> data;
@@ -117,22 +123,33 @@ public class CarsCheckedActivity extends Activity {
         refresh();
     }
 
+    /**
+     * 刷新列表
+     */
     private void refresh() {
         GetCarsCheckedListTask getCarsCheckedListTask = new GetCarsCheckedListTask(CarsCheckedActivity.this, startNumber,
                 new GetCarsCheckedListTask.OnGetListFinish() {
                     @Override
                     public void onFinish(String result) {
+                        startNumber += 10;
                         fillInData(result);
                     }
                     @Override
-                    public void onFailed() {
-                        // TODO 删掉！！！
+                    public void onFailed(String error) {
+                        Toast.makeText(CarsCheckedActivity.this, "获取已检车辆列表失败：" + error, Toast.LENGTH_SHORT).show();
+                        Log.d("DFCarChecker", "获取已检车辆列表失败：" + error);
+
+                        // TODO 测试用
                         fillInDummyData();
                     }
                 });
         getCarsCheckedListTask.execute();
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param result
+     */
     private void fillInData(String result) {
         try {
             JSONArray jsonArray = new JSONArray(result);
@@ -166,6 +183,9 @@ public class CarsCheckedActivity extends Activity {
         }
     }
 
+    /**
+     * 填充测试数据
+     */
     private void fillInDummyData() {
         for(int i = 0; i < 5; i++) {
             CarsCheckedItem item = new CarsCheckedItem();
@@ -182,6 +202,10 @@ public class CarsCheckedActivity extends Activity {
         adapter.notifyDataSetChanged();
     }
 
+    /**
+     * 选择导入的平台（大众版、专业版）
+     * @param carId
+     */
     private void selectPlatform(final int carId) {
         View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
 
@@ -217,7 +241,10 @@ public class CarsCheckedActivity extends Activity {
         dialog.show();
     }
 
-    // 输入卖家id
+    /**
+     * 输入卖家id
+     * @param carId
+     */
     private void checkSellerName(final int carId) {
         View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
         TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
@@ -242,7 +269,11 @@ public class CarsCheckedActivity extends Activity {
         dialog.show();
     }
 
-    // 获取卖家信息
+    /**
+     * 获取卖家信息
+     * @param carId
+     * @param sellerId
+     */
     private void getSellerInfo(final int carId, String sellerId) {
         CheckSellerNameTask checkSellerNameTask = new CheckSellerNameTask(this, sellerId, new CheckSellerNameTask.OnCheckSellerNameFinished() {
             @Override
@@ -258,7 +289,11 @@ public class CarsCheckedActivity extends Activity {
         checkSellerNameTask.execute();
     }
 
-    // 显示卖家详细信息
+    /**
+     * 显示卖家详细信息
+     * @param carId
+     * @param result
+     */
     private void showSellerName(final int carId, String result) {
         JSONObject jsonObject;
 
@@ -299,7 +334,10 @@ public class CarsCheckedActivity extends Activity {
         }
     }
 
-    // 显示出错信息
+    /**
+     * 显示出错信息
+     * @param carId
+     */
     private void showErrorDialog(final int carId) {
         String message = "未找到卖家，请检查用户名！";
 
@@ -326,6 +364,12 @@ public class CarsCheckedActivity extends Activity {
         dialog.show();
     }
 
+    /**
+     * 导入平台
+     * @param carId
+     * @param type
+     * @param sellerId
+     */
     private void importPlatform(int carId, String type, int sellerId) {
         ImportPlatformTask importPlatformTask = new ImportPlatformTask(this, carId, type, sellerId, new ImportPlatformTask.OnImportFinished() {
             @Override

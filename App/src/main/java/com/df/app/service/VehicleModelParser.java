@@ -24,6 +24,8 @@ import java.util.List;
 
 /**
  * Created by admin on 13-10-15.
+ *
+ * 解析xml
  */
 public class VehicleModelParser {
     private String tagName;

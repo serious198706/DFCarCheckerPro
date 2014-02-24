@@ -366,9 +366,17 @@ public class CollectDataLayout extends LinearLayout {
             editText.setText(data);
         }
 
+        View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        TextView content = new TextView(view1.getContext());
+        content.setText(R.string.collect_finished);
+        content.setTextSize(22f);
+        contentArea.addView(content);
+
+        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
         AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
-                .setTitle(R.string.alert)
-                .setMessage(R.string.collect_finished)
+                .setView(view1)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -540,8 +548,9 @@ public class CollectDataLayout extends LinearLayout {
                 }
 
                 @Override
-                public void onFailed() {
-
+                public void onFailed(String error) {
+                    Toast.makeText(rootView.getContext(), "获取问题失败: " + error, Toast.LENGTH_SHORT).show();
+                    Log.d("DFCarChecker", "获取问题失败: " + error);
                 }
             });
             getIssueItemsTask.execute();

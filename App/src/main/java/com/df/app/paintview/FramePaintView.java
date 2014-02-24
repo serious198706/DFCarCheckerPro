@@ -2,6 +2,8 @@ package com.df.app.paintview;
 
 /**
  * Created by 岩 on 13-9-26.
+ *
+ * 事故查勘绘制
  */
 
 import android.app.Activity;
@@ -21,6 +23,8 @@ import android.view.View;
 
 import com.df.app.CarCheck.AccidentResultLayout;
 import com.df.app.CarCheck.BasicInfoLayout;
+import com.df.app.CarCheck.ExteriorLayout;
+import com.df.app.CarCheck.IssueLayout;
 import com.df.app.CarCheck.PhotoFaultLayout;
 import com.df.app.MainActivity;
 import com.df.app.R;
@@ -40,11 +44,17 @@ public class FramePaintView extends PaintView {
 
     private int currentType = Common.COLOR_DIFF;
     private boolean move;
-    private List<PosEntity> data;
 
     // 本次更新的坐标点，如果用户点击取消，则不将thisTimeNewData中的坐标加入到data中
     private List<PosEntity> thisTimeNewData;
     private List<PosEntity> undoData;
+    private List<PosEntity> data;
+
+    // 本次更新的照片，如果用户点击取消，则不将thisTimeNewPhoto加入照片列表中
+    private List<PhotoEntity> thisTimeNewPhoto;
+    private List<PhotoEntity> photo;
+    private List<PhotoEntity> undoPhoto;
+
     private Bitmap bitmap;
     private Bitmap damageBitmap;
 
@@ -85,6 +95,10 @@ public class FramePaintView extends PaintView {
 
         undoData = new ArrayList<PosEntity>();
         thisTimeNewData = new ArrayList<PosEntity>();
+
+        photo = sight.equals("F") ? AccidentResultLayout.photoEntitiesFront : AccidentResultLayout.photoEntitiesRear;
+        thisTimeNewPhoto = new ArrayList<PhotoEntity>();
+        undoPhoto = new ArrayList<PhotoEntity>();
 
         damageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.damage);
         this.setOnTouchListener(onTouchListener);
@@ -179,6 +193,8 @@ public class FramePaintView extends PaintView {
                 PhotoEntity photoEntity = generatePhotoEntity();
                 PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
                 PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+
+                photo.add(photoEntity);
             }
         }).setCancelable(false);
 
@@ -209,6 +225,11 @@ public class FramePaintView extends PaintView {
 
             photoEntity.setName("结构缺陷");
             photoEntity.setFileName(posEntity.getImageFileName());
+            if(photoEntity.getFileName().equals("")) {
+                photoEntity.setThumbFileName("");
+            } else {
+                photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
+            }
             photoEntity.setJsonString(jsonObject.toString());
         } catch (JSONException e) {
             Log.d(Common.TAG, e.getMessage());
@@ -250,34 +271,57 @@ public class FramePaintView extends PaintView {
     }
 
 
+    @Override
     public void clear() {
         if(!data.isEmpty()) {
             data.clear();
             undoData.clear();
+            thisTimeNewData.clear();
             invalidate();
+        }
+        if(!photo.isEmpty()) {
+            photo.clear();
+            undoPhoto.clear();
+            thisTimeNewPhoto.clear();
         }
     }
 
+    @Override
     public void undo() {
         if(!data.isEmpty()) {
             undoData.add(data.get(data.size() - 1));
             data.remove(data.size() - 1);
             invalidate();
         }
+        if(!photo.isEmpty()) {
+            undoPhoto.add(photo.get(photo.size() - 1));
+            photo.remove(photo.size() - 1);
+        }
     }
 
+    @Override
     public void redo() {
         if(!undoData.isEmpty()) {
             data.add(undoData.get(undoData.size() - 1));
             undoData.remove(undoData.size() - 1);
             invalidate();
         }
+        if(!undoPhoto.isEmpty()) {
+            photo.add(undoPhoto.get(undoPhoto.size() - 1));
+            undoPhoto.remove(undoPhoto.size() - 1);
+        }
     }
 
+    @Override
     public void cancel() {
         if(!thisTimeNewData.isEmpty()) {
             for(int i = 0; i < thisTimeNewData.size(); i++) {
                 data.remove(thisTimeNewData.get(i));
+            }
+        }
+        if(!thisTimeNewPhoto.isEmpty()) {
+            for(int i = 0; i < thisTimeNewPhoto.size(); i++) {
+                photo.remove(thisTimeNewPhoto.get(i));
             }
         }
     }

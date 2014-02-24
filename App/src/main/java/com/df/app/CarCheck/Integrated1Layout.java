@@ -28,6 +28,8 @@ import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-25.
+ *
+ * 综合检查一，主要包括发动机检查、变速箱检查、功能检查
  */
 public class Integrated1Layout extends LinearLayout{
     private static String gearType;
@@ -123,6 +125,10 @@ public class Integrated1Layout extends LinearLayout{
 
     }
 
+    /**
+     * 根据车辆的驱动方式，显示不同的变速箱问题
+     * @param gearType
+     */
     public static void setGearType(String gearType) {
         Integrated1Layout.gearType = gearType;
 
@@ -147,7 +153,11 @@ public class Integrated1Layout extends LinearLayout{
         showView(rootView, R.id.gear_auto_row_3, !visibility);
     }
 
-    // 更新相关的Spinner
+    /**
+     * 更新相关的Spinner
+     * @param spinnerId
+     * @param selectedItemText
+     */
     public static void updateAssociatedSpinners(int spinnerId, String selectedItemText) {
         int interSpinnerId;
 
@@ -169,6 +179,10 @@ public class Integrated1Layout extends LinearLayout{
         }
     }
 
+    /**
+     * 设置spinner选择“无”之后的颜色
+     * @param spinnerId
+     */
     private static void setSpinnerColor(int spinnerId) {
         Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
 
@@ -193,6 +207,11 @@ public class Integrated1Layout extends LinearLayout{
         });
     }
 
+    /**
+     * 根据配置信息，将该spinner无效化
+     * @param spinnerId
+     * @param enable
+     */
     private static void enableSpinner(int spinnerId, boolean enable) {
         Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
 
@@ -201,7 +220,11 @@ public class Integrated1Layout extends LinearLayout{
         spinner.setAlpha(enable ? 1.0f : 0.3f);
     }
 
-
+    /**
+     * 生成发动机的JSONObject
+     * @return
+     * @throws JSONException
+     */
     public JSONObject generateEngineJSONObject() throws JSONException {
         JSONObject engine = new JSONObject();
 
@@ -215,6 +238,11 @@ public class Integrated1Layout extends LinearLayout{
         return engine;
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param engine
+     * @throws JSONException
+     */
     public void fillEngineWithJSONObject(JSONObject engine)  throws JSONException {
         setSpinnerSelectionWithString(rootView, R.id.engineStarted_spinner, engine.getString("started"));
         setSpinnerSelectionWithString(rootView, R.id.engineSteady_spinner, engine.getString("steady"));
@@ -224,6 +252,11 @@ public class Integrated1Layout extends LinearLayout{
         setSpinnerSelectionWithString(rootView, R.id.pipe_spinner, engine.getString("pipe"));
     }
 
+    /**
+     * 生成变速箱的JSONObject
+     * @return
+     * @throws JSONException
+     */
     public JSONObject generateGearboxJSONObject() throws JSONException {
         JSONObject gearbox = new JSONObject();
 
@@ -240,6 +273,11 @@ public class Integrated1Layout extends LinearLayout{
         return gearbox;
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param gearbox
+     * @throws JSONException
+     */
     private void fillGearboxWithJSONObject(JSONObject gearbox) throws JSONException {
         if(gearbox.has("mtClutch")) {
             setSpinnerSelectionWithString(rootView,R.id.gearMtClutch_spinner, gearbox.getString("mtClutch"));
@@ -254,6 +292,11 @@ public class Integrated1Layout extends LinearLayout{
         }
     }
 
+    /**
+     * 生成功能检查的JSONObject
+     * @return
+     * @throws JSONException
+     */
     public JSONObject generateFunctionJSONObject() throws JSONException {
         JSONObject function = new JSONObject();
 
@@ -297,6 +340,11 @@ public class Integrated1Layout extends LinearLayout{
         return function;
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param function
+     * @throws JSONException
+     */
     private void fillFunctionWithJSONObject(JSONObject function) throws JSONException{
         setSpinnerSelectionWithString(rootView, R.id.engineFault_spinner, function.getString("engineFault"));
         setSpinnerSelectionWithString(rootView, R.id.oilPressure_spinner, function.getString("oilPressure"));
@@ -362,14 +410,30 @@ public class Integrated1Layout extends LinearLayout{
             enableSpinner(R.id.parkAssist_spinner, false);
     }
 
+    /**
+     * 生成综合一备注的JSONObject
+     * @return
+     */
     public String generateCommentString() {
         return getEditViewText(rootView, R.id.it1_comment_edit);
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param comment
+     */
     private void fillCommentWithString(String comment) {
         setEditViewText(rootView, R.id.it1_comment_edit, comment);
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param engine
+     * @param gearbox
+     * @param function
+     * @param comment1
+     * @throws JSONException
+     */
     public void fillInData(JSONObject engine, JSONObject gearbox, JSONObject function, String comment1) throws JSONException {
         fillEngineWithJSONObject(engine);
         fillGearboxWithJSONObject(gearbox);
@@ -377,6 +441,10 @@ public class Integrated1Layout extends LinearLayout{
         fillCommentWithString(comment1);
     }
 
+    /**
+     * 提交前的检查（暂无检查内容）
+     * @return
+     */
     public String checkAllFields() {
         return "";
     }

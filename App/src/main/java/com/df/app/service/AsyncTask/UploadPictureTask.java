@@ -16,8 +16,10 @@ import java.util.List;
 
 /**
  * Created by 岩 on 14-1-9.
+ *
+ * 上传图片
  */
-// 上传图片
+
 public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
     public interface UploadFinished {
         public void OnFinish();
@@ -59,15 +61,13 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
         boolean success = false;
 
         soapService = new SoapService();
-
-        // 设置soap的配置
         soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.UPLOAD_PICTURE);
 
         for(int i = 0; i < photoEntityList.size(); i++) {
             PhotoEntity photoEntity = photoEntityList.get(i);
 
             // 获取照片的物理路径
-            Bitmap bitmap = null;
+            Bitmap bitmap;
             String path = Common.photoDirectory;
             String fileName = photoEntity.getFileName();
 
@@ -106,20 +106,11 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
     protected void onPostExecute(final Boolean success) {
         if(success) {
             progressDialog.dismiss();
-            //Toast.makeText(context, "全部上传成功！！", Toast.LENGTH_SHORT).show();
-            Log.d(Common.TAG, "全部上传成功！");
-
             mCallback.OnFinish();
         } else {
             progressDialog.dismiss();
             Toast.makeText(context, "上传失败！！", Toast.LENGTH_SHORT).show();
-            Log.d(Common.TAG, "上传图片失败！");
         }
-
-    }
-
-    @Override
-    protected void onCancelled() {
 
     }
 }

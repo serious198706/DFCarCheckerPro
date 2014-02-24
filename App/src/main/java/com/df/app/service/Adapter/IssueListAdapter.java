@@ -1,5 +1,6 @@
 package com.df.app.service.Adapter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,14 +11,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.CarCheck.AccidentResultLayout;
+import com.df.app.CarCheck.ExteriorLayout;
+import com.df.app.CarCheck.InteriorLayout;
 import com.df.app.CarCheck.PhotoFaultLayout;
 import com.df.app.R;
 import com.df.app.entries.Issue;
@@ -25,13 +31,18 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintview.FramePaintPreviewView;
 import com.df.app.paintview.FramePaintView;
+import com.df.app.paintview.PaintView;
 import com.df.app.util.Common;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.df.app.util.Helper.setTextView;
+
 /**
  * Created by 岩 on 13-12-24.
+ *
+ * 问题查勘adapter
  */
 public class IssueListAdapter extends BaseAdapter {
     private List<Issue> items;
@@ -112,6 +123,10 @@ public class IssueListAdapter extends BaseAdapter {
         return view;
     }
 
+    /**
+     * 对应某个问题，进行绘制
+     * @param issue
+     */
     private void drawIssuePoint(final Issue issue) {
         rootView = LayoutInflater.from(context).inflate(R.layout.issue_paint_layout, null);
 
@@ -120,6 +135,30 @@ public class IssueListAdapter extends BaseAdapter {
 
         // 初始化绘图View
         framePaintView = (FramePaintView) rootView.findViewById(R.id.image);
+
+        Button undoButton = (Button)rootView.findViewById(R.id.undo);
+        undoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                framePaintView.undo();
+            }
+        });
+
+        Button redoButton = (Button)rootView.findViewById(R.id.redo);
+        redoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                framePaintView.redo();
+            }
+        });
+
+        Button clearButton = (Button)rootView.findViewById(R.id.clear);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertUser(R.string.clear_confirm);
+            }
+        });
 
         if(issue.getView().equals("F")) {
             framePaintView.init(AccidentResultLayout.previewBitmapFront, posEntitiesFront, "F", issue.getId(), issue.getDesc());
@@ -142,12 +181,15 @@ public class IssueListAdapter extends BaseAdapter {
         mPictureDialog = new AlertDialog.Builder(context)
                 .setView(rootView)
                 .setPositiveButton(R.string.ok, null)
+                .setNegativeButton(R.string.cancel, null)
                 .setCancelable(false)
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
                         AccidentResultLayout.framePaintPreviewViewFront.invalidate();
                         AccidentResultLayout.framePaintPreviewViewRear.invalidate();
+
+                        notifyPhotoList();
                     }
                 })
                 .create();
@@ -173,48 +215,77 @@ public class IssueListAdapter extends BaseAdapter {
                 mPictureDialog.dismiss();
             }
         });
+
+        mPictureDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertUser(R.string.cancel_confirm);
+            }
+        });
     }
 
-    private void drawIssuePoint(String sight, int issueId, String comment) {
-        rootView = LayoutInflater.from(context).inflate(R.layout.issue_paint_layout, null);
+    /**
+     * 通知照片列表，有照片更新
+     */
+    private void notifyPhotoList() {
+        // 清空，然后将各自的photoEntity加入列表
+        PhotoFaultLayout.photoListAdapter.clear();
 
-        posEntitiesFront = AccidentResultLayout.posEntitiesFront;
-        posEntitiesRear = AccidentResultLayout.posEntitiesRear;
+        for(PhotoEntity photoEntity : ExteriorLayout.photoEntities)
+            PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
 
-        // 初始化绘图View
-        framePaintView = (FramePaintView) rootView.findViewById(R.id.image);
+        for(PhotoEntity photoEntity : InteriorLayout.photoEntities)
+            PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
 
-        if(sight.equals("F")) {
-            framePaintView.init(AccidentResultLayout.previewBitmapFront, posEntitiesFront, "F",
-                    issueId, comment);
-        } else {
-            framePaintView.init(AccidentResultLayout.previewBitmapRear, posEntitiesRear, "R",
-                    issueId, comment);
+        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesFront) {
+            PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
         }
 
-        // 选择当前绘图类型（结构检查只有一个）
-        framePaintView.setType(Common.COLOR_DIFF);
+        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesRear) {
+            PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+        }
 
-        mPictureDialog = new AlertDialog.Builder(context)
-                .setView(rootView)
+        PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 在弹出页面点击取消时提醒用户是否要取消
+     * @param msgId 车辆id
+     */
+    private void alertUser(final int msgId) {
+        View view1 = ((Activity)context).getLayoutInflater().inflate(R.layout.popup_layout, null);
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        TextView content = new TextView(view1.getContext());
+        content.setText(msgId);
+        content.setTextSize(20f);
+        contentArea.addView(content);
+
+        setTextView(view1, R.id.title, context.getResources().getString(R.string.alert));
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(view1)
+                .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setCancelable(false)
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
-                        AccidentResultLayout.framePaintPreviewViewFront.invalidate();
-                        AccidentResultLayout.framePaintPreviewViewRear.invalidate();
+                        if(msgId == R.string.cancel_confirm) {
+                            // 退出
+                            framePaintView.cancel();
+                            mPictureDialog.dismiss();
+                        } else if(msgId == R.string.clear_confirm) {
+                            framePaintView.clear();
+                        }
                     }
                 })
                 .create();
 
-        mPictureDialog.show();
+        dialog.show();
     }
 
+    /**
+     * 获取最新照片的名称
+     * @return
+     */
     public long getCurrentTimeMillis() {
         return framePaintView.getCurrentTimeMillis();
     }

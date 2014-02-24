@@ -2,6 +2,8 @@ package com.df.app.paintview;
 
 /**
  * Created by 岩 on 13-9-26.
+ *
+ * 内饰缺陷预览视图
  */
 
 import android.content.Context;

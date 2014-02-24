@@ -22,8 +22,10 @@ import java.io.InputStreamReader;
 
 /**
  * Created by 岩 on 14-1-13.
+ *
+ * 获取车辆详细信息线程
  */
-// 获取详细信息线程
+
 public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
     public interface OnGetDetailFinished {
         public void onFinish(String result);
@@ -44,8 +46,7 @@ public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected void onPreExecute() {
-        progressDialog = ProgressDialog.show(context, null,
-                "正在获取车辆信息，请稍候...", false, false);
+        progressDialog = ProgressDialog.show(context, null, "正在获取车辆信息，请稍候...", false, false);
     }
 
     @Override
@@ -68,6 +69,7 @@ public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
 
                 read.close();
 
+                // 直接设置成功信息
                 soapService = new SoapService();
                 soapService.setResultMessage(result);
 
@@ -80,10 +82,6 @@ public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
         }
         // 如果不存在
         else {
-            soapService = new SoapService();
-
-            soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_CAR_DETAIL);
-
             JSONObject jsonObject = new JSONObject();
 
             try {
@@ -94,6 +92,9 @@ public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            soapService = new SoapService();
+            soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_CAR_DETAIL);
 
             success = soapService.communicateWithServer(jsonObject.toString());
         }
@@ -109,7 +110,6 @@ public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
             mCallback.onFinish(soapService.getResultMessage());
         } else {
             mCallback.onFailed(soapService.getErrorMessage());
-            Log.d("DFCarChecker", "获取车辆配置信息失败：" + soapService.getErrorMessage());
         }
     }
 }

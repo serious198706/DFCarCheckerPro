@@ -17,6 +17,8 @@ import java.io.File;
 
 /**
  * Created by 岩 on 14-1-13.
+ *
+ * 注销
  */
 public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
     public interface OnLogoutFinished {
@@ -34,6 +36,10 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
         this.mCallback = listener;
     }
 
+    /**
+     * 递归删除所有文件
+     * @param fileOrDirectory
+     */
     private void DeleteRecursive(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory())
             for (File child : fileOrDirectory.listFiles())
@@ -44,21 +50,15 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected void onPreExecute() {
-        mProgressDialog = ProgressDialog.show(context, null,
-                "正在注销...", false, false);
+        mProgressDialog = ProgressDialog.show(context, null, "正在注销...", false, false);
     }
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        boolean success = false;
+        boolean success;
 
-        // 删除产生的垃圾文件
-        DeleteRecursive(new File(Environment.getExternalStorageDirectory().getPath() +
-                "/.cheyipai"));
-
-        soapService = new SoapService();
-
-        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.USER_LOGOUT);
+        // 删除文件
+        DeleteRecursive(new File(Common.utilDirectory));
 
         JSONObject jsonObject = new JSONObject();
 
@@ -68,8 +68,11 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
                 jsonObject.put("Key", MainActivity.userInfo.getKey());
             }
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
+
+        soapService = new SoapService();
+        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.USER_LOGOUT);
 
         success = soapService.communicateWithServer(jsonObject.toString());
 
@@ -82,15 +85,8 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
 
         if(success) {
             mCallback.onFinished();
-            Log.d(Common.TAG, "注销成功！");
         } else {
             mCallback.onFailed();
-            Log.d(Common.TAG, "注销失败！");
         }
-    }
-
-    @Override
-    protected void onCancelled() {
-        mProgressDialog.dismiss();
     }
 }

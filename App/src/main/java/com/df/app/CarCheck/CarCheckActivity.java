@@ -173,45 +173,43 @@ public class CarCheckActivity extends Activity {
         commitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
-                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-                TextView content = new TextView(view1.getContext());
-                content.setText(R.string.commitMsg);
-                content.setTextSize(22f);
-                contentArea.addView(content);
+                String pass = checkAllFields();
 
-                setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+                // 如果所有项目都已经填写完毕
+                if(pass.equals("")) {
+                    View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
+                    TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+                    TextView content = new TextView(view1.getContext());
+                    content.setText(R.string.commitMsg);
+                    content.setTextSize(22f);
+                    contentArea.addView(content);
 
-                AlertDialog dialog = new AlertDialog.Builder(CarCheckActivity.this)
-                        .setView(view1)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                // 如果所有项目都已经填写完毕
-                                String pass = checkAllFields();
+                    setTextView(view1, R.id.title, getResources().getString(R.string.alert));
 
-                                if(pass.equals("")) {
-                                    // 1.生成所有图片的Json数据
+                    AlertDialog dialog = new AlertDialog.Builder(CarCheckActivity.this)
+                            .setView(view1)
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
                                     generatePhotoEntities();
-                                } else {
-                                    if(pass.equals("accidentCheck")) {
-                                        Toast.makeText(CarCheckActivity.this, "未完成事故检测！", Toast.LENGTH_SHORT).show();
-                                        selectTab(R.id.accidentCheck);
-                                    } else if(pass.equals("exterior") || pass.equals("interior") ||
-                                            pass.equals("leftFront") || pass.equals("rightFront") ||
-                                            pass.equals("leftRear") || pass.equals("rightRear")) {
-                                        selectTab(R.id.integratedCheck);
-                                    } else {
-                                        photoLayout.locateEmptyField();
-                                    }
-
                                 }
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, null)
-                        .create();
+                            })
+                            .setNegativeButton(R.string.cancel, null)
+                            .create();
 
-                dialog.show();
+                    dialog.show();
+                } else {
+                    if(pass.equals("accidentCheck")) {
+                        Toast.makeText(CarCheckActivity.this, "未完成事故检测！", Toast.LENGTH_SHORT).show();
+                        selectTab(R.id.accidentCheck);
+                    } else if(pass.equals("exterior") || pass.equals("interior") ||
+                            pass.equals("leftFront") || pass.equals("rightFront") ||
+                            pass.equals("leftRear") || pass.equals("rightRear")) {
+                        selectTab(R.id.integratedCheck);
+                    } else if(pass.equals("engine") || pass.equals("procedures") || pass.equals("agreements")) {
+                        selectTab(R.id.photo);
+                    }
+                }
             }
         });
 
@@ -247,13 +245,13 @@ public class CarCheckActivity extends Activity {
             }
         });
 
-        Button comB = (Button)findViewById(R.id.com);
-        comB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                commitData();
-            }
-        });
+//        Button comB = (Button)findViewById(R.id.com);
+//        comB.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                commitData();
+//            }
+//        });
 
         // 填充
         fillInData(carId, jsonString);
@@ -288,7 +286,7 @@ public class CarCheckActivity extends Activity {
     // 添加所有的photoEntity
     private void generatePhotoEntities() {
         GeneratePhotoEntitiesTask generatePhotoEntitiesTask = new GeneratePhotoEntitiesTask(this, photoEntities,
-                accidentCheckLayout, integratedCheckLayout, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
+                accidentCheckLayout, integratedCheckLayout, true, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
             @Override
             public void onFinished(List<PhotoEntity> photoEntities) {
                 // 2.上传图片
@@ -315,7 +313,7 @@ public class CarCheckActivity extends Activity {
                 // 3.生成所有检测信息的Json数据
                 generateJsonString();
                 // 4.提交检测信息
-                //commitData();
+                commitData();
             }
         });
         uploadPictureTask.execute();
@@ -358,13 +356,14 @@ public class CarCheckActivity extends Activity {
      */
     private void saveData() {
         GeneratePhotoEntitiesTask generatePhotoEntitiesTask = new GeneratePhotoEntitiesTask(this, photoEntities,
-                accidentCheckLayout, integratedCheckLayout, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
+                accidentCheckLayout, integratedCheckLayout, false, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
             @Override
             public void onFinished(List<PhotoEntity> photoEntities) {
                 SaveDataTask saveDataTask = new SaveDataTask(CarCheckActivity.this, carId, photoEntities, new SaveDataTask.OnSaveDataFinished() {
                     @Override
                     public void onFinished() {
                         Toast.makeText(CarCheckActivity.this, "保存成功！", Toast.LENGTH_SHORT).show();
+                        Log.d(Common.TAG, "保存成功！");
                         clearCache();
                         Intent intent = new Intent(CarCheckActivity.this, CarsWaitingActivity.class);
                         startActivity(intent);
@@ -374,6 +373,7 @@ public class CarCheckActivity extends Activity {
                     @Override
                     public void onFailed() {
                         Toast.makeText(CarCheckActivity.this, "保存失败！", Toast.LENGTH_SHORT).show();
+                        Log.d(Common.TAG, "保存失败！");
                     }
                 });
                 saveDataTask.execute(jsonObject);
@@ -531,7 +531,15 @@ public class CarCheckActivity extends Activity {
             // TODO 对某张照片重拍
             case Common.PHOTO_RETAKE:
                 if(resultCode == Activity.RESULT_OK) {
+                    Helper.setPhotoSize(PhotoLayout.reTakePhotoEntity.getFileName(), 800);
+                    Helper.generatePhotoThumbnail(PhotoLayout.reTakePhotoEntity.getFileName(), 400);
 
+                    PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
+                    PhotoInteriorLayout.photoListAdapter.notifyDataSetChanged();
+                    PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+                    PhotoProcedureLayout.photoListAdapter.notifyDataSetChanged();
+                    PhotoEngineLayout.photoListAdapter.notifyDataSetChanged();
+                    PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
                 }
                 break;
         }
@@ -797,6 +805,18 @@ public class CarCheckActivity extends Activity {
             if(!part.equals("sketch")) {
                 PhotoExteriorLayout.photoListAdapter.addItem(photoEntity);
                 PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
+
+                if(part.equals("leftFront")) {
+                    Integrated2Layout.photoShotCount[0]++;
+                } else if(part.equals("rightFront")) {
+                    Integrated2Layout.photoShotCount[1]++;
+                } else if(part.equals("leftRear")) {
+                    Integrated2Layout.photoShotCount[2]++;
+                } else if(part.equals("rightRear")) {
+                    Integrated2Layout.photoShotCount[3]++;
+                } else if(part.equals("spare")) {
+                    Integrated2Layout.photoShotCount[4]++;
+                }
             }
         }
     }
@@ -855,6 +875,9 @@ public class CarCheckActivity extends Activity {
         }
         for(int i = 0; i < PhotoEngineLayout.photoShotCount.length; i++) {
             PhotoEngineLayout.photoShotCount[i] = 0;
+        }
+        for(int i = 0; i < Integrated2Layout.photoShotCount.length; i++) {
+            Integrated2Layout.photoShotCount[i] = 0;
         }
     }
 }

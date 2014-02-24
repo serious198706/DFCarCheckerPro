@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -15,6 +16,10 @@ import android.widget.TextView;
 import com.df.app.entries.UserInfo;
 import com.df.app.service.AsyncTask.CheckUpdateTask;
 import com.df.app.service.AsyncTask.LoginTask;
+import com.df.app.util.Common;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
@@ -114,28 +119,37 @@ public class LoginActivity extends Activity {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            //kick off a background task to perform the user login attempt.
-            mLoginTask = new LoginTask(LoginActivity.this, new LoginTask.OnLoginFinished() {
+            // 进行登录
+            mLoginTask = new LoginTask(LoginActivity.this,  mUserName, mPassword, new LoginTask.OnLoginFinished() {
                 @Override
-                public void onFinished(UserInfo userinfo) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("UserId", userinfo.getId());
-                    intent.putExtra("Key", userinfo.getKey());
-                    intent.putExtra("UserName", userinfo.getName());
-                    intent.putExtra("Orid", userinfo.getOrid());
-                    mLoginTask = null;
-                    startActivity(intent);
-                    finish();
+                public void onFinished(String result) {
+                    try {
+                        JSONObject userJsonObject = new JSONObject(result);
+
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("UserId", userJsonObject.getString("UserId"));
+                        intent.putExtra("Key", userJsonObject.getString("Key"));
+                        intent.putExtra("UserName", userJsonObject.getString("UserName"));
+                        intent.putExtra("Orid", userJsonObject.getString("Orid"));
+                        mLoginTask = null;
+                        startActivity(intent);
+                        finish();
+                    } catch (JSONException e) {
+                        Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
+                    }
                 }
 
                 @Override
-                public void onFailed(String errorMsg) {
-                    mPasswordView.setError(errorMsg);
-                    mPasswordView.requestFocus();
+                public void onFailed(String error) {
                     mLoginTask = null;
+                    // 登录失败，获取错误信息并显示
+                    Log.d(Common.TAG, "登录时出现错误：" + error);
+
+                    mPasswordView.setError(error);
+                    mPasswordView.requestFocus();
                 }
-            }, mUserName, mPassword);
-            mLoginTask.execute((Void) null);
+            });
+            mLoginTask.execute();
         }
     }
 

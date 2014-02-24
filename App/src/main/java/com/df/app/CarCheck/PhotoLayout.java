@@ -6,11 +6,12 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.df.app.R;
+import com.df.app.entries.PhotoEntity;
 import com.df.app.service.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
 
@@ -19,23 +20,27 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 照片列表，包括外观组标准照、内饰组标准照、缺陷组、机舱组、手续组和协议组
  */
-public class PhotoLayout extends LinearLayout {
+public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeListener {
     private View rootView;
 
     private ViewPager viewPager;
     private TextView exteriorTab, interiorTab, faultTab, procedureTab, engineTab, otherTab;
     private List<View> views;
 
-    private PhotoExteriorLayout photoExteriorLayout;
-    private PhotoInteriorLayout photoInteriorLayout;
-    private PhotoFaultLayout photoFaultLayout;
-    private PhotoProcedureLayout photoProcedureLayout;
-    private PhotoEngineLayout photoEngineLayout;
-    private PhotoOtherLayout photoOtherLayout;
+    public static PhotoExteriorLayout photoExteriorLayout;
+    public static PhotoInteriorLayout photoInteriorLayout;
+    public static PhotoFaultLayout photoFaultLayout;
+    public static PhotoProcedureLayout photoProcedureLayout;
+    public static PhotoEngineLayout photoEngineLayout;
+    public static PhotoOtherLayout photoOtherLayout;
 
     private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
     private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
+
+    public static PhotoEntity reTakePhotoEntity;
 
     public PhotoLayout(Context context) {
         super(context);
@@ -78,7 +83,7 @@ public class PhotoLayout extends LinearLayout {
 
         viewPager.setAdapter(new MyViewPagerAdapter(views));
         viewPager.setCurrentItem(0);
-        viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
+        viewPager.setOnPageChangeListener(this);
     }
 
     private void InitTextView() {
@@ -103,67 +108,70 @@ public class PhotoLayout extends LinearLayout {
         // 更新照片队列（如果有新照片的话）
     }
 
+    /**
+     * 保存手续组照片
+     */
     public void saveProceduresStandardPhoto() {
         photoProcedureLayout.saveProceduresStandardPhoto();
     }
 
+    /**
+     * 保存机舱组照片
+     */
     public void saveEngineStandardPhoto() {
-        photoEngineLayout.saveExteriorStandardPhoto();
+        photoEngineLayout.saveEngineStandardPhoto();
     }
 
+    /**
+     * 保存协议组照片
+     */
     public void saveOtherStandardPhoto() {
         photoOtherLayout.saveOtherStandardPhoto();
     }
 
+    /**
+     * 提交前的检查
+     * @return
+     */
     public String checkAllFields() {
         String currentField;
 
-        // 外观组照片必拍
-        currentField = photoExteriorLayout.check();
+        // 机舱组照片必拍
+        currentField = photoEngineLayout.check();
 
-        if(currentField.equals("")) {
-            // 内饰组照片必拍
-            currentField = photoInteriorLayout.check();
+        if(!currentField.equals("")) {
+            Toast.makeText(rootView.getContext(), "机舱组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(4);
+
+            return currentField;
         }
 
-        if(currentField.equals("")) {
-            // 机舱组照片必拍
-            currentField = photoEngineLayout.check();
-        }
+        // 协议组照片必拍
+        currentField = photoOtherLayout.check();
+        if(!currentField.equals("")) {
+            Toast.makeText(rootView.getContext(), "协议组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(5);
 
-        if(currentField.equals("")) {
-            // 手续组照片不是必拍
-            currentField = photoProcedureLayout.check();
-        }
-
-        if(currentField.equals("")) {
-            // 其他组照片不是必拍
-            currentField = photoOtherLayout.check();
+            return currentField;
         }
 
         return currentField;
     }
 
-    public void locateEmptyField() {
+
+    @Override
+    public void onPageScrollStateChanged(int arg0) {
 
     }
 
-    class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
-    {
-        @Override
-        public void onPageScrollStateChanged(int arg0) {
+    @Override
+    public void onPageScrolled(int arg0, float arg1, int arg2) {
 
-        }
+    }
 
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
-
-        }
-
-        @Override
-        public void onPageSelected(int arg0) {
-            selectTab(arg0);
-        }
+    @Override
+    public void onPageSelected(int arg0) {
+        selectTab(arg0);
     }
 
     private void selectTab(int currIndex) {

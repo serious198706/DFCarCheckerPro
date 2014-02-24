@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.CarsChecked.CarsCheckedActivity;
@@ -29,6 +31,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+
+import static com.df.app.util.Helper.setTextView;
 
 public class MainActivity extends Activity {
     public static UserInfo userInfo;
@@ -98,9 +102,17 @@ public class MainActivity extends Activity {
     }
 
     private void quit() {
+        View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        TextView content = new TextView(view1.getContext());
+        content.setText(R.string.quitMsg);
+        content.setTextSize(20f);
+        contentArea.addView(content);
+
+        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.alert)
-                .setMessage(R.string.quitMsg)
+                .setView(view1)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -124,6 +136,7 @@ public class MainActivity extends Activity {
             @Override
             public void onFailed() {
                 Toast.makeText(MainActivity.this, "注销失败！", Toast.LENGTH_SHORT).show();
+                Log.d(Common.TAG, "注销失败！");
                 finish();
             }
         });

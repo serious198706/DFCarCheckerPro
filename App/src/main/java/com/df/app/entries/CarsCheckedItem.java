@@ -2,6 +2,8 @@ package com.df.app.entries;
 
 /**
  * Created by 岩 on 14-1-7.
+ *
+ * 已检车辆
  */
 public class CarsCheckedItem {
     int carId;

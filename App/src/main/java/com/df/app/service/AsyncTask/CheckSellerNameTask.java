@@ -14,8 +14,10 @@ import org.json.JSONObject;
 
 /**
  * Created by 岩 on 14-1-20.
+ *
+ * 检查卖家姓名
  */
-// 检查卖家姓名线程
+
 public class CheckSellerNameTask extends AsyncTask<Void, Void, Boolean> {
     public interface OnCheckSellerNameFinished {
         public void onFinished(String result);
@@ -53,8 +55,6 @@ public class CheckSellerNameTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("SellerName", this.sellerNameValue);
 
             soapService = new SoapService();
-
-            // 设置soap的配置
             soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.CHECK_SELLER_NAME);
 
             success = soapService.communicateWithServer(jsonObject.toString());
@@ -76,9 +76,5 @@ public class CheckSellerNameTask extends AsyncTask<Void, Void, Boolean> {
         } else {
             mCallback.onFailed(soapService.getErrorMessage());
         }
-    }
-
-    @Override
-    protected void onCancelled() {
     }
 }

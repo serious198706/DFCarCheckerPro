@@ -26,6 +26,8 @@ import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 14-1-6.
+ *
+ * df5000设备列表
  */
 public class Device5000ListDialog extends Dialog {
     private Context context;
@@ -41,6 +43,7 @@ public class Device5000ListDialog extends Dialog {
     protected void onStart() {
         super.onStart();
 
+        // 请求打开蓝牙
         if (!mBtAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             activity.startActivityForResult(enableIntent, Common.REQUEST_ENABLE_BT);
@@ -112,6 +115,9 @@ public class Device5000ListDialog extends Dialog {
         doDiscovery();
     }
 
+    /**
+     * 点击某一台设备后，将该设备的地址回传
+     */
     private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -129,7 +135,7 @@ public class Device5000ListDialog extends Dialog {
     };
 
     /**
-     *
+     * 显示已配对的设备
      */
     public void showPairedDevices() {
         // 得到目前已配对的设备
@@ -170,7 +176,9 @@ public class Device5000ListDialog extends Dialog {
         mBtAdapter.startDiscovery();
     }
 
-    // 接收蓝牙适配器的广播
+    /**
+     * 接收蓝牙适配器的广播
+     */
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -201,6 +209,9 @@ public class Device5000ListDialog extends Dialog {
         }
     };
 
+    /**
+     * CollectDataLayout实现此接口，设备选择完成时调用此接口
+     */
     public interface OnSelectDeviceFinished {
         public void onFinished(String address);
     }

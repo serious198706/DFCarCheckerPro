@@ -15,8 +15,10 @@ import org.json.JSONObject;
 
 /**
  * Created by 岩 on 14-1-13.
+ *
+ * 提交检测数据
  */
-// 提交检测数据
+
 public class CommitDataTask extends AsyncTask<JSONObject, Void, Boolean> {
     public interface OnCommitDataFinished {
         public void onFinished(String result);
@@ -47,12 +49,6 @@ public class CommitDataTask extends AsyncTask<JSONObject, Void, Boolean> {
     protected Boolean doInBackground(JSONObject... params) {
         boolean success;
 
-        // 组织最终json
-        soapService = new SoapService();
-
-        // 设置soap的配置
-        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.COMMIT_DATA);
-
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -63,6 +59,9 @@ public class CommitDataTask extends AsyncTask<JSONObject, Void, Boolean> {
         } catch (JSONException e) {
             Log.d(Common.TAG, "生成Json失败！");
         }
+
+        soapService = new SoapService();
+        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.COMMIT_DATA);
 
         success = soapService.communicateWithServer(jsonObject.toString());
 
@@ -81,10 +80,5 @@ public class CommitDataTask extends AsyncTask<JSONObject, Void, Boolean> {
             Log.d(Common.TAG, "提交失败!" + soapService.getErrorMessage());
         }
 
-    }
-
-    @Override
-    protected void onCancelled() {
-        progressDialog.dismiss();
     }
 }

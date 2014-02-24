@@ -16,9 +16,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -49,9 +52,12 @@ import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setSpinnerSelectionWithString;
+import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 内饰检查，包括内饰缺陷图的绘制，内饰标准照及其他选项
  */
 public class InteriorLayout extends LinearLayout {
     private static View rootView;
@@ -61,8 +67,10 @@ public class InteriorLayout extends LinearLayout {
     public static List<PhotoEntity> photoEntities;
     public static List<PhotoEntity> standardPhotoEntities;
 
+    // 内饰缺陷图
     private Bitmap previewViewBitmap;
 
+    // 内饰缺陷图预览
     public static InteriorPaintPreviewView interiorPaintPreviewView;
 
     // 记录已经拍摄的照片数
@@ -86,7 +94,7 @@ public class InteriorLayout extends LinearLayout {
     // 记录破损部位
     private String brokenResult = "";
 
-
+    // 自定义scrollView
     private MyScrollView scrollView;
 
     public InteriorLayout(Context context) {
@@ -161,14 +169,21 @@ public class InteriorLayout extends LinearLayout {
         });
     }
 
-    public void updateUi() {
+    private void showShadow(boolean show) {
+        findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
+    }
 
-        // 点击图片进入绘制界面
+    /**
+     * 更新界面
+     */
+    public void updateUi() {
         figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
         previewViewBitmap = getBitmapFromFigure(figure);
 
         interiorPaintPreviewView = (InteriorPaintPreviewView) findViewById(R.id.interior_image);
         interiorPaintPreviewView.init(previewViewBitmap, posEntities);
+
+        // 点击预览图进入绘制界面
         interiorPaintPreviewView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -179,10 +194,9 @@ public class InteriorLayout extends LinearLayout {
         });
     }
 
-    private void showShadow(boolean show) {
-        findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
-    }
-
+    /**
+     * 绘制完成后，更新预览图
+     */
     public static void updateInteriorPreview() {
         if(!posEntities.isEmpty()) {
             interiorPaintPreviewView.setAlpha(1f);
@@ -197,9 +211,11 @@ public class InteriorLayout extends LinearLayout {
         }
     }
 
-    public void startCamera() {
-        String[] itemArray = getResources().getStringArray(R.array
-                .interior_camera_item);
+    /**
+     * 拍摄内饰标准照
+     */
+    private void startCamera() {
+        String[] itemArray = getResources().getStringArray(R.array.interior_camera_item);
 
         for(int i = 0; i < itemArray.length; i++) {
             itemArray[i] += " (";
@@ -207,51 +223,61 @@ public class InteriorLayout extends LinearLayout {
             itemArray[i] += ") ";
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(context)
-        .setTitle(R.string.interior_camera)
-        .setItems(itemArray, new DialogInterface.OnClickListener() {
+        View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(view1)
+                .create();
+
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        final ListView listView = new ListView(view1.getContext());
+        listView.setAdapter(new ArrayAdapter<String>(view1.getContext(), android.R.layout.simple_list_item_1, itemArray));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                dialog.dismiss();
                 currentShotPart = i;
                 String group = getResources().getStringArray(R.array.interior_camera_item)[currentShotPart];
-
                 Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
 
-                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
+                // 使用当前毫秒数当作照片名
                 currentTimeMillis = System.currentTimeMillis();
                 Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
-                // create a file to save the image
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
 
+                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
                 ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_INTERIOR_STANDARD);
             }
-        })
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
-        //builder.setView(inflater.inflate(R.layout.bi_camera_cato_dialog, null));
+        });
+        contentArea.addView(listView);
 
-        //builder.setMessage(R.string.ci_attention_content).setTitle(R.string.ci_attention);
-        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        }).create();
+        setTextView(view1, R.id.title, getResources().getString(R.string.interior_camera));
 
         dialog.show();
     }
 
+    /**
+     * 选择脏污部位（去掉）
+     */
     private void chooseDirty() {
         showPopupWindow("dirty", getResources().getString(R.string.dirty),
                 getResources().getStringArray(R.array.dirty_item));
     }
 
+    /**
+     * 选择破损部位（去掉）
+     */
     private void chooseBroken() {
         showPopupWindow("broken", getResources().getString(R.string.in_broken),
                 getResources().getStringArray(R.array.in_broken_item));
     }
 
+    /**
+     * 弹出选择窗口
+     * @param type dirty/broken
+     * @param title 标题
+     * @param array 内容
+     */
     private void showPopupWindow(final String type, String title, String array[]) {
         View view = getPopupView(type, title, array);
 
@@ -274,7 +300,13 @@ public class InteriorLayout extends LinearLayout {
         dialog.show();
     }
 
-
+    /**
+     * 填充弹出窗口的内容
+     * @param type dirty/broken
+     * @param title 标题
+     * @param array 内容
+     * @return view
+     */
     private View getPopupView(String type, String title, String array[]) {
         LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
         View view = inflater.inflate(R.layout.popup_layout, null);
@@ -324,6 +356,10 @@ public class InteriorLayout extends LinearLayout {
         return view;
     }
 
+    /**
+     * 获取弹出窗口的选择结果
+     * @return
+     */
     private String getPopupResult() {
         String result = "";
 
@@ -347,11 +383,9 @@ public class InteriorLayout extends LinearLayout {
         return result;
     }
 
-    public List<PhotoEntity> generatePhotoEntities() {
-        photoEntities.addAll(standardPhotoEntities);
-        return photoEntities;
-    }
-
+    /**
+     * 保存内饰标准照
+     */
     public void saveInteriorStandardPhoto() {
         Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
         Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
@@ -366,6 +400,10 @@ public class InteriorLayout extends LinearLayout {
         startCamera();
     }
 
+    /**
+     * 生成photoEntity
+     * @return
+     */
     private PhotoEntity generatePhotoEntity() {
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
@@ -423,6 +461,11 @@ public class InteriorLayout extends LinearLayout {
         return photoEntity;
     }
 
+    /**
+     * 根据车辆类型编码，确定预览图
+     * @param figure
+     * @return
+     */
     private Bitmap getBitmapFromFigure(int figure) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -471,6 +514,11 @@ public class InteriorLayout extends LinearLayout {
         return name;
     }
 
+    /**
+     * 生成内饰的JSONObject
+     * @return
+     * @throws JSONException
+     */
     public JSONObject generateJSONObject() throws JSONException{
         JSONObject interior = new JSONObject();
 
@@ -482,7 +530,10 @@ public class InteriorLayout extends LinearLayout {
         return interior;
     }
 
-
+    /**
+     * 生成内饰草图
+     * @return
+     */
     public PhotoEntity generateSketch() {
         Bitmap bitmap = null;
         Canvas c;
@@ -526,12 +577,20 @@ public class InteriorLayout extends LinearLayout {
         return photoEntity;
     }
 
-
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param interior
+     * @throws JSONException
+     */
     public void fillInData(JSONObject interior) throws JSONException{
         setSpinnerSelectionWithString(rootView, R.id.sealingStrip_spinner, interior.getString("sealingStrip"));
         setEditViewText(rootView, R.id.interior_comment_edit, interior.getString("comment"));
     }
 
+    /**
+     * 提交前的检查
+     * @return
+     */
     public String checkAllFields() {
         int sum = 0;
 
@@ -546,6 +605,9 @@ public class InteriorLayout extends LinearLayout {
         }
     }
 
+    /**
+     * 定位到拍摄按钮
+     */
     public void locateCameraButton() {
         final Button button = (Button)findViewById(R.id.interior_camera_button);
         button.setFocusable(true);

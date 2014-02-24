@@ -19,19 +19,15 @@ public class Common {
 
     public static String NAMESPACE = "http://cheyipai";
 
+    // 地址
     public static final String SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
     //public static final String SERVER_ADDRESS = "http://192.168.8.33:810/Services/";
     public static final String PICTURE_ADDRESS = "http://192.168.100.6:8006/";
 
-//    public static final String SERVER_ADDRESS = "http://192.168.100.6:50/";
-//    public static final String PICTURE_ADDRESS = "http://192.168.100.6:8006/";
-
-    // 调用地址
+    // 服务名称
     public static final String CAR_CHECK_SERVICE = "CarCheckService.svc";
-//    public static final String USER_MANAGE_SERVICE = "UserManageService.svc";
-//    public static final String REPORT_SERVICE = "ReportService.svc";
 
-    // Soap Action
+    // SoapAction
     public static final String SOAP_ACTION = "http://cheyipai/ICarCheckService/";
 
     // 方法名称
@@ -44,7 +40,7 @@ public class Common {
     public static final String UPLOAD_PICTURE = "UploadPictureTagKey";
     public static final String ANALYSIS_ACCIDENT_DATA = "AnalysisAccidentData";
     public static final String COMMIT_DATA = "SubmitCarCheckData";
-    public static final String SAVE_DATA = "SaveCarCheckData";
+    //public static final String SAVE_DATA = "SaveCarCheckData";
     public static final String GET_COOPERATORS = "GetCheckCooperates";
     public static final String GET_CHECKED_CARS = "ListCheckedCarsByUserId";
     public static final String GET_WAITING_CARS = "ListPendingCarsByUserId";
@@ -119,7 +115,7 @@ public class Common {
     public static final int REQUEST_CONNECT_DEVICE = 108;
     public static final int REQUEST_ENABLE_BT = 109;
 
-    //
+    // 获取设备序列号的指令
     public static final String CMD_GET_SERIAL = "aa057f012e";
 
     // 设备类型代码

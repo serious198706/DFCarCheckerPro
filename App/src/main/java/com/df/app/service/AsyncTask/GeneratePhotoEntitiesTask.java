@@ -28,6 +28,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 14-1-22.
+ *
+ * 生成所有需要上传的照片实体
  */
 public class GeneratePhotoEntitiesTask extends AsyncTask<JSONObject, Void, Boolean> {
     public interface OnGenerateFinished {
@@ -41,6 +43,7 @@ public class GeneratePhotoEntitiesTask extends AsyncTask<JSONObject, Void, Boole
     private List<PhotoEntity> photoEntities;
     private AccidentCheckLayout accidentCheckLayout;
     private IntegratedCheckLayout integratedCheckLayout;
+    private boolean generateSketch;
 
     public GeneratePhotoEntitiesTask(Context context, List<PhotoEntity> photoEntities, AccidentCheckLayout accidentCheckLayout,
                                      IntegratedCheckLayout integratedCheckLayout, OnGenerateFinished listener) {
@@ -49,6 +52,25 @@ public class GeneratePhotoEntitiesTask extends AsyncTask<JSONObject, Void, Boole
         this.accidentCheckLayout = accidentCheckLayout;
         this.integratedCheckLayout = integratedCheckLayout;
         this.mCallback = listener;
+    }
+
+    /**
+     * 构造方法
+     * @param context 上下文
+     * @param photoEntities 照片队列
+     * @param accidentCheckLayout 事故查勘页面句柄
+     * @param integratedCheckLayout 综合检查页面句柄
+     * @param generateSketch 是否生成草图
+     * @param listener 生成完成后的回调函数指针
+     */
+    public GeneratePhotoEntitiesTask(Context context, List<PhotoEntity> photoEntities, AccidentCheckLayout accidentCheckLayout,
+                                     IntegratedCheckLayout integratedCheckLayout, boolean generateSketch, OnGenerateFinished listener) {
+        this.context = context;
+        this.photoEntities = photoEntities;
+        this.accidentCheckLayout = accidentCheckLayout;
+        this.integratedCheckLayout = integratedCheckLayout;
+        this.mCallback = listener;
+        this.generateSketch = generateSketch;
     }
 
     @Override
@@ -86,7 +108,8 @@ public class GeneratePhotoEntitiesTask extends AsyncTask<JSONObject, Void, Boole
         photoEntities.addAll(PhotoOtherLayout.photoListAdapter.getItems());
 
         // 所有草图
-        photoEntities.addAll(generateSketches());
+        if(generateSketch)
+            photoEntities.addAll(generateSketches());
 
         return true;
     }
@@ -97,16 +120,9 @@ public class GeneratePhotoEntitiesTask extends AsyncTask<JSONObject, Void, Boole
 
         if(success) {
             mCallback.onFinished(this.photoEntities);
-            Log.d(Common.TAG, "提交成功！");
         } else {
             mCallback.onFailed();
-            Log.d(Common.TAG, "提交失败!");
         }
-    }
-
-    @Override
-    protected void onCancelled() {
-        progressDialog.dismiss();
     }
 
     /**

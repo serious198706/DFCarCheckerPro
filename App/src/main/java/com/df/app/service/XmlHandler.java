@@ -16,6 +16,8 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * Created by 岩 on 13-11-14.
+ *
+ * 处理xml文件，压缩解压缩
  */
 public class XmlHandler {
     private static final int BUFFER_SIZE = 1024;

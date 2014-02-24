@@ -38,6 +38,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+/**
+ * Created by 岩 on 14-1-7.
+ *
+ * 待检车辆列表
+ */
 public class CarsWaitingActivity extends Activity {
     private SwipeListView swipeListView;
     private ArrayList<CarsWaitingItem> data;
@@ -132,22 +137,33 @@ public class CarsWaitingActivity extends Activity {
         refresh();
     }
 
+    /**
+     * 刷新列表
+     */
     private void refresh() {
         GetCarsWaitingListTask getCarsWaitingListTask = new GetCarsWaitingListTask(CarsWaitingActivity.this, startNumber,
                 new GetCarsWaitingListTask.OnGetListFinish() {
                     @Override
                     public void onFinish(String result) {
                         fillInData(result);
+                        startNumber += 10;
                     }
                     @Override
-                    public void onFailed() {
-                        // TODO 删掉！！！
+                    public void onFailed(String error) {
+                        Toast.makeText(CarsWaitingActivity.this, "获取待检车辆列表失败：" + error, Toast.LENGTH_SHORT).show();
+                        Log.d("DFCarChecker", "获取待检车辆列表失败：" + error);
+
+                        // TODO 测试，留着
                         fillInDummyData();
                     }
                 });
         getCarsWaitingListTask.execute();
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param result
+     */
     private void fillInData(String result) {
         try {
             JSONArray jsonArray = new JSONArray(result);
@@ -172,8 +188,17 @@ public class CarsWaitingActivity extends Activity {
         adapter.notifyDataSetChanged();
 
         startNumber = data.size() + 1;
+
+        if(data.size() == 0) {
+            footerView.setVisibility(View.GONE);
+        } else {
+            footerView.setVisibility(View.VISIBLE);
+        }
     }
 
+    /**
+     * 填充测试数据
+     */
     private void fillInDummyData() {
         for(int i = 0; i < 5; i++) {
             CarsWaitingItem item = new CarsWaitingItem();

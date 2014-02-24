@@ -31,8 +31,6 @@ import com.df.app.entries.Model;
 import com.df.app.entries.Series;
 import com.df.app.entries.VehicleModel;
 import com.df.app.service.AsyncTask.GetCarSettingsByVinTask;
-import com.df.app.service.AsyncTask.GetCarSettingsTask;
-import com.df.app.service.SoapService;
 import com.df.app.util.Helper;
 
 import org.json.JSONArray;
@@ -43,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.df.app.util.Helper.enableView;
-import static com.df.app.util.Helper.getDateString;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.isVin;
 import static com.df.app.util.Helper.setEditViewText;
@@ -52,10 +49,12 @@ import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 车辆识别
  */
 public class CarRecogniseLayout extends LinearLayout {
     OnShowContentListener mShowContentCallback;
-    OnUpdatePreviewListener mUpdatePreviewCallback;
+
     View rootView;
 
     // 此页面的6个信息控件
@@ -63,17 +62,11 @@ public class CarRecogniseLayout extends LinearLayout {
     public static EditText licenceModelEdit;
     public static EditText vehicleTypeEdit;
     public static EditText useCharacterEdit;
-    public static EditText engineSerailEdit;
+    public static EditText engineSerialEdit;
     public static EditText brandEdit;
-
-    // soapservice
-    private SoapService soapService;
 
     // 车辆信息
     private VehicleModel vehicleModel;
-
-    // 获取车辆配置信息的线程
-    private GetCarSettingsTask mGetCarSettingsTask;
 
     // 选择车型的五个spinner
     private Spinner countrySpinner;
@@ -89,12 +82,14 @@ public class CarRecogniseLayout extends LinearLayout {
     private int lastSeriesIndex = 0;
     private int lastModelIndex = 0;
 
-    // 是否为进口车
-    public static boolean isPorted;
-
     // 车辆配置信息
     private CarSettings mCarSettings;
 
+    /**
+     * 传入回调函数指针
+     * @param context
+     * @param listener
+     */
     public CarRecogniseLayout(Context context, OnShowContentListener listener) {
         super(context);
         mShowContentCallback = listener;
@@ -113,12 +108,22 @@ public class CarRecogniseLayout extends LinearLayout {
             public void onClick(View view) {
                 // 询问是否要重新识别
                 if(!getEditViewText(rootView, R.id.plateNumber_edit).equals("")) {
+                    View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+                    TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+                    TextView content = new TextView(view1.getContext());
+                    content.setText("确定要重新识别行驶证信息？");
+                    content.setTextSize(20f);
+                    contentArea.addView(content);
+
+                    setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
                     AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
-                            .setTitle(R.string.alert)
-                            .setMessage("确定要重新识别行驶证信息？")
+                            .setView(view1)
                             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(DialogInterface dialogInterface, int i) { fillInDummyData(); }
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    fillInDummyData();
+                                }
                             })
                             .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                 @Override
@@ -185,7 +190,7 @@ public class CarRecogniseLayout extends LinearLayout {
             }
         });
 
-        engineSerailEdit = (EditText) rootView.findViewById(R.id.engineSerial_edit);
+        engineSerialEdit = (EditText) rootView.findViewById(R.id.engineSerial_edit);
         brandEdit = (EditText) rootView.findViewById(R.id.brand_edit);
 
         // vin输入框中只允许输入大写字母与数字
@@ -207,6 +212,11 @@ public class CarRecogniseLayout extends LinearLayout {
         vehicleModel = MainActivity.vehicleModel;
     }
 
+    /**
+     * 弹出选择框
+     * @param arrayId
+     * @param editViewId
+     */
     private void choose(final int arrayId, final int editViewId) {
         View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
 
@@ -234,7 +244,9 @@ public class CarRecogniseLayout extends LinearLayout {
     }
 
 
-    // 检查VIN并获取车辆配置
+    /**
+     * 检查VIN并获取车辆配置
+     */
     private void checkVinAndGetCarSettings() {
         final String vinString = getEditViewText(rootView, R.id.vin_edit);
 
@@ -247,9 +259,17 @@ public class CarRecogniseLayout extends LinearLayout {
 
         // 检查VIN码
         if(!isVin(vinString)) {
+            View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+            TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+            TextView content = new TextView(view1.getContext());
+            content.setText("您输入的VIN码为: " + vinString + "\n" + "系统检测到VIN码可能有误，是否确认继续提交？\n" );
+            content.setTextSize(20f);
+            contentArea.addView(content);
+
+            setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
             AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
-                    .setTitle(R.string.alert)
-                    .setMessage("您输入的VIN码为: " + vinString + "\n" + "系统检测到VIN码可能有误，是否确认继续提交？\n" )
+                    .setView(view1)
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -278,7 +298,10 @@ public class CarRecogniseLayout extends LinearLayout {
         getCarSettingsFromServer();
     }
 
-    // 从服务器获取车辆配置
+    /**
+     * 从服务器获取车辆配置(seriesId + modelId)
+     * @param seriesId seriesId + modelId
+     */
     private void getCarSettingsFromServer(String seriesId) {
         com.df.app.service.AsyncTask.GetCarSettingsTask getCarSettingsTask = new com.df.app.service.AsyncTask.GetCarSettingsTask(getContext(), seriesId,
                 new com.df.app.service.AsyncTask.GetCarSettingsTask.OnGetCarSettingsFinished() {
@@ -308,6 +331,9 @@ public class CarRecogniseLayout extends LinearLayout {
         getCarSettingsTask.execute();
     }
 
+    /**
+     * 从服务器获取车辆配置 (vin)
+     */
     private void getCarSettingsFromServer() {
         String vin = getEditViewText(rootView, R.id.vin_edit);
 
@@ -371,11 +397,11 @@ public class CarRecogniseLayout extends LinearLayout {
                                 tempArray[i] = modelNames.get(i);
                             }
 
-                            showChooseDialog(tempArray, new OnChooseFinished() {
+                            showModelChooseDialog(tempArray, new OnChooseModelFinished() {
                                 @Override
                                 public void onFinished(int index) throws JSONException {
                                     // 如果点击了“其他”（也就是传递回来的配置不符合现车）
-                                    if(index == modelNames.size()) {
+                                    if (index == modelNames.size()) {
                                         selectCarManually();
                                     }
                                     // 选择了某一辆车
@@ -454,7 +480,13 @@ public class CarRecogniseLayout extends LinearLayout {
         getCarSettingsByVinTask.execute();
     }
 
-    private void showChooseDialog(String[] array, final OnChooseFinished mCallback) throws JSONException{
+    /**
+     * 如果回传多个车辆，显示车辆型号选择
+     * @param array
+     * @param mCallback
+     * @throws JSONException
+     */
+    private void showModelChooseDialog(String[] array, final OnChooseModelFinished mCallback) throws JSONException{
         array[array.length - 1] = "其他";
 
         View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
@@ -485,7 +517,9 @@ public class CarRecogniseLayout extends LinearLayout {
         dialog.show();
     }
 
-    // 手动选择车型
+    /**
+     * 手动选择车型
+     */
     private void selectCarManually() {
         View view = LayoutInflater.from(rootView.getContext()).inflate(R.layout
                 .dialog_vehiclemodel_select, null);
@@ -503,15 +537,6 @@ public class CarRecogniseLayout extends LinearLayout {
                 .setView(view)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // 确定
-                        // 判断是否为进口车
-
-                        if (countrySpinner.getSelectedItemPosition() > 1) {
-                            isPorted = true;
-                        } else {
-                            isPorted = false;
-                        }
-
                         // 记录用户选择的位置
                         lastCountryIndex = countrySpinner.getSelectedItemPosition();
                         lastBrandIndex = brandSpinner.getSelectedItemPosition();
@@ -568,7 +593,9 @@ public class CarRecogniseLayout extends LinearLayout {
         dialog.show();
     }
 
-    // 更新UI
+    /**
+     * 更新UI
+     */
     private void updateUi() {
         showView(rootView, R.id.brand_input, true);
 
@@ -594,7 +621,12 @@ public class CarRecogniseLayout extends LinearLayout {
                     mCarSettings.getModel().id);
     }
 
-    // 更新车辆配置信息
+    /**
+     * 更新车辆配置信息
+     * @param config 配置信息
+     * @param category 车辆类型
+     * @param figure 车辆标识
+     */
     private void updateCarSettings(String config, String category, String figure) {
         Country country = vehicleModel.countries.get(lastCountryIndex - 1);
         Brand brand = country.brands.get(lastBrandIndex - 1);
@@ -666,7 +698,11 @@ public class CarRecogniseLayout extends LinearLayout {
     }
 
     // <editor-fold defaultstate="collapsed" desc="设置各种Spinner">
-    // 设置国家Spinner
+
+    /**
+     * 设置国家Spinner
+     * @param vehicleModel
+     */
     private void setCountrySpinner(final VehicleModel vehicleModel) {
         ArrayAdapter<String> adapter;
 
@@ -700,7 +736,10 @@ public class CarRecogniseLayout extends LinearLayout {
         lastCountryIndex = 0;
     }
 
-    // 设置品牌Spinner
+    /**
+     * 设置品牌Spinner
+     * @param country
+     */
     private void setBrandSpinner(final Country country) {
         ArrayAdapter<String> adapter;
         if(country == null) {
@@ -739,7 +778,10 @@ public class CarRecogniseLayout extends LinearLayout {
         lastBrandIndex = 0;
     }
 
-    // 设置厂商Spinner
+    /**
+     * 设置厂商Spinner
+     * @param brand
+     */
     private void setManufacturerSpinner(final Brand brand) {
         ArrayAdapter<String> adapter;
 
@@ -779,7 +821,10 @@ public class CarRecogniseLayout extends LinearLayout {
         lastManufacturerIndex = 0;
     }
 
-    // 设置车系Spinner
+    /**
+     * 设置车系Spinner
+     * @param manufacturer
+     */
     private void setSeriesSpinner(final Manufacturer manufacturer) {
         ArrayAdapter<String> adapter;
 
@@ -820,7 +865,10 @@ public class CarRecogniseLayout extends LinearLayout {
         lastSeriesIndex = 0;
     }
 
-    // 设置车型Spinner
+    /**
+     * 设置车型Spinner
+     * @param series
+     */
     private void setModelSpinner(final Series series) {
         ArrayAdapter<String> adapter;
 
@@ -843,6 +891,9 @@ public class CarRecogniseLayout extends LinearLayout {
         lastModelIndex = 0;
     }
 
+    /**
+     * 填入测试数据
+     */
     private void fillInDummyData() {
         // 可以修改此页面的下列信息
         enableView(rootView, R.id.plateNumber_edit, true);
@@ -863,19 +914,19 @@ public class CarRecogniseLayout extends LinearLayout {
 
     }
 
-    // BasicInfoLayout必须实现此方法
-    // 显示手续信息与基本信息的内容
+    /**
+     * BasicInfoLayout必须实现此接口
+     * 显示手续信息与基本信息的内容
+     */
     public interface OnShowContentListener {
         public void showContent(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial,
             String seriesId, String modelId);
     }
 
-    // IntegratedCheckLayout必须实现此方法
-    public interface OnUpdatePreviewListener {
-        public void updatePreview();
-    }
-
-    public interface OnChooseFinished {
+    /**
+     * getCarSettingsFromServer()中实现此接口
+     */
+    public interface OnChooseModelFinished {
         public void onFinished(int index) throws JSONException;
     }
 }

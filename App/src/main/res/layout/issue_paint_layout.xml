@@ -8,27 +8,52 @@
         android:layout_height="335dp"
         android:layout_centerHorizontal="true"/>
 
-    <RadioGroup android:id="@+id/serious"
+    <LinearLayout android:id="@+id/paintMenu"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_marginTop="10dp"
-        android:orientation="horizontal"
         android:layout_below="@id/image">
-        <RadioButton android:id="@+id/light"
+        <include layout="@layout/paint_menu"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/paintMenu">
+
+        <TextView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_weight="1"
-            android:text="@string/light"
             android:textColor="#555"
             android:textSize="18sp"
-            android:button="@drawable/radio_button"/>
-        <RadioButton android:id="@+id/heavy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/heavy"
-            android:textColor="#555"
-            android:textSize="18sp"
-            android:button="@drawable/radio_button"/>
-    </RadioGroup>
+            android:text="@string/chooseLightHeavy"
+            android:gravity="right|center_vertical"/>
+        <RadioGroup android:id="@+id/serious"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
+            <RadioButton android:id="@+id/light"
+                         android:layout_width="0dp"
+                         android:layout_height="wrap_content"
+                         android:layout_weight="1"
+                         android:text="@string/light"
+                         android:textColor="#555"
+                         android:textSize="18sp"
+                         android:button="@drawable/radio_button"/>
+            <RadioButton android:id="@+id/heavy"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_weight="1"
+                         android:text="@string/heavy"
+                         android:textColor="#555"
+                         android:textSize="18sp"
+                         android:button="@drawable/radio_button"/>
+        </RadioGroup>
+    </LinearLayout>
+
 </RelativeLayout>

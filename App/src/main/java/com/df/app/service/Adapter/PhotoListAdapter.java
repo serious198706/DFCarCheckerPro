@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.CarCheck.AccidentResultLayout;
+import com.df.app.CarCheck.PhotoLayout;
 import com.df.app.R;
 import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
@@ -36,6 +39,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-26.
+ *
+ * 照片列表adapter
  */
 public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
     private List<PhotoEntity> items;
@@ -73,13 +78,15 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
 
         if (photoEntity != null) {
             ImageView photo = (ImageView) view.findViewById(R.id.photo);
-            final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity
-                    .getThumbFileName());
-            photo.setImageBitmap(bitmap);
 
-//            if(bitmap.getWidth() == 400) {
-//                photo.setLayoutParams(new LinearLayout.LayoutParams(160, 120));
-//            }
+            if(photoEntity.getThumbFileName() == null || photoEntity.getThumbFileName().equals("")) {
+                final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera);
+                photo.setImageBitmap(bitmap);
+            } else {
+                final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity
+                        .getThumbFileName());
+                photo.setImageBitmap(bitmap);
+            }
 
             photo.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -92,25 +99,62 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
             TextView photoName = (TextView) view.findViewById(R.id.photo_name);
             photoName.setText(photoEntity.getName());
 
+            // 照片备注框
             EditText photoComment = (EditText) view.findViewById(R.id.photo_comment);
             photoComment.setText(photoEntity.getComment());
+
+            // 备注更改时将对应的photoEntity也更改
+            photoComment.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    photoEntity.setComment(editable.toString());
+                }
+            });
 
             Button reTakeButton = (Button)view.findViewById(R.id.reTake);
             reTakeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // 使用当前毫秒数当作照片名
-                    Uri fileUri = Uri.fromFile(new File(photoEntity.getFileName()));
+                    String filePath = Common.photoDirectory;
+                    String fileName;
 
+                    // 如果当前要重拍的照片没有内容，则给其命名
+                    if(photoEntity.getFileName().equals("")) {
+                        fileName = Long.toString(System.currentTimeMillis()) + ".jpg";
+                        filePath += fileName;
+                        photoEntity.setFileName(fileName);
+                        photoEntity.setThumbFileName(fileName.substring(0, fileName.length() - 4) + "_t.jpg");
+                    } else {
+                        filePath += photoEntity.getFileName();
+                    }
+
+                    // 将要修改的photoEntity提取出来
+                    PhotoLayout.reTakePhotoEntity = photoEntity;
+
+                    Uri fileUri = Uri.fromFile(new File(filePath));
                     Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
-                    ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_RETAKE);
+                    ((Activity)context).startActivityForResult(intent, Common.PHOTO_RETAKE);
                 }
             });
         }
         return view;
     }
 
+    /**
+     * 点击缩略图时，显示对应的图片
+     * @param fileName
+     */
     private void showPhoto(String fileName) {
         View view = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.picture_popup,
                 (ViewGroup)  ((Activity)getContext()).findViewById(R.id.layout_root));

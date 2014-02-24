@@ -14,8 +14,10 @@ import org.json.JSONObject;
 
 /**
  * Created by 岩 on 14-1-20.
+ *
+ * 导入平台
  */
-// 确认导入平台线程
+
 public class ImportPlatformTask extends AsyncTask<Void, Void, Boolean> {
     public interface OnImportFinished {
         public void onFinished(String result);
@@ -41,18 +43,16 @@ public class ImportPlatformTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPreExecute()
     {
-        progressDialog = ProgressDialog.show(context, null,
-                "正在导入平台，请稍候...", false, false);
+        progressDialog = ProgressDialog.show(context, null, "正在导入平台，请稍候...", false, false);
     }
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        boolean success = false;
+        boolean success;
 
         try {
             JSONObject jsonObject = new JSONObject();
 
-            // SeriesId + userID + key
             jsonObject.put("CarId", this.carId);
             jsonObject.put("Type", this.type);
             jsonObject.put("SellerId", this.sellerId);
@@ -60,8 +60,6 @@ public class ImportPlatformTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("Key", MainActivity.userInfo.getKey());
 
             soapService = new SoapService();
-
-            // 设置soap的配置
             soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.IMPORT_PLATFORM);
 
             success = soapService.communicateWithServer(jsonObject.toString());

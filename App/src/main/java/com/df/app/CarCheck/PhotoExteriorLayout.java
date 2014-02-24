@@ -16,11 +16,14 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-26.
+ *
+ * 外观组标准照列表
  */
 public class PhotoExteriorLayout extends LinearLayout {
     private View rootView;
     private Context context;
 
+    // adapter
     public static PhotoListAdapter photoListAdapter;
 
     public PhotoExteriorLayout(Context context) {
@@ -51,6 +54,10 @@ public class PhotoExteriorLayout extends LinearLayout {
         exteriorList.setAdapter(photoListAdapter);
     }
 
+    /**
+     * 生成测试数据
+     * @return
+     */
     private ArrayList<PhotoEntity> generateDummyPhoto() {
         ArrayList<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
@@ -70,7 +77,11 @@ public class PhotoExteriorLayout extends LinearLayout {
         return photoEntities;
     }
 
-    public String check() {
-        return "";
-    }
+//    /**
+//     * 提交前的检查
+//     * @return
+//     */
+//    public String check() {
+//        return "";
+//    }
 }

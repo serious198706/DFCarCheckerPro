@@ -13,6 +13,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-11-4.
+ *
+ * 绘制基类
  */
 public abstract class PaintView extends ImageView {
 

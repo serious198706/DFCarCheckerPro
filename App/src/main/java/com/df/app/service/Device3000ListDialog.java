@@ -32,6 +32,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 14-1-6.
+ *
+ * df3000设备列表
  */
 public class Device3000ListDialog extends Dialog {
     private static class DeviceEntry {
@@ -56,7 +58,7 @@ public class Device3000ListDialog extends Dialog {
 
     private static final int MESSAGE_REFRESH = 101;
     private final static int SEARCH = 102;
-    private static final long REFRESH_TIMEOUT_MILLIS = 5000;
+    private static final long REFRESH_TIMEOUT_MILLIS = 3000;
     private DF3000Service DF3000Service;
 
     private List<DeviceEntry> mEntries = new ArrayList<DeviceEntry>();
@@ -64,22 +66,24 @@ public class Device3000ListDialog extends Dialog {
     private ArrayAdapter<DeviceEntry> mAdapter;
     private ArrayAdapter<SerialNumber> mSerialNumberAdapter;
 
-
+    /**
+     * 处理消息
+     */
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
+                // 刷新设备列表
                 case MESSAGE_REFRESH:
                     refreshDeviceList();
                     mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, REFRESH_TIMEOUT_MILLIS);
                     break;
+                // 查找到设备
                 case SEARCH:
                     mSerialNumbers.clear();
                     mSerialNumbers.addAll(DF3000Service.getSerialNumbers());
                     mSerialNumberAdapter.notifyDataSetChanged();
-
-                    mProgressBarTitle.setText(String.format("找到  %d 台检测设备",
-                            mSerialNumbers.size()));
+                    mProgressBarTitle.setText(String.format("找到  %d 台检测设备", mSerialNumbers.size()));
                     mProgressBar.setVisibility(View.INVISIBLE);
                     break;
                 default:
@@ -128,11 +132,8 @@ public class Device3000ListDialog extends Dialog {
             public View getView(int position, View convertView, ViewGroup parent) {
                 final TwoLineListItem row;
                 if (convertView == null) {
-                    final LayoutInflater inflater =
-                            (LayoutInflater) context.getSystemService(Context
-                                    .LAYOUT_INFLATER_SERVICE);
-                    row = (TwoLineListItem) inflater.inflate(android.R.layout.simple_list_item_2,
-                            null);
+                    final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    row = (TwoLineListItem) inflater.inflate(android.R.layout.simple_list_item_2, null);
                 } else {
                     row = (TwoLineListItem) convertView;
                 }
@@ -173,19 +174,24 @@ public class Device3000ListDialog extends Dialog {
         });
     }
 
+    /**
+     * 刷新设备列表
+     */
     private void refreshDeviceList() {
         showProgressBar();
 
         new AsyncTask<Void, Void, List<DeviceEntry>>() {
             @Override
             protected List<DeviceEntry> doInBackground(Void... params) {
-                Log.d(Common.TAG, "Refreshing device list ...");
+                Log.d(Common.TAG, "查找设备列表...");
                 SystemClock.sleep(1000);
+
+                // 根据usbManager返回的结果，更新设备列表
                 final List<DeviceEntry> result = new ArrayList<DeviceEntry>();
                 for (final UsbDevice device : mUsbManager.getDeviceList().values()) {
-                    final List<UsbSerialDriver> drivers =
-                            UsbSerialProber.probeSingleDevice(mUsbManager, device);
+                    final List<UsbSerialDriver> drivers = UsbSerialProber.probeSingleDevice(mUsbManager, device);
                     Log.d(Common.TAG, "找到设备: " + device);
+
                     if (drivers.isEmpty()) {
                         Log.d(Common.TAG, "  - No UsbSerialDriver available.");
                         result.add(new DeviceEntry(device, null));
@@ -204,13 +210,13 @@ public class Device3000ListDialog extends Dialog {
                 mEntries.clear();
                 mEntries.addAll(result);
                 mAdapter.notifyDataSetChanged();
-                mProgressBarTitle.setText(
-                        String.format("找到(%s)个设备", Integer.valueOf(mEntries.size())));
+                mProgressBarTitle.setText(String.format("找到(%s)个适配器", mEntries.size()));
                 hideProgressBar();
-                Log.d(Common.TAG, "Done refreshing, " + mEntries.size() + " entries found.");
+
+                Log.d(Common.TAG, "查找完毕, 找到" + mEntries.size() + "个适配器");
             }
 
-        }.execute((Void) null);
+        }.execute();
     }
 
     private void showProgressBar() {
@@ -222,38 +228,37 @@ public class Device3000ListDialog extends Dialog {
         mProgressBar.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     * 显示已查找到的适配器设备
+     * @param driver
+     */
     private void showConsoleActivity(UsbSerialDriver driver) {
         mHandler.removeMessages(MESSAGE_REFRESH);
 
-        this.sDriver = driver;
+        sDriver = driver;
 
+        // 选定此适配器，并查找gauge
         search();
 
         mDeviceListView.setVisibility(View.GONE);
         mGaugeListView.setVisibility(View.VISIBLE);
 
-        mSerialNumberAdapter = new ArrayAdapter<SerialNumber>(context,
-                android.R.layout.simple_expandable_list_item_2, mSerialNumbers) {
+        mSerialNumberAdapter = new ArrayAdapter<SerialNumber>(context, android.R.layout.simple_expandable_list_item_2, mSerialNumbers) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 final TwoLineListItem row;
                 if (convertView == null) {
-                    final LayoutInflater inflater =
-                            (LayoutInflater) context.getSystemService(Context
-                                    .LAYOUT_INFLATER_SERVICE);
-                    row = (TwoLineListItem) inflater.inflate(android.R.layout.simple_list_item_2,
-                            null);
+                    final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    row = (TwoLineListItem) inflater.inflate(android.R.layout.simple_list_item_2, null);
                 } else {
                     row = (TwoLineListItem) convertView;
                 }
 
                 final SerialNumber serialNumber = mSerialNumbers.get(position);
-                final String title = String.format("%d 号设备，序列号：%d",
-                        (position+1), serialNumber.getSerialNumber());
+                final String title = String.format("%d 号设备，序列号：%d", (position+1), serialNumber.getSerialNumber());
                 row.getText1().setText(title);
 
                 final String subtitle = "点击设备";
-
                 row.getText2().setText(subtitle);
 
                 return row;
@@ -271,14 +276,21 @@ public class Device3000ListDialog extends Dialog {
         });
     }
 
+    /**
+     * 使用适配器查找gauge设备
+     */
     private void search(){
-        Log.i(Common.TAG, "search...");
+        Log.d(Common.TAG, "查找gauge设备...");
+
         if (sDriver == null) {
-            mProgressBarTitle.setText("No serial device.");
+            mProgressBarTitle.setText("未找到设备");
             return;
         }
 
-        DF3000Service = DF3000Service.instance(sDriver);
+        // 获取df3000service的实例
+        DF3000Service = com.df.app.service.DF3000Service.instance(sDriver);
+
+        // 开始查找设备
         new Thread() {
             @Override
             public void run() {
@@ -288,6 +300,9 @@ public class Device3000ListDialog extends Dialog {
         }.start();
     }
 
+    /**
+     * CollectDataLayout实现此接口，当选择设备完成后调用此接口
+     */
     public interface OnSelectDeviceFinished {
         public void onFinished(UsbSerialDriver sDriver);
     }

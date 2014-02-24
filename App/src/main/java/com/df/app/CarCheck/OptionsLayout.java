@@ -23,6 +23,8 @@ import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 配置信息
  */
 public class OptionsLayout extends LinearLayout {
     private View rootView;
@@ -73,7 +75,11 @@ public class OptionsLayout extends LinearLayout {
         Integrated1Layout.setGearType(mCarSettings.getTransmissionText());
     }
 
-    // 设置配置信息中的Spinner，并与综合检查中的Spinner产生联动
+    /**
+     * 设置配置信息中的Spinner，并与综合检查中的Spinner产生联动
+     * @param spinnerId
+     * @param selection
+     */
     private void setSpinnerSelection(final int spinnerId, int selection) {
         final Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
         spinner.setSelection(selection);
@@ -86,10 +92,15 @@ public class OptionsLayout extends LinearLayout {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
     }
 
+    /**
+     * 生成配置信息的JSONObject
+     * @return
+     */
     public JSONObject generateJSONObject() {
         JSONObject options = new JSONObject();
 
@@ -153,6 +164,10 @@ public class OptionsLayout extends LinearLayout {
         return options;
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param options
+     */
     public void fillInData(JSONObject options) {
         try {
             setEditViewText(rootView, R.id.displacement_edit, options.getString("displacement"));

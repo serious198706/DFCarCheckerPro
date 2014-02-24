@@ -2,13 +2,26 @@ package com.df.app.entries;
 
 /**
  * Created by 岩 on 13-12-24.
+ *
+ * 问题查勘
  */
 public class Issue {
+    // 问题id
     private int id;
+
+    // 问题描述
     private String desc;
+
+    // 视角
     private String view;
+
+    // 总结
     private String summary;
+
+    // 严重等级
     private String serious;
+
+    // 是否选中
     private String select;
 
     public Issue() {

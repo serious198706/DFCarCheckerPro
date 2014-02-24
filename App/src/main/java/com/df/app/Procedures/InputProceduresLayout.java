@@ -27,8 +27,10 @@ import static com.df.app.util.Helper.setEditViewText;
 
 /**
  * Created by 岩 on 14-1-8.
+ *
+ * 手续信息主页面，包括车辆识别、手续录入
  */
-public class InputProceduresLayout extends LinearLayout {
+public class InputProceduresLayout extends LinearLayout implements ViewPager.OnPageChangeListener {
     private View rootView;
 
     private ViewPager viewPager;
@@ -105,7 +107,7 @@ public class InputProceduresLayout extends LinearLayout {
 
         viewPager.setAdapter(new MyViewPagerAdapter(views));
         viewPager.setCurrentItem(0);
-        viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
+        viewPager.setOnPageChangeListener(this);
     }
 
     private void InitTextView() {
@@ -130,35 +132,39 @@ public class InputProceduresLayout extends LinearLayout {
         proceduresWebLayout.goBack();
     }
 
-    class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
-    {
-        @Override
-        public void onPageScrollStateChanged(int arg0) {
 
-        }
+    @Override
+    public void onPageScrollStateChanged(int arg0) {
 
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
-
-        }
-
-        @Override
-        public void onPageSelected(int arg0) {
-            selectTab(arg0);
-        }
     }
+
+    @Override
+    public void onPageScrolled(int arg0, float arg1, int arg2) {
+
+    }
+
+    @Override
+    public void onPageSelected(int arg0) {
+        selectTab(arg0);
+    }
+
 
     private void selectTab(int currIndex) {
         carRecogniseTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
         proceduresTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     */
     public void fillInData(String jsonString) {
         carRecogniseLayout.fillInData(jsonString);
     }
 
 
-    // CarCheckActivity必须实现此接口
+    /**
+     * CarCheckActivity必须实现此接口
+     */
     public interface OnUpdateUiListener {
         public void updateUi();
     }

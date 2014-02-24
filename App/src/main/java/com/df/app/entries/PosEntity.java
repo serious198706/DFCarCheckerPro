@@ -2,10 +2,11 @@ package com.df.app.entries;
 
 /**
  * Created by 岩 on 13-12-25.
+ *
+ * 缺陷点信息
  */
 
 import android.graphics.Bitmap;
-
 import java.io.Serializable;
 
 public class PosEntity implements Serializable {

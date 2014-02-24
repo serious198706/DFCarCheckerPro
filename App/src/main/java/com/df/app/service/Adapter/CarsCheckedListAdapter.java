@@ -19,6 +19,8 @@ import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 14-1-7.
+ *
+ * 已检车辆adapter
  */
 public class CarsCheckedListAdapter extends BaseAdapter {
     public interface OnImport {

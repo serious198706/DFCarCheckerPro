@@ -6,8 +6,10 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-10-16.
+ *
+ * 国家
  */
-// 国家
+
 public class Country {
     public String name;
     public String id;
@@ -18,6 +20,10 @@ public class Country {
         brands = new ArrayList<Brand>();
     }
 
+    /**
+     * 获取此国家下的所有品牌名称
+     * @return
+     */
     public List<String> getBrandNames() {
         brandNames = new ArrayList<String>();
         brandNames.add("");
@@ -28,6 +34,11 @@ public class Country {
         return brandNames;
     }
 
+    /**
+     * 根据id查找品牌
+     * @param id
+     * @return
+     */
     public Brand getBrandById(String id) {
         Brand brand = null;
 

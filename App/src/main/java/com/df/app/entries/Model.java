@@ -2,8 +2,10 @@ package com.df.app.entries;
 
 /**
  * Created by 岩 on 13-10-16.
+ *
+ * 车型
  */
-// 系列
+
 public class Model {
     public String name;
     public String id;
@@ -12,6 +14,11 @@ public class Model {
         return name;
     }
 
+    /**
+     * 根据id查找车型
+     * @param id
+     * @return
+     */
     public String getNameById(String id) {
         String name = "";
 

@@ -2,6 +2,8 @@ package com.df.app.paintview;
 
 /**
  * Created by 岩 on 13-9-26.
+ *
+ * 外观缺陷预览视图
  */
 
 import android.content.Context;
@@ -12,7 +14,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.df.app.R;
 import com.df.app.entries.PosEntity;
@@ -21,9 +22,6 @@ import com.df.app.util.Common;
 import java.util.List;
 
 public class ExteriorPaintPreviewView extends PaintPreviewView {
-
-    private int currentType;
-    private boolean move;
     private List<PosEntity> data;
     private Bitmap bitmap;
     private Bitmap colorDiffBitmap;
@@ -36,16 +34,6 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
         //init();
     }
 
-    @Override
-    public int getMaxWidth() {
-        return max_x;
-    }
-
-    @Override
-    public int getMaxHeight() {
-        return max_y;
-    }
-
     public ExteriorPaintPreviewView(Context context, AttributeSet attrs) {
         super(context, attrs);
         //init();
@@ -54,6 +42,16 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
     public ExteriorPaintPreviewView(Context context) {
         super(context);
         //init();
+    }
+
+    @Override
+    public int getMaxWidth() {
+        return max_x;
+    }
+
+    @Override
+    public int getMaxHeight() {
+        return max_y;
     }
 
     public void init(Bitmap bitmap, List<PosEntity> entities) {
@@ -70,16 +68,15 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //data = CarCheckExteriorActivity.posEntities;
         canvas.drawBitmap(bitmap, 0, 0, null);
         paint(canvas);
     }
 
-    public void setType(int type) {
-        this.currentType = type;
-    }
-
-    private Paint getPaint(int type) {
+    /**
+     * 获取绘制笔触
+     * @return
+     */
+    private Paint getPaint() {
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.BLUE);
@@ -96,6 +93,11 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
         }
     }
 
+    /**
+     * 将所有点绘制到背景上
+     * @param entity
+     * @param canvas
+     */
     private void paint(PosEntity entity, Canvas canvas) {
         int type = entity.getType();
 
@@ -104,7 +106,7 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
                 canvas.drawBitmap(colorDiffBitmap, entity.getStartX(), entity.getStartY(), null);
                 return;
             case Common.SCRATCH:
-                canvas.drawLine(entity.getStartX(), entity.getStartY(), entity.getEndX(), entity.getEndY(), getPaint(type));
+                canvas.drawLine(entity.getStartX(), entity.getStartY(), entity.getEndX(), entity.getEndY(), getPaint());
                 return ;
             case Common.TRANS:
                 int dx = Math.abs(entity.getEndX() - entity.getStartX());
@@ -112,7 +114,7 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
                 int dr = (int)Math.sqrt(dx * dx + dy * dy);
                 int x0 = (entity.getStartX() + entity.getEndX()) / 2;
                 int y0 = (entity.getStartY() + entity.getEndY()) / 2;
-                canvas.drawCircle(x0, y0, dr / 2, getPaint(type));
+                canvas.drawCircle(x0, y0, dr / 2, getPaint());
                 return;
             case Common.SCRAPE:
                 RectF rectF = null;
@@ -145,7 +147,7 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
                     rectF = new RectF(entity.getStartX(), entity.getStartY(), entity.getEndX(), entity.getEndY());
                 }
 
-                canvas.drawRect(rectF, getPaint(type));
+                canvas.drawRect(rectF, getPaint());
 
                 return;
             case Common.OTHER:

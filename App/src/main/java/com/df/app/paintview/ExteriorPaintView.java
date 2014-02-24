@@ -2,6 +2,8 @@ package com.df.app.paintview;
 
 /**
  * Created by 岩 on 13-9-26.
+ *
+ * 外观缺陷绘制
  */
 
 import android.app.Activity;
@@ -39,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ExteriorPaintView extends PaintView {
-
     private int currentType = Common.COLOR_DIFF;
     private boolean move;
 
@@ -260,6 +261,9 @@ public class ExteriorPaintView extends PaintView {
         }
     }
 
+    /**
+     * 拍照
+     */
     private void showCamera(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("拍照");
@@ -288,6 +292,10 @@ public class ExteriorPaintView extends PaintView {
         builder.show();
     }
 
+    /**
+     * 生成photoEntity
+     * @return
+     */
     private PhotoEntity generatePhotoEntity() {
         PosEntity posEntity = getPosEntity();
 
@@ -346,13 +354,21 @@ public class ExteriorPaintView extends PaintView {
 
         photoEntity.setName(getTypeName());
         photoEntity.setFileName(posEntity.getImageFileName());
+        if(photoEntity.getFileName().equals("")) {
+            photoEntity.setThumbFileName("");
+        } else {
+            photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
+        }
         photoEntity.setComment(posEntity.getComment());
         photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;
     }
 
-    // 获取该paintView的一些内容
+    /**
+     * 获取该paintView的一些内容
+     * @return
+     */
     public PosEntity getPosEntity(){
         if(data.isEmpty()){
             return null;

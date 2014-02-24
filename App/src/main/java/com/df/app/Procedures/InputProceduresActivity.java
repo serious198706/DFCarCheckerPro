@@ -25,6 +25,11 @@ import java.util.List;
 
 import static com.df.app.util.Helper.setTextView;
 
+/**
+ * Created by 岩 on 13-12-20.
+ *
+ * 手续信息主页面，包括车辆识别、手续录入
+ */
 public class InputProceduresActivity extends Activity {
     private InputProceduresLayout inputProceduresLayout;
 
@@ -59,6 +64,9 @@ public class InputProceduresActivity extends Activity {
         }
     }
 
+    /**
+     * 退出前的确认
+     */
     private void quitConfirm() {
         View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
         TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);

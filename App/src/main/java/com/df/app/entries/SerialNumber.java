@@ -6,7 +6,9 @@ import com.df.app.service.Decoder;
 import java.util.List;
 
 /**
- * 设备码
+ * Created by zsg on 14-1-6.
+ *
+ * 设备序列号
  */
 
 public class SerialNumber {
@@ -62,35 +64,42 @@ public class SerialNumber {
 		return false;
 	}
 
+    /**
+     * 获取序列号的可读形式 (provided by Docs)
+     * @return
+     */
     public long getSerialNumber() {
         return getSerialNumber(number[0], number[1], number[2]);
     }
 
-    public long getSerialNumber(byte snu, byte snh, byte snl)
-    { // translate from the internal representation of the serial number
+    private long getSerialNumber(byte snu, byte snh, byte snl)
+    {
+        // translate from the internal representation of the serial number
         if ( (snu & 0x80) != 0)
-        { // The topmost bit is set
+        {
+            // The topmost bit is set
             byte yy, kw;
             long nr;
-// sequential number
+            // sequential number
             nr = ((long)snl)+(((long)snh & 0x03) << 8);
-// week of year
+            // week of year
             kw = (byte)((snh & 0xFC) >> 2);
-// year
+            // year
             yy = (byte)(snu & 0x7F);
             return (((long)yy) * 100000
                     + kw  *   1000
                     + nr);
         }
         else
-        { // more complicated bit shifting
+        {
+            // more complicated bit shifting
             long sn1, sn2;
             sn1  = snu;
             sn2  = (sn1 & 0x0F) * 100;
             sn1  = (sn1 >> 4) * 100;
-// sn1 contains the lower three digits of the serial number
+            // sn1 contains the lower three digits of the serial number
             sn1 += snl;
-// sn2 contains the upper three digits of the serial number
+            // sn2 contains the upper three digits of the serial number
             sn2 += snh;
             return (((long)sn2) * 1000
                     + sn1);

@@ -6,6 +6,8 @@ import android.widget.ImageView;
 
 /**
  * Created by 岩 on 14-1-24.
+ *
+ * 预览基类
  */
 public abstract class PaintPreviewView extends ImageView {
     public PaintPreviewView(Context context) {

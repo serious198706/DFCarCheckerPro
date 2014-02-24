@@ -22,6 +22,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 14-1-13.
+ *
+ * 保存
  */
 // 提交检测数据
 public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
@@ -33,15 +35,16 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
     Context context;
     List<PhotoEntity> photoEntities;
     int carId;
-    private SoapService soapService;
     private ProgressDialog progressDialog;
     private OnSaveDataFinished mCallback;
 
-    public SaveDataTask(Context context, OnSaveDataFinished listener) {
-        this.context = context;
-        this.mCallback = listener;
-    }
-
+    /**
+     * 构造函数
+     * @param context 上下文
+     * @param carId 车辆id，以此为文件名进行本地保存
+     * @param photoEntityList 所有已拍摄图片
+     * @param listener 保存成功的回调函数指针
+     */
     public SaveDataTask(Context context, int carId, List<PhotoEntity> photoEntityList, OnSaveDataFinished listener) {
         this.context = context;
         this.carId = carId;
@@ -63,11 +66,10 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
     protected Boolean doInBackground(JSONObject... params) {
         boolean success;
 
-        JSONArray photos = new JSONArray();
-
         try {
-            for(PhotoEntity photoEntity : photoEntities) {
+            JSONArray photos = new JSONArray();
 
+            for(PhotoEntity photoEntity : photoEntities) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("comment", photoEntity.getComment());
                 jsonObject.put("fileName", photoEntity.getFileName());
@@ -79,20 +81,21 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
             }
 
             params[0].put("photos", photos);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            success = false;
-        }
 
-        try {
             String jsonString = (params[0]).toString();
 
+            // 保存文件，文件名为carId
             OutputStreamWriter write = new OutputStreamWriter(
                     new FileOutputStream(Common.savedDirectory + Integer.toString(carId)), "UTF-8");
             BufferedWriter writer=new BufferedWriter(write);
+
             writer.write(jsonString);
             writer.close();
+
             success = true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            success = false;
         } catch (Exception e) {
             e.printStackTrace();
             success = false;
@@ -107,12 +110,9 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
 
         if(success) {
             mCallback.onFinished();
-            Log.d(Common.TAG, "保存成功！");
         } else {
             mCallback.onFailed();
-            Log.d(Common.TAG, "提交失败!");
         }
-
     }
 
     @Override

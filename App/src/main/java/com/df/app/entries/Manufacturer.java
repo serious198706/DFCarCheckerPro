@@ -5,8 +5,10 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-10-16.
+ *
+ * 厂商
  */
-// 厂商
+
 public class Manufacturer {
     public String name;
     public String id;
@@ -17,6 +19,10 @@ public class Manufacturer {
         serieses = new ArrayList<Series>();
     }
 
+    /**
+     * 获取此品牌下的所有厂商名称
+     * @return
+     */
     public List<String> getSerialNames() {
         serialNames = new ArrayList<String>();
         serialNames.add("");
@@ -27,6 +33,11 @@ public class Manufacturer {
         return  serialNames;
     }
 
+    /**
+     * 根据id查找厂商
+     * @param id
+     * @return
+     */
     public Series getSeriesById(String id) {
         Series series = null;
 

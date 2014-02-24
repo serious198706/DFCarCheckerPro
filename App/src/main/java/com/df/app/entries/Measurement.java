@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * @author zsg
- * 
+ * Created by zsg on 14-1-6.
+ *
+ * 测量结果
  */
 
 public class Measurement {

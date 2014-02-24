@@ -62,7 +62,6 @@ public abstract class Command {
 	 * 求和
 	 * 
 	 * @param data
-	 * @param len
 	 * @return
 	 */
 	private int getCheckSum(byte[] data) {
@@ -77,7 +76,6 @@ public abstract class Command {
 	 * 给最后2位检验单元赋值
 	 * 
 	 * @param data
-	 * @param len
 	 */
 	private void checkSum(byte[] data) {
 		int wSum = getCheckSum(data);

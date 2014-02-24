@@ -39,6 +39,8 @@ import static com.df.app.util.Helper.setEditViewText;
 
 /**
  * Created by 岩 on 14-1-8.
+ *
+ * 车辆信息，包括基本信息和配置信息
  */
 public class VehicleInfoLayout extends LinearLayout {
     private static View rootView;
@@ -113,7 +115,9 @@ public class VehicleInfoLayout extends LinearLayout {
         });
     }
 
-    // 从服务器获取车辆配置
+    /**
+     * 从服务器获取车辆配置
+     */
     private void getCarSettingsFromServer(String seriesId) {
         mGetCarSettingsTask = new GetCarSettingsTask(rootView.getContext(), seriesId, new GetCarSettingsTask.OnGetCarSettingsFinished() {
             @Override
@@ -142,7 +146,9 @@ public class VehicleInfoLayout extends LinearLayout {
         mGetCarSettingsTask.execute();
     }
 
-    // 手动选择车型
+    /**
+     * 手动选择车型
+     */
     private void selectCarManually() {
         View view = LayoutInflater.from(rootView.getContext()).inflate(R.layout
                 .dialog_vehiclemodel_select, null);
@@ -222,7 +228,9 @@ public class VehicleInfoLayout extends LinearLayout {
         dialog.show();
     }
 
-    // 更新UI
+    /**
+     * 更新UI
+     */
     private void updateUi() {
         // 设置厂牌型号的EditText
         setEditViewText(rootView, R.id.brand_edit, mCarSettings.getBrandString());
@@ -231,7 +239,12 @@ public class VehicleInfoLayout extends LinearLayout {
         mCallback.onGetCarSettings();
     }
 
-    // 更新车辆配置信息
+    /**
+     * 更新车辆配置信息
+     * @param config
+     * @param category
+     * @param figure
+     */
     private void updateCarSettings(String config, String category, String figure) {
         Manufacturer manufacturer = mCarSettings.getManufacturer();
         Series series = mCarSettings.getSeries();
@@ -280,21 +293,23 @@ public class VehicleInfoLayout extends LinearLayout {
         mCarSettings.setConfig(config);
 
         // 设置车型分类，以用于图片类型判断
-        String categoryArray[] = getResources().getStringArray(R
-                .array.category_item);
+        String categoryArray[] = getResources().getStringArray(R.array.category_item);
 
-        if(Integer.parseInt(category) > 0)
-            mCarSettings.setCategory(categoryArray[Integer.parseInt
-                    (category) - 1]);
-        else
-            mCarSettings.setCategory(categoryArray[Integer.parseInt
-                    (category)]);
+        if(Integer.parseInt(category) > 0) {
+            mCarSettings.setCategory(categoryArray[Integer.parseInt(category) - 1]);
+        } else {
+            mCarSettings.setCategory(categoryArray[Integer.parseInt(category)]);
+        }
 
         mCarSettings.setFigure(figure);
     }
 
     // <editor-fold defaultstate="collapsed" desc="设置各种Spinner">
-    // 设置国家Spinner
+
+    /**
+     * 设置国家Spinner
+     * @param vehicleModel
+     */
     private void setCountrySpinner(final VehicleModel vehicleModel) {
         ArrayAdapter<String> adapter;
 
@@ -328,7 +343,10 @@ public class VehicleInfoLayout extends LinearLayout {
         lastCountryIndex = 0;
     }
 
-    // 设置品牌Spinner
+    /**
+     * 设置品牌Spinner
+     * @param country
+     */
     private void setBrandSpinner(final Country country) {
         ArrayAdapter<String> adapter;
         if(country == null) {
@@ -367,7 +385,10 @@ public class VehicleInfoLayout extends LinearLayout {
         lastBrandIndex = 0;
     }
 
-    // 设置厂商Spinner
+    /**
+     * 设置厂商Spinner
+     * @param brand
+     */
     private void setManufacturerSpinner(final Brand brand) {
         ArrayAdapter<String> adapter;
 
@@ -407,7 +428,10 @@ public class VehicleInfoLayout extends LinearLayout {
         lastManufacturerIndex = 0;
     }
 
-    // 设置车系Spinner
+    /**
+     * 设置车系Spinner
+     * @param manufacturer
+     */
     private void setSeriesSpinner(final Manufacturer manufacturer) {
         ArrayAdapter<String> adapter;
 
@@ -448,7 +472,10 @@ public class VehicleInfoLayout extends LinearLayout {
         lastSeriesIndex = 0;
     }
 
-    // 设置车型Spinner
+    /**
+     * 设置车型Spinner
+     * @param series
+     */
     private void setModelSpinner(final Series series) {
         ArrayAdapter<String> adapter;
 
@@ -472,7 +499,10 @@ public class VehicleInfoLayout extends LinearLayout {
     }
     // </editor-fold>
 
-
+    /**
+     * 生成基本信息JSONObject
+     * @return
+     */
     public JSONObject generateJSONObject() {
         JSONObject procedures = new JSONObject();
 
@@ -493,7 +523,13 @@ public class VehicleInfoLayout extends LinearLayout {
         return procedures;
     }
 
-    // 更新页面，顺带更新车辆信息
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * 更新页面，顺带更新车辆信息
+     * @param procedures
+     * @param seriesId
+     * @param modelId
+     */
     public void fillInData(JSONObject procedures, String seriesId, String modelId) {
         try {
             setEditViewText(rootView, R.id.vin_edit, procedures.getString("vin"));
@@ -552,7 +588,11 @@ public class VehicleInfoLayout extends LinearLayout {
         }
     }
 
-    // 只更新页面
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * 只更新页面
+     * @param procedures
+     */
     public void fillInData(JSONObject procedures) {
         try {
             setEditViewText(rootView, R.id.vin_edit, procedures.getString("vin"));
@@ -569,10 +609,17 @@ public class VehicleInfoLayout extends LinearLayout {
         }
     }
 
+    /**
+     * 获取vin
+     * @return
+     */
     public static String getVin() {
         return getEditViewText(rootView, R.id.vin_edit);
     }
 
+    /**
+     * CarCheckActivity实现此接口，获取到车辆配置信息时进行一些操作
+     */
     public interface OnGetCarSettings {
         public void onGetCarSettings();
     }

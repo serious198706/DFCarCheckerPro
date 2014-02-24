@@ -8,24 +8,20 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
-import com.df.app.service.WebAppInterface;
-import com.df.app.util.Common;
 
 /**
  * Created by 岩 on 14-1-13.
+ *
+ * 手续录入（网页）
  */
 public class ProceduresWebLayout extends LinearLayout {
     private Context context;
@@ -64,6 +60,10 @@ public class ProceduresWebLayout extends LinearLayout {
         Toast.makeText(rootView.getContext(), result, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * 适配屏幕
+     * @return
+     */
     private int getScale(){
         Display display = ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         int width = display.getWidth();
@@ -85,8 +85,19 @@ public class ProceduresWebLayout extends LinearLayout {
         proceduresWeb.goBack();
     }
 
+    /**
+     * 确定车辆基本信息后，将以下信息作为参数提交到网页
+     * @param vin vin
+     * @param plateNumber 车牌号码
+     * @param licenseModel 行驶证车辆类型
+     * @param vehicleType 车辆类型
+     * @param useCharacter 使用性质
+     * @param engineSerial 发动机号
+     * @param seriesId 车系id
+     * @param modelId 车型id
+     */
     public void updateUi(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial, String seriesId, String modelId) {
-        String url = "http://192.168.8.200:9901/Function/CarDetection2/Default.aspx?";
+        String url = "http://192.168.18.88:8001/Function/CarDetection2/Default.aspx?";
 
         url += "userId=" + MainActivity.userInfo.getId();
         url += "&";

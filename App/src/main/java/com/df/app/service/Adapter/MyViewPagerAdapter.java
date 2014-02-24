@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 滑动页面
  */
 
 public class MyViewPagerAdapter extends PagerAdapter {

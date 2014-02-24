@@ -20,11 +20,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.df.app.util.Helper.getSpinnerSelectedIndex;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 13-12-25.
+ *
+ * 综合三，暂时只有从检人员的选择
  */
 public class Integrated3Layout extends LinearLayout {
     private View rootView;
@@ -57,6 +60,9 @@ public class Integrated3Layout extends LinearLayout {
         getCooperatorNames();
     }
 
+    /**
+     * 获取从检人员的名字，并填入spinner
+     */
     private void getCooperatorNames() {
         GetCooperatorTask getCooperatorTask = new GetCooperatorTask(rootView.getContext(), new GetCooperatorTask.OnGetListFinish() {
             @Override
@@ -92,18 +98,37 @@ public class Integrated3Layout extends LinearLayout {
         getCooperatorTask.execute();
     }
 
+    /**
+     * 生成综合三的备注
+     * @return
+     */
     public String generateCommentString() {
         return "";
     }
 
+    /**
+     * 获取从检人员的id
+     * @return
+     */
     public int getCooperatorId() {
-        return 0;
+        int index = getSpinnerSelectedIndex(rootView, R.id.cooperatorName_spinner);
+        Cooperator cooperator = cooperators.get(index);
+
+        return cooperator.getId();
     }
 
+    /**
+     * 获取从检人员的名字
+     * @return
+     */
     public String getCooperatorName() {
         return getSpinnerSelectedText(rootView, R.id.cooperatorName_spinner);
     }
 
+    /**
+     * 检查所有域
+     * @return
+     */
     public String checkAllFields() {
         return "";
     }

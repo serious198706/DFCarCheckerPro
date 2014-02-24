@@ -51,6 +51,8 @@ import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 13-12-25.
+ *
+ * 综合检查二，主要包括泡水检查和轮胎检查
  */
 public class Integrated2Layout extends LinearLayout {
     private static View rootView;
@@ -59,8 +61,9 @@ public class Integrated2Layout extends LinearLayout {
 
     // 正在拍摄的轮胎
     private String currentTire;
+    private String currentTireName;
 
-    private int[] photoShotCount = {0, 0, 0, 0, 0};
+    public static int[] photoShotCount = {0, 0, 0, 0, 0};
 
     private int[] spinnerIds = {
             R.id.cigarLighter_spinner,
@@ -174,7 +177,8 @@ public class Integrated2Layout extends LinearLayout {
             @Override
             public void onClick(View view) {
                 currentTire = "leftFront";
-                takePhotoForTires("左前");
+                currentTireName = "左前轮";
+                takePhotoForTires(currentTireName);
             }
         });
 
@@ -183,7 +187,8 @@ public class Integrated2Layout extends LinearLayout {
             @Override
             public void onClick(View view) {
                 currentTire = "rightFront";
-                takePhotoForTires("右前");
+                currentTireName = "右前轮";
+                takePhotoForTires(currentTireName);
             }
         });
 
@@ -192,7 +197,8 @@ public class Integrated2Layout extends LinearLayout {
             @Override
             public void onClick(View view) {
                 currentTire = "leftRear";
-                takePhotoForTires("左后");
+                currentTireName = "左后轮";
+                takePhotoForTires(currentTireName);
             }
         });
 
@@ -201,7 +207,8 @@ public class Integrated2Layout extends LinearLayout {
             @Override
             public void onClick(View view) {
                 currentTire = "rightRear";
-                takePhotoForTires("右后");
+                currentTireName = "右后轮";
+                takePhotoForTires(currentTireName);
             }
         });
 
@@ -210,7 +217,8 @@ public class Integrated2Layout extends LinearLayout {
             @Override
             public void onClick(View view) {
                 currentTire = "spare";
-                takePhotoForTires("备胎");
+                currentTireName = "备胎轮";
+                takePhotoForTires(currentTireName);
             }
         });
 
@@ -227,26 +235,16 @@ public class Integrated2Layout extends LinearLayout {
         });
     }
 
-    private void takePhotoForTires(String tire) {
-        Toast.makeText(rootView.getContext(), "正在拍摄" + tire + "轮", Toast.LENGTH_LONG).show();
-
-        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
-        currentTimeMillis = System.currentTimeMillis();
-        Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg"); //
-        // create a file to save the image
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-
-        ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_TIRES);
+    private void showShadow(boolean show) {
+        findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
-    public void saveTirePhoto() {
-        Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
-        Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
-
-        PhotoEntity photoEntity = generatePhotoEntity();
-
-        // 如果此轮胎已经有照片，则替换之
+    /**
+     * 对某一轮胎进行拍照
+     * @param tire
+     */
+    private void takePhotoForTires(final String tire) {
+        // 如果此轮胎已经有照片，则询问用户是否要替换
         if(photoShotCount[tireMap.get(currentTire)] == 1) {
             View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
             TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
@@ -259,29 +257,44 @@ public class Integrated2Layout extends LinearLayout {
 
             AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
                     .setView(view1)
+                    // 要替换，就启动相机
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            // 确定替换，将之前的全部清除，再重新添加一遍
-                            PhotoExteriorLayout.photoListAdapter.clear();
-
-                            for(PhotoEntity photoEntity1 : photoEntityMap.values()) {
-                                PhotoExteriorLayout.photoListAdapter.addItem(photoEntity1);
-                            }
-
-                            PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
+                            startCamera(tire, photoEntityMap.get(currentTire).getFileName());
                         }
                     })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // 不替换，则无视这张图片
-                        }
-                    })
+                    // 不替换
+                    .setNegativeButton(R.string.cancel, null)
                     .create();
 
             dialog.show();
         } else {
+            currentTimeMillis = System.currentTimeMillis();
+            startCamera(tire, Long.toString(currentTimeMillis) + ".jpg");
+        }
+    }
+
+    /**
+     * 拍摄完毕并确认后，保存、处理照片并生成photoEntity
+     */
+    public void saveTirePhoto() {
+        // 如果此轮胎已经有照片，则替换之
+        if(photoShotCount[tireMap.get(currentTire)] == 1) {
+            PhotoEntity temp = photoEntityMap.get(currentTire);
+
+            Helper.setPhotoSize(temp.getFileName(), 800);
+            Helper.generatePhotoThumbnail(temp.getFileName(), 400);
+
+            PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
+        }
+        // 如果此轮胎没有照片，则生成新的照片
+        else {
+            Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
+            Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
+
+            PhotoEntity photoEntity = generatePhotoEntity();
+
             if(photoEntityMap.containsKey(currentTire))
                 photoEntityMap.remove(currentTire);
             else
@@ -293,6 +306,27 @@ public class Integrated2Layout extends LinearLayout {
         }
     }
 
+    /**
+     * 打开相机拍照
+     * @param tire
+     * @param fileName
+     */
+    private void startCamera(String tire, String fileName) {
+        Toast.makeText(rootView.getContext(), "正在拍摄" + tire, Toast.LENGTH_LONG).show();
+
+        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+        Uri fileUri = Helper.getOutputMediaFileUri(fileName); //
+        // create a file to save the image
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+
+        ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_TIRES);
+    }
+
+    /**
+     * 生成photoEntity
+     * @return
+     */
     private PhotoEntity generatePhotoEntity() {
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
@@ -339,32 +373,45 @@ public class Integrated2Layout extends LinearLayout {
         photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
         photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
         photoEntity.setJsonString(jsonObject.toString());
-        photoEntity.setName(currentTire);
+        photoEntity.setName(currentTireName);
 
         return photoEntity;
     }
 
+    /**
+     * 获取备胎的选择项
+     * @return
+     */
     public static String getSpareTireSelection() {
         return getSpinnerSelectedText(rootView, R.id.spareTire_spinner);
     }
 
-    public static void setSpareTireSelection(String selction) {
-        setSpinnerSelectionWithString(rootView, R.id.spareTire_spinner, selction);
+    /**
+     * 设置备胎的选择项
+     * @param selection
+     */
+    public static void setSpareTireSelection(String selection) {
+        setSpinnerSelectionWithString(rootView, R.id.spareTire_spinner, selection);
     }
 
+    /**
+     * 设置spinner选择“无”之后的颜色
+     * @param spinnerId
+     * @param color
+     */
     private static void setSpinnerColor(int spinnerId, int color) {
         Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(i >= 1)
+                if (i >= 1)
                     ((TextView) adapterView.getChildAt(0)).setTextColor(Color.RED);
                 else
                     ((TextView) adapterView.getChildAt(0)).setTextColor(Color.BLACK);
 
                 // 当选择项为“无”时，还应为黑色字体
-                if(adapterView.getSelectedItem().toString().equals("无")) {
+                if (adapterView.getSelectedItem().toString().equals("无")) {
                     ((TextView) adapterView.getChildAt(0)).setTextColor(Color.BLACK);
                 }
             }
@@ -376,10 +423,11 @@ public class Integrated2Layout extends LinearLayout {
         });
     }
 
-    private void showShadow(boolean show) {
-        findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
-    }
-
+    /**
+     * 生成泡水检查的JSONObject
+     * @return
+     * @throws JSONException
+     */
     public JSONObject generateFloodedJSONObject() throws JSONException {
         JSONObject flooded = new JSONObject();
 
@@ -403,6 +451,11 @@ public class Integrated2Layout extends LinearLayout {
         return flooded;
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param flooded
+     * @throws JSONException
+     */
     private void fillFloodWithJSONObject(JSONObject flooded) throws JSONException {
         setSpinnerSelectionWithString(rootView, R.id.cigarLighter_spinner, flooded.getString("cigarLighter"));
         setSpinnerSelectionWithString(rootView, R.id.seatBelts_spinner, flooded.getString("seatBelts"));
@@ -422,6 +475,11 @@ public class Integrated2Layout extends LinearLayout {
         setSpinnerSelectionWithString(rootView, R.id.engineRoom_spinner, flooded.getString("engineRoom"));
     }
 
+    /**
+     * 生成轮胎的JSONObject
+     * @return
+     * @throws JSONException
+     */
     public JSONObject generateTiresJSONObject() throws JSONException{
         JSONObject tires = new JSONObject();
 
@@ -436,6 +494,11 @@ public class Integrated2Layout extends LinearLayout {
         return tires;
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param tires
+     * @throws JSONException
+     */
     private void fillTiresWithJSONObject(JSONObject tires) throws JSONException{
         setEditViewText(rootView, R.id.leftFront_edit, tires.getString("leftFront"));
         setEditViewText(rootView, R.id.rightFront_edit, tires.getString("rightFront"));
@@ -446,14 +509,26 @@ public class Integrated2Layout extends LinearLayout {
         setSpinnerSelectionWithString(rootView, R.id.patternMatch_spinner, tires.getString("patternMatch"));
     }
 
+    /**
+     * 生成综合二备注的JSONObject
+     * @return
+     */
     public String generateCommentString() {
         return getEditViewText(rootView, R.id.it2_comment_edit);
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param comment
+     */
     private void fillCommentWithString(String comment) {
         setEditViewText(rootView, R.id.it2_comment_edit, comment);
     }
 
+    /**
+     * 生成轮胎的草图
+     * @return
+     */
     public PhotoEntity generateSketch() {
         ImageView imageView = (ImageView)findViewById(R.id.tire_image);
 
@@ -493,13 +568,23 @@ public class Integrated2Layout extends LinearLayout {
         return photoEntity;
     }
 
-
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param flooded
+     * @param tires
+     * @param comment2
+     * @throws JSONException
+     */
     public void fillInData(JSONObject flooded, JSONObject tires, String comment2) throws JSONException {
         fillFloodWithJSONObject(flooded);
         fillTiresWithJSONObject(tires);
         fillCommentWithString(comment2);
     }
 
+    /**
+     * 检查所有域
+     * @return
+     */
     public String checkAllFields() {
         if(photoShotCount[0] == 0) {
             return tireMap.keySet().toArray(new String[0])[0];
@@ -520,6 +605,9 @@ public class Integrated2Layout extends LinearLayout {
         return "";
     }
 
+    /**
+     * 当未拍摄轮胎照片时，定位到轮胎部分
+     */
     public void locateTirePart() {
         final Button button = (Button)findViewById(R.id.leftFront_button);
         button.setFocusable(true);

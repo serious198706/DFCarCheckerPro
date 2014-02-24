@@ -3,6 +3,11 @@ package com.df.app.entries;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by 岩 on 13-12-23.
+ *
+ * 品牌
+ */
 public class Brand {
     public String name;
     public String id;
@@ -13,6 +18,10 @@ public class Brand {
         manufacturers = new ArrayList<Manufacturer>();
     }
 
+    /**
+     * 获取此品牌下所有厂商的名称
+     * @return
+     */
     public List<String> getManufacturerNames() {
         manufacturerNames = new ArrayList<String>();
         manufacturerNames.add("");
@@ -23,6 +32,11 @@ public class Brand {
         return manufacturerNames;
     }
 
+    /**
+     * 根据厂商id查找厂商
+     * @param id
+     * @return
+     */
     public Manufacturer getManufacturerById(String id) {
         Manufacturer manufacturer = null;
 

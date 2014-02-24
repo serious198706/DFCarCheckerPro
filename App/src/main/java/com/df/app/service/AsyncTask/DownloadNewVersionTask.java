@@ -20,9 +20,10 @@ import java.net.URL;
 
 /**
  * Created by 岩 on 13-12-18.
+ *
+ * 下载新版本apk
  */
 
-// 下载新版本apk
 public class DownloadNewVersionTask extends AsyncTask<String, Integer, Boolean> {
     private ProgressDialog mProgressDialog;
     private Context context;

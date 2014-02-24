@@ -5,8 +5,9 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-10-16.
+ *
+ * 车系
  */
-// 系列
 public class Series {
     public String name;
     public String id;
@@ -17,6 +18,10 @@ public class Series {
         models = new ArrayList<Model>();
     }
 
+    /**
+     * 获取此厂商下的所有车系名称
+     * @return
+     */
     public List<String> getModelNames() {
         modelNames = new ArrayList<String>();
         modelNames.add("");
@@ -27,6 +32,11 @@ public class Series {
         return modelNames;
     }
 
+    /**
+     * 根据id查找车系
+     * @param id
+     * @return
+     */
     public Model getModelById(String id) {
         Model model = null;
 

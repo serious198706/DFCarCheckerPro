@@ -30,8 +30,10 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-20.
+ *
+ * 综合检查，包括外观检查、内饰检查、综合一、二、三检查
  */
-public class IntegratedCheckLayout extends LinearLayout {
+public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnPageChangeListener {
     private View rootView;
 
     private ViewPager viewPager;
@@ -100,7 +102,7 @@ public class IntegratedCheckLayout extends LinearLayout {
 
         viewPager.setAdapter(new MyViewPagerAdapter(views));
         viewPager.setCurrentItem(0);
-        viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
+        viewPager.setOnPageChangeListener(this);
     }
 
     private void InitTextView() {
@@ -119,40 +121,70 @@ public class IntegratedCheckLayout extends LinearLayout {
         itTab3.setOnClickListener(new MyOnClick(viewPager, 4));
     }
 
+    /**
+     * 获取车辆配置信息后，更新外观、内饰和综合一的界面
+     */
     public void updateUi() {
         exteriorLayout.updateUi();
         interiorLayout.updateUi();
         integrated1Layout.updateUi();
     }
 
-    public void saveTirePhoto() {
-        integrated2Layout.saveTirePhoto();
-    }
-
+    /**
+     * 更新外观草图
+     */
     public void updateExteriorPreview() {
         exteriorLayout.updateExteriorPreview();
     }
 
+    /**
+     * 更新内饰草图
+     */
     public void updateInteriorPreview() {
         interiorLayout.updateInteriorPreview();
     }
 
+    /**
+     * 保存外观标准照
+     */
     public void saveExteriorStandardPhoto() {
         exteriorLayout.saveExteriorStandardPhoto();
     }
 
+    /**
+     * 保存内饰标准照
+     */
     public void saveInteriorStandardPhoto() {
         interiorLayout.saveInteriorStandardPhoto();
     }
 
+    /**
+     * 保存轮胎照
+     */
+    public void saveTirePhoto() {
+        integrated2Layout.saveTirePhoto();
+    }
+
+    /**
+     * 获取从检id
+     * @return
+     */
     public int getCooperatorId() {
         return integrated3Layout.getCooperatorId();
     }
 
+    /**
+     * 获取从检名字
+     * @return
+     */
     public String getCooperatorName() {
         return integrated3Layout.getCooperatorName();
     }
 
+    /**
+     * 生成外观、内饰、轮胎的草图
+     * @return
+     */
     public List<PhotoEntity> generateSketches() {
         List<PhotoEntity> temp = new ArrayList<PhotoEntity>();
 
@@ -163,6 +195,10 @@ public class IntegratedCheckLayout extends LinearLayout {
         return temp;
     }
 
+    /**
+     * 提交前的检查
+     * @return
+     */
     public String checkAllFields() {
         String currentField;
 
@@ -209,22 +245,19 @@ public class IntegratedCheckLayout extends LinearLayout {
         return currentField;
     }
 
-    class MyOnPageChangeListener implements ViewPager.OnPageChangeListener
-    {
-        @Override
-        public void onPageScrollStateChanged(int arg0) {
+    @Override
+    public void onPageScrollStateChanged(int arg0) {
 
-        }
+    }
 
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
+    @Override
+    public void onPageScrolled(int arg0, float arg1, int arg2) {
 
-        }
+    }
 
-        @Override
-        public void onPageSelected(int arg0) {
-            selectTab(arg0);
-        }
+    @Override
+    public void onPageSelected(int arg0) {
+        selectTab(arg0);
     }
 
     private void selectTab(int currIndex) {
@@ -235,6 +268,10 @@ public class IntegratedCheckLayout extends LinearLayout {
         itTab3.setTextColor(currIndex == 4 ? selectedColor : unselectedColor);
     }
 
+    /**
+     * 生成综合检查的JSONObject
+     * @return
+     */
     public JSONObject generateJSONObject() {
         JSONObject conditions = new JSONObject();
 
@@ -285,6 +322,10 @@ public class IntegratedCheckLayout extends LinearLayout {
         return conditions;
     }
 
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     * @param conditions
+     */
     public void fillInData(JSONObject conditions) {
         try {
             JSONObject exterior = conditions.getJSONObject("exterior");
@@ -310,7 +351,9 @@ public class IntegratedCheckLayout extends LinearLayout {
         }
     }
 
-
+    /**
+     * 获取标准化备注文字
+     */
     public class GetStandardRemarksTask extends AsyncTask<Void, Void, Boolean> {
         private Context context;
         private SoapService soapService;

@@ -15,7 +15,10 @@ import org.json.JSONObject;
 
 /**
  * Created by 岩 on 14-1-13.
+ *
+ * 获取从检人员
  */
+
 public class GetCooperatorTask extends AsyncTask<JSONObject, Void, Boolean> {
     public interface OnGetListFinish {
         public void onFinish(String result);
@@ -46,12 +49,6 @@ public class GetCooperatorTask extends AsyncTask<JSONObject, Void, Boolean> {
     protected Boolean doInBackground(JSONObject... params) {
         boolean success;
 
-        // 组织最终json
-        soapService = new SoapService();
-
-        // 设置soap的配置
-        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_COOPERATORS);
-
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -60,6 +57,9 @@ public class GetCooperatorTask extends AsyncTask<JSONObject, Void, Boolean> {
         } catch (JSONException e) {
             Log.d(Common.TAG, "生成Json失败！");
         }
+
+        soapService = new SoapService();
+        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_COOPERATORS);
 
         success = soapService.communicateWithServer(jsonObject.toString());
 

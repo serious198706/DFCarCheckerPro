@@ -30,15 +30,24 @@ import java.util.List;
 
 /**
  * Created by 岩 on 13-12-26.
+ *
+ * 协议组照片列表
  */
 public class PhotoOtherLayout extends LinearLayout {
     private View rootView;
     private Context context;
 
+    // adapter
     public static PhotoListAdapter photoListAdapter;
+
+    // 已拍摄的照片数量
+    private int  photoShotCount = 0;
+
+    // 正在拍摄的部位
     private int currentShotPart;
+
+    // 目前的文件名
     private long currentTimeMillis;
-    private int photoShotCount = 0;
 
     public PhotoOtherLayout(Context context) {
         super(context);
@@ -76,6 +85,9 @@ public class PhotoOtherLayout extends LinearLayout {
         });
     }
 
+    /**
+     * 拍摄协议组照片
+     */
     private void starCamera() {
         Toast.makeText(context, "正在拍摄协议组", Toast.LENGTH_LONG).show();
 
@@ -90,6 +102,9 @@ public class PhotoOtherLayout extends LinearLayout {
         ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_OTHER_STANDARD);
     }
 
+    /**
+     * 保存协议组照片
+     */
     public void saveOtherStandardPhoto() {
         Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
         Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
@@ -102,6 +117,10 @@ public class PhotoOtherLayout extends LinearLayout {
         photoShotCount++;
     }
 
+    /**
+     * 生成photoEntity
+     * @return
+     */
     private PhotoEntity generatePhotoEntity() {
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
@@ -135,6 +154,10 @@ public class PhotoOtherLayout extends LinearLayout {
         return photoEntity;
     }
 
+    /**
+     * 生成测试数据
+     * @return
+     */
     private ArrayList<PhotoEntity> generateDummyPhoto() {
         ArrayList<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
@@ -154,7 +177,14 @@ public class PhotoOtherLayout extends LinearLayout {
         return photoEntities;
     }
 
+    /**
+     * 提交前的检查
+     * @return
+     */
     public String check() {
-        return "";
+        if(photoShotCount == 0)
+            return "other";
+        else
+            return "";
     }
 }

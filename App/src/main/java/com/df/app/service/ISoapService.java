@@ -2,16 +2,15 @@ package com.df.app.service;
 
 /**
  * Created by 岩 on 13-10-9.
+ *
+ * soapService接口
  */
-import android.content.Context;
+
 import android.graphics.Bitmap;
 
-import org.ksoap2.serialization.SoapObject;
-
 public interface ISoapService {
-    boolean login(Context context, String jsonString);
+    boolean communicateWithServer();
     boolean communicateWithServer(String jsonString);
     boolean uploadPicture(Bitmap bitmap, String jsonString);
     boolean uploadPicture(String jsonString);
-    public boolean checkUpdate();
 }

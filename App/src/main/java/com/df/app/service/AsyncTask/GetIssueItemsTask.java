@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.df.app.CarCheck.BasicInfoLayout;
 import com.df.app.MainActivity;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
@@ -19,13 +20,12 @@ import org.json.JSONObject;
 public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
     public interface OnGetIssueItemsFinished {
         public void onFinish(String result, ProgressDialog progressDialog);
-        public void onFailed();
+        public void onFailed(String error);
     }
 
     Context context;
     private SoapService soapService;
     private ProgressDialog progressDialog;
-    private String result;
     private OnGetIssueItemsFinished mCallback;
     private JSONObject accidentData;
 
@@ -44,24 +44,20 @@ public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        boolean success = false;
+        boolean success;
 
         try {
             JSONObject jsonObject = new JSONObject();
 
-            // SeriesId + userID + key
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
-            jsonObject.put("SeriesId", /*CarsWaitingActivity.seriesId*/3);
+            jsonObject.put("SeriesId", BasicInfoLayout.mCarSettings.getSeries().id);
             jsonObject.put("Data", accidentData);
 
             soapService = new SoapService();
-
-            // 设置soap的配置
             soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.ANALYSIS_ACCIDENT_DATA);
 
             success = soapService.communicateWithServer(jsonObject.toString());
-
         } catch (JSONException e) {
             Log.d("DFCarChecker", "Json解析错误：" + e.getMessage());
             return false;
@@ -75,13 +71,7 @@ public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
         if (success) {
             mCallback.onFinish(soapService.getResultMessage(), progressDialog);
         } else {
-            mCallback.onFailed();
-            Toast.makeText(context, "连接错误！", Toast.LENGTH_SHORT).show();
-            Log.d("DFCarChecker", "连接错误: " + soapService.getErrorMessage());
+            mCallback.onFailed(soapService.getErrorMessage());
         }
-    }
-
-    @Override
-    protected void onCancelled() {
     }
 }

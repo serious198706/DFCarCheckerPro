@@ -2,6 +2,8 @@ package com.df.app.entries;
 
 /**
  * Created by 岩 on 14-1-13.
+ *
+ * 从检人员
  */
 public class Cooperator {
     private int id;
