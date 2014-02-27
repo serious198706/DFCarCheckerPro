@@ -28,18 +28,17 @@ public class XmlHandler {
         try {
             byte data[] = new byte[BUFFER_SIZE];
 
-            for (int i = 0; i < files.length; i++) {
-                FileInputStream fi = new FileInputStream(files[i]);
+            for (String file : files) {
+                FileInputStream fi = new FileInputStream(file);
                 origin = new BufferedInputStream(fi, BUFFER_SIZE);
                 try {
-                    ZipEntry entry = new ZipEntry(files[i].substring(files[i].lastIndexOf("/") + 1));
+                    ZipEntry entry = new ZipEntry(file.substring(file.lastIndexOf("/") + 1));
                     out.putNextEntry(entry);
                     int count;
                     while ((count = origin.read(data, 0, BUFFER_SIZE)) != -1) {
                         out.write(data, 0, count);
                     }
-                }
-                finally {
+                } finally {
                     origin.close();
                 }
             }

@@ -1,18 +1,15 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,7 +25,6 @@ import com.df.app.entries.Model;
 import com.df.app.entries.Series;
 import com.df.app.entries.VehicleModel;
 import com.df.app.service.AsyncTask.GetCarSettingsTask;
-import com.df.app.service.SoapService;
 import com.df.app.util.Helper;
 
 import org.json.JSONException;
@@ -45,18 +41,11 @@ import static com.df.app.util.Helper.setEditViewText;
 public class VehicleInfoLayout extends LinearLayout {
     private static View rootView;
 
+    // 车辆配置
     private CarSettings mCarSettings;
 
-    public static EditText brandEdit;
-
-    // soapservice
-    private SoapService soapService;
-
-    // 车辆信息
+    // 存储车型信息（来自xml）
     private VehicleModel vehicleModel;
-
-    // 获取车辆配置信息的线程
-    private GetCarSettingsTask mGetCarSettingsTask;
 
     // 选择车型的五个spinner
     private Spinner countrySpinner;
@@ -72,14 +61,11 @@ public class VehicleInfoLayout extends LinearLayout {
     private int lastSeriesIndex = 0;
     private int lastModelIndex = 0;
 
-    private String countryId;
-    private String brandId;
-    private String manufacturerId;
-    private String seriesId;
-    private String modelId;
-
+    // 获取车辆配置信息后，更新页面的回调
     private OnGetCarSettings mCallback;
-    private ProgressDialog progressDialog;
+
+    // 获取车辆详细信息后，填入数据的回调
+    private OnUiUpdated mUiUpdatedCallback;
 
     public VehicleInfoLayout(Context context, OnGetCarSettings listener) {
         super(context);
@@ -87,22 +73,10 @@ public class VehicleInfoLayout extends LinearLayout {
         init(context);
     }
 
-    public VehicleInfoLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
-    }
-
-    public VehicleInfoLayout(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        init(context);
-    }
-
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.vehicle_info_layout, this);
 
-        brandEdit = (EditText) rootView.findViewById(R.id.brand_edit);
         vehicleModel = MainActivity.vehicleModel;
-
         mCarSettings = BasicInfoLayout.mCarSettings;
 
         // 点击品牌选择按钮
@@ -119,7 +93,7 @@ public class VehicleInfoLayout extends LinearLayout {
      * 从服务器获取车辆配置
      */
     private void getCarSettingsFromServer(String seriesId) {
-        mGetCarSettingsTask = new GetCarSettingsTask(rootView.getContext(), seriesId, new GetCarSettingsTask.OnGetCarSettingsFinished() {
+        GetCarSettingsTask mGetCarSettingsTask = new GetCarSettingsTask(rootView.getContext(), seriesId, new GetCarSettingsTask.OnGetCarSettingsFinished() {
             @Override
             public void onFinished(String result) {
                 try {
@@ -140,7 +114,7 @@ public class VehicleInfoLayout extends LinearLayout {
                 // 传输失败，获取错误信息并显示
                 Log.d("DFCarChecker", "获取车辆配置信息失败：" + result);
                 Toast.makeText(rootView.getContext(), result, Toast.LENGTH_LONG).show();
-                ((Activity)getContext()).finish();
+                ((Activity) getContext()).finish();
             }
         });
         mGetCarSettingsTask.execute();
@@ -237,6 +211,9 @@ public class VehicleInfoLayout extends LinearLayout {
 
         // 更新配置界面、外观、内饰界面
         mCallback.onGetCarSettings();
+
+        if(mUiUpdatedCallback != null)
+            mUiUpdatedCallback.onUiUpdated();
     }
 
     /**
@@ -530,8 +507,10 @@ public class VehicleInfoLayout extends LinearLayout {
      * @param seriesId
      * @param modelId
      */
-    public void fillInData(JSONObject procedures, String seriesId, String modelId) {
+    public void fillInData(JSONObject procedures, String seriesId, String modelId, OnUiUpdated listener) {
         try {
+            mUiUpdatedCallback = listener;
+
             setEditViewText(rootView, R.id.vin_edit, procedures.getString("vin"));
             setEditViewText(rootView, R.id.engineSerial_edit, procedures.getString("engineSerial"));
             setEditViewText(rootView, R.id.plateNumber_edit, procedures.getString("plateNumber"));
@@ -622,5 +601,9 @@ public class VehicleInfoLayout extends LinearLayout {
      */
     public interface OnGetCarSettings {
         public void onGetCarSettings();
+    }
+
+    public interface OnUiUpdated {
+        public void onUiUpdated();
     }
 }

@@ -3,12 +3,8 @@ package com.df.app.service.AsyncTask;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import com.df.app.CarCheck.BasicInfoLayout;
-import com.df.app.MainActivity;
 import com.df.app.entries.PhotoEntity;
-import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 
 import org.json.JSONArray;

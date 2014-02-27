@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.df.app"
     android:versionCode="1"
-    android:versionName="1.1.7" >
+    android:versionName="1.1.9" >
 
     <uses-sdk
         android:minSdkVersion="17"
@@ -64,34 +64,34 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.df.app.CarCheck.CarCheckActivity"
+            android:name="com.df.app.carCheck.CarCheckActivity"
             android:label="@string/title_activity_car_check_frame"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity
-            android:name="com.df.app.CarCheck.PaintActivity"
+            android:name="com.df.app.carCheck.PaintActivity"
             android:label="@string/title_activity_car_check_frame"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity
-            android:name="com.df.app.CarsChecked.CarsCheckedActivity"
+            android:name="com.df.app.carsChecked.CarsCheckedActivity"
             android:label="@string/title_activity_cars_checked"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.df.app.CarsWaiting.CarsWaitingActivity"
+            android:name="com.df.app.carsWaiting.CarsWaitingActivity"
             android:label="@string/title_activity_cars_waiting"
             android:screenOrientation="portrait"  >
         </activity>
         <activity
-            android:name="com.df.app.Procedures.InputProceduresActivity"
+            android:name="com.df.app.procedures.InputProceduresActivity"
             android:label="@string/title_activity_procedures"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="com.df.app.CarCheck.AddPhotoCommentActivity"
+            android:name="com.df.app.carCheck.AddPhotoCommentActivity"
             android:label="@string/title_activity_add_photo_comment"
             android:screenOrientation="portrait"  >
         </activity>

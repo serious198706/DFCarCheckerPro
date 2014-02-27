@@ -1,27 +1,15 @@
-package com.df.app.Procedures;
+package com.df.app.procedures;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.util.AttributeSet;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.df.app.CarCheck.BasicInfoLayout;
-import com.df.app.CarCheck.OptionsLayout;
 import com.df.app.R;
-import com.df.app.entries.CarSettings;
-
-import java.util.List;
 
 import static com.df.app.util.Helper.setTextView;
 

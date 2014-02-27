@@ -13,7 +13,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.df.app.entries.UserInfo;
 import com.df.app.service.AsyncTask.CheckUpdateTask;
 import com.df.app.service.AsyncTask.LoginTask;
 import com.df.app.util.Common;
@@ -26,16 +25,12 @@ import org.json.JSONObject;
  * well.
  */
 public class LoginActivity extends Activity {
-    // 用户名及密码
-    private String mUserName;
-    private String mPassword;
 
     // UI references.
     private EditText mUserNameView;
     private EditText mPasswordView;
 
     private LoginTask mLoginTask = null;
-    private CheckUpdateTask mCheckUpdateTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +70,7 @@ public class LoginActivity extends Activity {
             e.printStackTrace();
         }
 
-        mCheckUpdateTask = new CheckUpdateTask(LoginActivity.this);
+        CheckUpdateTask mCheckUpdateTask = new CheckUpdateTask(LoginActivity.this);
         mCheckUpdateTask.execute();
     }
 
@@ -94,8 +89,8 @@ public class LoginActivity extends Activity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        mUserName = mUserNameView.getText().toString();
-        mPassword = mPasswordView.getText().toString();
+        String mUserName = mUserNameView.getText().toString();
+        String mPassword = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -120,7 +115,7 @@ public class LoginActivity extends Activity {
             focusView.requestFocus();
         } else {
             // 进行登录
-            mLoginTask = new LoginTask(LoginActivity.this,  mUserName, mPassword, new LoginTask.OnLoginFinished() {
+            mLoginTask = new LoginTask(LoginActivity.this, mUserName, mPassword, new LoginTask.OnLoginFinished() {
                 @Override
                 public void onFinished(String result) {
                     try {

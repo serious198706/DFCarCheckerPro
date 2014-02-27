@@ -1,6 +1,5 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -9,7 +8,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,8 +15,8 @@ import android.widget.Toast;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
-import com.df.app.service.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
+import com.df.app.service.MyOnClick;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 
@@ -37,14 +35,7 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
     private View rootView;
 
     private ViewPager viewPager;
-    private ImageView imageView;
     private TextView exteriorTab, interiorTab, itTab1, itTab2, itTab3;
-    private List<View> views;
-    private int offset =0;
-    private int currIndex = 0;
-    private int bmpW;
-
-    private Activity activity;
 
     private static ExteriorLayout exteriorLayout;
     private static InteriorLayout interiorLayout;
@@ -80,13 +71,9 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
 //        task.execute();
     }
 
-    public void setActivity(Activity activity) {
-        this.activity = activity;
-    }
-
     private void InitViewPager(Context context) {
         viewPager = (ViewPager) rootView.findViewById(R.id.vPager);
-        views = new ArrayList<View>();
+        List<View> views = new ArrayList<View>();
 
         exteriorLayout = new ExteriorLayout(context);
         interiorLayout = new InteriorLayout(context);
@@ -134,28 +121,14 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
      * 更新外观草图
      */
     public void updateExteriorPreview() {
-        exteriorLayout.updateExteriorPreview();
+        ExteriorLayout.updateExteriorPreview();
     }
 
     /**
      * 更新内饰草图
      */
     public void updateInteriorPreview() {
-        interiorLayout.updateInteriorPreview();
-    }
-
-    /**
-     * 保存外观标准照
-     */
-    public void saveExteriorStandardPhoto() {
-        exteriorLayout.saveExteriorStandardPhoto();
-    }
-
-    /**
-     * 保存内饰标准照
-     */
-    public void saveInteriorStandardPhoto() {
-        interiorLayout.saveInteriorStandardPhoto();
+        InteriorLayout.updateInteriorPreview();
     }
 
     /**
@@ -202,42 +175,53 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
     public String checkAllFields() {
         String currentField;
 
-        // 外观照片数量检查
-        currentField = exteriorLayout.checkAllFields();
-
-        if(!currentField.equals("")) {
-            Toast.makeText(rootView.getContext(), "外观组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
-            viewPager.setCurrentItem(0);
-            exteriorLayout.locateCameraButton();
-
-            return currentField;
-        }
-
-        // 内饰照片数量检查
-        currentField = interiorLayout.checkAllFields();
-
-        if(!currentField.equals("")) {
-            Toast.makeText(rootView.getContext(), "内饰组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
-            viewPager.setCurrentItem(1);
-            interiorLayout.locateCameraButton();
-
-            return currentField;
-        }
-
         // 综合检查一
         currentField = integrated2Layout.checkAllFields();
 
-        if(!currentField.equals("")) {
-            Toast.makeText(rootView.getContext(), "轮胎照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+        if(currentField.equals("leftFront")) {
+            Toast.makeText(rootView.getContext(), "未拍摄左前轮照片！", Toast.LENGTH_SHORT).show();
             viewPager.setCurrentItem(3);
             integrated2Layout.locateTirePart();
 
             return currentField;
+        } else if(currentField.equals("rightFront")) {
+            Toast.makeText(rootView.getContext(), "未拍摄右前轮照片！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(3);
+            integrated2Layout.locateTirePart();
+
+            return currentField;
+        } else if(currentField.equals("leftRear")) {
+            Toast.makeText(rootView.getContext(), "未拍摄左后轮照片！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(3);
+            integrated2Layout.locateTirePart();
+
+            return currentField;
+        } else if(currentField.equals("rightRear")) {
+            Toast.makeText(rootView.getContext(), "未拍摄右后轮照片！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(3);
+            integrated2Layout.locateTirePart();
+
+            return currentField;
+        } else if(currentField.equals("spare")) {
+            Toast.makeText(rootView.getContext(), "未拍摄备胎照片！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(3);
+            integrated2Layout.locateTirePart();
+
+            return currentField;
+        } else if(currentField.equals("edits")) {
+            Toast.makeText(rootView.getContext(), "轮胎标号有误！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(3);
+            integrated2Layout.locateTirePart();
+
+            return "edits";
         }
 
         // 综合检查三
-        if(currentField.equals("")) {
-            currentField = integrated3Layout.checkAllFields();
+        currentField = integrated3Layout.checkAllFields();
+
+        if(currentField.equals("coop")) {
+            Toast.makeText(rootView.getContext(), "未选择从检人员！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(4);
 
             return currentField;
         }
@@ -346,9 +330,14 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
             integrated1Layout.fillInData(engine, gearbox, function, comment1);
             integrated2Layout.fillInData(flooded, tires, comment2);
 
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void fillInData(String checkCooperatorName) {
+        integrated3Layout.fillInData(checkCooperatorName);
     }
 
     /**

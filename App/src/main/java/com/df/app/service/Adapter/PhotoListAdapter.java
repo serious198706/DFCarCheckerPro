@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,25 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.df.app.CarCheck.AccidentResultLayout;
-import com.df.app.CarCheck.PhotoLayout;
+import com.df.app.carCheck.PhotoLayout;
 import com.df.app.R;
-import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.util.Common;
-import com.df.app.util.Helper;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,7 +35,6 @@ import java.util.List;
 public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
     private List<PhotoEntity> items;
     private Context context;
-    private Dialog mPictureDialog;
 
     public PhotoListAdapter(Context context, int layoutResourceId, List<PhotoEntity> items) {
         super(context, layoutResourceId, items);
@@ -164,7 +153,7 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
         Bitmap bitmap = BitmapFactory.decodeFile(fileName);
         image.setImageBitmap(bitmap);
 
-        mPictureDialog = new Dialog(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
+        Dialog mPictureDialog = new Dialog(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
         mPictureDialog.setContentView(view);
         mPictureDialog.setCancelable(true);
         mPictureDialog.show();

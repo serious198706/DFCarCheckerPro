@@ -6,6 +6,8 @@ import com.df.app.R;
 
 /**
  * Created by 岩 on 13-12-18.
+ *
+ * 常量
  */
 public class Common {
     public static String utilDirectory = Environment.getExternalStorageDirectory().getPath() +

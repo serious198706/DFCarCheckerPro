@@ -1,4 +1,4 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,13 +13,13 @@ import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -38,13 +38,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
+import static com.df.app.util.Helper.setEditError;
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setSpinnerSelectionWithString;
 import static com.df.app.util.Helper.setTextView;
@@ -81,7 +80,9 @@ public class Integrated2Layout extends LinearLayout {
             R.id.storageCorner_spinner,
             R.id.newFuse_spinner,
             R.id.fuse_spinner,
-            R.id.engineRoom_spinner};
+            R.id.engineRoom_spinner,
+            R.id.patternMatch_spinner,
+            R.id.formatMatch_spinner};
 
     private static Map<String, Integer> tireMap;
     static {
@@ -92,6 +93,8 @@ public class Integrated2Layout extends LinearLayout {
         tireMap.put("rightRear", 3);
         tireMap.put("spare", 4);
     }
+
+    private String[] map = {"leftFront", "rightFront", "leftRear", "rightRear", "spare"};
 
     private Button leftFrontButton;
     private Button rightFrontButton;
@@ -154,8 +157,8 @@ public class Integrated2Layout extends LinearLayout {
             }
         });
 
-        for(int i = 0; i < spinnerIds.length; i++) {
-            setSpinnerColor(spinnerIds[i], Color.RED);
+        for (int spinnerId : spinnerIds) {
+            setSpinnerColor(spinnerId);
         }
 
         Spinner spareSpinner = (Spinner)findViewById(R.id.spareTire_spinner);
@@ -366,7 +369,7 @@ public class Integrated2Layout extends LinearLayout {
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
 
         PhotoEntity photoEntity = new PhotoEntity();
@@ -397,9 +400,8 @@ public class Integrated2Layout extends LinearLayout {
     /**
      * 设置spinner选择“无”之后的颜色
      * @param spinnerId
-     * @param color
      */
-    private static void setSpinnerColor(int spinnerId, int color) {
+    private static void setSpinnerColor(int spinnerId) {
         Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -558,7 +560,7 @@ public class Integrated2Layout extends LinearLayout {
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
 
         PhotoEntity photoEntity = new PhotoEntity();
@@ -586,20 +588,50 @@ public class Integrated2Layout extends LinearLayout {
      * @return
      */
     public String checkAllFields() {
-        if(photoShotCount[0] == 0) {
-            return tireMap.keySet().toArray(new String[0])[0];
+        int count;
+
+        // 如果有备胎，则要检查备胎的图片
+        if(getSpinnerSelectedText(rootView, R.id.spareTire_spinner).equals("有")) {
+            count = photoShotCount.length;
+        } else {
+            count = photoShotCount.length - 1;
         }
 
-        if(photoShotCount[1] == 0) {
-            return tireMap.keySet().toArray(new String[0])[1];
+        for(int i = 0; i < count; i++) {
+            if(photoShotCount[i] == 0) {
+                return map[i];
+            }
         }
 
-        if(photoShotCount[2] == 0) {
-            return tireMap.keySet().toArray(new String[0])[2];
+        if(getEditViewText(rootView, R.id.leftFront_edit).length() > 0 &&
+                getEditViewText(rootView, R.id.leftFront_edit).length() < 4) {
+            setEditError(rootView, R.id.leftFront_edit, "轮胎标号格式不正确");
+            return "edits";
         }
 
-        if(photoShotCount[3] == 0) {
-            return tireMap.keySet().toArray(new String[0])[3];
+        if(getEditViewText(rootView, R.id.rightFront_edit).length() > 0 &&
+                getEditViewText(rootView, R.id.rightFront_edit).length() < 4) {
+            setEditError(rootView, R.id.rightFront_edit, "轮胎标号格式不正确");
+            return "edits";
+        }
+
+        if(getEditViewText(rootView, R.id.leftRear_edit).length() > 0 &&
+                getEditViewText(rootView, R.id.leftRear_edit).length() < 4) {
+            setEditError(rootView, R.id.leftRear_edit, "轮胎标号格式不正确");
+            return "edits";
+        }
+
+        if(getEditViewText(rootView, R.id.rightRear_edit).length() > 0 &&
+                getEditViewText(rootView, R.id.rightRear_edit).length() < 4) {
+            setEditError(rootView, R.id.rightRear_edit, "轮胎标号格式不正确");
+            return "edits";
+        }
+
+        if(getEditViewText(rootView, R.id.spare_edit).length() > 0 &&
+                getEditViewText(rootView, R.id.spare_edit).length() < 4 &&
+                getSpinnerSelectedText(rootView, R.id.spareTire_spinner).equals("有")) {
+            setEditError(rootView, R.id.spare_edit, "轮胎标号格式不正确");
+            return "edits";
         }
 
         return "";
@@ -609,14 +641,14 @@ public class Integrated2Layout extends LinearLayout {
      * 当未拍摄轮胎照片时，定位到轮胎部分
      */
     public void locateTirePart() {
-        final Button button = (Button)findViewById(R.id.leftFront_button);
-        button.setFocusable(true);
-        button.requestFocus();
+        final EditText editText = (EditText)findViewById(R.id.spare_edit);
+        editText.setFocusable(true);
+        editText.requestFocus();
 
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                scrollView.scrollTo(0, button.getBottom());
+                scrollView.scrollTo(0, editText.getBottom());
             }
         });
     }

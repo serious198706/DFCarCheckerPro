@@ -1,4 +1,4 @@
-package com.df.app.Procedures;
+package com.df.app.procedures;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -13,6 +13,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.df.app.MainActivity;
@@ -24,9 +25,9 @@ import com.df.app.R;
  * 手续录入（网页）
  */
 public class ProceduresWebLayout extends LinearLayout {
-    private Context context;
     private View rootView;
     private WebView proceduresWeb;
+    private ProgressBar pb;
 
     public ProceduresWebLayout(Context context) {
         super(context);
@@ -44,9 +45,8 @@ public class ProceduresWebLayout extends LinearLayout {
     @JavascriptInterface
     @SuppressLint("SetJavaScriptEnabled")
     private void init(Context context) {
-        this.context = context;
-
         rootView = LayoutInflater.from(context).inflate(R.layout.procedures_web_layout, this);
+        pb = (ProgressBar)findViewById(R.id.progressBar);
     }
 
     @JavascriptInterface
@@ -67,7 +67,7 @@ public class ProceduresWebLayout extends LinearLayout {
     private int getScale(){
         Display display = ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         int width = display.getWidth();
-        Double val = new Double(width)/new Double(700);
+        Double val = (double) width / (double) 700;
         val = val * 100d;
         return val.intValue();
     }
@@ -83,6 +83,11 @@ public class ProceduresWebLayout extends LinearLayout {
 
     public void goBack() {
         proceduresWeb.goBack();
+    }
+
+    public void showContent(boolean show) {
+        pb.setVisibility(show ? GONE : VISIBLE);
+        proceduresWeb.setVisibility(show ? VISIBLE : GONE);
     }
 
     /**
@@ -123,7 +128,11 @@ public class ProceduresWebLayout extends LinearLayout {
 
         proceduresWeb = (WebView)findViewById(R.id.proceduresWeb);
         proceduresWeb.loadUrl(url);
-        proceduresWeb.setWebViewClient(new WebViewClient());
+        proceduresWeb.setWebViewClient(new WebViewClient() {
+            public void onPageFinished(WebView view, String url) {
+                showContent(true);
+            }
+        });
         proceduresWeb.setWebChromeClient(new WebChromeClient());
         proceduresWeb.getSettings().setJavaScriptEnabled(true);
         proceduresWeb.addJavascriptInterface(this, "android");

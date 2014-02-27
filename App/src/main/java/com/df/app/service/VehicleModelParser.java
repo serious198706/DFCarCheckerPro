@@ -1,6 +1,5 @@
 package com.df.app.service;
 
-import android.os.Environment;
 import android.util.Xml;
 
 import com.df.app.entries.Brand;
@@ -13,12 +12,8 @@ import com.df.app.entries.VehicleModel;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +23,6 @@ import java.util.List;
  * 解析xml
  */
 public class VehicleModelParser {
-    private String tagName;
 
     public VehicleModelParser() {}
 
@@ -69,7 +63,7 @@ public class VehicleModelParser {
                         break;
                     // 解析标签
                     case XmlPullParser.START_TAG:
-                        tagName = parser.getName();  // "root"
+                        String tagName = parser.getName();
 
                         if("root".equals(tagName)) {
                             vehicleModels.version = parser.getAttributeValue(0);

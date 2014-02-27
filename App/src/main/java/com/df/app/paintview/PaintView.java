@@ -30,6 +30,7 @@ public abstract class PaintView extends ImageView {
         super(context, attrs, defStyle);
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public abstract void onDraw(Canvas canvas);
 

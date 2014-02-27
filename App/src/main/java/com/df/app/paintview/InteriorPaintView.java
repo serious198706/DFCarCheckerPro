@@ -20,13 +20,13 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.df.app.CarCheck.BasicInfoLayout;
-import com.df.app.CarCheck.ExteriorLayout;
-import com.df.app.CarCheck.InteriorLayout;
-import com.df.app.CarCheck.PhotoFaultLayout;
+import com.df.app.carCheck.BasicInfoLayout;
+import com.df.app.carCheck.ExteriorLayout;
+import com.df.app.carCheck.InteriorLayout;
 import com.df.app.MainActivity;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
@@ -36,9 +36,7 @@ import com.df.app.util.Helper;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class InteriorPaintView extends PaintView {
 
@@ -60,7 +58,7 @@ public class InteriorPaintView extends PaintView {
 
     private long currentTimeMillis;
 
-    private Map<Integer, String> typeNameMap;
+    private SparseArray<String> typeNameMap;
 
     public InteriorPaintView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -78,7 +76,7 @@ public class InteriorPaintView extends PaintView {
     }
 
     public void init(Bitmap bitmap, List<PosEntity> entities) {
-        typeNameMap = new HashMap<Integer, String>();
+        typeNameMap = new SparseArray<String>();
         typeNameMap.put(Common.DIRTY, "脏污");
         typeNameMap.put(Common.BROKEN, "破损");
 
@@ -209,7 +207,6 @@ public class InteriorPaintView extends PaintView {
         }
 
         canvas.drawRect(rectF, getPaint(entity.getType()));
-        return;
     }
 
     private void showCamera(){
@@ -378,13 +375,13 @@ public class InteriorPaintView extends PaintView {
 
     public void cancel() {
         if(!thisTimeNewData.isEmpty()) {
-            for(int i = 0; i < thisTimeNewData.size(); i++) {
-                data.remove(thisTimeNewData.get(i));
+            for (PosEntity aThisTimeNewData : thisTimeNewData) {
+                data.remove(aThisTimeNewData);
             }
         }
         if(!thisTimeNewPhoto.isEmpty()) {
-            for(int i = 0; i < thisTimeNewPhoto.size(); i++) {
-                photo.remove(thisTimeNewPhoto.get(i));
+            for (PhotoEntity aThisTimeNewPhoto : thisTimeNewPhoto) {
+                photo.remove(aThisTimeNewPhoto);
             }
         }
     }

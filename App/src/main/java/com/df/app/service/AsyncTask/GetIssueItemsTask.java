@@ -4,9 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.df.app.CarCheck.BasicInfoLayout;
+import com.df.app.carCheck.BasicInfoLayout;
 import com.df.app.MainActivity;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
@@ -16,11 +15,13 @@ import org.json.JSONObject;
 
 /**
  * Created by 岩 on 14-1-13.
+ *
+ * 获取查勘问题
  */
 public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
     public interface OnGetIssueItemsFinished {
         public void onFinish(String result, ProgressDialog progressDialog);
-        public void onFailed(String error);
+        public void onFailed(String error, ProgressDialog progressDialog);
     }
 
     Context context;
@@ -71,7 +72,7 @@ public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
         if (success) {
             mCallback.onFinish(soapService.getResultMessage(), progressDialog);
         } else {
-            mCallback.onFailed(soapService.getErrorMessage());
+            mCallback.onFailed(soapService.getErrorMessage(), progressDialog);
         }
     }
 }

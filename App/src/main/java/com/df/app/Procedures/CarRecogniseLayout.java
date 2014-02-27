@@ -1,4 +1,4 @@
-package com.df.app.Procedures;
+package com.df.app.procedures;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -53,17 +53,14 @@ import static com.df.app.util.Helper.showView;
  * 车辆识别
  */
 public class CarRecogniseLayout extends LinearLayout {
-    OnShowContentListener mShowContentCallback;
+    OnShowContent mShowContentCallback;
+    OnHideContent mHideContentCallback;
 
     View rootView;
 
     // 此页面的6个信息控件
-    public static EditText plateNumberEdit;
-    public static EditText licenceModelEdit;
     public static EditText vehicleTypeEdit;
     public static EditText useCharacterEdit;
-    public static EditText engineSerialEdit;
-    public static EditText brandEdit;
 
     // 车辆信息
     private VehicleModel vehicleModel;
@@ -88,11 +85,12 @@ public class CarRecogniseLayout extends LinearLayout {
     /**
      * 传入回调函数指针
      * @param context
-     * @param listener
+     * @param sListener
      */
-    public CarRecogniseLayout(Context context, OnShowContentListener listener) {
+    public CarRecogniseLayout(Context context, OnShowContent sListener, OnHideContent hListener) {
         super(context);
-        mShowContentCallback = listener;
+        mShowContentCallback = sListener;
+        mHideContentCallback = hListener;
         init(context);
     }
 
@@ -107,31 +105,10 @@ public class CarRecogniseLayout extends LinearLayout {
             @Override
             public void onClick(View view) {
                 // 询问是否要重新识别
-                if(!getEditViewText(rootView, R.id.plateNumber_edit).equals("")) {
-                    View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
-                    TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-                    TextView content = new TextView(view1.getContext());
-                    content.setText("确定要重新识别行驶证信息？");
-                    content.setTextSize(20f);
-                    contentArea.addView(content);
-
-                    setTextView(view1, R.id.title, getResources().getString(R.string.alert));
-
-                    AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
-                            .setView(view1)
-                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    fillInDummyData();
-                                }
-                            })
-                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                }
-                            }).create();
-
-                    dialog.show();
+                if(!mCarSettings.getBrandString().equals("")) {
+                    reRecognise(R.string.reRecognise1);
+                } else if(!getEditViewText(rootView, R.id.plateNumber_edit).equals("")) {
+                    reRecognise(R.string.reRecognise);
                 } else {
                     fillInDummyData();
                 }
@@ -162,8 +139,6 @@ public class CarRecogniseLayout extends LinearLayout {
             }
         });
 
-        plateNumberEdit = (EditText) rootView.findViewById(R.id.plateNumber_edit);
-        licenceModelEdit = (EditText) rootView.findViewById(R.id.licenseModel_edit);
         vehicleTypeEdit = (EditText) rootView.findViewById(R.id.vehicleType_edit);
         vehicleTypeEdit.setOnTouchListener(new OnTouchListener() {
             @Override
@@ -190,9 +165,6 @@ public class CarRecogniseLayout extends LinearLayout {
             }
         });
 
-        engineSerialEdit = (EditText) rootView.findViewById(R.id.engineSerial_edit);
-        brandEdit = (EditText) rootView.findViewById(R.id.brand_edit);
-
         // vin输入框中只允许输入大写字母与数字
         InputFilter alphaNumericFilter = new InputFilter() {
             @Override
@@ -210,6 +182,38 @@ public class CarRecogniseLayout extends LinearLayout {
         vin_edit.setFilters(new InputFilter[]{ alphaNumericFilter, new InputFilter.AllCaps()});
 
         vehicleModel = MainActivity.vehicleModel;
+    }
+
+    /**
+     * 重新识别提示框
+     */
+    private void reRecognise(final int text) {
+        View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        TextView content = new TextView(view1.getContext());
+        content.setText(text);
+        content.setTextSize(20f);
+        contentArea.addView(content);
+
+        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+        AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
+                .setView(view1)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        fillInDummyData();
+                        if(text == R.string.reRecognise1)
+                            mHideContentCallback.hideContent();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                }).create();
+
+        dialog.show();
     }
 
     /**
@@ -232,7 +236,7 @@ public class CarRecogniseLayout extends LinearLayout {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 dialog.dismiss();
-                String temp = (String)listView.getItemAtPosition(i);
+                String temp = (String) listView.getItemAtPosition(i);
                 setEditViewText(rootView, editViewId, temp);
             }
         });
@@ -521,6 +525,35 @@ public class CarRecogniseLayout extends LinearLayout {
      * 手动选择车型
      */
     private void selectCarManually() {
+        if(!mCarSettings.getBrandString().equals("")) {
+            View view1 = ((Activity)rootView.getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+            TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+            TextView content = new TextView(view1.getContext());
+            content.setText(R.string.reMatch);
+            content.setTextSize(20f);
+            contentArea.addView(content);
+
+            setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+            AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
+                    .setView(view1)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            mHideContentCallback.hideContent();
+                            showSelectCarDialog();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .create();
+
+            dialog.show();
+        } else {
+            showSelectCarDialog();
+        }
+    }
+
+    private void showSelectCarDialog() {
         View view = LayoutInflater.from(rootView.getContext()).inflate(R.layout
                 .dialog_vehiclemodel_select, null);
 
@@ -598,6 +631,7 @@ public class CarRecogniseLayout extends LinearLayout {
      */
     private void updateUi() {
         showView(rootView, R.id.brand_input, true);
+        showView(rootView, R.id.recognise_button, false);
 
         // 设置厂牌型号的EditText
         setEditViewText(rootView, R.id.brand_edit, mCarSettings.getBrandString());
@@ -915,12 +949,20 @@ public class CarRecogniseLayout extends LinearLayout {
     }
 
     /**
-     * BasicInfoLayout必须实现此接口
-     * 显示手续信息与基本信息的内容
+     * InputProceduresLayout必须实现此接口
+     * 显示手续信息的标签及内容
      */
-    public interface OnShowContentListener {
+    public interface OnShowContent {
         public void showContent(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial,
             String seriesId, String modelId);
+    }
+
+    /**
+     * InputProceduresLayout必须实现此接口
+     * 隐藏手续信息的标签及内容
+     */
+    public interface OnHideContent {
+        public void hideContent();
     }
 
     /**

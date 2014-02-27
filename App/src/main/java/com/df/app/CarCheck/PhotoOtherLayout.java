@@ -1,9 +1,7 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -138,7 +136,7 @@ public class PhotoOtherLayout extends LinearLayout {
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
 
         PhotoEntity photoEntity = new PhotoEntity();

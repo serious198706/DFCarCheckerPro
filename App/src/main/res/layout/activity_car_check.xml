@@ -1,8 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#FFF">
+                android:layout_height="match_parent">
     <RelativeLayout android:id="@+id/naviBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -13,24 +11,28 @@
             android:background="#AA030A"/>
     </RelativeLayout>
 
-    <com.df.app.CarCheck.BasicInfoLayout android:id="@+id/basicInfo"
+    <com.df.app.carCheck.BasicInfoLayout
+        android:id="@+id/basicInfo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/naviBar"/>
 
-    <com.df.app.CarCheck.AccidentCheckLayout android:id="@+id/accidentCheck"
+    <com.df.app.carCheck.AccidentCheckLayout
+        android:id="@+id/accidentCheck"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/naviBar"
         android:visibility="gone"/>
 
-    <com.df.app.CarCheck.IntegratedCheckLayout android:id="@+id/integratedCheck"
+    <com.df.app.carCheck.IntegratedCheckLayout
+        android:id="@+id/integratedCheck"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/naviBar"
         android:visibility="gone"/>
 
-    <com.df.app.CarCheck.PhotoLayout android:id="@+id/photo"
+    <com.df.app.carCheck.PhotoLayout
+        android:id="@+id/photo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/naviBar"

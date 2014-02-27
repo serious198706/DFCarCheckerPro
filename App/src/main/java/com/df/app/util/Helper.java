@@ -5,9 +5,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -16,7 +14,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -199,9 +196,9 @@ public class Helper {
      * @param view
      * @param editId
      */
-    public static void setEditError(View view, int editId) {
+    public static void setEditError(View view, int editId, String msg) {
         EditText editText = (EditText)view.findViewById(editId);
-        editText.setError("请填写必要字段！");
+        editText.setError(msg);
     }
 
     /**
@@ -346,7 +343,7 @@ public class Helper {
         // 将字节数组中每个字节拆解成2位16进制整数
         for (int i = 0; i < bytes.length; i++) {
             sb.append(hexString.charAt((bytes[i] & 0xf0) >> 4));
-            sb.append(hexString.charAt((bytes[i] & 0x0f) >> 0) + " ");
+            sb.append(hexString.charAt((bytes[i] & 0x0f)) + " ");
         }
 
         return sb.toString();
@@ -387,7 +384,7 @@ public class Helper {
     /*
      *  把字节数组转换成16进制字符串
      */
-    public static final String bytesToHexString(byte[] bArray, int count) {
+    public static String bytesToHexString(byte[] bArray, int count) {
         StringBuffer sb = new StringBuffer(bArray.length);
 
         String sTemp;

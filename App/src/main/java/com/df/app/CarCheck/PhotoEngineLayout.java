@@ -1,4 +1,4 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -38,7 +38,6 @@ import static com.df.app.util.Helper.setTextView;
  * 机舱组照片列表
  */
 public class PhotoEngineLayout extends LinearLayout {
-    private View rootView;
     private Context context;
 
     // adapter
@@ -71,7 +70,7 @@ public class PhotoEngineLayout extends LinearLayout {
     }
 
     private void init(Context context) {
-        rootView = LayoutInflater.from(context).inflate(R.layout.photo_engine_list, this);
+        LayoutInflater.from(context).inflate(R.layout.photo_engine_list, this);
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
@@ -187,7 +186,7 @@ public class PhotoEngineLayout extends LinearLayout {
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
 
         PhotoEntity photoEntity = new PhotoEntity();
@@ -233,8 +232,8 @@ public class PhotoEngineLayout extends LinearLayout {
     public String check() {
         int sum = 0;
 
-        for(int i = 0; i < photoShotCount.length; i++) {
-            sum += photoShotCount[i];
+        for (int aPhotoShotCount : photoShotCount) {
+            sum += aPhotoShotCount;
         }
 
         if(sum < 1) {

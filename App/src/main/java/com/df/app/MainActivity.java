@@ -15,9 +15,9 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.df.app.CarsChecked.CarsCheckedActivity;
-import com.df.app.CarsWaiting.CarsWaitingActivity;
-import com.df.app.Procedures.InputProceduresActivity;
+import com.df.app.carsChecked.CarsCheckedActivity;
+import com.df.app.carsWaiting.CarsWaitingActivity;
+import com.df.app.procedures.InputProceduresActivity;
 import com.df.app.entries.UserInfo;
 import com.df.app.entries.VehicleModel;
 import com.df.app.service.EncryptDecryptFile;

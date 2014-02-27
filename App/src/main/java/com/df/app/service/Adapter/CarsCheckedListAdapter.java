@@ -1,15 +1,12 @@
 package com.df.app.service.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.df.app.Procedures.InputProceduresActivity;
 import com.df.app.R;
 import com.df.app.entries.CarsCheckedItem;
 

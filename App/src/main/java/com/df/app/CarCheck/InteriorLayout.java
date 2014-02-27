@@ -1,4 +1,4 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -8,24 +8,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.net.Uri;
-import android.os.Handler;
-import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
@@ -34,7 +27,6 @@ import com.df.app.entries.PosEntity;
 import com.df.app.paintview.InteriorPaintPreviewView;
 import com.df.app.service.MyScrollView;
 import com.df.app.util.Common;
-import com.df.app.util.Helper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,7 +44,6 @@ import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setSpinnerSelectionWithString;
-import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -65,25 +56,9 @@ public class InteriorLayout extends LinearLayout {
 
     public static List<PosEntity> posEntities;
     public static List<PhotoEntity> photoEntities;
-    public static List<PhotoEntity> standardPhotoEntities;
-
-    // 内饰缺陷图
-    private Bitmap previewViewBitmap;
 
     // 内饰缺陷图预览
     public static InteriorPaintPreviewView interiorPaintPreviewView;
-
-    // 记录已经拍摄的照片数
-    public static int[] photoShotCount = {0, 0, 0, 0, 0, 0, 0};
-
-    // 记录当前拍摄的文件名
-    private long currentTimeMillis;
-
-    // 记录当前正在拍摄的部位
-    private int currentShotPart;
-
-    // 车辆型号标识
-    private int figure;
 
     // 承载checkbox
     private TableLayout root;
@@ -93,9 +68,6 @@ public class InteriorLayout extends LinearLayout {
 
     // 记录破损部位
     private String brokenResult = "";
-
-    // 自定义scrollView
-    private MyScrollView scrollView;
 
     public InteriorLayout(Context context) {
         super(context);
@@ -113,21 +85,12 @@ public class InteriorLayout extends LinearLayout {
     }
 
     private void init(Context context) {
-        this.context = context;
+        InteriorLayout.context = context;
         rootView = LayoutInflater.from(context).inflate(R.layout.interior_layout, this);
 
         posEntities = new ArrayList<PosEntity>();
         photoEntities = new ArrayList<PhotoEntity>();
-        standardPhotoEntities = new ArrayList<PhotoEntity>();
         interiorPaintPreviewView = (InteriorPaintPreviewView) findViewById(R.id.interior_image);
-
-        Button startCameraButton = (Button)findViewById(R.id.interior_camera_button);
-        startCameraButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startCamera();
-            }
-        });
 
         Button dirtyButton = (Button)findViewById(R.id.dirty_button);
         dirtyButton.setOnClickListener(new OnClickListener() {
@@ -145,11 +108,11 @@ public class InteriorLayout extends LinearLayout {
             }
         });
 
-        scrollView = (MyScrollView)findViewById(R.id.root);
+        MyScrollView scrollView = (MyScrollView) findViewById(R.id.root);
         scrollView.setListener(new MyScrollView.ScrollViewListener() {
             @Override
             public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldx, int oldy) {
-                if(scrollView.getScrollY() > 5) {
+                if (scrollView.getScrollY() > 5) {
                     showShadow(true);
                 } else {
                     showShadow(false);
@@ -177,11 +140,12 @@ public class InteriorLayout extends LinearLayout {
      * 更新界面
      */
     public void updateUi() {
-        figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
-        previewViewBitmap = getBitmapFromFigure(figure);
+        int figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
+        Bitmap previewViewBitmap = getBitmapFromFigure(figure);
 
         interiorPaintPreviewView = (InteriorPaintPreviewView) findViewById(R.id.interior_image);
         interiorPaintPreviewView.init(previewViewBitmap, posEntities);
+        interiorPaintPreviewView.setMinimumHeight(previewViewBitmap.getHeight());
 
         // 点击预览图进入绘制界面
         interiorPaintPreviewView.setOnClickListener(new OnClickListener() {
@@ -189,7 +153,7 @@ public class InteriorLayout extends LinearLayout {
             public void onClick(View view) {
                 Intent intent = new Intent(context, PaintActivity.class);
                 intent.putExtra("PAINT_TYPE", "IN_PAINT");
-                ((Activity)getContext()).startActivityForResult(intent, Common.ENTER_INTERIOR_PAINT);
+                ((Activity) getContext()).startActivityForResult(intent, Common.ENTER_INTERIOR_PAINT);
             }
         });
     }
@@ -209,51 +173,6 @@ public class InteriorLayout extends LinearLayout {
             interiorPaintPreviewView.invalidate();
             rootView.findViewById(R.id.tipOnPreview).setVisibility(View.VISIBLE);
         }
-    }
-
-    /**
-     * 拍摄内饰标准照
-     */
-    private void startCamera() {
-        String[] itemArray = getResources().getStringArray(R.array.interior_camera_item);
-
-        for(int i = 0; i < itemArray.length; i++) {
-            itemArray[i] += " (";
-            itemArray[i] += Integer.toString(photoShotCount[i]);
-            itemArray[i] += ") ";
-        }
-
-        View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
-
-        final AlertDialog dialog = new AlertDialog.Builder(getContext())
-                .setView(view1)
-                .create();
-
-        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-        final ListView listView = new ListView(view1.getContext());
-        listView.setAdapter(new ArrayAdapter<String>(view1.getContext(), android.R.layout.simple_list_item_1, itemArray));
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                dialog.dismiss();
-                currentShotPart = i;
-                String group = getResources().getStringArray(R.array.interior_camera_item)[currentShotPart];
-                Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
-
-                // 使用当前毫秒数当作照片名
-                currentTimeMillis = System.currentTimeMillis();
-                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
-
-                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
-                ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_INTERIOR_STANDARD);
-            }
-        });
-        contentArea.addView(listView);
-
-        setTextView(view1, R.id.title, getResources().getString(R.string.interior_camera));
-
-        dialog.show();
     }
 
     /**
@@ -384,84 +303,6 @@ public class InteriorLayout extends LinearLayout {
     }
 
     /**
-     * 保存内饰标准照
-     */
-    public void saveInteriorStandardPhoto() {
-        Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
-        Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
-
-        PhotoEntity photoEntity = generatePhotoEntity();
-
-        PhotoInteriorLayout.photoListAdapter.addItem(photoEntity);
-        PhotoInteriorLayout.photoListAdapter.notifyDataSetChanged();
-
-        photoShotCount[currentShotPart]++;
-
-        startCamera();
-    }
-
-    /**
-     * 生成photoEntity
-     * @return
-     */
-    private PhotoEntity generatePhotoEntity() {
-        // 组织JsonString
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            JSONObject photoJsonObject = new JSONObject();
-            String currentPart = "";
-
-            switch (currentShotPart) {
-                case 0:
-                    currentPart = "workbench";
-                    break;
-                case 1:
-                    currentPart = "steeringWheel";
-                    break;
-                case 2:
-                    currentPart = "dashboard";
-                    break;
-                case 3:
-                    currentPart = "leftDoor+steeringWheel";
-                    break;
-                case 4:
-                    currentPart = "rearSeats";
-                    break;
-                case 5:
-                    currentPart = "coDriverSeat";
-                    break;
-                case 6:
-                    currentPart = "other";
-                    break;
-            }
-
-            photoJsonObject.put("part", currentPart);
-
-            jsonObject.put("Group", "interior");
-            jsonObject.put("Part", "standard");
-            jsonObject.put("PhotoData", photoJsonObject);
-            jsonObject.put("UserId", MainActivity.userInfo.getId());
-            jsonObject.put("Key", MainActivity.userInfo.getKey());
-            jsonObject.put("CarId", BasicInfoLayout.carId);
-        } catch (JSONException e) {
-
-        }
-
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
-        if(!photoEntity.getFileName().equals(""))
-            photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
-        else
-            photoEntity.setThumbFileName("");
-        photoEntity.setJsonString(jsonObject.toString());
-        String group = getResources().getStringArray(R.array.interior_camera_item)[currentShotPart];
-        photoEntity.setName(group);
-
-        return photoEntity;
-    }
-
-    /**
      * 根据车辆类型编码，确定预览图
      * @param figure
      * @return
@@ -474,7 +315,6 @@ public class InteriorLayout extends LinearLayout {
     }
 
     private String getBitmapNameFromFigure(int figure) {
-
         return Common.utilDirectory + getNameFromFigure(figure);
     }
 
@@ -567,7 +407,7 @@ public class InteriorLayout extends LinearLayout {
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
 
         PhotoEntity photoEntity = new PhotoEntity();
@@ -585,39 +425,5 @@ public class InteriorLayout extends LinearLayout {
     public void fillInData(JSONObject interior) throws JSONException{
         setSpinnerSelectionWithString(rootView, R.id.sealingStrip_spinner, interior.getString("sealingStrip"));
         setEditViewText(rootView, R.id.interior_comment_edit, interior.getString("comment"));
-    }
-
-    /**
-     * 提交前的检查
-     * @return
-     */
-    public String checkAllFields() {
-        int sum = 0;
-
-        for(int i = 0; i < photoShotCount.length; i++) {
-            sum += photoShotCount[i];
-        }
-
-        if(sum < 1) {
-            return "interior";
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * 定位到拍摄按钮
-     */
-    public void locateCameraButton() {
-        final Button button = (Button)findViewById(R.id.interior_camera_button);
-        button.setFocusable(true);
-        button.requestFocus();
-
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                scrollView.scrollTo(0, button.getBottom());
-            }
-        });
     }
 }

@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -34,7 +33,7 @@ public class WelcomeActivity extends Activity {
      * If set, will toggle the system UI visibility upon interaction. Otherwise,
      * will show the system UI visibility upon interaction.
      */
-    private static final boolean TOGGLE_ON_CLICK = true;
+    private static final boolean TOGGLE_ON_CLICK = false;
 
     /**
      * The flags to pass to {@link SystemUiHider#getInstance}.
@@ -45,7 +44,6 @@ public class WelcomeActivity extends Activity {
      * The instance of the {@link SystemUiHider} for this activity.
      */
     private SystemUiHider mSystemUiHider;
-    private long SPLASH_TIME_OUT = 1500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +112,7 @@ public class WelcomeActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
 
+        long SPLASH_TIME_OUT = 1500;
         new Handler().postDelayed(new Runnable() {
 
             /*

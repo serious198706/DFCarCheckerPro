@@ -21,7 +21,6 @@ import com.df.app.util.Common;
 
 import java.util.Set;
 
-import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setTextView;
 
 /**

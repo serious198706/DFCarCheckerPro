@@ -101,7 +101,7 @@ public class SerialNumber {
             sn1 += snl;
             // sn2 contains the upper three digits of the serial number
             sn2 += snh;
-            return (((long)sn2) * 1000
+            return ((sn2) * 1000
                     + sn1);
         }
     }

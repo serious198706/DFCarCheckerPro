@@ -3,7 +3,7 @@
     <string name="carsChecked">已检测车辆</string>
     <string name="modify">修改</string>
     <string name="importPlatform">导入平台</string>
-    <string name="loadMore">加载更多...</string>
+    <string name="loadMore">加载更多&#8230;</string>
 
     <string name="selectPlatform">请选择要导入的平台</string>
     <string-array name="platform_items">

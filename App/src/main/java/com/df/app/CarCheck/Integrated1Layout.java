@@ -1,4 +1,4 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -67,6 +67,8 @@ public class Integrated1Layout extends LinearLayout{
             R.id.rearPowerSeats_spinner,
             R.id.ahc_spinner,
             R.id.parkAssist_spinner};
+    public static boolean finished = false;
+    private JSONObject function;
 
     public Integrated1Layout(Context context) {
         super(context);
@@ -98,8 +100,8 @@ public class Integrated1Layout extends LinearLayout{
             }
         });
 
-        for(int i = 0; i < spinnerIds.length; i++) {
-            setSpinnerColor(spinnerIds[i]);
+        for (int spinnerId : spinnerIds) {
+            setSpinnerColor(spinnerId);
         }
 
         EditText AirConditioningTempEdit = (EditText) rootView.findViewById(R.id.airConditioningTemp_edit);
@@ -121,8 +123,7 @@ public class Integrated1Layout extends LinearLayout{
         findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
     }
 
-    public void updateUi() {
-
+    public void updateUi()  {
     }
 
     /**
@@ -215,7 +216,10 @@ public class Integrated1Layout extends LinearLayout{
     private static void enableSpinner(int spinnerId, boolean enable) {
         Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
 
-        spinner.setSelection(enable ? 0 : 2);
+        // 如果配置项为“无”，则设置spinner为“无”
+        if(!enable) {
+            spinner.setSelection(2);
+        }
         spinner.setClickable(enable);
         spinner.setAlpha(enable ? 1.0f : 0.3f);
     }
@@ -310,32 +314,59 @@ public class Integrated1Layout extends LinearLayout{
 
         if(!getSpinnerSelectedText(rootView, R.id.abs_spinner).equals("无"))
             function.put("abs", getSpinnerSelectedText(rootView, R.id.abs_spinner));
+        else
+            function.put("abs", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.airBag_spinner).equals("无"))
             function.put("airBag", getSpinnerSelectedText(rootView, R.id.airBag_spinner));
+        else
+            function.put("airBag", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.powerWindows_spinner).equals("无"))
             function.put("powerWindows", getSpinnerSelectedText(rootView, R.id.powerWindows_spinner));
+        else
+            function.put("powerWindows", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.sunroof_spinner).equals("无"))
             function.put("sunroof", getSpinnerSelectedText(rootView, R.id.sunroof_spinner));
+        else
+            function.put("sunroof", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.airConditioning_spinner).equals("无")) {
             function.put("airConditioning", getSpinnerSelectedText(rootView, R.id.airConditioning_spinner));
             function.put("airConditioningTemp", Integer.parseInt(getEditViewText(rootView, R.id.airConditioningTemp_edit)));
+        } else {
+            function.put("airConditioning", JSONObject.NULL);
+            function.put("airConditioningTemp", 0);
         }
         if(!getSpinnerSelectedText(rootView, R.id.powerSeats_spinner).equals("无"))
             function.put("powerSeats", getSpinnerSelectedText(rootView, R.id.powerSeats_spinner));
+        else
+            function.put("powerSeats", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.powerMirror_spinner).equals("无"))
             function.put("powerMirror", getSpinnerSelectedText(rootView, R.id.powerMirror_spinner));
+        else
+            function.put("powerMirror", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.reversingRadar_spinner).equals("无"))
             function.put("reversingRadar", getSpinnerSelectedText(rootView, R.id.reversingRadar_spinner));
+        else
+            function.put("reversingRadar", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.reversingCamera_spinner).equals("无"))
             function.put("reversingCamera", getSpinnerSelectedText(rootView, R.id.reversingCamera_spinner));
+        else
+            function.put("reversingCamera", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.softCloseDoors_spinner).equals("无"))
             function.put("softCloseDoors", getSpinnerSelectedText(rootView, R.id.softCloseDoors_spinner));
+        else
+            function.put("softCloseDoors", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.rearPowerSeats_spinner).equals("无"))
             function.put("rearPowerSeats", getSpinnerSelectedText(rootView, R.id.rearPowerSeats_spinner));
+        else
+            function.put("rearPowerSeats", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.ahc_spinner).equals("无"))
             function.put("ahc", getSpinnerSelectedText(rootView, R.id.ahc_spinner));
+        else
+            function.put("ahc", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.parkAssist_spinner).equals("无"))
             function.put("parkAssist", getSpinnerSelectedText(rootView, R.id.parkAssist_spinner));
+        else
+            function.put("parkAssist", JSONObject.NULL);
 
         return function;
     }
@@ -354,60 +385,37 @@ public class Integrated1Layout extends LinearLayout{
         setSpinnerSelectionWithString(rootView, R.id.milometer_spinner, function.getString("milometer"));
         setSpinnerSelectionWithString(rootView, R.id.audio_spinner, function.getString("audio"));
 
-        if(function.has("abs"))
-            setSpinnerSelectionWithString(rootView, R.id.abs_spinner, function.getString("abs"));
-        else
-            enableSpinner(R.id.abs_spinner, false);
-        if(function.has("airBag"))
-            setSpinnerSelectionWithString(rootView, R.id.airBag_spinner, function.getString("airBag"));
-        else
-            enableSpinner(R.id.airBag_spinner, false);
-        if(function.has("powerWindows"))
-            setSpinnerSelectionWithString(rootView, R.id.powerWindows_spinner, function.getString("powerWindows"));
-        else
-            enableSpinner(R.id.powerWindows_spinner, false);
-        if(function.has("sunroof"))
-            setSpinnerSelectionWithString(rootView, R.id.sunroof_spinner, function.getString("sunroof"));
-        else
-            enableSpinner(R.id.sunroof_spinner, false);
+        setSpinner(function, "abs", R.id.abs_spinner);
+        setSpinner(function, "airBag", R.id.airBag_spinner);
+        setSpinner(function, "powerWindows", R.id.powerWindows_spinner);
+        setSpinner(function, "sunroof", R.id.sunroof_spinner);
+
         if(function.has("airConditioning")) {
-            setSpinnerSelectionWithString(rootView, R.id.airConditioning_spinner, function.getString("airConditioning"));
-            setEditViewText(rootView, R.id.airConditioningTemp_edit, Integer.toString(function.getInt("airConditioningTemp")));
+            if(function.getString("airConditioning") == null) {
+                enableSpinner(R.id.airConditioning_spinner, false);
+            } else {
+                setSpinnerSelectionWithString(rootView, R.id.airConditioning_spinner, function.getString("airConditioning"));
+                setEditViewText(rootView, R.id.airConditioningTemp_edit, Integer.toString(function.getInt("airConditioningTemp")));
+            }
         }
-        else
-            enableSpinner(R.id.airConditioning_spinner, false);
-        if(function.has("powerSeats"))
-            setSpinnerSelectionWithString(rootView, R.id.powerSeats_spinner, function.getString("powerSeats"));
-        else
-            enableSpinner(R.id.powerSeats_spinner, false);
-        if(function.has("powerMirror"))
-            setSpinnerSelectionWithString(rootView, R.id.powerMirror_spinner, function.getString("powerMirror"));
-        else
-            enableSpinner(R.id.powerMirror_spinner, false);
-        if(function.has("reversingRadar"))
-            setSpinnerSelectionWithString(rootView, R.id.reversingRadar_spinner, function.getString("reversingRadar"));
-        else
-            enableSpinner(R.id.reversingRadar_spinner, false);
-        if(function.has("reversingCamera"))
-            setSpinnerSelectionWithString(rootView, R.id.reversingCamera_spinner, function.getString("reversingCamera"));
-        else
-            enableSpinner(R.id.reversingCamera_spinner, false);
-        if(function.has("softCloseDoors"))
-            setSpinnerSelectionWithString(rootView, R.id.softCloseDoors_spinner, function.getString("softCloseDoors"));
-        else
-            enableSpinner(R.id.softCloseDoors_spinner, false);
-        if(function.has("rearPowerSeats"))
-            setSpinnerSelectionWithString(rootView, R.id.rearPowerSeats_spinner, function.getString("rearPowerSeats"));
-        else
-            enableSpinner(R.id.rearPowerSeats_spinner, false);
-        if(function.has("ahc"))
-            setSpinnerSelectionWithString(rootView, R.id.ahc_spinner, function.getString("ahc"));
-        else
-            enableSpinner(R.id.ahc_spinner, false);
-        if(function.has("parkAssist"))
-            setSpinnerSelectionWithString(rootView, R.id.parkAssist_spinner, function.getString("parkAssist"));
-        else
-            enableSpinner(R.id.parkAssist_spinner, false);
+
+        setSpinner(function, "powerSeats", R.id.powerSeats_spinner);
+        setSpinner(function, "powerMirror", R.id.powerMirror_spinner);
+        setSpinner(function, "reversingRadar", R.id.reversingRadar_spinner);
+        setSpinner(function, "reversingCamera", R.id.reversingCamera_spinner);
+        setSpinner(function, "softCloseDoors", R.id.softCloseDoors_spinner);
+        setSpinner(function, "rearPowerSeats", R.id.rearPowerSeats_spinner);
+        setSpinner(function, "ahc", R.id.ahc_spinner);
+        setSpinner(function, "parkAssist", R.id.parkAssist_spinner);
+    }
+
+    private void setSpinner(JSONObject jsonObject, String temp, int id) throws JSONException{
+        if(jsonObject.has(temp)) {
+            if(jsonObject.isNull(temp))
+                enableSpinner(id, false);
+            else
+                setSpinnerSelectionWithString(rootView, id, jsonObject.isNull(temp) ? "无" : jsonObject.getString(temp));
+        }
     }
 
     /**
@@ -439,6 +447,8 @@ public class Integrated1Layout extends LinearLayout{
         fillGearboxWithJSONObject(gearbox);
         fillFunctionWithJSONObject(function);
         fillCommentWithString(comment1);
+
+        finished = true;
     }
 
     /**

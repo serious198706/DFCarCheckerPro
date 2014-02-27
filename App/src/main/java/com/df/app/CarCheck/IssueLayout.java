@@ -1,11 +1,11 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -16,6 +16,7 @@ import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
@@ -31,7 +32,6 @@ import org.json.JSONObject;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -199,27 +199,32 @@ public class IssueLayout extends LinearLayout {
      * @param level
      */
     private void drawSketch(String level) {
-        String[] partNames = level.split(",");
+        try {
+            String[] partNames = level.split(",");
 
-        // 根据名称添加其他图
-        for(String layerName : partNames) {
-            Bitmap bitmap = BitmapFactory.decodeFile(Common.utilDirectory + layerName);
-            Drawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
-            drawableList.add(bitmapDrawable);
+            // 根据名称添加其他图
+            for(String layerName : partNames) {
+                Bitmap bitmap = BitmapFactory.decodeFile(Common.utilDirectory + layerName);
+                Drawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+                drawableList.add(bitmapDrawable);
+            }
+
+            // 创建LayerDrawable
+            LayerDrawable layerDrawable = new LayerDrawable(drawableList.toArray(new Drawable[drawableList.size()]));
+
+            int width = layerDrawable.getIntrinsicWidth();
+            int height = layerDrawable.getIntrinsicHeight();
+
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            layerDrawable.setBounds(0, 0, width, height);
+            layerDrawable.draw(new Canvas(bitmap));
+
+            // 将LayerDrawable添加到imageView中
+            imageView.setImageBitmap(bitmap);
+        } catch (OutOfMemoryError e) {
+            Toast.makeText(rootView.getContext(), "内存不足，请稍候重试！", Toast.LENGTH_SHORT).show();
+            ((Activity)rootView.getContext()).finish();
         }
-
-        // 创建LayerDrawable
-        LayerDrawable layerDrawable = new LayerDrawable(drawableList.toArray(new Drawable[0]));
-
-        int width = layerDrawable.getIntrinsicWidth();
-        int height = layerDrawable.getIntrinsicHeight();
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        layerDrawable.setBounds(0, 0, width, height);
-        layerDrawable.draw(new Canvas(bitmap));
-
-        // 将LayerDrawable添加到imageView中
-        imageView.setImageBitmap(bitmap);
     }
 
     /**
@@ -304,7 +309,7 @@ public class IssueLayout extends LinearLayout {
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
 
         PhotoEntity photoEntity = new PhotoEntity();

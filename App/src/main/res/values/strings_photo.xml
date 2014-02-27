@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="exteriorFault">外观缺陷：</string>
-    <string name="interiorFault">内室缺陷：</string>
-    <string name="frameFault">结构缺陷：</string>
-
     <string name="takePhotoForProcedures">拍摄手续组照片</string>
     <string-array name="photoForProceduresItems">
         <item>铭牌</item>

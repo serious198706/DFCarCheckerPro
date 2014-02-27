@@ -1,17 +1,14 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
@@ -19,7 +16,6 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintview.FramePaintPreviewView;
 import com.df.app.paintview.PaintPreviewView;
-import com.df.app.paintview.PaintView;
 import com.df.app.util.Common;
 
 import org.json.JSONException;
@@ -35,7 +31,6 @@ import java.util.List;
  * 查勘结果页面
  */
 public class AccidentResultLayout extends LinearLayout {
-    private View rootView;
 
     public static FramePaintPreviewView framePaintPreviewViewFront;
     public static FramePaintPreviewView framePaintPreviewViewRear;
@@ -54,18 +49,8 @@ public class AccidentResultLayout extends LinearLayout {
         init(context);
     }
 
-    public AccidentResultLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
-    }
-
-    public AccidentResultLayout(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        init(context);
-    }
-
     private void init(Context context) {
-        rootView = LayoutInflater.from(context).inflate(R.layout.accident_result_layout, this);
+        View rootView = LayoutInflater.from(context).inflate(R.layout.accident_result_layout, this);
 
         posEntitiesFront = new ArrayList<PosEntity>();
         posEntitiesRear = new ArrayList<PosEntity>();
@@ -81,12 +66,12 @@ public class AccidentResultLayout extends LinearLayout {
         LayoutParams layoutParams = new LayoutParams(previewBitmapFront.getWidth(), previewBitmapFront.getHeight());
         layoutParams.gravity = Gravity.CENTER;
 
-        framePaintPreviewViewFront = (FramePaintPreviewView)rootView.findViewById(R.id.front_preview);
+        framePaintPreviewViewFront = (FramePaintPreviewView) rootView.findViewById(R.id.front_preview);
         framePaintPreviewViewFront.init(previewBitmapFront, posEntitiesFront);
         framePaintPreviewViewFront.setLayoutParams(layoutParams);
 
         previewBitmapRear = BitmapFactory.decodeFile(Common.utilDirectory + "d4_r", options);
-        framePaintPreviewViewRear = (FramePaintPreviewView)rootView.findViewById(R.id.rear_preview);
+        framePaintPreviewViewRear = (FramePaintPreviewView) rootView.findViewById(R.id.rear_preview);
         framePaintPreviewViewRear.init(previewBitmapRear, posEntitiesRear);
         framePaintPreviewViewRear.setLayoutParams(layoutParams);
     }
@@ -264,7 +249,7 @@ public class AccidentResultLayout extends LinearLayout {
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
 
         PhotoEntity photoEntity = new PhotoEntity();

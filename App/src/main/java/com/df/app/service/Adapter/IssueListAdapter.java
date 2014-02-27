@@ -4,16 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
@@ -21,20 +17,17 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.df.app.CarCheck.AccidentResultLayout;
-import com.df.app.CarCheck.ExteriorLayout;
-import com.df.app.CarCheck.InteriorLayout;
-import com.df.app.CarCheck.PhotoFaultLayout;
+import com.df.app.carCheck.AccidentResultLayout;
+import com.df.app.carCheck.ExteriorLayout;
+import com.df.app.carCheck.InteriorLayout;
+import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.R;
 import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
-import com.df.app.paintview.FramePaintPreviewView;
 import com.df.app.paintview.FramePaintView;
-import com.df.app.paintview.PaintView;
 import com.df.app.util.Common;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.df.app.util.Helper.setTextView;
@@ -51,8 +44,6 @@ public class IssueListAdapter extends BaseAdapter {
     private AlertDialog mPictureDialog;
     private FramePaintView framePaintView;
     private View rootView;
-    private List<PosEntity> posEntitiesFront;
-    private List<PosEntity> posEntitiesRear;
 
     public IssueListAdapter(Context context, List<Issue> items) {
         this.context = context;
@@ -130,8 +121,8 @@ public class IssueListAdapter extends BaseAdapter {
     private void drawIssuePoint(final Issue issue) {
         rootView = LayoutInflater.from(context).inflate(R.layout.issue_paint_layout, null);
 
-        posEntitiesFront = AccidentResultLayout.posEntitiesFront;
-        posEntitiesRear = AccidentResultLayout.posEntitiesRear;
+        List<PosEntity> posEntitiesFront = AccidentResultLayout.posEntitiesFront;
+        List<PosEntity> posEntitiesRear = AccidentResultLayout.posEntitiesRear;
 
         // 初始化绘图View
         framePaintView = (FramePaintView) rootView.findViewById(R.id.image);

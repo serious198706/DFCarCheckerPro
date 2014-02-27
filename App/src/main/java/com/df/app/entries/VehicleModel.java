@@ -12,7 +12,6 @@ import java.util.List;
 public class VehicleModel {
     // 国家列表
     public List<Country> countries;
-    private List<String> countryNames;
     public String version;
 
     public VehicleModel() {
@@ -32,7 +31,7 @@ public class VehicleModel {
      * @return
      */
     public List<String> getCountryNames() {
-        countryNames = new ArrayList<String>();
+        List<String> countryNames = new ArrayList<String>();
 
         countryNames.add("");
 

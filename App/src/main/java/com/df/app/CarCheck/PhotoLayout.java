@@ -1,4 +1,4 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -28,7 +28,6 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
 
     private ViewPager viewPager;
     private TextView exteriorTab, interiorTab, faultTab, procedureTab, engineTab, otherTab;
-    private List<View> views;
 
     public static PhotoExteriorLayout photoExteriorLayout;
     public static PhotoInteriorLayout photoInteriorLayout;
@@ -65,7 +64,7 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
 
     private void InitViewPager(Context context) {
         viewPager = (ViewPager) rootView.findViewById(R.id.vPager);
-        views = new ArrayList<View>();
+        List<View> views = new ArrayList<View>();
 
         photoExteriorLayout = new PhotoExteriorLayout(context);
         photoInteriorLayout = new PhotoInteriorLayout(context);
@@ -109,6 +108,20 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
     }
 
     /**
+     * 保存外观组照片
+     */
+    public void saveExteriorStandardPhoto() {
+        photoExteriorLayout.saveExteriorStandardPhoto();
+    }
+
+    /**
+     * 保存内饰组照片
+     */
+    public void saveInteriorStandardPhoto() {
+        photoInteriorLayout.saveInteriorStandardPhoto();
+    }
+
+    /**
      * 保存手续组照片
      */
     public void saveProceduresStandardPhoto() {
@@ -135,6 +148,24 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
      */
     public String checkAllFields() {
         String currentField;
+
+        currentField = photoExteriorLayout.check();
+
+        if(!currentField.equals("")) {
+            Toast.makeText(rootView.getContext(), "外观组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(0);
+
+            return currentField;
+        }
+
+        currentField = photoInteriorLayout.check();
+
+        if(!currentField.equals("")) {
+            Toast.makeText(rootView.getContext(), "内饰组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            viewPager.setCurrentItem(1);
+
+            return currentField;
+        }
 
         // 机舱组照片必拍
         currentField = photoEngineLayout.check();
@@ -187,4 +218,6 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
 
         }
     }
+
+
 }

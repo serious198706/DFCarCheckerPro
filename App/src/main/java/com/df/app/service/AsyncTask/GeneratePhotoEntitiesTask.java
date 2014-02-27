@@ -3,24 +3,17 @@ package com.df.app.service.AsyncTask;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import com.df.app.CarCheck.AccidentCheckLayout;
-import com.df.app.CarCheck.AccidentResultLayout;
-import com.df.app.CarCheck.BasicInfoLayout;
-import com.df.app.CarCheck.IntegratedCheckLayout;
-import com.df.app.CarCheck.PhotoEngineLayout;
-import com.df.app.CarCheck.PhotoExteriorLayout;
-import com.df.app.CarCheck.PhotoFaultLayout;
-import com.df.app.CarCheck.PhotoInteriorLayout;
-import com.df.app.CarCheck.PhotoOtherLayout;
-import com.df.app.CarCheck.PhotoProcedureLayout;
-import com.df.app.MainActivity;
+import com.df.app.carCheck.AccidentCheckLayout;
+import com.df.app.carCheck.IntegratedCheckLayout;
+import com.df.app.carCheck.PhotoEngineLayout;
+import com.df.app.carCheck.PhotoExteriorLayout;
+import com.df.app.carCheck.PhotoFaultLayout;
+import com.df.app.carCheck.PhotoInteriorLayout;
+import com.df.app.carCheck.PhotoOtherLayout;
+import com.df.app.carCheck.PhotoProcedureLayout;
 import com.df.app.entries.PhotoEntity;
-import com.df.app.service.SoapService;
-import com.df.app.util.Common;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -22,6 +22,7 @@ import java.util.List;
 
 import static com.df.app.util.Helper.getSpinnerSelectedIndex;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
+import static com.df.app.util.Helper.setSpinnerSelectionWithString;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -33,6 +34,7 @@ public class Integrated3Layout extends LinearLayout {
     private View rootView;
     private List<Cooperator> cooperators;
     private List<String> cooperatorNames;
+    private String storedCooperatorName;
 
     public Integrated3Layout(Context context) {
         super(context);
@@ -54,6 +56,9 @@ public class Integrated3Layout extends LinearLayout {
 
         cooperators = new ArrayList<Cooperator>();
         cooperatorNames = new ArrayList<String>();
+        cooperatorNames.add("");
+
+        storedCooperatorName = "";
 
         setTextView(rootView, R.id.userName, MainActivity.userInfo.getName());
 
@@ -87,6 +92,10 @@ public class Integrated3Layout extends LinearLayout {
                 Spinner cooperatorSpinner = (Spinner)findViewById(R.id.cooperatorName_spinner);
                 cooperatorSpinner.setAdapter(new ArrayAdapter(rootView.getContext(),
                         android.R.layout.simple_spinner_dropdown_item, cooperatorNames));
+
+                if(!storedCooperatorName.equals("")) {
+                    setSpinnerSelectionWithString(rootView, R.id.cooperatorName_spinner, storedCooperatorName);
+                }
             }
 
             @Override
@@ -112,9 +121,13 @@ public class Integrated3Layout extends LinearLayout {
      */
     public int getCooperatorId() {
         int index = getSpinnerSelectedIndex(rootView, R.id.cooperatorName_spinner);
-        Cooperator cooperator = cooperators.get(index);
 
-        return cooperator.getId();
+        if(index == 0) {
+            return -1;
+        } else {
+            Cooperator cooperator = cooperators.get(index - 1);
+            return cooperator.getId();
+        }
     }
 
     /**
@@ -130,6 +143,10 @@ public class Integrated3Layout extends LinearLayout {
      * @return
      */
     public String checkAllFields() {
-        return "";
+        return getCooperatorName().equals("") ? "coop" : "";
+    }
+
+    public void fillInData(String checkCooperatorName) {
+        this.storedCooperatorName = checkCooperatorName;
     }
 }

@@ -9,7 +9,7 @@
               android:layout_height="80dp"
               android:layout_weight="1"
               android:textSize="20sp"
-              android:text="右前门铰链处是否平整、无修复焊接痕迹右前门铰链处是否平整、无修复焊接痕迹"
+              android:text=""
               android:gravity="center_vertical"
               android:layout_marginRight="10dp"/>
     <Switch android:id="@+id/issue_switch"

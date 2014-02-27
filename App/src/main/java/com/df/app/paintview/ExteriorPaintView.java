@@ -21,11 +21,12 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.df.app.CarCheck.BasicInfoLayout;
-import com.df.app.CarCheck.ExteriorLayout;
+import com.df.app.carCheck.BasicInfoLayout;
+import com.df.app.carCheck.ExteriorLayout;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
@@ -36,9 +37,7 @@ import com.df.app.util.Helper;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ExteriorPaintView extends PaintView {
     private int currentType = Common.COLOR_DIFF;
@@ -62,7 +61,7 @@ public class ExteriorPaintView extends PaintView {
 
     private long currentTimeMillis;
 
-    private Map<Integer, String> typeNameMap;
+    private SparseArray<String> typeNameMap;
 
     public long getCurrentTimeMillis() {return currentTimeMillis;}
 
@@ -82,7 +81,7 @@ public class ExteriorPaintView extends PaintView {
     }
 
     public void init(Bitmap bitmap, List<PosEntity> entities) {
-        typeNameMap = new HashMap<Integer, String>();
+        typeNameMap = new SparseArray<String>();
         typeNameMap.put(Common.COLOR_DIFF, "色差");
         typeNameMap.put(Common.SCRATCH, "划痕");
         typeNameMap.put(Common.TRANS, "变形");
@@ -257,7 +256,6 @@ public class ExteriorPaintView extends PaintView {
                 return;
             case Common.OTHER:
                 canvas.drawBitmap(otherBitmap, entity.getStartX(), entity.getStartY(), null);
-                return;
         }
     }
 

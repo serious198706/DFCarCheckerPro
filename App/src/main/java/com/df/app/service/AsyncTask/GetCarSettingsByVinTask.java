@@ -6,14 +6,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.df.app.MainActivity;
-import com.df.app.entries.Model;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.List;
 
 /**
  * Created by 岩 on 14-1-21.

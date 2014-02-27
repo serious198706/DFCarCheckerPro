@@ -21,7 +21,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.df.app.CarCheck.CollectDataLayout;
+import com.df.app.carCheck.CollectDataLayout;
 import com.df.app.util.Common;
 
 import static com.df.app.util.Helper.bytesToHexString;
@@ -446,7 +446,7 @@ public class DF5000Service {
                             a = a / 10;
                         }
                         count++;
-                        str2.append(String.valueOf(a) + ",");
+                        str2.append(String.valueOf(a)).append(",");
                     }
 
                     data[1] = String.valueOf(str2);

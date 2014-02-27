@@ -1,4 +1,4 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -178,6 +178,9 @@ public class PaintActivity extends Activity {
 
         setTextView(getWindow().getDecorView(), R.id.currentItem, getResources().getString(R.string.exterior));
 
+        RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT,RadioGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(20, 10, 20, 10);
+
         // 选择当前绘图类型
         RadioGroup radioGroup = new RadioGroup(this);
 
@@ -195,6 +198,7 @@ public class PaintActivity extends Activity {
                 }
             }
         });
+        colorDiffRadio.setLayoutParams(params);
 
         RadioButton scratchRadio = new RadioButton(this);
         scratchRadio.setText(R.string.exterior_scratch);
@@ -210,6 +214,7 @@ public class PaintActivity extends Activity {
                 }
             }
         });
+        scratchRadio.setLayoutParams(params);
 
         RadioButton transRadio = new RadioButton(this);
         transRadio.setText(R.string.exterior_trans);
@@ -225,6 +230,7 @@ public class PaintActivity extends Activity {
                 }
             }
         });
+        transRadio.setLayoutParams(params);
 
         RadioButton scrapeRadio = new RadioButton(this);
         scrapeRadio.setText(R.string.exterior_scrape);
@@ -241,6 +247,7 @@ public class PaintActivity extends Activity {
 
             }
         });
+        scrapeRadio.setLayoutParams(params);
 
         RadioButton otherRadio = new RadioButton(this);
         otherRadio.setText(R.string.exterior_other);
@@ -256,6 +263,7 @@ public class PaintActivity extends Activity {
                 }
             }
         });
+        otherRadio.setLayoutParams(params);
 
         radioGroup.addView(colorDiffRadio, 0);
         radioGroup.addView(scratchRadio, 1);
@@ -284,6 +292,9 @@ public class PaintActivity extends Activity {
 
         setTextView(getWindow().getDecorView(), R.id.currentItem, getResources().getString(R.string.interior));
 
+        RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT,RadioGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(20, 10, 20, 10);
+
         // 选择当前绘图类型
         RadioGroup radioGroup = new RadioGroup(this);
 
@@ -300,12 +311,15 @@ public class PaintActivity extends Activity {
                 interiorPaintView.setType(currentType);
             }
         });
+        dirtyRadio.setLayoutParams(params);
+
 
         RadioButton brokenRadio = new RadioButton(this);
         brokenRadio.setText(R.string.interior_broken);
         brokenRadio.setButtonDrawable(R.drawable.radio_button);
         img = getResources().getDrawable( R.drawable.in_broken);
         brokenRadio.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+        brokenRadio.setLayoutParams(params);
 
         radioGroup.addView(dirtyRadio);
         radioGroup.addView(brokenRadio);

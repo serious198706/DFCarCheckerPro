@@ -25,9 +25,7 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
         public void OnFinish();
     }
 
-    private SoapService soapService;
     private int total;
-    private int complete;
     private Context context;
     private List<PhotoEntity> photoEntityList;
 
@@ -41,7 +39,6 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
         this.mCallback = listener;
 
         total = photoEntityList.size();
-        complete = 0;
     }
 
     @Override
@@ -60,7 +57,7 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
     protected Boolean doInBackground(Void... params) {
         boolean success = false;
 
-        soapService = new SoapService();
+        SoapService soapService = new SoapService();
         soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.UPLOAD_PICTURE);
 
         for(int i = 0; i < photoEntityList.size(); i++) {

@@ -1,10 +1,8 @@
 package com.df.app.service;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.df.app.entries.UserInfo;
 import com.df.app.util.Common;
 
 import org.json.JSONException;
@@ -14,12 +12,8 @@ import org.ksoap2.serialization.MarshalBase64;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
-import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 
 /**
  * Created by 岩 on 13-12-28.
@@ -197,7 +191,7 @@ public class SoapService implements ISoapService {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream);
                 }
             } catch (JSONException e) {
-
+                e.printStackTrace();
             }
 
             byteArray = stream.toByteArray();

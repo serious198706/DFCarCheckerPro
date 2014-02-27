@@ -28,7 +28,8 @@
         android:id="@+id/swipelist_backview"
         android:tag="back"
         android:background="#BBB"
-        android:gravity="right">
+        android:gravity="right"
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:layout_width="wrap_content"
@@ -38,7 +39,8 @@
             android:layout_margin="5dp"
             android:textColor="#FFF"
             android:background="@drawable/button_custom"
-            android:padding="-5dp" />
+            android:padding="-5dp"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -48,7 +50,8 @@
             android:layout_margin="5dp"
             android:textColor="#FFF"
             android:background="@drawable/button_custom"
-            android:padding="-5dp" />
+            android:padding="-5dp"
+            style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>
 
     <RelativeLayout

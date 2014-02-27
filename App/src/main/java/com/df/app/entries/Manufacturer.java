@@ -13,7 +13,6 @@ public class Manufacturer {
     public String name;
     public String id;
     public List<Series> serieses;
-    private List<String> serialNames;
 
     public Manufacturer() {
         serieses = new ArrayList<Series>();
@@ -24,13 +23,13 @@ public class Manufacturer {
      * @return
      */
     public List<String> getSerialNames() {
-        serialNames = new ArrayList<String>();
+        List<String> serialNames = new ArrayList<String>();
         serialNames.add("");
         for(int i = 0; i < serieses.size(); i++) {
             serialNames.add(serieses.get(i).name);
         }
 
-        return  serialNames;
+        return serialNames;
     }
 
     /**

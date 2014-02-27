@@ -59,8 +59,9 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:entries="@array/driveType_item"
-                    android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:popupBackground="@drawable/spinner_dropdown"
+                    android:background="@drawable/spinner_selector"
+                    android:dropDownVerticalOffset="2dp"/>
             </TableRow>
             <TableRow android:layout_marginTop="15dp">
                 <TextView
@@ -105,7 +106,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:entries="@array/airbag_number"
-                    android:popupBackground="@drawable/spinner_bg"
+                    android:popupBackground="@drawable/spinner_dropdown"
                     android:background="@drawable/spinner_selector"/>
             </TableRow>
 

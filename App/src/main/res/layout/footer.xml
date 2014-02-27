@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/footer_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingTop="7dip"
@@ -9,20 +9,11 @@
     android:orientation="horizontal"
     android:gravity="center">
 
-    <LinearLayout
-        android:id="@+id/footer_layout"
+    <Button
+        android:text="@string/loadMore"
+        android:id="@+id/loadMore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_gravity="center">
-
-        <Button
-            android:text="@string/loadMore"
-            android:id="@+id/loadMore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            style="?android:borderlessButtonStyle"/>
-    </LinearLayout>
-</LinearLayout> 
+        android:textSize="18sp"
+        style="?android:borderlessButtonStyle"/>
+</LinearLayout>

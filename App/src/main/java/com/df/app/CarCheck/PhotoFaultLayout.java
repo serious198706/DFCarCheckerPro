@@ -1,9 +1,8 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -20,15 +19,11 @@ import java.util.List;
  * 缺陷组照片列表
  */
 public class PhotoFaultLayout extends LinearLayout {
-    private static View rootView;
-    private static Context context;
 
     public static PhotoListAdapter photoListAdapter;
 
     public PhotoFaultLayout(Context context) {
         super(context);
-
-        this.context = context;
         init(context);
     }
 
@@ -43,7 +38,7 @@ public class PhotoFaultLayout extends LinearLayout {
     }
 
     private void init(Context context) {
-        rootView = LayoutInflater.from(context).inflate(R.layout.photo_fault_list, this);
+        LayoutInflater.from(context).inflate(R.layout.photo_fault_list, this);
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 

@@ -24,7 +24,7 @@ public class Decoder {
         int wSum = 0;
         for (int i = 1; i < data.length-2 ; i++) {// 下标1-(length-2)求和
             if ((int) data[i] < 0) {
-                wSum += (int) (data[i] & 0xFF);
+                wSum += (data[i] & 0xFF);
             } else {
                 wSum += (int) data[i];
             }

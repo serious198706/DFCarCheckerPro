@@ -3,7 +3,6 @@ package com.df.app.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import android.util.Log;
 
 import com.df.app.entries.Measurement;
 import com.df.app.entries.SerialNumber;

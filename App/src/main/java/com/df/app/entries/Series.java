@@ -12,7 +12,6 @@ public class Series {
     public String name;
     public String id;
     public List<Model> models;
-    private List<String> modelNames;
 
     public Series() {
         models = new ArrayList<Model>();
@@ -23,7 +22,7 @@ public class Series {
      * @return
      */
     public List<String> getModelNames() {
-        modelNames = new ArrayList<String>();
+        List<String> modelNames = new ArrayList<String>();
         modelNames.add("");
         for(int i = 0; i < models.size(); i++) {
             modelNames.add(models.get(i).name);

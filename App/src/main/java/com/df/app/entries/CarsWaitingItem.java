@@ -1,15 +1,11 @@
 package com.df.app.entries;
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * Created by 岩 on 14-1-8.
+ *
+ * 待检车辆条目
  */
 public class CarsWaitingItem {
     int carId;

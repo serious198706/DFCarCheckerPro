@@ -83,22 +83,22 @@ public class DownloadNewVersionTask extends AsyncTask<String, Integer, Boolean> 
                 File downloadPath = new File(Environment.getExternalStorageDirectory().getPath() +
                         "/Download");
 
-                downloadPath.mkdirs();
+                if(downloadPath.mkdirs()) {
+                    output = new FileOutputStream(downloadPath.getPath() + "/DFCarCheckerPro.apk");
 
-                output = new FileOutputStream(downloadPath.getPath() + "/DFCarCheckerPro.apk");
-
-                byte data[] = new byte[4096];
-                long total = 0;
-                int count;
-                while ((count = input.read(data)) != -1) {
-                    // allow canceling with back button
-                    if (isCancelled())
-                        return false;
-                    total += count;
-                    // publishing the progress....
-                    if (fileLength > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / fileLength));
-                    output.write(data, 0, count);
+                    byte data[] = new byte[4096];
+                    long total = 0;
+                    int count;
+                    while ((count = input.read(data)) != -1) {
+                        // allow canceling with back button
+                        if (isCancelled())
+                            return false;
+                        total += count;
+                        // publishing the progress....
+                        if (fileLength > 0) // only if total length is known
+                            publishProgress((int) (total * 100 / fileLength));
+                        output.write(data, 0, count);
+                    }
                 }
             } catch (Exception e) {
                 return false;

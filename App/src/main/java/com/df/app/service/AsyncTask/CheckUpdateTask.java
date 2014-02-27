@@ -100,7 +100,7 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
                     dialog.show();
                 }
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         } else {
             Toast.makeText(context, "获取版本号失败！", Toast.LENGTH_SHORT).show();
@@ -114,14 +114,20 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
      * @return 是否需要升级
      */
     private boolean compareVersion(String localVersion, String serverVersion) {
-        if(localVersion.charAt(0) < serverVersion.charAt(0))
-            return true;
+        String[] localVersionArray = localVersion.split(".");
+        String[] serverVersionArray = serverVersion.split(".");
 
-        if(localVersion.charAt(2) < serverVersion.charAt(2))
+        if(Integer.parseInt(localVersionArray[0]) < Integer.parseInt(serverVersionArray[0])) {
             return true;
+        }
 
-        if(localVersion.charAt(4) < serverVersion.charAt(4))
+        if(Integer.parseInt(localVersionArray[1]) < Integer.parseInt(serverVersionArray[1])) {
             return true;
+        }
+
+        if(Integer.parseInt(localVersionArray[2]) < Integer.parseInt(serverVersionArray[2])) {
+            return true;
+        }
 
         return false;
     }

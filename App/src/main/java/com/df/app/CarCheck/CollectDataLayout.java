@@ -1,4 +1,4 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -124,9 +125,9 @@ public class CollectDataLayout extends LinearLayout {
     // 加强件控件map
     // 1. EditText的id
     // 2. 此部位的名称
-    private static Map<Integer, String> enhanceIdMap;
+    private static SparseArray<String> enhanceIdMap;
     static {
-        enhanceIdMap = new HashMap<Integer, String>();
+        enhanceIdMap = new SparseArray<String>();
         enhanceIdMap.put(R.id.M1_edit, "M1");
         enhanceIdMap.put(R.id.D1_edit, "D1");
         enhanceIdMap.put(R.id.D2_edit, "D2");
@@ -471,7 +472,7 @@ public class CollectDataLayout extends LinearLayout {
                                         overIds[measurement.getBlockId() - 1], values);
                             } else {
                                 setEditViewText(rootView,
-                                        enhanceIdMap.keySet().toArray(new Integer[0])[measurement.getBlockId() - 18], values);
+                                        enhanceIdMap.keyAt(measurement.getBlockId() - 18), values);
                             }
 
                             // 当数据全部采集完毕后，弹出完成提示
@@ -523,7 +524,7 @@ public class CollectDataLayout extends LinearLayout {
             Log.d(Common.TAG, "连接设备失败！！");
         }
         else {
-            DF3000Service = DF3000Service.instance(sDriver);
+            DF3000Service = com.df.app.service.DF3000Service.instance(sDriver);
 
             Thread collectThread = new Thread(runnable);
             collectThread.start();
@@ -548,7 +549,8 @@ public class CollectDataLayout extends LinearLayout {
                 }
 
                 @Override
-                public void onFailed(String error) {
+                public void onFailed(String error, ProgressDialog progressDialog) {
+                    progressDialog.dismiss();
                     Toast.makeText(rootView.getContext(), "获取问题失败: " + error, Toast.LENGTH_SHORT).show();
                     Log.d("DFCarChecker", "获取问题失败: " + error);
                 }
@@ -709,7 +711,7 @@ public class CollectDataLayout extends LinearLayout {
      */
     private void collectData(String message) {
         // 是否已经连接到设备
-        if (DF5000Service.getState() != DF5000Service.STATE_CONNECTED) {
+        if (DF5000Service.getState() != com.df.app.service.DF5000Service.STATE_CONNECTED) {
             Toast.makeText(rootView.getContext(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -746,8 +748,8 @@ public class CollectDataLayout extends LinearLayout {
         // 加强件数据
         JSONObject enhance = new JSONObject();
 
-        for(int n : enhanceIdMap.keySet()) {
-            enhance.put(enhanceIdMap.get(n), getEditViewText(rootView, n));
+        for(int i = 0; i < enhanceIdMap.size(); i++) {
+            enhance.put(enhanceIdMap.valueAt(i), getEditViewText(rootView, enhanceIdMap.keyAt(i)));
         }
 
         // 选项
@@ -840,9 +842,9 @@ public class CollectDataLayout extends LinearLayout {
             }
 
             // 加强件填充数据
-            for(int n : enhanceIdMap.keySet()) {
-                String s = enhance.getString(enhanceIdMap.get(n));
-                setEditViewText(rootView, n, s);
+            for(int i = 0; i < enhanceIdMap.size(); i++) {
+                String s = enhance.getString(enhanceIdMap.valueAt(i));
+                setEditViewText(rootView, enhanceIdMap.keyAt(i), s);
             }
 
             // 隐藏部位
@@ -868,7 +870,7 @@ public class CollectDataLayout extends LinearLayout {
                 checkBox.setChecked(true);
             }
         } catch(JSONException e) {
-
+            e.printStackTrace();
         }
     }
 

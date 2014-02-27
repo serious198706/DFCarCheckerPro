@@ -65,6 +65,7 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
         otherBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.out_other);
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -152,7 +153,6 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
                 return;
             case Common.OTHER:
                 canvas.drawBitmap(otherBitmap, entity.getStartX(), entity.getStartY(), null);
-                return;
         }
     }
 }

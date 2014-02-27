@@ -2,14 +2,11 @@ package com.df.app.service.AsyncTask;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.df.app.MainActivity;
-import com.df.app.entries.UserInfo;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 

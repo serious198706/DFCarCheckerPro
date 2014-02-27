@@ -12,7 +12,6 @@ public class Brand {
     public String name;
     public String id;
     public List<Manufacturer> manufacturers;
-    private List<String> manufacturerNames;
 
     public Brand() {
         manufacturers = new ArrayList<Manufacturer>();
@@ -23,7 +22,7 @@ public class Brand {
      * @return
      */
     public List<String> getManufacturerNames() {
-        manufacturerNames = new ArrayList<String>();
+        List<String> manufacturerNames = new ArrayList<String>();
         manufacturerNames.add("");
         for(int i = 0; i < manufacturers.size(); i++) {
             manufacturerNames.add(manufacturers.get(i).name);

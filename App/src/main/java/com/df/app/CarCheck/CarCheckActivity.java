@@ -1,27 +1,26 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.df.app.CarsChecked.CarsCheckedActivity;
-import com.df.app.CarsWaiting.CarsWaitingActivity;
+import com.df.app.carsChecked.CarsCheckedActivity;
+import com.df.app.carsWaiting.CarsWaitingActivity;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
-import com.df.app.service.Adapter.PhotoListAdapter;
 import com.df.app.service.AsyncTask.CommitDataTask;
 import com.df.app.service.AsyncTask.GeneratePhotoEntitiesTask;
 import com.df.app.service.AsyncTask.SaveDataTask;
@@ -35,9 +34,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.df.app.util.Helper.setTextView;
 
@@ -51,7 +48,6 @@ public class CarCheckActivity extends Activity {
     private AccidentCheckLayout accidentCheckLayout;
     private IntegratedCheckLayout integratedCheckLayout;
     private PhotoLayout photoLayout;
-    private Button naviButton;
     private Button basicInfoButton;
     private Button accidentCheckButton;
     private Button integratedButton;
@@ -62,12 +58,14 @@ public class CarCheckActivity extends Activity {
 
     private boolean showMenu = false;
 
-    Map<Integer, String> tabMap = new HashMap<Integer, String>();
+    // 按钮内容与按钮id的map
+    SparseArray<String> tabMap = new SparseArray<String>();
 
-    private String jsonString;
+    private Class activity;
 
     // 最终json串
     private JSONObject jsonObject;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +76,9 @@ public class CarCheckActivity extends Activity {
         Bundle bundle = getIntent().getExtras();
 
         // 获取车辆详细信息
-        final String jsonString = bundle.getString("jsonString");
+        String jsonString = bundle.getString("jsonString");
         carId = bundle.getInt("carId");
+        activity = (Class)getIntent().getSerializableExtra("activity");
 
         photoEntities = new ArrayList<PhotoEntity>();
 
@@ -88,8 +87,8 @@ public class CarCheckActivity extends Activity {
         tabMap.put(R.id.integratedCheck, "综合检查");
         tabMap.put(R.id.photo, "照片拍摄");
 
-        naviButton = (Button)findViewById(R.id.buttonNavi);
-        naviButton.setOnClickListener(new View.OnClickListener() {
+        Button navigateButton = (Button) findViewById(R.id.buttonNavi);
+        navigateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showMenu = !showMenu;
@@ -202,12 +201,15 @@ public class CarCheckActivity extends Activity {
                     if(pass.equals("accidentCheck")) {
                         Toast.makeText(CarCheckActivity.this, "未完成事故检测！", Toast.LENGTH_SHORT).show();
                         selectTab(R.id.accidentCheck);
-                    } else if(pass.equals("exterior") || pass.equals("interior") ||
-                            pass.equals("leftFront") || pass.equals("rightFront") ||
-                            pass.equals("leftRear") || pass.equals("rightRear")) {
+                    } else if(pass.equals("leftFront") || pass.equals("rightFront") ||
+                            pass.equals("leftRear") || pass.equals("rightRear") ||
+                            pass.equals("spare") || pass.equals("edits")) {
                         selectTab(R.id.integratedCheck);
-                    } else if(pass.equals("engine") || pass.equals("procedures") || pass.equals("agreements")) {
+                    } else if(pass.equals("exterior") || pass.equals("interior") ||
+                            pass.equals("engine") || pass.equals("procedures") || pass.equals("agreements")) {
                         selectTab(R.id.photo);
+                    } else if(pass.equals("coop")) {
+                        selectTab(R.id.integratedCheck);
                     }
                 }
             }
@@ -253,7 +255,7 @@ public class CarCheckActivity extends Activity {
 //            }
 //        });
 
-        // 填充
+        // 填充数据
         fillInData(carId, jsonString);
     }
 
@@ -329,14 +331,14 @@ public class CarCheckActivity extends Activity {
                 // 如果存在临时保存的数据，则删除之
                 File file = new File(Common.savedDirectory + Integer.toString(carId));
                 if(file.exists()) {
-                    file.delete();
+                    if(file.delete()) {
+                        Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
+                        clearCache();
+                        Intent intent = new Intent(CarCheckActivity.this, CarsCheckedActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
                 }
-
-                Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
-                clearCache();
-                Intent intent = new Intent(CarCheckActivity.this, CarsCheckedActivity.class);
-                startActivity(intent);
-                finish();
             }
 
             @Override
@@ -406,7 +408,9 @@ public class CarCheckActivity extends Activity {
         String title = tabMap.get(layoutId);
         setTextView(getWindow().getDecorView(), R.id.currentItem, title);
 
-        for(int id : tabMap.keySet()) {
+        for(int i = 0; i < tabMap.size(); i++) {
+            int id = tabMap.keyAt(i);
+
             if(id != layoutId) {
                 findViewById(id).setVisibility(View.GONE);
             } else {
@@ -440,18 +444,6 @@ public class CarCheckActivity extends Activity {
             // 内饰缺陷照
             case Common.ENTER_INTERIOR_PAINT:
                 integratedCheckLayout.updateInteriorPreview();
-                break;
-            // 外观标准照
-            case Common.PHOTO_FOR_EXTERIOR_STANDARD:
-                if(resultCode == Activity.RESULT_OK) {
-                    integratedCheckLayout.saveExteriorStandardPhoto();
-                }
-                break;
-            // 内饰标准照
-            case Common.PHOTO_FOR_INTERIOR_STANDARD:
-                if(resultCode == Activity.RESULT_OK) {
-                    integratedCheckLayout.saveInteriorStandardPhoto();
-                }
                 break;
             // 事故查勘照片拍摄
             case Common.PHOTO_FOR_ACCIDENT_FRONT:
@@ -491,6 +483,18 @@ public class CarCheckActivity extends Activity {
                 break;
             // 外观内饰照片备注
             case Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO:
+                break;
+            // 外观标准照
+            case Common.PHOTO_FOR_EXTERIOR_STANDARD:
+                if(resultCode == Activity.RESULT_OK) {
+                    photoLayout.saveExteriorStandardPhoto();
+                }
+                break;
+            // 内饰标准照
+            case Common.PHOTO_FOR_INTERIOR_STANDARD:
+                if(resultCode == Activity.RESULT_OK) {
+                    photoLayout.saveInteriorStandardPhoto();
+                }
                 break;
             // 轮胎照片
             case Common.PHOTO_FOR_TIRES:
@@ -562,10 +566,8 @@ public class CarCheckActivity extends Activity {
             jsonObject.put("checkUserName", MainActivity.userInfo.getName());
             jsonObject.put("checkCooperatorId", integratedCheckLayout.getCooperatorId());
             jsonObject.put("checkCooperatorName", integratedCheckLayout.getCooperatorName());
-
-            jsonObject.toString();
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -599,7 +601,7 @@ public class CarCheckActivity extends Activity {
                 integratedCheckLayout.fillInData(conditions);
             }
 
-            // TODO 如果有照片节点，则更新照片list
+            // 如果有照片节点，则更新照片list
             if(jsonObject.has("photos")) {
                 List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
@@ -620,6 +622,11 @@ public class CarCheckActivity extends Activity {
                 for(PhotoEntity photoEntity : photoEntities) {
                     addPhotoEntityToGroup(photoEntity);
                 }
+            }
+
+            // 如果有从检名字节点
+            if(jsonObject.has("checkCooperatorName")) {
+                integratedCheckLayout.fillInData(jsonObject.getString("checkCooperatorName"));
             }
         } catch (JSONException e) {
 
@@ -647,19 +654,19 @@ public class CarCheckActivity extends Activity {
                 String photoPart = photoData.getString("part");
 
                 if(photoPart.equals("leftFront45")) {
-                    ExteriorLayout.photoShotCount[0]++;
+                    PhotoExteriorLayout.photoShotCount[0]++;
                 } else if(photoPart.equals("rightFront45")) {
-                    ExteriorLayout.photoShotCount[1]++;
+                    PhotoExteriorLayout.photoShotCount[1]++;
                 } else if(photoPart.equals("left")) {
-                    ExteriorLayout.photoShotCount[2]++;
+                    PhotoExteriorLayout.photoShotCount[2]++;
                 } else if(photoPart.equals("right")) {
-                    ExteriorLayout.photoShotCount[3]++;
+                    PhotoExteriorLayout.photoShotCount[3]++;
                 } else if(photoPart.equals("leftRear45")) {
-                    ExteriorLayout.photoShotCount[4]++;
+                    PhotoExteriorLayout.photoShotCount[4]++;
                 } else if(photoPart.equals("rightRear45")) {
-                    ExteriorLayout.photoShotCount[5]++;
+                    PhotoExteriorLayout.photoShotCount[5]++;
                 } else if(photoPart.equals("other")) {
-                    ExteriorLayout.photoShotCount[6]++;
+                    PhotoExteriorLayout.photoShotCount[6]++;
                 }
             }
             // 缺陷照
@@ -676,7 +683,8 @@ public class CarCheckActivity extends Activity {
                 posEntity.setEnd(photoData.getInt("endX"), photoData.getInt("endY"));
 
                 posEntity.setMaxX(1000);
-                posEntity.setMaxY(1407);
+                posEntity.setMaxY(2000);
+                //posEntity.setMaxY(1407);
                 posEntity.setComment(photoData.getString("comment"));
 
                 ExteriorLayout.posEntities.add(posEntity);
@@ -696,19 +704,19 @@ public class CarCheckActivity extends Activity {
                 String photoPart = photoData.getString("part");
 
                 if(photoPart.equals("workbench")) {
-                    InteriorLayout.photoShotCount[0]++;
+                    PhotoInteriorLayout.photoShotCount[0]++;
                 } else if(photoPart.equals("steeringWheel")) {
-                    InteriorLayout.photoShotCount[1]++;
+                    PhotoInteriorLayout.photoShotCount[1]++;
                 } else if(photoPart.equals("dashboard")) {
-                    InteriorLayout.photoShotCount[2]++;
+                    PhotoInteriorLayout.photoShotCount[2]++;
                 } else if(photoPart.equals("leftDoor+steeringWheel")) {
-                    InteriorLayout.photoShotCount[3]++;
+                    PhotoInteriorLayout.photoShotCount[3]++;
                 } else if(photoPart.equals("rearSeats")) {
-                    InteriorLayout.photoShotCount[4]++;
+                    PhotoInteriorLayout.photoShotCount[4]++;
                 } else if(photoPart.equals("coDriverSeat")) {
-                    InteriorLayout.photoShotCount[5]++;
+                    PhotoInteriorLayout.photoShotCount[5]++;
                 } else if(photoPart.equals("other")) {
-                    InteriorLayout.photoShotCount[6]++;
+                    PhotoInteriorLayout.photoShotCount[6]++;
                 }
             }
             // 缺陷照
@@ -724,7 +732,8 @@ public class CarCheckActivity extends Activity {
                 posEntity.setEnd(photoData.getInt("endX"), photoData.getInt("endY"));
                 posEntity.setStart(photoData.getInt("startX"), photoData.getInt("startY"));
                 posEntity.setMaxX(1000);
-                posEntity.setMaxY(1383);
+                posEntity.setMaxY(2000);
+                //posEntity.setMaxY(1383);
                 posEntity.setComment(photoData.getString("comment"));
 
                 InteriorLayout.posEntities.add(posEntity);
@@ -846,7 +855,7 @@ public class CarCheckActivity extends Activity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         clearCache();
 
-                        Intent intent = new Intent(CarCheckActivity.this, CarsWaitingActivity.class);
+                        Intent intent = new Intent(CarCheckActivity.this, activity);
                         startActivity(intent);
                         finish();
                     }
@@ -861,11 +870,11 @@ public class CarCheckActivity extends Activity {
      * 退出时，清除一些静态数据
      */
     private void clearCache() {
-        for(int i = 0; i < ExteriorLayout.photoShotCount.length; i++) {
-            ExteriorLayout.photoShotCount[i] = 0;
+        for(int i = 0; i < PhotoExteriorLayout.photoShotCount.length; i++) {
+            PhotoExteriorLayout.photoShotCount[i] = 0;
         }
-        for(int i = 0; i < InteriorLayout.photoShotCount.length; i++) {
-            InteriorLayout.photoShotCount[i] = 0;
+        for(int i = 0; i < PhotoInteriorLayout.photoShotCount.length; i++) {
+            PhotoInteriorLayout.photoShotCount[i] = 0;
         }
         for(int i = 0; i < PhotoEngineLayout.photoShotCount.length; i++) {
             PhotoEngineLayout.photoShotCount[i] = 0;

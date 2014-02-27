@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.df.app.CarCheck.BasicInfoLayout;
 import com.df.app.MainActivity;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;

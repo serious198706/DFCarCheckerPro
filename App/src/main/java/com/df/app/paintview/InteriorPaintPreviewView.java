@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.df.app.entries.PosEntity;
 import com.df.app.util.Common;
@@ -22,11 +21,8 @@ import java.util.List;
 
 public class InteriorPaintPreviewView extends PaintPreviewView {
 
-    private int currentType;
-    private boolean move;
     private List<PosEntity> data;
     private Bitmap bitmap;
-    private Bitmap colorDiffBitmap;
 
     private int max_x, max_y;
 
@@ -63,6 +59,7 @@ public class InteriorPaintPreviewView extends PaintPreviewView {
         return max_y;
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -71,7 +68,7 @@ public class InteriorPaintPreviewView extends PaintPreviewView {
     }
 
     public void setType(int type) {
-        this.currentType = type;
+
     }
 
     private Paint getPaint(int type) {
@@ -96,7 +93,7 @@ public class InteriorPaintPreviewView extends PaintPreviewView {
     }
 
     private void paint(PosEntity entity, Canvas canvas) {
-        RectF rectF = null;
+        RectF rectF;
 
         // 如果Rect的right < left，或者bottom < top，则会画不出矩形
         // 为了修正这个，需要做点处理

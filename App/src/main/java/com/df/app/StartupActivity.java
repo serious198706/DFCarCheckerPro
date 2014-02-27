@@ -1,19 +1,10 @@
 package com.df.app;
 
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 
 import com.df.app.util.Common;
 

@@ -1,4 +1,4 @@
-package com.df.app.CarCheck;
+package com.df.app.carCheck;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -27,20 +27,26 @@ import java.util.List;
  */
 public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageChangeListener{
     private View rootView;
-
     private ViewPager viewPager;
     private TextView vehicleInfoTab, optionsTab;
     private List<View> views;
 
+    // 车辆信息
     private VehicleInfoLayout vehicleInfoLayout;
+
+    // 配置信息
     private OptionsLayout optionsLayout;
 
+    // 车辆配置
     public static CarSettings mCarSettings;
 
+    // CarId
     public static int carId;
 
-    private OnGetCarSettings mUpdateUiCallback;
+    // 获取车辆配置后的回调
+    private OnGetCarSettings mOnGetCarSettingsCallback;
 
+    // 标签选中和未选中的颜色
     private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
     private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
 
@@ -78,7 +84,7 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
                 }
 
                 // 更新结构、外观、内饰
-                mUpdateUiCallback.onGetCarSettings();
+                mOnGetCarSettingsCallback.onGetCarSettings();
 
                 // 更新配置信息页面
                 optionsLayout.updateUi();
@@ -147,7 +153,7 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
             features.put("procedures", vehicleInfoLayout.generateJSONObject());
             features.put("options", optionsLayout.generateJSONObject());
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
 
         return features;
@@ -158,19 +164,24 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
      */
     public void fillInData(int carId, JSONObject features) {
         try {
-            this.carId = carId;
+            BasicInfoLayout.carId = carId;
 
             JSONObject procedures = features.getJSONObject("procedures");
 
             if(features.has("options")) {
-                JSONObject options = features.getJSONObject("options");
-                optionsLayout.fillInData(options);
-                vehicleInfoLayout.fillInData(procedures, options.getString("seriesId"), options.getString("modelId"));
+                final JSONObject options = features.getJSONObject("options");
+                vehicleInfoLayout.fillInData(procedures, options.getString("seriesId"), options.getString("modelId"),
+                        new VehicleInfoLayout.OnUiUpdated() {
+                            @Override
+                            public void onUiUpdated() {
+                                optionsLayout.fillInData(options);
+                            }
+                        });
             } else {
                 vehicleInfoLayout.fillInData(procedures);
             }
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -185,6 +196,6 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
      * 因为基本信息页是在xml中静态生成的，所以要手动设置回调的监听者
      */
     public void setUpdateUiListener(OnGetCarSettings listener) {
-        this.mUpdateUiCallback = listener;
+        this.mOnGetCarSettingsCallback = listener;
     }
 }

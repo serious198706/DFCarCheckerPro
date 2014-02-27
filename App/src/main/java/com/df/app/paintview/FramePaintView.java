@@ -21,11 +21,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.df.app.CarCheck.AccidentResultLayout;
-import com.df.app.CarCheck.BasicInfoLayout;
-import com.df.app.CarCheck.ExteriorLayout;
-import com.df.app.CarCheck.IssueLayout;
-import com.df.app.CarCheck.PhotoFaultLayout;
+import com.df.app.carCheck.AccidentResultLayout;
+import com.df.app.carCheck.BasicInfoLayout;
+import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
@@ -43,7 +41,6 @@ import java.util.List;
 public class FramePaintView extends PaintView {
 
     private int currentType = Common.COLOR_DIFF;
-    private boolean move;
 
     // 本次更新的坐标点，如果用户点击取消，则不将thisTimeNewData中的坐标加入到data中
     private List<PosEntity> thisTimeNewData;
@@ -142,7 +139,6 @@ public class FramePaintView extends PaintView {
                 } else if(event.getAction() == MotionEvent.ACTION_MOVE){
                         entity = data.get(data.size() - 1);
                         entity.setStart(x, y);
-                        move = true;
                         invalidate();
                 } else if(event.getAction() == MotionEvent.ACTION_UP){
                     showCamera();

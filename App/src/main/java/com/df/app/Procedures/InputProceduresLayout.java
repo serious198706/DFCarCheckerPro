@@ -1,4 +1,4 @@
-package com.df.app.Procedures;
+package com.df.app.procedures;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,19 +11,12 @@ import android.widget.TextView;
 
 import com.df.app.R;
 import com.df.app.entries.CarSettings;
-import com.df.app.service.AsyncTask.GetCarDetailTask;
 import com.df.app.service.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
-import com.df.app.util.Helper;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static com.df.app.util.Helper.setEditViewText;
 
 /**
  * Created by 岩 on 14-1-8.
@@ -34,6 +27,7 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
     private View rootView;
 
     private ViewPager viewPager;
+    private MyViewPagerAdapter adapter;
     private TextView carRecogniseTab, proceduresTab, optionsTab;
     private List<View> views;
 
@@ -75,21 +69,35 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
         // 车辆配置信息
         mCarSettings = new CarSettings();
 
-        carRecogniseLayout = new CarRecogniseLayout(context, new CarRecogniseLayout.OnShowContentListener() {
+        carRecogniseLayout = new CarRecogniseLayout(context, new CarRecogniseLayout.OnShowContent() {
             @Override
             public void showContent(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial, String seriesId, String modelId) {
+                // 更新手续页面
+                proceduresWebLayout.updateUi(vin, plateNumber, licenseModel, vehicleType, useCharacter, engineSerial, seriesId, modelId);
+
                 // 当VIN确定后，出现另外两个页面
                 if(!loaded) {
-                    proceduresWebLayout.updateUi(vin, plateNumber, licenseModel, vehicleType, useCharacter, engineSerial, seriesId, modelId);
                     views.add(proceduresWebLayout);
+                    adapter.notifyDataSetChanged();
 
                     proceduresTab.setVisibility(VISIBLE);
                     proceduresTab.setOnClickListener(new MyOnClick(viewPager, 1));
 
-                    viewPager.setAdapter(new MyViewPagerAdapter(views));
-
                     loaded = true;
                 }
+            }
+        }, new CarRecogniseLayout.OnHideContent() {
+            @Override
+            public void hideContent() {
+                views.remove(proceduresWebLayout);
+                adapter.notifyDataSetChanged();
+
+                proceduresTab.setVisibility(INVISIBLE);
+                proceduresTab.setOnClickListener(null);
+
+                proceduresWebLayout.showContent(false);
+
+                loaded = false;
             }
         });
 
@@ -100,12 +108,14 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
     }
 
     private void InitViewPager(Context context) {
-        viewPager = (ViewPager) rootView.findViewById(R.id.vPager);
         views = new ArrayList<View>();
+        adapter = new MyViewPagerAdapter(views);
+        viewPager = (ViewPager) rootView.findViewById(R.id.vPager);
 
         views.add(carRecogniseLayout);
+        adapter.notifyDataSetChanged();
 
-        viewPager.setAdapter(new MyViewPagerAdapter(views));
+        viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
         viewPager.setOnPageChangeListener(this);
     }
@@ -122,10 +132,7 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
     }
 
     public boolean canGoBack() {
-        if(proceduresWebLayout.canGoBack())
-            return true;
-        else
-            return false;
+        return proceduresWebLayout.canGoBack();
     }
 
     public void goBack() {

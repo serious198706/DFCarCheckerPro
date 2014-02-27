@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.df.app.R;
 import com.df.app.entries.PosEntity;
@@ -20,7 +19,6 @@ import java.util.List;
 
 public class FramePaintPreviewView extends PaintPreviewView {
 
-    private int currentType;
     private boolean move;
     private List<PosEntity> data;
     private Bitmap bitmap;
@@ -72,7 +70,7 @@ public class FramePaintPreviewView extends PaintPreviewView {
     }
 
     public void setType(int type) {
-        this.currentType = type;
+        int currentType = type;
     }
 
     private void paint(Canvas canvas) {
