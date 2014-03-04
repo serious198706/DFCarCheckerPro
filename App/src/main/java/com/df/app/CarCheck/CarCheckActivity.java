@@ -247,13 +247,13 @@ public class CarCheckActivity extends Activity {
             }
         });
 
-//        Button comB = (Button)findViewById(R.id.com);
-//        comB.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                commitData();
-//            }
-//        });
+        Button comB = (Button)findViewById(R.id.com);
+        comB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                commitData();
+            }
+        });
 
         // 填充数据
         fillInData(carId, jsonString);
@@ -312,10 +312,8 @@ public class CarCheckActivity extends Activity {
         UploadPictureTask uploadPictureTask = new UploadPictureTask(CarCheckActivity.this, photoEntities, new UploadPictureTask.UploadFinished() {
             @Override
             public void OnFinish() {
-                // 3.生成所有检测信息的Json数据
-                generateJsonString();
                 // 4.提交检测信息
-                commitData();
+                //commitData();
             }
         });
         uploadPictureTask.execute();
@@ -325,19 +323,26 @@ public class CarCheckActivity extends Activity {
      * 提交检测数据
      */
     private void commitData() {
+        // 3.生成所有检测信息的Json数据
+        generateJsonString();
+
         CommitDataTask commitDataTask = new CommitDataTask(CarCheckActivity.this, new CommitDataTask.OnCommitDataFinished() {
             @Override
             public void onFinished(String result) {
+                Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
+                clearCache();
+                Intent intent = new Intent(CarCheckActivity.this, CarsCheckedActivity.class);
+                startActivity(intent);
+                finish();
+
                 // 如果存在临时保存的数据，则删除之
-                File file = new File(Common.savedDirectory + Integer.toString(carId));
-                if(file.exists()) {
-                    if(file.delete()) {
-                        Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
-                        clearCache();
-                        Intent intent = new Intent(CarCheckActivity.this, CarsCheckedActivity.class);
-                        startActivity(intent);
-                        finish();
+                try {
+                    File file = new File(Common.savedDirectory + Integer.toString(carId));
+                    if(file.exists()) {
+                        file.delete();
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -671,6 +676,7 @@ public class CarCheckActivity extends Activity {
             }
             // 缺陷照
             else if(part.equals("fault")) {
+                ExteriorLayout.photoEntities.add(photoEntity);
                 PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
                 PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
 
@@ -721,6 +727,7 @@ public class CarCheckActivity extends Activity {
             }
             // 缺陷照
             else if(part.equals("fault")) {
+                InteriorLayout.photoEntities.add(photoEntity);
                 PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
                 PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
 
@@ -804,6 +811,7 @@ public class CarCheckActivity extends Activity {
         }
         // 协议组
         else if(group.equals("agreement")) {
+            PhotoOtherLayout.photoShotCount++;
             PhotoOtherLayout.photoListAdapter.addItem(photoEntity);
             PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
         }
@@ -888,5 +896,6 @@ public class CarCheckActivity extends Activity {
         for(int i = 0; i < Integrated2Layout.photoShotCount.length; i++) {
             Integrated2Layout.photoShotCount[i] = 0;
         }
+        PhotoOtherLayout.photoShotCount = 0;
     }
 }

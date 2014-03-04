@@ -179,6 +179,7 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
 
         // 协议组照片必拍
         currentField = photoOtherLayout.check();
+
         if(!currentField.equals("")) {
             Toast.makeText(rootView.getContext(), "协议组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
             viewPager.setCurrentItem(5);

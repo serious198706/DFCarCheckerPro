@@ -301,7 +301,7 @@ public class PaintActivity extends Activity {
         RadioButton dirtyRadio = new RadioButton(this);
         dirtyRadio.setText(R.string.interior_dirty);
         dirtyRadio.setButtonDrawable(R.drawable.radio_button);
-        Drawable img = getResources().getDrawable( R.drawable.in_dirty);
+        Drawable img = getResources().getDrawable( R.drawable.out_scrape);
         dirtyRadio.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
         dirtyRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -317,7 +317,7 @@ public class PaintActivity extends Activity {
         RadioButton brokenRadio = new RadioButton(this);
         brokenRadio.setText(R.string.interior_broken);
         brokenRadio.setButtonDrawable(R.drawable.radio_button);
-        img = getResources().getDrawable( R.drawable.in_broken);
+        img = getResources().getDrawable( R.drawable.out_trans);
         brokenRadio.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
         brokenRadio.setLayoutParams(params);
 
@@ -466,7 +466,7 @@ public class PaintActivity extends Activity {
         endY = posEntity.getEndY();
 
         // 如果是“变形”，即圆
-        if(posEntity.getType() == 3) {
+        if(posEntity.getType() == 3 || posEntity.getType() == 7) {
             // 计算半径
             int dx = Math.abs(endX - startX);
             int dy = Math.abs(endY- startY);

@@ -173,10 +173,10 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
      * @return
      */
     public String checkAllFields() {
-        String currentField;
+        String currentField = "";
 
-        // 综合检查一
-        currentField = integrated2Layout.checkAllFields();
+        // 综合检查二
+        //currentField = integrated2Layout.checkAllFields();
 
         if(currentField.equals("leftFront")) {
             Toast.makeText(rootView.getContext(), "未拍摄左前轮照片！", Toast.LENGTH_SHORT).show();
@@ -298,7 +298,18 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
             conditions.put("comment2", comment2);
             conditions.put("comment3", comment3);
 
-            conditions.put("comment", comment1 + ";" + comment2 + ";" + comment3);
+            String comment = "";
+
+            if(!comment1.equals(""))
+                comment += comment1 + ";";
+
+            if(!comment2.equals(""))
+                comment += comment2 + ";";
+
+            if(!comment3.equals(""))
+                comment += comment3;
+
+            conditions.put("comment", comment);
         } catch (JSONException e) {
             e.printStackTrace();
         }

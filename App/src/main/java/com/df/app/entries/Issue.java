@@ -1,5 +1,8 @@
 package com.df.app.entries;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by 岩 on 13-12-24.
  *
@@ -24,6 +27,9 @@ public class Issue {
     // 是否选中
     private String select;
 
+    // 对应此issue所绘制的点的集合
+    private List<PosEntity> posEntities;
+
     public Issue() {
         super();
     }
@@ -36,6 +42,8 @@ public class Issue {
         this.summary = summary;
         this.serious = serious;
         this.select = select;
+
+        this.posEntities = new ArrayList<PosEntity>();
     }
 
     public int getId() {
@@ -84,5 +92,13 @@ public class Issue {
 
     public void setSelect(String select) {
         this.select = select;
+    }
+
+    public List<PosEntity> getPosEntities() {
+        return posEntities;
+    }
+
+    public void setPosEntities(List<PosEntity> posEntities) {
+        this.posEntities = posEntities;
     }
 }

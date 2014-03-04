@@ -39,7 +39,7 @@ public class PhotoOtherLayout extends LinearLayout {
     public static PhotoListAdapter photoListAdapter;
 
     // 已拍摄的照片数量
-    private int  photoShotCount = 0;
+    public static int photoShotCount = 0;
 
     // 正在拍摄的部位
     private int currentShotPart;
@@ -181,7 +181,7 @@ public class PhotoOtherLayout extends LinearLayout {
      */
     public String check() {
         if(photoShotCount == 0)
-            return "other";
+            return "agreement";
         else
             return "";
     }

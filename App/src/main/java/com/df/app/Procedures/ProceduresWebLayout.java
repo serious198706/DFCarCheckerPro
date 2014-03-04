@@ -139,4 +139,27 @@ public class ProceduresWebLayout extends LinearLayout {
         proceduresWeb.setInitialScale(getScale());
         proceduresWeb.clearCache(true);
     }
+
+    public void updateUi(String carId) {
+        String url = "http://192.168.18.88:8001/Function/CarDetection2/Modify.aspx?";
+
+        url += "userId=" + MainActivity.userInfo.getId();
+        url += "&";
+        url += "userName=" + MainActivity.userInfo.getName();
+        url += "&";
+        url += "carId" + carId;
+
+        proceduresWeb = (WebView)findViewById(R.id.proceduresWeb);
+        proceduresWeb.loadUrl(url);
+        proceduresWeb.setWebViewClient(new WebViewClient() {
+            public void onPageFinished(WebView view, String url) {
+                showContent(true);
+            }
+        });
+        proceduresWeb.setWebChromeClient(new WebChromeClient());
+        proceduresWeb.getSettings().setJavaScriptEnabled(true);
+        proceduresWeb.addJavascriptInterface(this, "android");
+        proceduresWeb.setInitialScale(getScale());
+        proceduresWeb.clearCache(true);
+    }
 }

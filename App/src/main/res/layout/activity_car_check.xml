@@ -85,7 +85,7 @@
                 android:layout_toLeftOf="@id/buttonHome"
                 android:text="提交"
                 android:textColor="#fff"
-                android:visibility="gone"/>
+                />
 
         <Button android:id="@+id/buttonBasicInfo"
                 android:layout_width="195dp"

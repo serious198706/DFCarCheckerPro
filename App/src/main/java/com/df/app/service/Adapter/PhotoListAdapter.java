@@ -93,20 +93,10 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
             photoComment.setText(photoEntity.getComment());
 
             // 备注更改时将对应的photoEntity也更改
-            photoComment.addTextChangedListener(new TextWatcher() {
+            photoComment.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    photoEntity.setComment(editable.toString());
+                public void onFocusChange(View view, boolean b) {
+                    photoEntity.setComment(((EditText)view).getText().toString());
                 }
             });
 

@@ -86,6 +86,22 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
                     loaded = true;
                 }
             }
+
+            @Override
+            public void modify(String carId) {
+                proceduresWebLayout.updateUi(carId);
+
+                // 当VIN确定后，出现另外两个页面
+                if(!loaded) {
+                    views.add(proceduresWebLayout);
+                    adapter.notifyDataSetChanged();
+
+                    proceduresTab.setVisibility(VISIBLE);
+                    proceduresTab.setOnClickListener(new MyOnClick(viewPager, 1));
+
+                    loaded = true;
+                }
+            }
         }, new CarRecogniseLayout.OnHideContent() {
             @Override
             public void hideContent() {

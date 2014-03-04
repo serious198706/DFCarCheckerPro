@@ -20,6 +20,7 @@ import com.df.app.util.Common;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.df.app.util.Helper.enableView;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
@@ -104,7 +105,18 @@ public class Integrated1Layout extends LinearLayout{
             setSpinnerColor(spinnerId);
         }
 
-        EditText AirConditioningTempEdit = (EditText) rootView.findViewById(R.id.airConditioningTemp_edit);
+        Spinner airConditioningSpinner = (Spinner)rootView.findViewById(R.id.airConditioning_spinner);
+        airConditioningSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                enableView(rootView, R.id.airConditioningTemp_edit, i <= 1);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         // 移除输入框的焦点，避免每次输入完成后界面滚动
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);

@@ -82,6 +82,10 @@ public class CarRecogniseLayout extends LinearLayout {
     // 车辆配置信息
     private CarSettings mCarSettings;
 
+    // 是否是修改手续
+    private boolean modify;
+    private int carId;
+
     /**
      * 传入回调函数指针
      * @param context
@@ -179,7 +183,16 @@ public class CarRecogniseLayout extends LinearLayout {
             }
         };
         EditText vin_edit = (EditText)findViewById(R.id.vin_edit);
-        vin_edit.setFilters(new InputFilter[]{ alphaNumericFilter, new InputFilter.AllCaps()});
+        vin_edit.setFilters(new InputFilter[]{ alphaNumericFilter, new InputFilter.AllCaps(), new InputFilter.LengthFilter(17)});
+
+        EditText plateNumberEdit = (EditText)findViewById(R.id.plateNumber_edit);
+        plateNumberEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(10)});
+
+        EditText licenseModelEdit = (EditText)findViewById(R.id.licenseModel_edit);
+        licenseModelEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(22)});
+
+        EditText engineSerialEdit = (EditText)findViewById(R.id.engineSerial_edit);
+        engineSerialEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(17)});
 
         vehicleModel = MainActivity.vehicleModel;
     }
@@ -311,18 +324,11 @@ public class CarRecogniseLayout extends LinearLayout {
                 new com.df.app.service.AsyncTask.GetCarSettingsTask.OnGetCarSettingsFinished() {
                     @Override
                     public void onFinished(String result) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(result);
+                        // 更新车辆配置
+                        updateCarSettings();
 
-                            // 更新车辆配置
-                            updateCarSettings(jsonObject.getString("config"),
-                                    jsonObject.getString("category"), jsonObject.getString("figure"));
-
-                            // 更新UI
-                            updateUi();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        // 更新UI
+                        updateUi();
                     }
 
                     @Override
@@ -418,10 +424,6 @@ public class CarRecogniseLayout extends LinearLayout {
                                         Series series = manufacturer.getSeriesById(jsonObject.getString("seriesId"));
                                         Model model = series.getModelById(jsonObject.getString("modelId"));
 
-                                        String config = jsonObject.getString("config");
-                                        String category = jsonObject.getString("category");
-                                        String figure = jsonObject.getString("figure");
-
                                         // 根据用户选择的车型的id，记录车型选择spinner的位置
                                         lastCountryIndex = vehicleModel.getCountryNames().indexOf(country.name);
                                         lastBrandIndex = country.getBrandNames().indexOf(brand.name);
@@ -430,7 +432,7 @@ public class CarRecogniseLayout extends LinearLayout {
                                         lastModelIndex = series.getModelNames().indexOf(model.name);
 
                                         // 更新配置信息
-                                        updateCarSettings(config, category, figure);
+                                        updateCarSettings();
 
                                         // 更新UI
                                         updateUi();
@@ -644,24 +646,29 @@ public class CarRecogniseLayout extends LinearLayout {
         enableView(rootView, R.id.engineSerial_edit, false);
 
         if(mCarSettings.getSeries() != null)
-            // 其他页面的显示与ui更新
-            mShowContentCallback.showContent(getEditViewText(rootView, R.id.vin_edit),
-                    getEditViewText(rootView, R.id.plateNumber_edit),
-                    getEditViewText(rootView, R.id.licenseModel_edit),
-                    getEditViewText(rootView, R.id.vehicleType_edit),
-                    getEditViewText(rootView, R.id.useCharacter_edit),
-                    getEditViewText(rootView, R.id.engineSerial_edit),
-                    mCarSettings.getSeries().id,
-                    mCarSettings.getModel().id);
+            // 正常录入
+            if(!modify) {
+                // 其他页面的显示与ui更新
+                mShowContentCallback.showContent(getEditViewText(rootView, R.id.vin_edit),
+                        getEditViewText(rootView, R.id.plateNumber_edit),
+                        getEditViewText(rootView, R.id.licenseModel_edit),
+                        getEditViewText(rootView, R.id.vehicleType_edit),
+                        getEditViewText(rootView, R.id.useCharacter_edit),
+                        getEditViewText(rootView, R.id.engineSerial_edit),
+                        mCarSettings.getSeries().id,
+                        mCarSettings.getModel().id);
+            }
+            // 修改
+            else {
+                mShowContentCallback.modify(Integer.toString(carId));
+            }
+
     }
 
     /**
      * 更新车辆配置信息
-     * @param config 配置信息
-     * @param category 车辆类型
-     * @param figure 车辆标识
      */
-    private void updateCarSettings(String config, String category, String figure) {
+    private void updateCarSettings() {
         Country country = vehicleModel.countries.get(lastCountryIndex - 1);
         Brand brand = country.brands.get(lastBrandIndex - 1);
         Manufacturer manufacturer = brand.manufacturers.get(lastManufacturerIndex - 1);
@@ -671,67 +678,66 @@ public class CarRecogniseLayout extends LinearLayout {
         // 车型
         String brandString = manufacturer.name + " " + series.name + " " + model.name;
 
-        // 排量
-        String displacementString = model.name;
-        if (displacementString.length() > 3) {
-            displacementString = displacementString.substring(0, 3);
-        }
-
         // 更新配置信息类
         mCarSettings.setBrandString(brandString);
-        mCarSettings.setDisplacement(displacementString);
         mCarSettings.setCountry(country);
         mCarSettings.setBrand(brand);
         mCarSettings.setManufacturer(manufacturer);
         mCarSettings.setSeries(series);
         mCarSettings.setModel(model);
 
-        String modelString = model.getName();
-
-        // 将排量框设置文字
-        if(modelString.length() >= 3)
-        {
-            mCarSettings.setDisplacement(modelString.substring(0, 3));
-        }
-
-        // 设置驱动方式Spinner
-        if(modelString.contains("四驱")) {
-            mCarSettings.setDriveType("四驱");
-        } else {
-            mCarSettings.setDriveType("两驱");
-        }
-
-        // 设置变速器形式Spinner
-        if(modelString.contains("A/MT")) {
-            mCarSettings.setTransmission("A/MT");
-        } else if(modelString.contains("MT")) {
-            mCarSettings.setTransmission("MT");
-        } else if(modelString.contains("CVT") || modelString.contains("DSG")) {
-            mCarSettings.setTransmission("CVT");
-        } else {
-            mCarSettings.setTransmission("AT");
-        }
-
-        // 设置配置信息
-        mCarSettings.setConfig(config);
-
-        // 设置车型分类，以用于图片类型判断
-        String categoryArray[] = getResources().getStringArray(R
-                .array.category_item);
-
-        if(Integer.parseInt(category) > 0)
-            mCarSettings.setCategory(categoryArray[Integer.parseInt
-                    (category) - 1]);
-        else
-            mCarSettings.setCategory(categoryArray[Integer.parseInt
-                    (category)]);
-
-        mCarSettings.setFigure(figure);
-
         enableView(rootView, R.id.brand_select_button, true);
     }
 
-    // <editor-fold defaultstate="collapsed" desc="设置各种Spinner">
+    private void modifyCarSettings(String seriesId, String modelId) {
+        // 更新配置信息
+        Country country = null;
+        Brand brand = null;
+        Manufacturer manufacturer = null;
+        Series series = null;
+        Model model = null;
+
+        boolean found = false;
+
+        for(Country country1 : vehicleModel.getCountries()) {
+            for(Brand brand1 : country1.brands) {
+                for(Manufacturer manufacturer1 : brand1.manufacturers) {
+                    for(Series series1 : manufacturer1.serieses) {
+                        if(series1.id.equals(seriesId)) {
+                            manufacturer = manufacturer1;
+                            brand = brand1;
+                            country = country1;
+                            series = series1;
+                            model = series.getModelById(modelId);
+
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(found)
+                        break;
+                }
+                if(found)
+                    break;
+            }
+            if(found)
+                break;
+        }
+
+        mCarSettings.setCountry(country);
+        mCarSettings.setBrand(brand);
+        mCarSettings.setManufacturer(manufacturer);
+        mCarSettings.setSeries(series);
+        mCarSettings.setModel(model);
+
+        // 车型
+        String brandString = manufacturer.name + " " + series.name + " " + model.name;
+
+        // 更新配置信息类
+        mCarSettings.setBrandString(brandString);
+
+        updateUi();
+    }
 
     /**
      * 设置国家Spinner
@@ -789,9 +795,9 @@ public class CarRecogniseLayout extends LinearLayout {
         brandSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(country == null || i == 0) {
+                if (country == null || i == 0) {
                     setManufacturerSpinner(null);
-                } else if(i >= 1) {
+                } else if (i >= 1) {
                     setManufacturerSpinner(country.brands.get(i - 1));
                 }
             }
@@ -944,8 +950,29 @@ public class CarRecogniseLayout extends LinearLayout {
         setEditViewText(rootView, R.id.vin_edit, "LSJDA11A21D012476");
     }
 
+    /**
+     * 修改手续信息时，填入数据
+     * @param jsonString
+     */
     public void fillInData(String jsonString) {
+        modify = true;
 
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+
+            setEditViewText(rootView, R.id.plateNumber_edit, jsonObject.getString("plateNumber"));
+            setEditViewText(rootView, R.id.licenseModel_edit, jsonObject.getString("licenseModel"));
+            setEditViewText(rootView, R.id.vehicleType_edit, jsonObject.getString("vehicleType"));
+            setEditViewText(rootView, R.id.useCharacter_edit, jsonObject.getString("useCharacter"));
+            setEditViewText(rootView, R.id.engineSerial_edit, jsonObject.getString("engineSerial"));
+            setEditViewText(rootView, R.id.vin_edit, jsonObject.getString("vin"));
+
+            modifyCarSettings(jsonObject.getString("seriesId"), jsonObject.getString("modelId"));
+
+            carId = jsonObject.getInt("carId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -955,6 +982,7 @@ public class CarRecogniseLayout extends LinearLayout {
     public interface OnShowContent {
         public void showContent(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial,
             String seriesId, String modelId);
+        public void modify(String carId);
     }
 
     /**

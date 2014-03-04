@@ -90,7 +90,7 @@ public class Integrated3Layout extends LinearLayout {
                 }
 
                 Spinner cooperatorSpinner = (Spinner)findViewById(R.id.cooperatorName_spinner);
-                cooperatorSpinner.setAdapter(new ArrayAdapter(rootView.getContext(),
+                cooperatorSpinner.setAdapter(new ArrayAdapter<String>(rootView.getContext(),
                         android.R.layout.simple_spinner_dropdown_item, cooperatorNames));
 
                 if(!storedCooperatorName.equals("")) {

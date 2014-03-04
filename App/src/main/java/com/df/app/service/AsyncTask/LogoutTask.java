@@ -56,7 +56,7 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
         boolean success;
 
         // 删除文件
-        DeleteRecursive(new File(Common.utilDirectory));
+        //DeleteRecursive(new File(Common.utilDirectory));
 
         JSONObject jsonObject = new JSONObject();
 

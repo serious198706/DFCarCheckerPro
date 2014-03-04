@@ -1,5 +1,6 @@
 package com.df.app.util;
 
+import android.graphics.Color;
 import android.os.Environment;
 
 import com.df.app.R;
@@ -84,6 +85,9 @@ public class Common {
 
     public static final int ENTER_EXTERIOR_PAINT = 0;
     public static final int ENTER_INTERIOR_PAINT = 1;
+
+    // 绘制颜色
+    public static int PAINTCOLOR = Color.rgb(0xEA, 0x55, 0x04);
 
     // 拍摄照片的request code
     public static final int PHOTO_FOR_EXTERIOR_STANDARD = 2;

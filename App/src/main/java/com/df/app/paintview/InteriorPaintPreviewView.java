@@ -78,7 +78,7 @@ public class InteriorPaintPreviewView extends PaintPreviewView {
         paint.setAlpha(0x80);//半透明
 
         // 根据当前类型决定笔触的颜色
-        paint.setColor(type == Common.DIRTY ? Color.RED : Color.BLACK);
+        paint.setColor(Common.PAINTCOLOR);
         paint.setAlpha(0x80);   //80%透明
         paint.setStyle(Paint.Style.STROKE); // 线类型填充
         paint.setStrokeWidth(4);  // 笔触粗细
@@ -93,37 +93,55 @@ public class InteriorPaintPreviewView extends PaintPreviewView {
     }
 
     private void paint(PosEntity entity, Canvas canvas) {
-        RectF rectF;
+        int type = entity.getType();
 
-        // 如果Rect的right < left，或者bottom < top，则会画不出矩形
-        // 为了修正这个，需要做点处理
+        switch (type) {
+            case Common.BROKEN:
+                // 计算半径
+                int dx = Math.abs(entity.getEndX() - entity.getStartX());
+                int dy = Math.abs(entity.getEndY() - entity.getStartY());
+                int dr = (int)Math.sqrt(dx * dx + dy * dy);
 
-        // 右下
-        if(entity.getStartX() < entity.getEndX() &&
-                entity.getStartY() < entity.getEndY()) {
-            rectF = new RectF(entity.getStartX(), entity.getStartY(), entity.getEndX(), entity.getEndY());
-        }
-        // 右上
-        else if(entity.getStartX() < entity.getEndX() &&
-                entity.getStartY() > entity.getEndY()) {
-            rectF = new RectF(entity.getStartX(), entity.getEndY(), entity.getEndX(), entity.getStartY());
-        }
-        // 左下
-        else if(entity.getStartX() > entity.getEndX() &&
-                entity.getStartY() < entity.getEndY()) {
-            rectF = new RectF(entity.getEndX(), entity.getStartY(), entity.getStartX(), entity.getEndY());
-        }
-        // 左上
-        else if(entity.getStartX() > entity.getEndX() &&
-                entity.getStartY() > entity.getEndY()) {
-            rectF = new RectF(entity.getEndX(), entity.getEndY(), entity.getStartX(), entity.getStartY());
-        }
-        // 重合或者默认
-        else {
-            rectF = new RectF(entity.getStartX(), entity.getStartY(), entity.getEndX(), entity.getEndY());
+                // 计算圆心
+                int x0 = (entity.getStartX() + entity.getEndX()) / 2;
+                int y0 = (entity.getStartY() + entity.getEndY()) / 2;
+
+                canvas.drawCircle(x0, y0, dr / 2, getPaint(type));
+                return;
+            case Common.DIRTY:
+                RectF rectF;
+
+                // 如果Rect的right < left，或者bottom < top，则会画不出矩形
+                // 为了修正这个，需要做点处理
+
+                // 右下
+                if(entity.getStartX() < entity.getEndX() &&
+                        entity.getStartY() < entity.getEndY()) {
+                    rectF = new RectF(entity.getStartX(), entity.getStartY(), entity.getEndX(), entity.getEndY());
+                }
+                // 右上
+                else if(entity.getStartX() < entity.getEndX() &&
+                        entity.getStartY() > entity.getEndY()) {
+                    rectF = new RectF(entity.getStartX(), entity.getEndY(), entity.getEndX(), entity.getStartY());
+                }
+                // 左下
+                else if(entity.getStartX() > entity.getEndX() &&
+                        entity.getStartY() < entity.getEndY()) {
+                    rectF = new RectF(entity.getEndX(), entity.getStartY(), entity.getStartX(), entity.getEndY());
+                }
+                // 左上
+                else if(entity.getStartX() > entity.getEndX() &&
+                        entity.getStartY() > entity.getEndY()) {
+                    rectF = new RectF(entity.getEndX(), entity.getEndY(), entity.getStartX(), entity.getStartY());
+                }
+                // 重合或者默认
+                else {
+                    rectF = new RectF(entity.getStartX(), entity.getStartY(), entity.getEndX(), entity.getEndY());
+                }
+
+                canvas.drawRect(rectF, getPaint(entity.getType()));
         }
 
-        canvas.drawRect(rectF, getPaint(entity.getType()));
     }
 }
 

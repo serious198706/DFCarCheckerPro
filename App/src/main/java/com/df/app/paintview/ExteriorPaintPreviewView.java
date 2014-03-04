@@ -80,7 +80,7 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
     private Paint getPaint() {
         Paint paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(Color.BLUE);
+        paint.setColor(Common.PAINTCOLOR);
         paint.setAlpha(0x80);//半透明
         paint.setStyle(Paint.Style.STROKE); //加粗
         paint.setStrokeWidth(4); //宽度

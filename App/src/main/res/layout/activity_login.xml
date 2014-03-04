@@ -27,7 +27,6 @@
             android:maxLines="1"
             android:layout_width="270dp"
             android:layout_height="wrap_content"
-            android:hint="@string/prompt_password"
             android:text="123456"
             android:inputType="textPassword"
             android:background="#00000000"

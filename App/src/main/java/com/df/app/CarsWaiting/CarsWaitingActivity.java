@@ -57,7 +57,7 @@ public class CarsWaitingActivity extends Activity {
             public void onModifyProcedure(CarsWaitingItem item) {
                 Intent intent = new Intent(CarsWaitingActivity.this, InputProceduresActivity.class);
                 intent.putExtra("jsonString", item.getJsonObject().toString());
-                //startActivity(intent);
+                startActivity(intent);
             }
         });
 
@@ -119,6 +119,7 @@ public class CarsWaitingActivity extends Activity {
                 startNumber = 1;
                 data.clear();
                 adapter.notifyDataSetChanged();
+                swipeListView.closeAnimate(lastPos);
                 refresh();
             }
         });
@@ -150,7 +151,7 @@ public class CarsWaitingActivity extends Activity {
     }
 
     /**
-     * 修改或者半路检测时，填上已经保存的内容
+     * 填充待检测列表
      * @param result
      */
     private void fillInData(String result) {
