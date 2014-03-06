@@ -26,8 +26,11 @@ import com.df.app.carCheck.BasicInfoLayout;
 import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Issue;
+import com.df.app.entries.IssuePhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
+import com.df.app.service.Adapter.IssuePhotoListAdapter;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
@@ -37,6 +40,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.df.app.util.Helper.drawTextToBitmap;
 
 public class FramePaintView extends PaintView {
 
@@ -58,12 +63,12 @@ public class FramePaintView extends PaintView {
     private int max_x, max_y;
 
     private String sight;
-    private int issueId;
-    private String comment;
 
     private long currentTimeMillis;
 
-    public long getCurrentTimeMillis() {return currentTimeMillis;}
+    private Issue issue;
+    private IssuePhotoListAdapter adapter;
+    private Context context;
 
     public FramePaintView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -80,12 +85,13 @@ public class FramePaintView extends PaintView {
         //init();
     }
 
-    public void init(Bitmap bitmap, List<PosEntity> entities, String sight, int issueId, String comment) {
+    public void init(Context context, Bitmap bitmap, Issue issue, IssuePhotoListAdapter adapter, List<PosEntity> entities, String sight) {
+        this.context = context;
         this.bitmap = bitmap;
+        this.issue = issue;
         this.data = entities;
         this.sight = sight;
-        this.issueId = issueId;
-        this.comment = comment;
+        this.adapter = adapter;
 
         max_x = bitmap.getWidth();
         max_y = bitmap.getHeight();
@@ -129,13 +135,14 @@ public class FramePaintView extends PaintView {
                     entity.setImageFileName(Long.toString(currentTimeMillis) + ".jpg");
 
                     // 按下时就设置issueId(由Adapter传来)
-                    entity.setIssueId(issueId);
+                    entity.setIssueId(issue.getId());
 
                     // 按下时就设置comment(由Adapter传来)
-                    entity.setComment(comment);
+                    entity.setComment(issue.getDesc());
 
                     data.add(entity);
                     thisTimeNewData.add(entity);
+                    issue.addPos(entity);
                 } else if(event.getAction() == MotionEvent.ACTION_MOVE){
                         entity = data.get(data.size() - 1);
                         entity.setStart(x, y);
@@ -152,12 +159,14 @@ public class FramePaintView extends PaintView {
     };
 
     private void paint(Canvas canvas) {
-        for (PosEntity entity : data) {
-            paint(entity, canvas);
+        for(int i = 0; i < issue.getPosEntities().size(); i++) {
+            PosEntity entity = issue.getPosEntities().get(i);
+            paint(entity, i, canvas);
         }
     }
 
-    private void paint(PosEntity entity, Canvas canvas) {
+    private void paint(PosEntity entity, int index, Canvas canvas) {
+        damageBitmap = drawTextToBitmap(context, R.drawable.damage, index + 1);
         canvas.drawBitmap(damageBitmap, entity.getStartX(), entity.getStartY(), null);
     }
 
@@ -177,6 +186,11 @@ public class FramePaintView extends PaintView {
 
                 ((Activity)getContext()).startActivityForResult(intent,
                         sight.equals("F") ? Common.PHOTO_FOR_ACCIDENT_FRONT : Common.PHOTO_FOR_ACCIDENT_REAR);
+
+                // 拍照的时候，记录当前的issue & adapter & thisTimeNewPhoto
+                AccidentResultLayout.issue = issue;
+                AccidentResultLayout.adapter = adapter;
+                AccidentResultLayout.thisTimeNewPhoto = thisTimeNewPhoto;
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -191,6 +205,14 @@ public class FramePaintView extends PaintView {
                 PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
 
                 photo.add(photoEntity);
+                thisTimeNewPhoto.add(photoEntity);
+                issue.addPhoto(photoEntity);
+
+                int index = adapter.getCount();
+                IssuePhoto issuePhoto = new IssuePhoto(index, photoEntity.getThumbFileName(),
+                        photoEntity.getComment());
+                adapter.addItem(issuePhoto);
+                adapter.notifyDataSetChanged();
             }
         }).setCancelable(false);
 
@@ -266,32 +288,56 @@ public class FramePaintView extends PaintView {
         return "结构缺陷";
     }
 
-
+    // 清除
     @Override
     public void clear() {
-        if(!data.isEmpty()) {
-            data.clear();
+        // 如果此issue有数据
+        if(!issue.getPosEntities().isEmpty()) {
+            // 从所有点的集合（前方视角或后方视角）中删掉此issue的所有点
+            data.removeAll(issue.getPosEntities());
+
+            // 回撤的点
             undoData.clear();
+
+            // 此次新添加的点
             thisTimeNewData.clear();
+
+            // 此issue的点
+            issue.clearPos();
+
+            // 刷新视图
             invalidate();
         }
-        if(!photo.isEmpty()) {
-            photo.clear();
+
+        // 如果此issue有数据
+        if(!issue.getPhotoEntities().isEmpty()) {
+            // 从所有照片的集合（前方视角或后方视角）中删掉此issue的所有照片
+            data.removeAll(issue.getPhotoEntities());
+
+            // 回撤的照片
             undoPhoto.clear();
+
+            // 此次新添加的照片
             thisTimeNewPhoto.clear();
+
+            // 此issue的照片
+            issue.clearPhoto();
         }
+
     }
 
     @Override
     public void undo() {
-        if(!data.isEmpty()) {
+        if(!issue.getPosEntities().isEmpty()) {
             undoData.add(data.get(data.size() - 1));
             data.remove(data.size() - 1);
+            issue.removeLastPos();
             invalidate();
         }
         if(!photo.isEmpty()) {
             undoPhoto.add(photo.get(photo.size() - 1));
             photo.remove(photo.size() - 1);
+            issue.removeLastPhoto();
         }
     }
 
@@ -300,11 +346,13 @@ public class FramePaintView extends PaintView {
         if(!undoData.isEmpty()) {
             data.add(undoData.get(undoData.size() - 1));
             undoData.remove(undoData.size() - 1);
+            issue.addPos(undoData.get(undoData.size() - 1));
             invalidate();
         }
         if(!undoPhoto.isEmpty()) {
             photo.add(undoPhoto.get(undoPhoto.size() - 1));
             undoPhoto.remove(undoPhoto.size() - 1);
+            issue.addPhoto(undoPhoto.get(undoPhoto.size() - 1));
         }
     }
 
@@ -313,11 +361,14 @@ public class FramePaintView extends PaintView {
         if(!thisTimeNewData.isEmpty()) {
             for(int i = 0; i < thisTimeNewData.size(); i++) {
                 data.remove(thisTimeNewData.get(i));
+                issue.remove(thisTimeNewData.get(i));
+                adapter.remove(adapter.getCount() - 1);
             }
         }
         if(!thisTimeNewPhoto.isEmpty()) {
             for(int i = 0; i < thisTimeNewPhoto.size(); i++) {
                 photo.remove(thisTimeNewPhoto.get(i));
+                issue.remove(thisTimeNewPhoto.get(i));
             }
         }
     }

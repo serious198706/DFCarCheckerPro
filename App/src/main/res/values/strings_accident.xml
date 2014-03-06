@@ -64,6 +64,7 @@
     <string name="no">否</string>
 
     <string name="issue">查勘项: </string>
+    <string name="issue_back">&lt;查勘项</string>
 
     <string name="front">前方视角: </string>
     <string name="rear">后方视角: </string>
@@ -82,4 +83,6 @@
     <string name="not_connected">没有连接到设备</string>
     <string name="lost_connection">失去与设备的连接！</string>
     <string name="need_bluetooth">未打开蓝牙，无法连接设备！</string>
+
+    <string name="confirmDelete">确认删除此条目？</string>
 </resources>

@@ -1,7 +1,13 @@
 package com.df.app.util;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -395,5 +401,45 @@ public class Helper {
             sb.append(sTemp.toUpperCase());
         }
         return sb.toString();
+    }
+
+    public static Bitmap drawTextToBitmap(Context context, int resourceId,  int index) {
+        try {
+            float scale = context.getResources().getDisplayMetrics().density;
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId);
+
+            android.graphics.Bitmap.Config bitmapConfig = bitmap.getConfig();
+            // 保险起见，从原bitmap将bitmapConfig拷贝过来
+            if(bitmapConfig == null) {
+                bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
+            }
+            // 将imutableBitmap变成mutableBitmap
+            bitmap = bitmap.copy(bitmapConfig, true);
+
+            Canvas canvas = new Canvas(bitmap);
+
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+            // 文字颜色
+            paint.setColor(Color.WHITE);
+            // 文字大小
+            paint.setTextSize((int) (12 * scale));
+            // 加个小影子~
+            paint.setShadowLayer(1f, 0f, 1f, Color.DKGRAY);
+
+            // 往图片上写文字
+            Rect bounds = new Rect();
+            String text = Integer.toString(index);
+            paint.getTextBounds(text, 0, text.length(), bounds);
+
+            int x = (bitmap.getWidth() - bounds.width()) / 5;
+            int y = (bitmap.getHeight() + bounds.height()) / 4;
+
+            canvas.drawText(text, x * scale, y * scale, paint);
+
+            return bitmap;
+        } catch (Exception e) {
+            return BitmapFactory.decodeResource(context.getResources(), resourceId);
+        }
     }
 }

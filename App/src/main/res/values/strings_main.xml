@@ -7,4 +7,6 @@
     <string name="commitMsg">确定提交检测信息？</string>
     <string name="saveMsg">确定保存此次检测信息？</string>
     <string name="inputComment">填写备注信息：</string>
+    <string name="addComment">&lt;添加照片备注</string>
+    <string name="discardComment">放弃已填写的备注信息？</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.df.app.entries;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
  *
  * 问题查勘
  */
-public class Issue {
+public class Issue implements Serializable {
     // 问题id
     private int id;
 
@@ -30,6 +31,9 @@ public class Issue {
     // 对应此issue所绘制的点的集合
     private List<PosEntity> posEntities;
 
+    // 对应此issue所拍摄的图片
+    private List<PhotoEntity> photoEntities;
+
     public Issue() {
         super();
     }
@@ -44,6 +48,7 @@ public class Issue {
         this.select = select;
 
         this.posEntities = new ArrayList<PosEntity>();
+        this.photoEntities = new ArrayList<PhotoEntity>();
     }
 
     public int getId() {
@@ -100,5 +105,37 @@ public class Issue {
 
     public void setPosEntities(List<PosEntity> posEntities) {
         this.posEntities = posEntities;
+    }
+
+    public List<PhotoEntity> getPhotoEntities() {
+        return photoEntities;
+    }
+
+    public void setPhotoEntities(List<PhotoEntity> photoEntities) {
+        this.photoEntities = photoEntities;
+    }
+
+    public void addPos(PosEntity posEntity) { this.posEntities.add(posEntity); }
+
+    public void removeLastPos() { this.posEntities.remove(this.posEntities.size() - 1); }
+
+    public void addPhoto(PhotoEntity photoEntity) { this.photoEntities.add(photoEntity); }
+
+    public void removeLastPhoto() { this.photoEntities.remove(this.photoEntities.size() - 1); }
+
+    public void clearPos() {
+        this.posEntities.clear();
+    }
+
+    public void clearPhoto() {
+        this.photoEntities.clear();
+    }
+
+    public void remove(PosEntity posEntity) {
+        this.posEntities.remove(posEntity);
+    }
+
+    public void remove(PhotoEntity photoEntity) {
+        this.photoEntities.remove(photoEntity);
     }
 }

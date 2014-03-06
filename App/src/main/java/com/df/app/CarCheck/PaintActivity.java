@@ -478,6 +478,7 @@ public class PaintActivity extends Activity {
 
             startX = x0;
             startY = y0;
+            endX = endY = 0;
             radius = dr / 2;
         }
 

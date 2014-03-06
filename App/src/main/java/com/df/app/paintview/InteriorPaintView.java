@@ -324,7 +324,6 @@ public class InteriorPaintView extends PaintView {
     }
 
     // 获取该paintView的一些内容
-    public long getCurrentTimeMillis() {return currentTimeMillis;}
     public PosEntity getPosEntity(){
         if(data.isEmpty()){
             return null;

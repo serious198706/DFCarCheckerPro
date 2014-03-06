@@ -3,57 +3,91 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
+    <RelativeLayout android:id="@+id/naviBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+        <ImageView android:id="@+id/banner"
+                   android:layout_width="match_parent"
+                   android:layout_height="52dp"
+                   android:background="#AA030A"/>
+
+        <TextView android:id="@+id/currentItem"
+                  android:layout_width="wrap_content"
+                  android:layout_height="36dp"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginTop="6dp"
+                  android:textColor="#FFF"
+                  android:textSize="28sp"/>
+
+        <Button android:id="@+id/done"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="8dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/commit"/>
+    </RelativeLayout>
+
     <com.df.app.paintview.FramePaintView android:id="@+id/image"
         android:layout_width="500dp"
-        android:layout_height="335dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_height="350dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/naviBar"/>
 
-    <LinearLayout android:id="@+id/paintMenu"
+    <LinearLayout android:id="@+id/menus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
+        android:orientation="vertical"
         android:layout_below="@id/image">
-        <include layout="@layout/paint_menu"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/paintMenu">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="40dp"
+        <TextView android:id="@+id/issueDesc"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:textColor="#555"
             android:textSize="18sp"
-            android:text="@string/chooseLightHeavy"
-            android:gravity="right|center_vertical"/>
-        <RadioGroup android:id="@+id/serious"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="2"
-                    android:orientation="horizontal">
-            <RadioButton android:id="@+id/light"
-                         android:layout_width="0dp"
-                         android:layout_height="wrap_content"
-                         android:layout_weight="1"
-                         android:text="@string/light"
-                         android:textColor="#555"
-                         android:textSize="18sp"
-                         android:button="@drawable/radio_button"/>
-            <RadioButton android:id="@+id/heavy"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_weight="1"
-                         android:text="@string/heavy"
-                         android:textColor="#555"
-                         android:textSize="18sp"
-                         android:button="@drawable/radio_button"/>
-        </RadioGroup>
+            android:text="问题描述"
+            android:gravity="center"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:textColor="#555"
+                android:textSize="18sp"
+                android:text="@string/chooseLightHeavy"
+                android:gravity="right|center_vertical"/>
+            <RadioGroup android:id="@+id/serious"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="2"
+                        android:orientation="horizontal">
+                <RadioButton android:id="@+id/light"
+                             android:layout_width="0dp"
+                             android:layout_height="wrap_content"
+                             android:layout_weight="1"
+                             android:text="@string/light"
+                             android:textColor="#555"
+                             android:textSize="18sp"
+                             android:button="@drawable/radio_button"/>
+                <RadioButton android:id="@+id/heavy"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:layout_weight="1"
+                             android:text="@string/heavy"
+                             android:textColor="#555"
+                             android:textSize="18sp"
+                             android:button="@drawable/radio_button"/>
+            </RadioGroup>
+        </LinearLayout>
     </LinearLayout>
-
+    <ListView android:id="@+id/issuePhotoList"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_below="@id/menus">
+    </ListView>
 </RelativeLayout>

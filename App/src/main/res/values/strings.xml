@@ -22,5 +22,8 @@
     <string name="title_activity_cars_waiting">CarsWaitingActivity</string>
     <string name="title_activity_procedures">ProceduresActivity</string>
     <string name="title_activity_add_photo_comment">AddPhotoCommentActivity</string>
+    <string name="title_activity_frame_paint">FramePaintActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

@@ -50,6 +50,11 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
         this.items.add(item);
     }
 
+    public void removeItem(PhotoEntity item) {
+        if(this.items.contains(item))
+            this.items.remove(item);
+    }
+
     public List<PhotoEntity> getItems() {
         return items;
     }

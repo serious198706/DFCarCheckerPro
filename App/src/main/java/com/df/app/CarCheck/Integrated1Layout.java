@@ -68,6 +68,7 @@ public class Integrated1Layout extends LinearLayout{
             R.id.rearPowerSeats_spinner,
             R.id.ahc_spinner,
             R.id.parkAssist_spinner};
+
     public static boolean finished = false;
     private JSONObject function;
 

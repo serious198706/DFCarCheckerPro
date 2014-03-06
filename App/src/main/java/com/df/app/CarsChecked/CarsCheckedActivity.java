@@ -118,6 +118,7 @@ public class CarsCheckedActivity extends Activity {
                 startNumber = 1;
                 data.clear();
                 adapter.notifyDataSetChanged();
+                swipeListView.closeAnimate(lastPos);
                 refresh();
             }
         });

@@ -114,8 +114,8 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
      * @return 是否需要升级
      */
     private boolean compareVersion(String localVersion, String serverVersion) {
-        String[] localVersionArray = localVersion.split(".");
-        String[] serverVersionArray = serverVersion.split(".");
+        String[] localVersionArray = localVersion.split("\\.");
+        String[] serverVersionArray = serverVersion.split("\\.");
 
         if(Integer.parseInt(localVersionArray[0]) < Integer.parseInt(serverVersionArray[0])) {
             return true;
