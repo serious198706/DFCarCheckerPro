@@ -454,4 +454,10 @@ public class ExteriorLayout extends LinearLayout {
         CheckBox checkBox = (CheckBox)findViewById(R.id.needRepair);
         checkBox.setChecked(exterior.getString("needRepair").equals("是"));
     }
+
+    public void clearCache() {
+        posEntities = null;
+        photoEntities = null;
+        exteriorPaintPreviewView = null;
+    }
 }

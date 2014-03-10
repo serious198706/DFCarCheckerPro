@@ -22,6 +22,8 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.df.app.R;
+import com.df.app.carCheck.AddPhotoCommentActivity;
+import com.df.app.carCheck.IssueLayout;
 import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.entries.Issue;
 import com.df.app.entries.IssuePhoto;
@@ -94,11 +96,38 @@ public class IssuePhotoListAdapter extends BaseAdapter {
             indexImage.setImageBitmap(drawTextToBitmap(context, R.drawable.damage, position + 1));
 
             ImageView photo = (ImageView)view.findViewById(R.id.issuePhoto);
-            Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + issuePhoto.getFileName());
-            photo.setImageBitmap(bitmap);
+
+            if(issuePhoto.getFileName() == null || issuePhoto.getFileName().equals("")) {
+                final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera);
+                photo.setImageBitmap(bitmap);
+            } else {
+                final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + issuePhoto.getFileName());
+                photo.setImageBitmap(bitmap);
+            }
+
+            //TODO 点击图片之后要做什么？
+            photo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
 
             TextView comment = (TextView)view.findViewById(R.id.issueComment);
             comment.setText(issuePhoto.getDesc());
+            comment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    IssueLayout.photoEntityModify = issue.getPhotoEntities().get(position);
+                    IssueLayout.issuePhoto = issuePhoto;
+                    IssueLayout.photoListAdapter = IssuePhotoListAdapter.this;
+
+                    Intent intent = new Intent(context, AddPhotoCommentActivity.class);
+                    intent.putExtra("fileName", issuePhoto.getFileName());
+                    intent.putExtra("comment", ((TextView)view).getText().toString());
+                    ((Activity)context).startActivityForResult(intent, Common.MODIFY_COMMENT);
+                }
+            });
 
             Button deleteButton = (Button)view.findViewById(R.id.delete);
             deleteButton.setOnClickListener(new View.OnClickListener() {

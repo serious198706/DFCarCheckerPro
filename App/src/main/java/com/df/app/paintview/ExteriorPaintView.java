@@ -39,6 +39,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.df.app.util.Helper.getBitmapHeight;
+import static com.df.app.util.Helper.getBitmapWidth;
+
 public class ExteriorPaintView extends PaintView {
     private int currentType = Common.COLOR_DIFF;
     private boolean move;
@@ -336,6 +339,8 @@ public class ExteriorPaintView extends PaintView {
             photoJsonObject.put("startY", startY);
             photoJsonObject.put("endX", endX);
             photoJsonObject.put("endY", endY);
+            photoJsonObject.put("width", getBitmapWidth(posEntity.getImageFileName()));
+            photoJsonObject.put("height", getBitmapHeight(posEntity.getImageFileName()));
             photoJsonObject.put("radius", radius);
             photoJsonObject.put("comment", posEntity.getComment());
 

@@ -34,6 +34,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.df.app.util.Helper.getBitmapHeight;
+import static com.df.app.util.Helper.getBitmapWidth;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -496,6 +498,8 @@ public class PaintActivity extends Activity {
             photoJsonObject.put("startY", startY);
             photoJsonObject.put("endX", endX);
             photoJsonObject.put("endY", endY);
+            photoJsonObject.put("width", getBitmapWidth(posEntity.getImageFileName()));
+            photoJsonObject.put("height", getBitmapHeight(posEntity.getImageFileName()));
             photoJsonObject.put("radius", radius);
             photoJsonObject.put("comment", posEntity.getComment());
 

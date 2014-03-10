@@ -250,7 +250,7 @@ public class Helper {
     }
 
     /**
-     * 重
+     *
      * @param fileName
      * @param max
      */
@@ -293,6 +293,18 @@ public class Helper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // 获取图片宽度
+    public static int getBitmapWidth(String fileName) {
+        Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + fileName);
+        return bitmap == null ? 0 : bitmap.getWidth();
+    }
+
+    // 获取图片高度
+    public static int getBitmapHeight(String fileName) {
+        Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + fileName);
+        return bitmap == null ? 0 : bitmap.getHeight();
     }
 
     // 生成缩略图

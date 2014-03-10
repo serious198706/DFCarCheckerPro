@@ -426,4 +426,10 @@ public class InteriorLayout extends LinearLayout {
         setSpinnerSelectionWithString(rootView, R.id.sealingStrip_spinner, interior.getString("sealingStrip"));
         setEditViewText(rootView, R.id.interior_comment_edit, interior.getString("comment"));
     }
+
+    public void clearCache() {
+        posEntities = null;
+        photoEntities = null;
+        interiorPaintPreviewView = null;
+    }
 }

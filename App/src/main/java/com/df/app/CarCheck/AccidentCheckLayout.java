@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.df.app.R;
+import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.service.MyOnClick;
@@ -122,6 +123,7 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
      */
     public void updatePreviews() {
         accidentResultLayout.updateUi();
+        issueLayout.drawSketch();
     }
 
     /**
@@ -260,5 +262,18 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         }
 
         return loaded ? "" : "accidentCheck";
+    }
+
+    public List<Issue> getIssues() {
+        return issueLayout.getIssues();
+    }
+
+    public void modifyComment(String comment) {
+        issueLayout.modifyComment(comment);
+    }
+
+    public void clearCache() {
+        issueLayout.clearCache();
+        accidentResultLayout.clearCache();
     }
 }

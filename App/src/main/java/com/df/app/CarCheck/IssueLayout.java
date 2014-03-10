@@ -1,5 +1,6 @@
 package com.df.app.carCheck;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,9 +10,12 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,9 +25,12 @@ import android.widget.Toast;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.Issue;
+import com.df.app.entries.IssuePhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.IssueListAdapter;
+import com.df.app.service.Adapter.IssuePhotoListAdapter;
 import com.df.app.util.Common;
+import com.df.app.util.QuickReturnListView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +39,7 @@ import org.json.JSONObject;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -45,11 +53,26 @@ public class IssueLayout extends LinearLayout {
     private ArrayList<Issue> issueList;
     private ImageView imageView;
 
+    public static IssuePhoto issuePhoto;
+    public static PhotoEntity photoEntityModify;
+    public static IssuePhotoListAdapter photoListAdapter;
+
     // 图片层
     private ArrayList<Drawable> drawableList;
 
-    // 最后会用到，所以保
+    // 最后会用到，所以保存起来
     private JSONObject sketch;
+
+    // 上部，消失部分
+    private View header;
+
+    // 问题列表
+    private ListView issueListView;
+
+    // 因爲畫圖佔用時間太長，耗費資源太多，所以放到後面執行，寫在一個線程裏
+    private Runnable r;
+    private String level1;
+    private String level2;
 
     public IssueLayout(Context context) {
         super(context);
@@ -69,15 +92,17 @@ public class IssueLayout extends LinearLayout {
     private void init(Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.issue_layout, this);
 
-        ListView issueListView = (ListView) findViewById(R.id.issue_list);
+        issueListView = (ListView) findViewById(R.id.issue_list);
+        header = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.issue_header, null);
 
         issueList  = new ArrayList<Issue>();
 
         adapter = new IssueListAdapter(context, issueList);
 
         issueListView.setAdapter(adapter);
+        issueListView.addHeaderView(header);
 
-        imageView = (ImageView)findViewById(R.id.issue_image);
+        imageView = (ImageView)header.findViewById(R.id.issue_image);
 
         issueListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -98,6 +123,16 @@ public class IssueLayout extends LinearLayout {
                 }
             }
         });
+
+        // 画图
+        r = new Runnable() {
+            @Override
+            public void run() {
+                drawBase();
+                drawSketch(handelLevelNames(level1, 1));
+                drawSketch(handelLevelNames(level2, 2));
+            }
+        };
     }
 
     private void showShadow(boolean show) {
@@ -122,8 +157,8 @@ public class IssueLayout extends LinearLayout {
             // 获取覆盖件等级
             sketch = jsonObject.getJSONObject("sketch");
 
-            String level1 = sketch.getString("level1");
-            String level2 = sketch.getString("level2");
+            level1 = sketch.getString("level1");
+            level2 = sketch.getString("level2");
 
             // 获取问题列表
             JSONArray jsonArray = jsonObject.getJSONArray("issueItem");
@@ -147,10 +182,7 @@ public class IssueLayout extends LinearLayout {
 
             adapter.notifyDataSetChanged();
 
-            // 画图
-            drawBase();
-            drawSketch(handelLevelNames(level1, 1));
-            drawSketch(handelLevelNames(level2, 2));
+            r.run();
 
             if(progressDialog != null)
                 progressDialog.dismiss();
@@ -206,6 +238,7 @@ public class IssueLayout extends LinearLayout {
             for(String layerName : partNames) {
                 Bitmap bitmap = BitmapFactory.decodeFile(Common.utilDirectory + layerName);
                 Drawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+                bitmap = null;
                 drawableList.add(bitmapDrawable);
             }
 
@@ -325,5 +358,26 @@ public class IssueLayout extends LinearLayout {
      */
     public void fillInData(JSONObject issue) {
         fillInData(issue.toString(), null);
+    }
+
+    public List<Issue> getIssues() {
+        return issueList;
+    }
+
+    public void drawSketch() {
+
+    }
+
+    public void modifyComment(String comment) {
+        photoEntityModify.setComment(comment);
+        issuePhoto.setDesc(comment);
+        photoListAdapter.notifyDataSetChanged();
+        PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+    }
+
+    public void clearCache() {
+        issuePhoto = null;
+        photoListAdapter = null;
+        photoEntityModify = null;
     }
 }

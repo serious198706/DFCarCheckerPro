@@ -111,6 +111,13 @@ public class Integrated1Layout extends LinearLayout{
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 enableView(rootView, R.id.airConditioningTemp_edit, i <= 1);
+
+                ((TextView) adapterView.getChildAt(0)).setTextColor(i >= 1 ? Color.RED : Color.BLACK);
+
+                // 当选择项为“无”时，还应为黑色字体
+                if(adapterView.getSelectedItem().toString().equals("无")) {
+                    ((TextView) adapterView.getChildAt(0)).setTextColor(Color.BLACK);
+                }
             }
 
             @Override

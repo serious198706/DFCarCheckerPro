@@ -12,10 +12,13 @@ import android.widget.LinearLayout;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Issue;
+import com.df.app.entries.IssuePhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintview.FramePaintPreviewView;
 import com.df.app.paintview.PaintPreviewView;
+import com.df.app.service.Adapter.IssuePhotoListAdapter;
 import com.df.app.util.Common;
 
 import org.json.JSONException;
@@ -25,12 +28,18 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.df.app.util.Helper.getBitmapHeight;
+import static com.df.app.util.Helper.getBitmapWidth;
+
 /**
  * Created by 岩 on 13-12-20.
  *
  * 查勘结果页面
  */
 public class AccidentResultLayout extends LinearLayout {
+    public static Issue issue;
+    public static IssuePhotoListAdapter adapter;
+    public static List<PhotoEntity> thisTimeNewPhoto;
 
     public static FramePaintPreviewView framePaintPreviewViewFront;
     public static FramePaintPreviewView framePaintPreviewViewRear;
@@ -114,6 +123,14 @@ public class AccidentResultLayout extends LinearLayout {
                 : AccidentResultLayout.photoEntitiesRear;
 
         photoEntities.add(photoEntity);
+        issue.addPhoto(photoEntity);
+        thisTimeNewPhoto.add(photoEntity);
+
+        int index = adapter.getCount() + 1;
+        IssuePhoto issuePhoto = new IssuePhoto(index, photoEntity.getThumbFileName(),
+                photoEntity.getComment());
+        adapter.addItem(issuePhoto);
+        adapter.notifyDataSetChanged();
 
         PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
@@ -138,6 +155,8 @@ public class AccidentResultLayout extends LinearLayout {
 
             photoJsonObject.put("x", posEntity.getStartX());
             photoJsonObject.put("y", posEntity.getStartY());
+            photoJsonObject.put("width", getBitmapWidth(posEntity.getImageFileName()));
+            photoJsonObject.put("height", getBitmapHeight(posEntity.getImageFileName()));
             photoJsonObject.put("issueId", posEntity.getIssueId());
             photoJsonObject.put("comment", posEntity.getComment());
 
@@ -257,5 +276,19 @@ public class AccidentResultLayout extends LinearLayout {
         photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;
+    }
+
+    public void clearCache() {
+        issue = null;
+        adapter = null;
+        thisTimeNewPhoto = null;
+        framePaintPreviewViewFront = null;
+        framePaintPreviewViewRear = null;
+        previewBitmapFront = null;
+        previewBitmapRear = null;
+        posEntitiesFront = null;
+        posEntitiesRear = null;
+        photoEntitiesFront = null;
+        photoEntitiesRear = null;
     }
 }

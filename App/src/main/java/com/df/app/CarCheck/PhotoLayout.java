@@ -220,5 +220,32 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
         }
     }
 
+    public void clearCache() {
+        PhotoExteriorLayout.photoListAdapter = null;
+        for(int i = 0; i < PhotoExteriorLayout.photoShotCount.length; i++) {
+            PhotoExteriorLayout.photoShotCount[i] = 0;
+        }
 
+        PhotoInteriorLayout.photoListAdapter = null;
+        for(int i = 0; i < PhotoInteriorLayout.photoShotCount.length; i++) {
+            PhotoInteriorLayout.photoShotCount[i] = 0;
+        }
+
+        PhotoEngineLayout.photoListAdapter = null;
+        for(int i = 0; i < PhotoEngineLayout.photoShotCount.length; i++) {
+            PhotoEngineLayout.photoShotCount[i] = 0;
+        }
+
+        PhotoProcedureLayout.photoListAdapter = null;
+        for(int i = 0; i < PhotoProcedureLayout.photoShotCount.length; i++) {
+            PhotoProcedureLayout.photoShotCount[i] = 0;
+        }
+
+        for(int i = 0; i < Integrated2Layout.photoShotCount.length; i++) {
+            Integrated2Layout.photoShotCount[i] = 0;
+        }
+
+        PhotoOtherLayout.photoListAdapter = null;
+        PhotoOtherLayout.photoShotCount = 0;
+    }
 }

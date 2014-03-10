@@ -19,6 +19,7 @@ import com.df.app.carsChecked.CarsCheckedActivity;
 import com.df.app.carsWaiting.CarsWaitingActivity;
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.service.AsyncTask.CommitDataTask;
@@ -36,6 +37,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.df.app.util.Helper.getBitmapHeight;
+import static com.df.app.util.Helper.getBitmapWidth;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -76,7 +79,7 @@ public class CarCheckActivity extends Activity {
         Bundle bundle = getIntent().getExtras();
 
         // 获取车辆详细信息
-        String jsonString = bundle.getString("jsonString");
+        final String jsonString = bundle.getString("jsonString");
         carId = bundle.getInt("carId");
         activity = (Class)getIntent().getSerializableExtra("activity");
 
@@ -255,7 +258,6 @@ public class CarCheckActivity extends Activity {
             }
         });
 
-        // 填充数据
         fillInData(carId, jsonString);
     }
 
@@ -489,6 +491,12 @@ public class CarCheckActivity extends Activity {
             // 外观内饰照片备注
             case Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO:
                 break;
+            // 修改备注
+            case Common.MODIFY_COMMENT:
+                Bundle bundle = data.getExtras();
+
+                accidentCheckLayout.modifyComment(bundle.getString("COMMENT"));
+                break;
             // 外观标准照
             case Common.PHOTO_FOR_EXTERIOR_STANDARD:
                 if(resultCode == Activity.RESULT_OK) {
@@ -537,11 +545,23 @@ public class CarCheckActivity extends Activity {
                     accidentCheckLayout.stopBluetoothService();
                 }
                 break;
-            // TODO 对某张照片重拍
             case Common.PHOTO_RETAKE:
                 if(resultCode == Activity.RESULT_OK) {
-                    Helper.setPhotoSize(PhotoLayout.reTakePhotoEntity.getFileName(), 800);
-                    Helper.generatePhotoThumbnail(PhotoLayout.reTakePhotoEntity.getFileName(), 400);
+                    // 替换原photoEntity中的宽度与高度数据
+                    PhotoEntity temp = PhotoLayout.reTakePhotoEntity;
+                    try {
+                        JSONObject jsonObject1 = new JSONObject(temp.getJsonString());
+                        JSONObject photoData = jsonObject1.getJSONObject("PhotoData");
+                        photoData.put("width", getBitmapWidth(temp.getFileName()));
+                        photoData.put("height", getBitmapHeight(temp.getFileName()));
+
+                        jsonObject1.put("PhotoData", photoData);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Helper.setPhotoSize(temp.getFileName(), 800);
+                    Helper.generatePhotoThumbnail(temp.getFileName(), 400);
 
                     PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
                     PhotoInteriorLayout.photoListAdapter.notifyDataSetChanged();
@@ -685,12 +705,27 @@ public class CarCheckActivity extends Activity {
                 int type = photoData.getInt("type");
                 PosEntity posEntity = new PosEntity(type);
 
-                posEntity.setStart(photoData.getInt("startX"), photoData.getInt("startY"));
-                posEntity.setEnd(photoData.getInt("endX"), photoData.getInt("endY"));
-
+                // 设置边界
                 posEntity.setMaxX(1000);
                 posEntity.setMaxY(2000);
-                //posEntity.setMaxY(1407);
+
+                int startX, startY, endX, endY, radius;
+
+                if(type == Common.TRANS || type == Common.BROKEN) {
+                    radius = photoData.getInt("radius");
+                    startX = photoData.getInt("startX") - radius;
+                    startY = photoData.getInt("startY") - radius;
+                    endX = photoData.getInt("startX") + radius;
+                    endY = photoData.getInt("startY") + radius;
+                } else {
+                    startX = photoData.getInt("startX");
+                    startY = photoData.getInt("startY");
+                    endX = photoData.getInt("endX");
+                    endY = photoData.getInt("endY");
+                }
+
+                posEntity.setStart(startX, startY);
+                posEntity.setEnd(endX, endY);
                 posEntity.setComment(photoData.getString("comment"));
 
                 ExteriorLayout.posEntities.add(posEntity);
@@ -760,17 +795,27 @@ public class CarCheckActivity extends Activity {
                 posEntity.setIssueId(photoData.getInt("issueId"));
                 posEntity.setComment(photoData.getString("comment"));
 
+                List<Issue> issues = accidentCheckLayout.getIssues();
+
+                for(Issue issue : issues) {
+                    if(issue.getId() == photoData.getInt("issueId")) {
+                        issue.getPosEntities().add(posEntity);
+                        issue.getPhotoEntities().add(photoEntity);
+                    }
+                }
+
                 if(part.equals("front")) {
                     AccidentResultLayout.posEntitiesFront.add(posEntity);
+                    AccidentResultLayout.photoEntitiesFront.add(photoEntity);
                     AccidentResultLayout.framePaintPreviewViewFront.invalidate();
-                    PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
-                    PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
                 } else if(part.equals("rear")){
                     AccidentResultLayout.posEntitiesRear.add(posEntity);
+                    AccidentResultLayout.photoEntitiesRear.add(photoEntity);
                     AccidentResultLayout.framePaintPreviewViewRear.invalidate();
-                    PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
-                    PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
                 }
+
+                PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
             }
         }
         // 手续组
@@ -878,24 +923,9 @@ public class CarCheckActivity extends Activity {
      * 退出时，清除一些静态数据
      */
     private void clearCache() {
-        for(int i = 0; i < PhotoExteriorLayout.photoShotCount.length; i++) {
-            PhotoExteriorLayout.photoShotCount[i] = 0;
-        }
-        for(int i = 0; i < PhotoInteriorLayout.photoShotCount.length; i++) {
-            PhotoInteriorLayout.photoShotCount[i] = 0;
-        }
-        for(int i = 0; i < PhotoEngineLayout.photoShotCount.length; i++) {
-            PhotoEngineLayout.photoShotCount[i] = 0;
-        }
-        for(int i = 0; i < PhotoProcedureLayout.photoShotCount.length; i++) {
-            PhotoProcedureLayout.photoShotCount[i] = 0;
-        }
-        for(int i = 0; i < PhotoEngineLayout.photoShotCount.length; i++) {
-            PhotoEngineLayout.photoShotCount[i] = 0;
-        }
-        for(int i = 0; i < Integrated2Layout.photoShotCount.length; i++) {
-            Integrated2Layout.photoShotCount[i] = 0;
-        }
-        PhotoOtherLayout.photoShotCount = 0;
+        basicInfoLayout.clearCache();
+        accidentCheckLayout.clearCache();
+        integratedCheckLayout.clearCache();
+        photoLayout.clearCache();
     }
 }

@@ -41,6 +41,8 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.df.app.util.Helper.getBitmapHeight;
+import static com.df.app.util.Helper.getBitmapWidth;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditError;
@@ -361,6 +363,8 @@ public class Integrated2Layout extends LinearLayout {
 
             photoJsonObject.put("x", button.getX());
             photoJsonObject.put("y", button.getY());
+            photoJsonObject.put("width", getBitmapWidth(Long.toString(currentTimeMillis) + ".jpg"));
+            photoJsonObject.put("height", getBitmapHeight(Long.toString(currentTimeMillis) + ".jpg"));
 
             jsonObject.put("Group", "tire");
             jsonObject.put("Part", currentTire);

@@ -73,8 +73,6 @@ public class CarsCheckedActivity extends Activity {
         swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
             @Override
             public void onClickFrontView(int position) {
-                Log.d("swipe", String.format("onClickFrontView %d", position));
-
                 getCarDetail(data.get(position).getCarId(), CarCheckActivity.class);
             }
 
@@ -141,9 +139,6 @@ public class CarsCheckedActivity extends Activity {
                     public void onFailed(String error) {
                         Toast.makeText(CarsCheckedActivity.this, "获取已检车辆列表失败：" + error, Toast.LENGTH_SHORT).show();
                         Log.d("DFCarChecker", "获取已检车辆列表失败：" + error);
-
-                        // TODO 测试用
-                        fillInDummyData();
                     }
                 });
         getCarsCheckedListTask.execute();

@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.df.app.util.Helper.drawTextToBitmap;
+import static com.df.app.util.Helper.getBitmapHeight;
+import static com.df.app.util.Helper.getBitmapWidth;
 
 public class FramePaintView extends PaintView {
 
@@ -82,6 +84,8 @@ public class FramePaintView extends PaintView {
 
     public FramePaintView(Context context) {
         super(context);
+        if(isInEditMode()) {
+        }
         //init();
     }
 
@@ -233,6 +237,8 @@ public class FramePaintView extends PaintView {
 
             photoJsonObject.put("x", posEntity.getStartX());
             photoJsonObject.put("y", posEntity.getStartY());
+            photoJsonObject.put("width", getBitmapWidth(posEntity.getImageFileName()));
+            photoJsonObject.put("height", getBitmapHeight(posEntity.getImageFileName()));
             photoJsonObject.put("issueId", posEntity.getIssueId());
             photoJsonObject.put("comment", posEntity.getComment());
 

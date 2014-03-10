@@ -351,6 +351,11 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
         integrated3Layout.fillInData(checkCooperatorName);
     }
 
+    public void clearCache() {
+        exteriorLayout.clearCache();
+        interiorLayout.clearCache();
+    }
+
     /**
      * 获取标准化备注文字
      */

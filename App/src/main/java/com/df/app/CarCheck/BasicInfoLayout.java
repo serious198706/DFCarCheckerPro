@@ -185,6 +185,10 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
         }
     }
 
+    public void clearCache() {
+        mCarSettings = null;
+    }
+
     /**
      * CarCheckActivity来实现此接口，当确定车辆配置信息后，需要更新事故、外观、内饰、综合检查页面
      */

@@ -21,7 +21,7 @@
                   android:textSize="28sp"/>
 
         <Button android:id="@+id/done"
-                android:layout_width="35dp"
+                android:layout_width="40dp"
                 android:layout_height="35dp"
                 android:layout_margin="8dp"
                 android:layout_alignParentRight="true"
@@ -29,11 +29,41 @@
                 android:background="@drawable/commit"/>
     </RelativeLayout>
 
+    <RelativeLayout android:id="@+id/deleteAlert"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@id/naviBar"
+        android:layout_margin="15dp"
+        android:visibility="gone">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FF8"/>
+
+        <ImageView android:id="@+id/alertImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/alert"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#555"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="@string/deleteAlert"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/alertImage"
+            android:layout_marginLeft="5dp"/>
+    </RelativeLayout>
+
     <com.df.app.paintview.FramePaintView android:id="@+id/image"
         android:layout_width="500dp"
         android:layout_height="350dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/naviBar"/>
+        android:layout_below="@id/deleteAlert"/>
 
     <LinearLayout android:id="@+id/menus"
         android:layout_width="match_parent"
@@ -90,4 +120,14 @@
               android:layout_height="match_parent"
               android:layout_below="@id/menus">
     </ListView>
+
+    <Button android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:text="确认删除记录"
+        android:visibility="gone"/>
 </RelativeLayout>

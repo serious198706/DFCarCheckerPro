@@ -35,8 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.df.app.R;
+import com.df.app.util.Helper;
 
 import static com.df.app.util.Helper.setTextView;
+import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-24.
@@ -89,26 +91,27 @@ public class IssueListAdapter extends BaseAdapter {
         final Issue issue = items.get(position);
 
         if (issue != null) {
-            Switch issueSwitch = (Switch) view.findViewById(R.id.issue_switch);
+            final Switch issueSwitch = (Switch) view.findViewById(R.id.issue_switch);
             TextView issueDesc = (TextView) view.findViewById(R.id.issue_desc);
 
             if (issueSwitch != null) {
-                issueSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                issueSwitch.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        if(b == issue.getSelect().equals("否")) {
-                            return;
+                    public void onClick(View view) {
+                        if(issue.getSelect().equals("否")) {
+                            closeIssue(issueSwitch, issue);
                         }
 
-                        if(b && !issue.getView().equals("")) {
+                        if(!issue.getSelect().equals("否") && !issue.getView().equals("")) {
                             // 弹出绘制界面
-                            drawIssuePoint(issue);
+                            drawIssuePoint(issueSwitch, issue, false);
                         }
 
                         // 选择完成后，将对应问题的select更新
-                        issue.setSelect(b ? "否" : "是");
+                        issue.setSelect(issue.getSelect().equals("否") ? "否" : "是");
                     }
                 });
+
 
                 // 为了防止缓存现象，要重设置一下switch
                 issueSwitch.setChecked(issue.getSelect().equals("否"));
@@ -118,7 +121,7 @@ public class IssueListAdapter extends BaseAdapter {
                     issueDesc.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            drawIssuePoint(issue);
+                            drawIssuePoint(issueSwitch, issue, false);
                         }
                     });
                 } else {
@@ -137,23 +140,37 @@ public class IssueListAdapter extends BaseAdapter {
 
     /**
      * 对应某个问题，进行绘制
-     * @param issue
+     * @param issueSwitch 开关，在做不同的操作时，对开关做不同的操作
+     * @param issue 问题条目
+     * @param delete 是否为删除操作
      */
-    private void drawIssuePoint(final Issue issue) {
+    private void drawIssuePoint(final Switch issueSwitch, final Issue issue, final boolean delete) {
         rootView = LayoutInflater.from(context).inflate(R.layout.issue_paint_layout, null);
 
+        showView(rootView, R.id.deleteAlert, delete);
+
         TextView title = (TextView)rootView.findViewById(R.id.currentItem);
-        title.setText(R.string.issue_back);
+        title.setText(delete ? R.string.deleteRecord : R.string.issue_back);
         title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                alertUser(R.string.cancel_confirm);
+                if(delete) {
+                    // 如果取消删除，则要将将switch改为“否”
+                    issueSwitch.setChecked(true);
+                    mPictureDialog.dismiss();
+                } else {
+                    alertUser(R.string.cancel_confirm);
+                }
             }
         });
 
         TextView issueDesc = (TextView)rootView.findViewById(R.id.issueDesc);
         issueDesc.setText(issue.getDesc());
 
+        showView(rootView, R.id.done, !delete);
+        showView(rootView, R.id.deleteButton, delete);
+
+        // 确认按钮
         Button doneButton = (Button)rootView.findViewById(R.id.done);
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,6 +188,40 @@ public class IssueListAdapter extends BaseAdapter {
 
                 // 如果选择了，就保存
                 issue.setSerious(radioButton.getText().toString());
+                issue.setSelect("否");
+                mPictureDialog.dismiss();
+            }
+        });
+
+        // 确认删除按钮
+        Button deleteButton = (Button)rootView.findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (PhotoEntity photoEntity : issue.getPhotoEntities()) {
+                    if (issue.getView().equals("F")) {
+                        AccidentResultLayout.photoEntitiesFront.remove(photoEntity);
+                    } else {
+                        AccidentResultLayout.photoEntitiesRear.remove(photoEntity);
+                    }
+
+                    PhotoFaultLayout.photoListAdapter.removeItem(photoEntity);
+                }
+
+                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+
+                for (PosEntity posEntity : issue.getPosEntities()) {
+                    if (issue.getView().equals("F")) {
+                        AccidentResultLayout.posEntitiesFront.remove(posEntity);
+                    } else {
+                        AccidentResultLayout.posEntitiesRear.remove(posEntity);
+                    }
+                }
+
+                issue.getPhotoEntities().clear();
+                issue.getPosEntities().clear();
+                issue.setSerious("");
+                issue.setSelect("是");
                 mPictureDialog.dismiss();
             }
         });
@@ -252,6 +303,13 @@ public class IssueListAdapter extends BaseAdapter {
         });
         mPictureDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mPictureDialog.show();
+    }
+
+    /**
+     * 关闭并删除此项目所对应的所有照片与pos
+     */
+    private void closeIssue(final Switch issueSwitch, final Issue issue) {
+        drawIssuePoint(issueSwitch, issue, true);
     }
 
     /**
