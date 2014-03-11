@@ -1,18 +1,28 @@
 package com.df.app.service.AsyncTask;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 
 import java.util.List;
+
+import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 14-1-9.
@@ -22,7 +32,8 @@ import java.util.List;
 
 public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
     public interface UploadFinished {
-        public void OnFinish();
+        public void onFinish();
+        public void onCancel();
     }
 
     private int total;
@@ -48,7 +59,33 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
         progressDialog.setIndeterminate(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
+        progressDialog.setCancelable(true);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                View view1 = ((Activity)context).getLayoutInflater().inflate(R.layout.popup_layout, null);
+                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+                TextView content = new TextView(view1.getContext());
+                content.setText(R.string.cancelUploading);
+                content.setTextSize(20f);
+                contentArea.addView(content);
+
+                setTextView(view1, R.id.title, context.getResources().getString(R.string.alert));
+
+                AlertDialog dialog = new AlertDialog.Builder(context)
+                        .setView(view1)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            cancel(true);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .create();
+
+                dialog.show();
+            }
+        });
         progressDialog.setMax(total);
         progressDialog.show();
     }
@@ -103,11 +140,23 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
     protected void onPostExecute(final Boolean success) {
         if(success) {
             progressDialog.dismiss();
-            mCallback.OnFinish();
+            mCallback.onFinish();
         } else {
             progressDialog.dismiss();
             Toast.makeText(context, "上传失败！！", Toast.LENGTH_SHORT).show();
         }
+    }
 
+    @Override
+    protected void onCancelled() {
+        total = 0;
+        context = null;
+        photoEntityList = null;
+
+        mCallback.onCancel();
+        mCallback = null;
+
+        progressDialog.dismiss();
+        progressDialog = null;
     }
 }

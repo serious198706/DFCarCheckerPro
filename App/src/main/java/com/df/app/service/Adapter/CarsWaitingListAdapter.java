@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.df.app.R;
@@ -25,14 +26,20 @@ public class CarsWaitingListAdapter extends BaseAdapter {
         public void onModifyProcedure(CarsWaitingItem item);
     }
 
+    public interface OnEditPressed {
+        public void onEditPressed(int position);
+    }
+
     private Context context;
     private ArrayList<CarsWaitingItem> items;
     private OnModifyProcedure mCallback;
+    private OnEditPressed mEditCallback;
 
-    public CarsWaitingListAdapter(Context context, ArrayList<CarsWaitingItem> objects, OnModifyProcedure listener) {
+    public CarsWaitingListAdapter(Context context, ArrayList<CarsWaitingItem> objects, OnModifyProcedure listener, OnEditPressed listener1) {
         this.context = context;
         this.items = objects;
         this.mCallback = listener;
+        this.mEditCallback = listener1;
     }
 
     @Override
@@ -51,7 +58,7 @@ public class CarsWaitingListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
             LayoutInflater vi = (LayoutInflater) context.getSystemService(Context
@@ -62,13 +69,21 @@ public class CarsWaitingListAdapter extends BaseAdapter {
         final CarsWaitingItem carsWaitingItem = items.get(position);
 
         if (carsWaitingItem != null) {
-            setTextView(view, R.id.car_number, "车牌号码：" + carsWaitingItem.getPlateNumber());
-            setTextView(view, R.id.car_type, "型号：" + carsWaitingItem.getCarType());
-            setTextView(view, R.id.car_color, "颜色：" + carsWaitingItem.getExteriorColor());
-            setTextView(view, R.id.car_date, "创建日期：" + carsWaitingItem.getDate());
+            setTextView(view, R.id.car_number, carsWaitingItem.getPlateNumber());
+            setTextView(view, R.id.car_type, carsWaitingItem.getCarType());
+            setTextView(view, R.id.car_color, carsWaitingItem.getExteriorColor());
+            setTextView(view, R.id.car_date, carsWaitingItem.getDate());
             view.findViewById(R.id.car_level).setVisibility(View.GONE);
             view.findViewById(R.id.car_status).setVisibility(View.GONE);
         }
+
+        ImageView edit = (ImageView)view.findViewById(R.id.edit);
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mEditCallback.onEditPressed(position);
+            }
+        });
 
         Button button1 = (Button)view.findViewById(R.id.example_row_b_action_1);
         button1.setText(R.string.modifyProcedures);

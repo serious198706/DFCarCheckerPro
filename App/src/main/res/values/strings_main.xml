@@ -4,6 +4,7 @@
     <string name="quitMsg">确定退出？</string>
     <string name="quitCheckMsg">确定放弃此次检测？</string>
     <string name="quitInputProcedures">确定放弃录入手续？</string>
+    <string name="cancelUploading">确定取消上传照片？</string>
     <string name="commitMsg">确定提交检测信息？</string>
     <string name="saveMsg">确定保存此次检测信息？</string>
     <string name="inputComment">填写备注信息：</string>

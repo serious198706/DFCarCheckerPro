@@ -313,9 +313,15 @@ public class CarCheckActivity extends Activity {
     private void uploadPictures() {
         UploadPictureTask uploadPictureTask = new UploadPictureTask(CarCheckActivity.this, photoEntities, new UploadPictureTask.UploadFinished() {
             @Override
-            public void OnFinish() {
+            public void onFinish() {
                 // 4.提交检测信息
                 //commitData();
+            }
+
+            @Override
+            public void onCancel() {
+                // 取消上传过程
+                Toast.makeText(CarCheckActivity.this, "取消上传", Toast.LENGTH_SHORT).show();
             }
         });
         uploadPictureTask.execute();
@@ -373,10 +379,10 @@ public class CarCheckActivity extends Activity {
                     public void onFinished() {
                         Toast.makeText(CarCheckActivity.this, "保存成功！", Toast.LENGTH_SHORT).show();
                         Log.d(Common.TAG, "保存成功！");
-                        clearCache();
-                        Intent intent = new Intent(CarCheckActivity.this, CarsWaitingActivity.class);
-                        startActivity(intent);
-                        finish();
+//                        clearCache();
+//                        Intent intent = new Intent(CarCheckActivity.this, CarsWaitingActivity.class);
+//                        startActivity(intent);
+//                        finish();
                     }
 
                     @Override

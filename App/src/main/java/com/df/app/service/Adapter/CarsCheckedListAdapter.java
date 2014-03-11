@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.df.app.R;
 import com.df.app.entries.CarsCheckedItem;
@@ -24,14 +25,20 @@ public class CarsCheckedListAdapter extends BaseAdapter {
         public void onImport(int carId);
     }
 
+    public interface OnEditPressed {
+        public void onEditPressed(int position);
+    }
+
     private Context context;
     private ArrayList<CarsCheckedItem> items;
     private OnImport mCallback;
+    private OnEditPressed mEditCallback;
 
-    public CarsCheckedListAdapter(Context context, ArrayList<CarsCheckedItem> objects, OnImport listener) {
+    public CarsCheckedListAdapter(Context context, ArrayList<CarsCheckedItem> objects, OnImport listener,  OnEditPressed listener1) {
         this.context = context;
         this.items = objects;
         this.mCallback = listener;
+        this.mEditCallback = listener1;
     }
 
     @Override
@@ -50,7 +57,7 @@ public class CarsCheckedListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
             LayoutInflater vi = (LayoutInflater) context.getSystemService(Context
@@ -61,9 +68,9 @@ public class CarsCheckedListAdapter extends BaseAdapter {
         final CarsCheckedItem carsCheckedItem = items.get(position);
 
         if (carsCheckedItem != null) {
-            setTextView(view, R.id.car_number, "车牌号码：" + carsCheckedItem.getPlateNumber());
-            setTextView(view, R.id.car_type, "车型：" + carsCheckedItem.getCarType());
-            setTextView(view, R.id.car_color, "颜色：" + carsCheckedItem.getExteriorColor());
+            setTextView(view, R.id.car_number, carsCheckedItem.getPlateNumber());
+            setTextView(view, R.id.car_type, carsCheckedItem.getCarType());
+            setTextView(view, R.id.car_color, carsCheckedItem.getExteriorColor());
             setTextView(view, R.id.car_level, "分数：" + carsCheckedItem.getLevel());
 
             String carStatus = "";
@@ -89,7 +96,15 @@ public class CarsCheckedListAdapter extends BaseAdapter {
             }
 
             setTextView(view, R.id.car_status, "状态：" + carStatus);
-            setTextView(view, R.id.car_date, "创建日期：" + carsCheckedItem.getDate());
+            setTextView(view, R.id.car_date, carsCheckedItem.getDate());
+
+            ImageView edit = (ImageView)view.findViewById(R.id.edit);
+            edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mEditCallback.onEditPressed(position);
+                }
+            });
 
             Button button2 = (Button)view.findViewById(R.id.example_row_b_action_2);
             button2.setOnClickListener(new View.OnClickListener() {

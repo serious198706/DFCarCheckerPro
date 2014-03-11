@@ -4,7 +4,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <!--<item name="android:spinnerStyle">@style/Widget.Spinner</item>-->
+        <item name="android:spinnerStyle">@style/MySpinner</item>
         <!--<item name="android:editTextStyle">@style/Widget.EditText</item>-->
     </style>
 
@@ -46,8 +46,11 @@
         <item name="android:typeface">monospace</item>
     </style>
 
-    <style name="Widget.Spinner" parent="android:Widget">
+    <style name="MySpinner" parent="android:Widget.Spinner">
+        <item name="android:spinnerMode">dialog</item>
+        <item name="android:popupBackground">@drawable/spinner_dropdown</item>
         <item name="android:background">@drawable/spinner_selector</item>
+        <item name="android:dropDownVerticalOffset">2dp</item>
     </style>
 
     <style name="Widget.EditText" parent="android:Widget">

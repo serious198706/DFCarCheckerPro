@@ -95,22 +95,60 @@ public class IssueListAdapter extends BaseAdapter {
             TextView issueDesc = (TextView) view.findViewById(R.id.issue_desc);
 
             if (issueSwitch != null) {
-                issueSwitch.setOnClickListener(new View.OnClickListener() {
+                issueSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
-                    public void onClick(View view) {
-                        if(issue.getSelect().equals("否")) {
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        // 如果该issue当前为“否”，并且有视角
+                        if(!b && issue.getSelect().equals("否") && !issue.getView().equals("")) {
+                            // 清除此issue的数据
                             closeIssue(issueSwitch, issue);
-                        }
-
-                        if(!issue.getSelect().equals("否") && !issue.getView().equals("")) {
+                        } else if(issue.getSelect().equals("是") && !issue.getView().equals("")) {
                             // 弹出绘制界面
                             drawIssuePoint(issueSwitch, issue, false);
+                        } else if(issue.getView().equals("")) {
+                            issue.setSelect(b ? "否" : "是");
                         }
-
-                        // 选择完成后，将对应问题的select更新
-                        issue.setSelect(issue.getSelect().equals("否") ? "否" : "是");
+//
+//
+//
+//
+//
+//
+//
+//
+//                        if(b == issue.getSelect().equals("否")) {
+//                            closeIssue(issueSwitch, issue);
+//                        }
+//
+//                        if(b && !issue.getView().equals("")) {
+//                            // 弹出绘制界面
+//                            drawIssuePoint(issueSwitch, issue, false);
+//                        }
+//
+//                        // 选择完成后，将对应问题的select更新
+//                        issue.setSelect(b ? "否" : "是");
                     }
                 });
+
+
+//                issueSwitch.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        if(issue.getSelect().equals("否")) {
+//                            closeIssue(issueSwitch, issue);
+//                        }
+//
+//                        if(!issue.getSelect().equals("否") && !issue.getView().equals("")) {
+//                            // 弹出绘制界面
+//                            drawIssuePoint(issueSwitch, issue, false);
+//                        } else if(!issue.getSelect().equals("否") && issue.getView().equals("")) {
+//                            issue.setSelect("是");
+//                        }
+//
+//                        // 选择完成后，将对应问题的select更新
+//                        issue.setSelect(issue.getSelect().equals("否") ? "否" : "是");
+//                    }
+//                });
 
 
                 // 为了防止缓存现象，要重设置一下switch
@@ -138,6 +176,8 @@ public class IssueListAdapter extends BaseAdapter {
         return view;
     }
 
+
+
     /**
      * 对应某个问题，进行绘制
      * @param issueSwitch 开关，在做不同的操作时，对开关做不同的操作
@@ -156,11 +196,13 @@ public class IssueListAdapter extends BaseAdapter {
             public void onClick(View view) {
                 if(delete) {
                     // 如果取消删除，则要将将switch改为“否”
-                    issueSwitch.setChecked(true);
-                    mPictureDialog.dismiss();
+                    //issueSwitch.setChecked(true);
+                    issue.setSelect("否");
                 } else {
                     alertUser(R.string.cancel_confirm);
                 }
+
+                mPictureDialog.dismiss();
             }
         });
 
@@ -299,6 +341,20 @@ public class IssueListAdapter extends BaseAdapter {
                 notifyPhotoList();
 
                 notifyDataSetChanged();
+            }
+        });
+        mPictureDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                if(delete) {
+                    // 如果取消删除，则要将将switch改为“否”
+                    //issueSwitch.setChecked(true);
+                    issue.setSelect("否");
+                } else {
+                    alertUser(R.string.cancel_confirm);
+                }
+
+                mPictureDialog.dismiss();
             }
         });
         mPictureDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
