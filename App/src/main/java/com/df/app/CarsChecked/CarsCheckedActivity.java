@@ -67,6 +67,11 @@ public class CarsCheckedActivity extends Activity {
             public void onImport(int carId) {
                 selectPlatform(carId);
             }
+        }, new CarsCheckedListAdapter.OnEditPressed() {
+            @Override
+            public void onEditPressed(int position) {
+                swipeListView.openAnimate(position);
+            }
         });
 
         swipeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);

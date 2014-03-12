@@ -71,7 +71,17 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
 
         mCarSettings = new CarSettings();
 
-        optionsLayout = new OptionsLayout(context);
+        optionsLayout = new OptionsLayout(context, new OptionsLayout.OnLoadSettingsButtonClicked() {
+            @Override
+            public void onLoadSettings() {
+                // 更新结构、外观、内饰
+                mOnGetCarSettingsCallback.onGetCarSettings();
+
+                // 更新配置信息页面
+                optionsLayout.updateUi();
+            }
+        });
+
         vehicleInfoLayout = new VehicleInfoLayout(context, new VehicleInfoLayout.OnGetCarSettings() {
             @Override
             public void onGetCarSettings() {
@@ -83,11 +93,13 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
                     viewPager.setAdapter(new MyViewPagerAdapter(views));
                 }
 
-                // 更新结构、外观、内饰
-                mOnGetCarSettingsCallback.onGetCarSettings();
+                if(CarCheckActivity.saved) {
+                    // 更新结构、外观、内饰
+                    mOnGetCarSettingsCallback.onGetCarSettings();
 
-                // 更新配置信息页面
-                optionsLayout.updateUi();
+                    // 更新配置信息页面
+                    optionsLayout.updateUi();
+                }
             }
         });
 

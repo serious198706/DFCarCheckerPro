@@ -26,20 +26,29 @@ public class CarsWaitingListAdapter extends BaseAdapter {
         public void onModifyProcedure(CarsWaitingItem item);
     }
 
+    public interface OnDeleteCar {
+        public void onDeleteCar(int position);
+    }
+
     public interface OnEditPressed {
         public void onEditPressed(int position);
     }
 
+
+    public interface OnAction {
+        public void onEditPressed(int position);
+        public void onModifyProcedure(int positon);
+        public void onDeleteCar(int position);
+    }
+
     private Context context;
     private ArrayList<CarsWaitingItem> items;
-    private OnModifyProcedure mCallback;
-    private OnEditPressed mEditCallback;
+    private OnAction mCallback;
 
-    public CarsWaitingListAdapter(Context context, ArrayList<CarsWaitingItem> objects, OnModifyProcedure listener, OnEditPressed listener1) {
+    public CarsWaitingListAdapter(Context context, ArrayList<CarsWaitingItem> objects, OnAction listener) {
         this.context = context;
         this.items = objects;
         this.mCallback = listener;
-        this.mEditCallback = listener1;
     }
 
     @Override
@@ -81,7 +90,7 @@ public class CarsWaitingListAdapter extends BaseAdapter {
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mEditCallback.onEditPressed(position);
+                mCallback.onEditPressed(position);
             }
         });
 
@@ -90,16 +99,16 @@ public class CarsWaitingListAdapter extends BaseAdapter {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCallback.onModifyProcedure(carsWaitingItem);
+                mCallback.onModifyProcedure(position);
             }
         });
 
         Button button2 = (Button)view.findViewById(R.id.example_row_b_action_2);
-        button2.setText(R.string.check);
+        button2.setText(R.string.deleteCar);
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(), "检测车辆", Toast.LENGTH_SHORT).show();
+                mCallback.onDeleteCar(position);
             }
         });
 

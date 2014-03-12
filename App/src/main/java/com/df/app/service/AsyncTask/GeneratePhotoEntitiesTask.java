@@ -14,6 +14,7 @@ import com.df.app.carCheck.PhotoOtherLayout;
 import com.df.app.carCheck.PhotoProcedureLayout;
 import com.df.app.entries.PhotoEntity;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -103,6 +104,21 @@ public class GeneratePhotoEntitiesTask extends AsyncTask<JSONObject, Void, Boole
         // 所有草图
         if(generateSketch)
             photoEntities.addAll(generateSketches());
+
+        try {
+            for(int i = 0; i < photoEntities.size(); i++) {
+                PhotoEntity photoEntity = photoEntities.get(i);
+                JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+
+                // 给每张图片设置序列号
+                jsonObject.put("Index", i + 1);
+
+                // 更新photoEntity
+                photoEntity.setJsonString(jsonObject.toString());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         return true;
     }

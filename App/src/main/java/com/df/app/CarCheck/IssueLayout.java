@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -123,16 +124,6 @@ public class IssueLayout extends LinearLayout {
                 }
             }
         });
-
-        // 画图
-        r = new Runnable() {
-            @Override
-            public void run() {
-                drawBase();
-                drawSketch(handelLevelNames(level1, 1));
-                drawSketch(handelLevelNames(level2, 2));
-            }
-        };
     }
 
     private void showShadow(boolean show) {
@@ -148,7 +139,7 @@ public class IssueLayout extends LinearLayout {
      * @param result
      * @param progressDialog
      */
-    private void fillInData(String result, ProgressDialog progressDialog) {
+    private void fillInData(String result, final ProgressDialog progressDialog) {
         issueList.clear();
 
         try {
@@ -182,10 +173,21 @@ public class IssueLayout extends LinearLayout {
 
             adapter.notifyDataSetChanged();
 
-            r.run();
+            Handler handler = new Handler();
 
-            if(progressDialog != null)
-                progressDialog.dismiss();
+            // 画图
+            r = new Runnable() {
+                @Override
+                public void run() {
+                    drawBase();
+                    drawSketch(handelLevelNames(level1, 1));
+                    drawSketch(handelLevelNames(level2, 2));
+
+                    if(progressDialog != null)
+                        progressDialog.dismiss();
+                }
+            };
+            handler.postDelayed(r, 3000);
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -50,6 +50,7 @@ public class Common {
     public static final String GET_CAR_DETAIL = "GetCheckedCarDetailByCarId";
     public static final String IMPORT_PLATFORM = "ImportPlatform";
     public static final String CHECK_SELLER_NAME = "CheckSellerName";
+    public static final String DELETE_CAR = "DeletePendingCarInfoByCarId";
 
     // 配置信息页与综合检查页spinner的联动关系
     public static final int[][] carSettingsSpinnerMap = {

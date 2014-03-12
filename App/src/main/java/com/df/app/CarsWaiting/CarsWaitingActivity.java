@@ -1,8 +1,9 @@
 package com.df.app.carsWaiting;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,13 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.df.app.carCheck.CarCheckActivity;
-import com.df.app.procedures.InputProceduresActivity;
 import com.df.app.R;
+import com.df.app.carCheck.CarCheckActivity;
 import com.df.app.entries.CarsWaitingItem;
+import com.df.app.procedures.InputProceduresActivity;
 import com.df.app.service.Adapter.CarsWaitingListAdapter;
+import com.df.app.service.AsyncTask.DeleteCarTask;
 import com.df.app.service.AsyncTask.GetCarDetailTask;
 import com.df.app.service.AsyncTask.GetCarsWaitingListTask;
 import com.df.app.util.Common;
@@ -28,6 +32,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 14-1-7.
@@ -52,12 +58,44 @@ public class CarsWaitingActivity extends Activity {
 
         data = new ArrayList<CarsWaitingItem>();
 
-        adapter = new CarsWaitingListAdapter(this, data, new CarsWaitingListAdapter.OnModifyProcedure() {
+        adapter = new CarsWaitingListAdapter(this, data, new CarsWaitingListAdapter.OnAction() {
             @Override
-            public void onModifyProcedure(CarsWaitingItem item) {
+            public void onEditPressed(int position) {
+                swipeListView.openAnimate(position);
+            }
+
+            @Override
+            public void onModifyProcedure(int positon) {
+                CarsWaitingItem item = data.get(positon);
                 Intent intent = new Intent(CarsWaitingActivity.this, InputProceduresActivity.class);
                 intent.putExtra("jsonString", item.getJsonObject().toString());
                 startActivity(intent);
+            }
+
+            @Override
+            public void onDeleteCar(final int position) {
+                View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
+                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+                TextView content = new TextView(view1.getContext());
+                content.setText(R.string.confirmDeleteCar);
+                content.setTextSize(20f);
+                contentArea.addView(content);
+
+                setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+                AlertDialog dialog = new AlertDialog.Builder(CarsWaitingActivity.this)
+                        .setView(view1)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                CarsWaitingItem item = data.get(position);
+                                deleteCar(item.getCarId());
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .create();
+
+                dialog.show();
             }
         });
 
@@ -249,5 +287,31 @@ public class CarsWaitingActivity extends Activity {
         });
 
         getCarDetailTask.execute();
+    }
+
+    /**
+     * 删除车辆
+     */
+    private void deleteCar(int carId) {
+        DeleteCarTask deleteCarTask = new DeleteCarTask(CarsWaitingActivity.this, carId, new DeleteCarTask.OnDeleteFinished() {
+            @Override
+            public void onFinished(String result) {
+                Toast.makeText(CarsWaitingActivity.this, "删除成功！", Toast.LENGTH_SHORT).show();
+
+                startNumber = 1;
+                data.clear();
+                adapter.notifyDataSetChanged();
+                swipeListView.closeAnimate(lastPos);
+                refresh();
+                refresh();
+            }
+
+            @Override
+            public void onFailed(String result) {
+                Toast.makeText(CarsWaitingActivity.this, "删除失败！" + result, Toast.LENGTH_SHORT).show();
+                Log.d(Common.TAG, "删除失败！" + result);
+            }
+        });
+        deleteCarTask.execute();
     }
 }

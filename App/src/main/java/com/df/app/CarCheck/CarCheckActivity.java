@@ -58,6 +58,7 @@ public class CarCheckActivity extends Activity {
 
     private int carId;
     private List<PhotoEntity> photoEntities;
+    public static boolean saved = false;
 
     private boolean showMenu = false;
 
@@ -553,21 +554,23 @@ public class CarCheckActivity extends Activity {
                 break;
             case Common.PHOTO_RETAKE:
                 if(resultCode == Activity.RESULT_OK) {
-                    // 替换原photoEntity中的宽度与高度数据
                     PhotoEntity temp = PhotoLayout.reTakePhotoEntity;
-                    try {
-                        JSONObject jsonObject1 = new JSONObject(temp.getJsonString());
-                        JSONObject photoData = jsonObject1.getJSONObject("PhotoData");
-                        photoData.put("width", getBitmapWidth(temp.getFileName()));
-                        photoData.put("height", getBitmapHeight(temp.getFileName()));
-
-                        jsonObject1.put("PhotoData", photoData);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
                     Helper.setPhotoSize(temp.getFileName(), 800);
                     Helper.generatePhotoThumbnail(temp.getFileName(), 400);
+
+                    try {
+                        JSONObject jsonObject1 = new JSONObject(temp.getJsonString());
+                        JSONObject photoData = jsonObject1.getJSONObject("PhotoData");
+
+                        // 替换原photoEntity中的宽度与高度数据
+                        photoData.put("width", getBitmapWidth(temp.getFileName()));
+                        photoData.put("height", getBitmapHeight(temp.getFileName()));
+                        jsonObject1.put("PhotoData", photoData);
+                        temp.setJsonString(jsonObject1.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
                     PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
                     PhotoInteriorLayout.photoListAdapter.notifyDataSetChanged();
@@ -609,6 +612,9 @@ public class CarCheckActivity extends Activity {
     private void fillInData(int carId, String jsonString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
+            if(jsonObject.has("accident")) {
+                saved = true;
+            }
 
             // 更新手续页面（一定会有）
             JSONObject features = jsonObject.getJSONObject("features");
@@ -929,6 +935,7 @@ public class CarCheckActivity extends Activity {
      * 退出时，清除一些静态数据
      */
     private void clearCache() {
+        saved = false;
         basicInfoLayout.clearCache();
         accidentCheckLayout.clearCache();
         integratedCheckLayout.clearCache();

@@ -34,6 +34,8 @@ public class Issue implements Serializable {
     // 对应此issue所拍摄的图片
     private List<PhotoEntity> photoEntities;
 
+    private boolean lastSelect;
+
     public Issue() {
         super();
     }
@@ -137,5 +139,13 @@ public class Issue implements Serializable {
 
     public void remove(PhotoEntity photoEntity) {
         this.photoEntities.remove(photoEntity);
+    }
+
+    public boolean isLastSelect() {
+        return lastSelect;
+    }
+
+    public void setLastSelect(boolean lastSelect) {
+        this.lastSelect = lastSelect;
     }
 }

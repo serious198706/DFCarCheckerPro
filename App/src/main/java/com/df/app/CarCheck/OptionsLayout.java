@@ -5,11 +5,13 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.df.app.R;
 import com.df.app.entries.CarSettings;
+import com.df.app.service.AsyncTask.DeleteCarTask;
 import com.df.app.util.Common;
 
 import org.json.JSONException;
@@ -27,12 +29,18 @@ import static com.df.app.util.Helper.setTextView;
  * 配置信息
  */
 public class OptionsLayout extends LinearLayout {
+    public interface OnLoadSettingsButtonClicked {
+        public void onLoadSettings();
+    }
+
     private View rootView;
 
     private CarSettings mCarSettings;
+    private OnLoadSettingsButtonClicked mCallback;
 
-    public OptionsLayout(Context context) {
+    public OptionsLayout(Context context, OnLoadSettingsButtonClicked listener) {
         super(context);
+        this.mCallback = listener;
         init(context);
     }
 
@@ -50,6 +58,14 @@ public class OptionsLayout extends LinearLayout {
         rootView = LayoutInflater.from(context).inflate(R.layout.options_layout, this);
 
         mCarSettings = BasicInfoLayout.mCarSettings;
+
+        Button loadSettingsButton = (Button)findViewById(R.id.loadSettingsButton);
+        loadSettingsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCallback.onLoadSettings();
+            }
+        });
     }
 
     public void updateUi() {

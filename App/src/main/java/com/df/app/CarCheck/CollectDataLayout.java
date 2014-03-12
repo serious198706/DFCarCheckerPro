@@ -19,12 +19,15 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +50,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.df.app.util.Helper.bytesToHexString;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
@@ -190,7 +194,7 @@ public class CollectDataLayout extends LinearLayout {
         init(context);
     }
 
-    private void init(Context context) {
+    private void init(final Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.collect_data_layout, this);
 
         // 查找设备按钮
@@ -282,6 +286,25 @@ public class CollectDataLayout extends LinearLayout {
         carImg = (ImageView)findViewById(R.id.standard_image);
         Bitmap bitmap = BitmapFactory.decodeFile(Common.utilDirectory + "L");
         carImg.setImageBitmap(bitmap);
+
+        // 隐藏图片的bar
+        final ImageView collapseBar = (ImageView)findViewById(R.id.collapseBar);
+        collapseBar.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), carImg.getVisibility() == VISIBLE ?
+                    R.drawable.expand : R.drawable.collapse);
+
+                collapseBar.setImageBitmap(bitmap);
+                carImg.setVisibility(carImg.getVisibility() == VISIBLE ? GONE : VISIBLE);
+//                RelativeLayout relativeLayout = (RelativeLayout)findViewById(R.id.aniArea);
+//
+//                TranslateAnimation anim=new TranslateAnimation(0,0,0,-220);
+//                anim.setFillAfter(true);
+//                anim.setDuration(500);
+//                relativeLayout.startAnimation(anim);
+            }
+        });
 
         // 显示阴影
         scrollView = (MyScrollView) findViewById(R.id.root);

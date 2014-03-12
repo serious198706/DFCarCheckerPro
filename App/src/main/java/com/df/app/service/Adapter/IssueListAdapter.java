@@ -37,6 +37,7 @@ import java.util.List;
 import com.df.app.R;
 import com.df.app.util.Helper;
 
+import static com.df.app.util.Helper.isVin;
 import static com.df.app.util.Helper.setTextView;
 import static com.df.app.util.Helper.showView;
 
@@ -91,75 +92,40 @@ public class IssueListAdapter extends BaseAdapter {
         final Issue issue = items.get(position);
 
         if (issue != null) {
-            final Switch issueSwitch = (Switch) view.findViewById(R.id.issue_switch);
+            Switch issueSwitch = (Switch) view.findViewById(R.id.issue_switch);
             TextView issueDesc = (TextView) view.findViewById(R.id.issue_desc);
 
             if (issueSwitch != null) {
                 issueSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        if(issue.isLastSelect() == b) {
+                            return;
+                        }
+
                         // 如果该issue当前为“否”，并且有视角
                         if(!b && issue.getSelect().equals("否") && !issue.getView().equals("")) {
                             // 清除此issue的数据
-                            closeIssue(issueSwitch, issue);
-                        } else if(issue.getSelect().equals("是") && !issue.getView().equals("")) {
+                            closeIssue(issue);
+                        } else if(!issue.getSelect().equals("否") && !issue.getView().equals("")) {
                             // 弹出绘制界面
-                            drawIssuePoint(issueSwitch, issue, false);
+                            drawIssuePoint(issue, false);
                         } else if(issue.getView().equals("")) {
                             issue.setSelect(b ? "否" : "是");
                         }
-//
-//
-//
-//
-//
-//
-//
-//
-//                        if(b == issue.getSelect().equals("否")) {
-//                            closeIssue(issueSwitch, issue);
-//                        }
-//
-//                        if(b && !issue.getView().equals("")) {
-//                            // 弹出绘制界面
-//                            drawIssuePoint(issueSwitch, issue, false);
-//                        }
-//
-//                        // 选择完成后，将对应问题的select更新
-//                        issue.setSelect(b ? "否" : "是");
                     }
                 });
 
-
-//                issueSwitch.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        if(issue.getSelect().equals("否")) {
-//                            closeIssue(issueSwitch, issue);
-//                        }
-//
-//                        if(!issue.getSelect().equals("否") && !issue.getView().equals("")) {
-//                            // 弹出绘制界面
-//                            drawIssuePoint(issueSwitch, issue, false);
-//                        } else if(!issue.getSelect().equals("否") && issue.getView().equals("")) {
-//                            issue.setSelect("是");
-//                        }
-//
-//                        // 选择完成后，将对应问题的select更新
-//                        issue.setSelect(issue.getSelect().equals("否") ? "否" : "是");
-//                    }
-//                });
-
-
                 // 为了防止缓存现象，要重设置一下switch
                 issueSwitch.setChecked(issue.getSelect().equals("否"));
+                issue.setLastSelect(issue.getSelect().equals("否"));
 
                 if (issue.getPosEntities().size() > 0) {
                     issueDesc.setTextColor(Color.BLUE);
                     issueDesc.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            drawIssuePoint(issueSwitch, issue, false);
+                            drawIssuePoint(issue, false);
                         }
                     });
                 } else {
@@ -180,11 +146,10 @@ public class IssueListAdapter extends BaseAdapter {
 
     /**
      * 对应某个问题，进行绘制
-     * @param issueSwitch 开关，在做不同的操作时，对开关做不同的操作
      * @param issue 问题条目
      * @param delete 是否为删除操作
      */
-    private void drawIssuePoint(final Switch issueSwitch, final Issue issue, final boolean delete) {
+    private void drawIssuePoint(final Issue issue, final boolean delete) {
         rootView = LayoutInflater.from(context).inflate(R.layout.issue_paint_layout, null);
 
         showView(rootView, R.id.deleteAlert, delete);
@@ -195,14 +160,15 @@ public class IssueListAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 if(delete) {
-                    // 如果取消删除，则要将将switch改为“否”
-                    //issueSwitch.setChecked(true);
+                    issue.setLastSelect(true);
                     issue.setSelect("否");
+
+                    mPictureDialog.dismiss();
                 } else {
+                    issue.setLastSelect(false);
                     alertUser(R.string.cancel_confirm);
                 }
 
-                mPictureDialog.dismiss();
             }
         });
 
@@ -231,6 +197,7 @@ public class IssueListAdapter extends BaseAdapter {
                 // 如果选择了，就保存
                 issue.setSerious(radioButton.getText().toString());
                 issue.setSelect("否");
+                issue.setLastSelect(true);
                 mPictureDialog.dismiss();
             }
         });
@@ -264,6 +231,7 @@ public class IssueListAdapter extends BaseAdapter {
                 issue.getPosEntities().clear();
                 issue.setSerious("");
                 issue.setSelect("是");
+                issue.setLastSelect(false);
                 mPictureDialog.dismiss();
             }
         });
@@ -354,6 +322,8 @@ public class IssueListAdapter extends BaseAdapter {
                     alertUser(R.string.cancel_confirm);
                 }
 
+                issue.setLastSelect(true);
+
                 mPictureDialog.dismiss();
             }
         });
@@ -364,8 +334,8 @@ public class IssueListAdapter extends BaseAdapter {
     /**
      * 关闭并删除此项目所对应的所有照片与pos
      */
-    private void closeIssue(final Switch issueSwitch, final Issue issue) {
-        drawIssuePoint(issueSwitch, issue, true);
+    private void closeIssue(final Issue issue) {
+        drawIssuePoint(issue, true);
     }
 
     /**

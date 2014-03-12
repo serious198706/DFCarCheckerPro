@@ -763,6 +763,7 @@ public class CarRecogniseLayout extends LinearLayout {
                     setBrandSpinner(null);
                 } else if(i >= 1) {
                     setBrandSpinner(vehicleModel.countries.get(i - 1));
+                    brandSpinner.performClick();
                 }
             }
 
@@ -799,6 +800,7 @@ public class CarRecogniseLayout extends LinearLayout {
                     setManufacturerSpinner(null);
                 } else if (i >= 1) {
                     setManufacturerSpinner(country.brands.get(i - 1));
+                    manufacturerSpinner.performClick();
                 }
             }
 
@@ -842,6 +844,7 @@ public class CarRecogniseLayout extends LinearLayout {
                     setSeriesSpinner(null);
                 } else if (i >= 1) {
                     setSeriesSpinner(brand.manufacturers.get(i - 1));
+                    seriesSpinner.performClick();
                 }
             }
 
@@ -885,6 +888,7 @@ public class CarRecogniseLayout extends LinearLayout {
                     setModelSpinner(null);
                 } else if (i >= 1) {
                     setModelSpinner(manufacturer.serieses.get(i - 1));
+                    modelSpinner.performClick();
                 }
 
             }
