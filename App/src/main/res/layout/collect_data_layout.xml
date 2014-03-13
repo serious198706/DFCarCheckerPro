@@ -155,7 +155,8 @@
                   android:background="@drawable/shadow"
                   android:visibility="invisible"/>
 
-            <com.df.app.service.MyScrollView android:id="@+id/root"
+            <com.df.app.util.MyScrollView
+                android:id="@+id/root"
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
                                              android:layout_marginTop="-7dp"
@@ -784,7 +785,7 @@
                     </TableRow>
 
                 </TableLayout>
-            </com.df.app.service.MyScrollView>
+            </com.df.app.util.MyScrollView>
         </RelativeLayout>
 
 

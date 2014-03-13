@@ -13,7 +13,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TableLayout;
@@ -21,17 +23,22 @@ import android.widget.TextView;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintview.ExteriorPaintView;
 import com.df.app.paintview.InteriorPaintView;
 import com.df.app.paintview.PaintView;
+import com.df.app.service.Adapter.PaintPhotoListAdapter;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
+import com.df.app.util.SlidingUpPanelLayout;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.df.app.util.Helper.getBitmapHeight;
@@ -57,9 +64,15 @@ public class PaintActivity extends Activity {
     // 绘图类的父类
     PaintView paintView;
 
+    // 滑出的照片列表
+    private SlidingUpPanelLayout slidingUpPanelLayout;
+    private boolean isExpanded = false;
+    private ArrayList<ListedPhoto> listedPhotos;
+    private PaintPhotoListAdapter adapter;
+
     // 绘制类型
     public enum PaintType {
-        FRAME_PAINT, EX_PAINT, IN_PAINT, NOVALUE;
+        EX_PAINT, IN_PAINT, NOVALUE;
 
         public static PaintType paintType(String str)
         {
@@ -86,7 +99,12 @@ public class PaintActivity extends Activity {
 
         // 初始化绘图View
         interiorPaintView = (InteriorPaintView) findViewById(R.id.interior_paint_view);
-        interiorPaintView.init(bitmap, InteriorLayout.posEntities);
+        interiorPaintView.init(bitmap, InteriorLayout.posEntities, new InteriorPaintView.OnAddEmptyPhoto() {
+            @Override
+            public void onAddEmptyPhoto(PosEntity posEntity) {
+                addPhotoToList();
+            }
+        });
         interiorPaintView.setType(Common.DIRTY);
         interiorPaintView.setLayoutParams(layoutParams);
 
@@ -99,7 +117,12 @@ public class PaintActivity extends Activity {
 
         // 初始化绘图View
         exteriorPaintView = (ExteriorPaintView) findViewById(R.id.exterior_paint_view);
-        exteriorPaintView.init(bitmap, ExteriorLayout.posEntities);
+        exteriorPaintView.init(bitmap, ExteriorLayout.posEntities, new ExteriorPaintView.OnAddEmptyPhoto() {
+            @Override
+            public void onAddEmptyPhoto(PosEntity posEntity) {
+                addPhotoToList();
+            }
+        });
         exteriorPaintView.setType(Common.COLOR_DIFF);
         exteriorPaintView.setLayoutParams(layoutParams);
 
@@ -124,23 +147,8 @@ public class PaintActivity extends Activity {
 
         paintView = (PaintView)map.get(currentPaintView);
 
-        // 撤销按钮
-        Button undoButton = (Button)findViewById(R.id.undo);
-        undoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                paintView.undo();
-            }
-        });
-
-        // 重做按钮
-        Button redoButton = (Button)findViewById(R.id.redo);
-        redoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                paintView.redo();
-            }
-        });
+        // 填充照片列表
+        initPhotoList();
 
         // 清除按钮
         Button clearButton = (Button)findViewById(R.id.clear);
@@ -169,6 +177,82 @@ public class PaintActivity extends Activity {
                 finish();
             }
         });
+
+        ImageView imageView = (ImageView)findViewById(R.id.expandImage);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!isExpanded) {
+                    slidingUpPanelLayout.expandPane(0.3f);
+                    isExpanded = true;
+                }
+                else {
+                    slidingUpPanelLayout.collapsePane();
+                    isExpanded = false;
+                }
+            }
+        });
+
+        slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        slidingUpPanelLayout.setShadowDrawable(getResources().getDrawable(R.drawable.above_shadow));
+        slidingUpPanelLayout.setAnchorPoint(0.3f);
+        slidingUpPanelLayout.setSlidingEnabled(false);
+        slidingUpPanelLayout.offsetTopAndBottom(150);
+        slidingUpPanelLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelExpanded(View panel) {
+
+            }
+
+            @Override
+            public void onPanelCollapsed(View panel) {
+                ImageView imageView = (ImageView) findViewById(R.id.expandImage);
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.expander_close_holo_light);
+                imageView.setImageBitmap(bitmap);
+            }
+
+            @Override
+            public void onPanelAnchored(View panel) {
+                ImageView imageView = (ImageView) findViewById(R.id.expandImage);
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.expander_open_holo_light);
+                imageView.setImageBitmap(bitmap);
+            }
+        });
+    }
+
+    /**
+     * 初始化照片列表（根据不同的布局）
+     */
+    private void initPhotoList() {
+        ListView photoListView = (ListView)findViewById(R.id.paintPhotoList);
+
+        listedPhotos = new ArrayList<ListedPhoto>();
+
+        for(int i = 0; i < paintView.getPosEntities().size(); i++) {
+            PosEntity posEntity = paintView.getPosEntities().get(i);
+            PhotoEntity photoEntity = paintView.getPhotoEntities().get(i);
+
+            ListedPhoto listedPhoto = new ListedPhoto(i, photoEntity.getThumbFileName(), photoEntity.getComment(), posEntity.getType());
+            listedPhotos.add(listedPhoto);
+        }
+
+         adapter = new PaintPhotoListAdapter(this, listedPhotos, new PaintPhotoListAdapter.OnDeleteItem() {
+            @Override
+            public void onDeleteItem(int position) {
+                paintView.getPhotoEntities().remove(position);
+                paintView.getPosEntities().remove(position);
+                paintView.invalidate();
+                adapter.remove(position);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        photoListView.setAdapter(adapter);
     }
 
     /**
@@ -181,7 +265,7 @@ public class PaintActivity extends Activity {
         setTextView(getWindow().getDecorView(), R.id.currentItem, getResources().getString(R.string.exterior));
 
         RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT,RadioGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(20, 10, 20, 10);
+        params.setMargins(15, 10, 15, 10);
 
         // 选择当前绘图类型
         RadioGroup radioGroup = new RadioGroup(this);
@@ -424,6 +508,14 @@ public class PaintActivity extends Activity {
         PhotoEntity photoEntity = generatePhotoEntity(paintView.getPosEntity());
 
         paintView.getPhotoEntities().add(photoEntity);
+
+        ListedPhoto listedPhoto = new ListedPhoto(paintView.getPosEntities().size(),
+                paintView.getPosEntity().getImageFileName(),
+                paintView.getPosEntity().getComment(),
+                paintView.getPosEntity().getType());
+
+        adapter.add(listedPhoto);
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -488,22 +580,22 @@ public class PaintActivity extends Activity {
         JSONObject jsonObject = new JSONObject();
 
         try {
-            JSONObject photoJsonObject = new JSONObject();
+            JSONObject photoData = new JSONObject();
 
             jsonObject.put("Group", paintView.getGroup());
             jsonObject.put("Part", "fault");
 
-            photoJsonObject.put("type", posEntity.getType());
-            photoJsonObject.put("startX", startX);
-            photoJsonObject.put("startY", startY);
-            photoJsonObject.put("endX", endX);
-            photoJsonObject.put("endY", endY);
-            photoJsonObject.put("width", getBitmapWidth(posEntity.getImageFileName()));
-            photoJsonObject.put("height", getBitmapHeight(posEntity.getImageFileName()));
-            photoJsonObject.put("radius", radius);
-            photoJsonObject.put("comment", posEntity.getComment());
+            photoData.put("type", posEntity.getType());
+            photoData.put("startX", startX);
+            photoData.put("startY", startY);
+            photoData.put("endX", endX);
+            photoData.put("endY", endY);
+            photoData.put("width", getBitmapWidth(posEntity.getImageFileName()));
+            photoData.put("height", getBitmapHeight(posEntity.getImageFileName()));
+            photoData.put("radius", radius);
+            photoData.put("comment", posEntity.getComment());
 
-            jsonObject.put("PhotoData", photoJsonObject);
+            jsonObject.put("PhotoData", photoData);
             jsonObject.put("CarId", BasicInfoLayout.carId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());

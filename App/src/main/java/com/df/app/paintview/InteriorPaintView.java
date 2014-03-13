@@ -42,6 +42,10 @@ import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
 
 public class InteriorPaintView extends PaintView {
+    public interface OnAddEmptyPhoto {
+        public void onAddEmptyPhoto(PosEntity posEntity);
+    }
+
     private int currentType = Common.DIRTY;
     private boolean move;
     // 本次更新的坐标点，如果用户点击取消，则不将thisTimeNewData中的坐标加入到data中
@@ -62,6 +66,8 @@ public class InteriorPaintView extends PaintView {
 
     private SparseArray<String> typeNameMap;
 
+    private OnAddEmptyPhoto mCallback;
+
     public InteriorPaintView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         //init();
@@ -77,13 +83,15 @@ public class InteriorPaintView extends PaintView {
         //init();
     }
 
-    public void init(Bitmap bitmap, List<PosEntity> entities) {
+    public void init(Bitmap bitmap, List<PosEntity> entities, OnAddEmptyPhoto listener) {
         typeNameMap = new SparseArray<String>();
         typeNameMap.put(Common.DIRTY, "脏污");
         typeNameMap.put(Common.BROKEN, "破损");
 
         this.bitmap = bitmap;
         data = entities;
+
+        this.mCallback = listener;
 
         max_x = bitmap.getWidth();
         max_y = bitmap.getHeight();
@@ -249,8 +257,7 @@ public class InteriorPaintView extends PaintView {
                 getPosEntity().setImageFileName("");
                 getPosEntity().setComment("");
 
-                PhotoEntity photoEntity = generatePhotoEntity();
-                photo.add(photoEntity);
+                mCallback.onAddEmptyPhoto(getPosEntity());
             }
         }).setCancelable(false);
 

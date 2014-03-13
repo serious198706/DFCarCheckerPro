@@ -15,7 +15,7 @@ import com.df.app.R;
 import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
-import com.df.app.service.MyOnClick;
+import com.df.app.util.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
 
 import org.json.JSONException;

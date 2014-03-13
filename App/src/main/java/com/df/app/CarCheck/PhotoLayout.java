@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
-import com.df.app.service.MyOnClick;
+import com.df.app.util.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
 
 import java.util.ArrayList;

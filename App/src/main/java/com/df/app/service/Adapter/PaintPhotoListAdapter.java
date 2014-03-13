@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.RectF;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,6 @@ import android.widget.TextView;
 import com.df.app.R;
 import com.df.app.carCheck.AddPhotoCommentActivity;
 import com.df.app.carCheck.IssueLayout;
-import com.df.app.entries.Issue;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.util.Common;
 
@@ -29,24 +29,20 @@ import static com.df.app.util.Helper.drawTextToBitmap;
 import static com.df.app.util.Helper.setTextView;
 
 /**
- * Created by 岩 on 14-3-5.
- *
- * 弹出的绘制窗口中的列表adapter
+ * Created by 岩 on 14-3-13.
  */
-public class IssuePhotoListAdapter extends BaseAdapter {
+public class PaintPhotoListAdapter extends BaseAdapter {
     public interface OnDeleteItem {
         public void onDeleteItem(int position);
     }
 
     private Context context;
     private List<ListedPhoto> items;
-    private Issue issue;
     private OnDeleteItem mCallback;
 
-    public IssuePhotoListAdapter(Context context, List<ListedPhoto> items, Issue issue, OnDeleteItem listener) {
+    public PaintPhotoListAdapter(Context context, List<ListedPhoto> items, OnDeleteItem listener) {
         this.context = context;
         this.items = items;
-        this.issue = issue;
         this.mCallback = listener;
     }
 
@@ -65,16 +61,20 @@ public class IssuePhotoListAdapter extends BaseAdapter {
         return position;
     }
 
-    public void addItem(ListedPhoto listedPhoto) {
-        this.items.add(listedPhoto);
+    public void add(ListedPhoto item) {
+        items.add(item);
+    }
+
+    public void remove(ListedPhoto item) {
+        items.remove(item);
     }
 
     public void remove(int position) {
-        this.items.remove(position);
+        items.remove(position);
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup viewGroup) {
         View view = convertView;
         if (view == null) {
             LayoutInflater vi = (LayoutInflater) context.getSystemService(Context
@@ -86,7 +86,34 @@ public class IssuePhotoListAdapter extends BaseAdapter {
 
         if(listedPhoto != null) {
             ImageView indexImage = (ImageView)view.findViewById(R.id.indexImage);
-            indexImage.setImageBitmap(drawTextToBitmap(context, R.drawable.damage, position + 1));
+            int imageId = 0;
+
+            switch (listedPhoto.getType()) {
+                case Common.COLOR_DIFF:
+                    imageId = R.drawable.out_color_diff;
+                    break;
+                case Common.SCRATCH:
+                    imageId = R.drawable.out_scratch;
+                    break;
+                case Common.TRANS:
+                    imageId = R.drawable.out_trans;
+                    break;
+                case Common.SCRAPE:
+                    imageId = R.drawable.out_scrape;
+                    break;
+                case Common.OTHER:
+                    imageId = R.drawable.out_other;
+                    break;
+                case Common.BROKEN:
+                    imageId = R.drawable.out_trans;
+                    break;
+                case Common.DIRTY:
+                    imageId = R.drawable.out_scrape;
+                    break;
+            }
+
+            Bitmap indexBitmap = BitmapFactory.decodeResource(context.getResources(), imageId);
+            indexImage.setImageBitmap(indexBitmap);
 
             ImageView photo = (ImageView)view.findViewById(R.id.issuePhoto);
 
@@ -111,14 +138,14 @@ public class IssuePhotoListAdapter extends BaseAdapter {
             comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    IssueLayout.photoEntityModify = issue.getPhotoEntities().get(position);
-                    IssueLayout.listedPhoto = listedPhoto;
-                    IssueLayout.photoListAdapter = IssuePhotoListAdapter.this;
-
-                    Intent intent = new Intent(context, AddPhotoCommentActivity.class);
-                    intent.putExtra("fileName", listedPhoto.getFileName());
-                    intent.putExtra("comment", ((TextView)view).getText().toString());
-                    ((Activity)context).startActivityForResult(intent, Common.MODIFY_COMMENT);
+//                    IssueLayout.photoEntityModify = issue.getPhotoEntities().get(position);
+//                    IssueLayout.listedPhoto = listedPhoto;
+//                    IssueLayout.photoListAdapter = IssuePhotoListAdapter.this;
+//
+//                    Intent intent = new Intent(context, AddPhotoCommentActivity.class);
+//                    intent.putExtra("fileName", listedPhoto.getFileName());
+//                    intent.putExtra("comment", ((TextView)view).getText().toString());
+//                    ((Activity)context).startActivityForResult(intent, Common.MODIFY_COMMENT);
                 }
             });
 
@@ -152,8 +179,7 @@ public class IssuePhotoListAdapter extends BaseAdapter {
             });
         }
 
+
         return view;
     }
-
-
 }

@@ -27,7 +27,7 @@ import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.Issue;
-import com.df.app.entries.IssuePhoto;
+import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.service.Adapter.IssuePhotoListAdapter;
@@ -213,9 +213,9 @@ public class FramePaintView extends PaintView {
                 issue.addPhoto(photoEntity);
 
                 int index = adapter.getCount();
-                IssuePhoto issuePhoto = new IssuePhoto(index, photoEntity.getThumbFileName(),
+                ListedPhoto listedPhoto = new ListedPhoto(index, photoEntity.getThumbFileName(),
                         photoEntity.getComment());
-                adapter.addItem(issuePhoto);
+                adapter.addItem(listedPhoto);
                 adapter.notifyDataSetChanged();
             }
         }).setCancelable(false);

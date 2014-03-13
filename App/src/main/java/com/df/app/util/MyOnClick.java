@@ -1,4 +1,4 @@
-package com.df.app.service;
+package com.df.app.util;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;

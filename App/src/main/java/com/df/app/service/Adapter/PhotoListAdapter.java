@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.df.app.carCheck.PhotoLayout;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
+import com.df.app.service.PhotoOperationActivity;
 import com.df.app.util.Common;
 
 import java.io.File;
@@ -148,9 +149,12 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
         Bitmap bitmap = BitmapFactory.decodeFile(fileName);
         image.setImageBitmap(bitmap);
 
-        Dialog mPictureDialog = new Dialog(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
-        mPictureDialog.setContentView(view);
-        mPictureDialog.setCancelable(true);
-        mPictureDialog.show();
+        Intent intent = new Intent(context, PhotoOperationActivity.class);
+        intent.putExtra("fileName", fileName);
+        context.startActivity(intent);
+//        Dialog mPictureDialog = new Dialog(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
+//        mPictureDialog.setContentView(view);
+//        mPictureDialog.setCancelable(true);
+//        mPictureDialog.show();
     }
 }

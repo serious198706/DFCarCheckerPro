@@ -1,6 +1,5 @@
 package com.df.app.carCheck;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,13 +9,10 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,12 +22,11 @@ import android.widget.Toast;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.Issue;
-import com.df.app.entries.IssuePhoto;
+import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.IssueListAdapter;
 import com.df.app.service.Adapter.IssuePhotoListAdapter;
 import com.df.app.util.Common;
-import com.df.app.util.QuickReturnListView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,7 +49,7 @@ public class IssueLayout extends LinearLayout {
     private ArrayList<Issue> issueList;
     private ImageView imageView;
 
-    public static IssuePhoto issuePhoto;
+    public static ListedPhoto listedPhoto;
     public static PhotoEntity photoEntityModify;
     public static IssuePhotoListAdapter photoListAdapter;
 
@@ -372,13 +367,13 @@ public class IssueLayout extends LinearLayout {
 
     public void modifyComment(String comment) {
         photoEntityModify.setComment(comment);
-        issuePhoto.setDesc(comment);
+        listedPhoto.setDesc(comment);
         photoListAdapter.notifyDataSetChanged();
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }
 
     public void clearCache() {
-        issuePhoto = null;
+        listedPhoto = null;
         photoListAdapter = null;
         photoEntityModify = null;
     }

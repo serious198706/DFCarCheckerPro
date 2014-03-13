@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.df.app.R;
 import com.df.app.entries.CarSettings;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
-import com.df.app.service.MyOnClick;
+import com.df.app.util.MyOnClick;
 
 import org.json.JSONException;
 import org.json.JSONObject;

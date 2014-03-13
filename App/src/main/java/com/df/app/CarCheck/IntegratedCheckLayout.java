@@ -16,7 +16,7 @@ import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
-import com.df.app.service.MyOnClick;
+import com.df.app.util.MyOnClick;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 

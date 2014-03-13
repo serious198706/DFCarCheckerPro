@@ -43,6 +43,10 @@ import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
 
 public class ExteriorPaintView extends PaintView {
+    public interface OnAddEmptyPhoto {
+        public void onAddEmptyPhoto(PosEntity posEntity);
+    }
+
     private int currentType = Common.COLOR_DIFF;
     private boolean move;
 
@@ -66,6 +70,8 @@ public class ExteriorPaintView extends PaintView {
 
     private SparseArray<String> typeNameMap;
 
+    private OnAddEmptyPhoto mCallback;
+
     public long getCurrentTimeMillis() {return currentTimeMillis;}
 
     public ExteriorPaintView(Context context, AttributeSet attrs, int defStyle) {
@@ -83,13 +89,15 @@ public class ExteriorPaintView extends PaintView {
         //init();
     }
 
-    public void init(Bitmap bitmap, List<PosEntity> entities) {
+    public void init(Bitmap bitmap, List<PosEntity> entities, OnAddEmptyPhoto listener) {
         typeNameMap = new SparseArray<String>();
         typeNameMap.put(Common.COLOR_DIFF, "色差");
         typeNameMap.put(Common.SCRATCH, "划痕");
         typeNameMap.put(Common.TRANS, "变形");
         typeNameMap.put(Common.SCRAPE, "刮蹭");
         typeNameMap.put(Common.OTHER, "其他");
+
+        this.mCallback = listener;
 
         this.bitmap = bitmap;
         data = entities;
@@ -283,89 +291,15 @@ public class ExteriorPaintView extends PaintView {
         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+
+
                 getPosEntity().setImageFileName("");
                 getPosEntity().setComment("");
 
-                PhotoEntity photoEntity = generatePhotoEntity();
-                photo.add(photoEntity);
+                mCallback.onAddEmptyPhoto(getPosEntity());
             }
         }).setCancelable(false);
         builder.show();
-    }
-
-    /**
-     * 生成photoEntity
-     * @return
-     */
-    private PhotoEntity generatePhotoEntity() {
-        PosEntity posEntity = getPosEntity();
-
-        int startX, startY, endX, endY;
-        int radius = 0;
-
-        startX = posEntity.getStartX();
-        startY = posEntity.getStartY();
-        endX = posEntity.getEndX();
-        endY = posEntity.getEndY();
-
-        // 如果是“变形”，即圆
-        if(posEntity.getType() == 3) {
-            // 计算半径
-            int dx = Math.abs(endX - startX);
-            int dy = Math.abs(endY- startY);
-            int dr = (int)Math.sqrt(dx * dx + dy * dy);
-
-            // 计算圆心
-            int x0 = (startX + endX) / 2;
-            int y0 = (startY + endY) / 2;
-
-            startX = x0;
-            startY = y0;
-            endX = endY = 0;
-            radius = dr / 2;
-        }
-
-        // 组织JsonString
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            JSONObject photoJsonObject = new JSONObject();
-
-            jsonObject.put("Group", "exterior");
-            jsonObject.put("Part", "fault");
-
-            photoJsonObject.put("type", posEntity.getType());
-            photoJsonObject.put("startX", startX);
-            photoJsonObject.put("startY", startY);
-            photoJsonObject.put("endX", endX);
-            photoJsonObject.put("endY", endY);
-            photoJsonObject.put("width", getBitmapWidth(posEntity.getImageFileName()));
-            photoJsonObject.put("height", getBitmapHeight(posEntity.getImageFileName()));
-            photoJsonObject.put("radius", radius);
-            photoJsonObject.put("comment", posEntity.getComment());
-
-            jsonObject.put("PhotoData", photoJsonObject);
-            jsonObject.put("CarId", BasicInfoLayout.carId);
-            jsonObject.put("UserId", MainActivity.userInfo.getId());
-            jsonObject.put("Key", MainActivity.userInfo.getKey());
-        } catch (Exception e) {
-            Log.d("DFCarChecker", "Json组织错误：" + e.getMessage());
-        }
-
-        // 组建PhotoEntity
-        PhotoEntity photoEntity = new PhotoEntity();
-
-        photoEntity.setName(getTypeName());
-        photoEntity.setFileName(posEntity.getImageFileName());
-        if(photoEntity.getFileName().equals("")) {
-            photoEntity.setThumbFileName("");
-        } else {
-            photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
-        }
-        photoEntity.setComment(posEntity.getComment());
-        photoEntity.setJsonString(jsonObject.toString());
-
-        return photoEntity;
     }
 
     /**

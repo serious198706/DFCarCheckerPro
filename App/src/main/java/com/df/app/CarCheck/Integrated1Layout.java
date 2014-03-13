@@ -8,13 +8,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.df.app.R;
-import com.df.app.service.MyScrollView;
+import com.df.app.util.MyScrollView;
 import com.df.app.util.Common;
 
 import org.json.JSONException;

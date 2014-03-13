@@ -26,7 +26,7 @@ import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintview.ExteriorPaintPreviewView;
-import com.df.app.service.MyScrollView;
+import com.df.app.util.MyScrollView;
 import com.df.app.util.Common;
 
 import org.json.JSONException;

@@ -25,7 +25,7 @@ import com.df.app.carCheck.ExteriorLayout;
 import com.df.app.carCheck.InteriorLayout;
 import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.entries.Issue;
-import com.df.app.entries.IssuePhoto;
+import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintview.FramePaintView;
@@ -35,9 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.df.app.R;
-import com.df.app.util.Helper;
 
-import static com.df.app.util.Helper.isVin;
 import static com.df.app.util.Helper.setTextView;
 import static com.df.app.util.Helper.showView;
 
@@ -236,15 +234,15 @@ public class IssueListAdapter extends BaseAdapter {
             }
         });
 
-        List<IssuePhoto> issuePhotos = new ArrayList<IssuePhoto>();
+        List<ListedPhoto> listedPhotos = new ArrayList<ListedPhoto>();
 
         for(int i = 0; i < issue.getPhotoEntities().size(); i++) {
             PhotoEntity photoEntity = issue.getPhotoEntities().get(i);
-            IssuePhoto temp = new IssuePhoto(i, photoEntity.getThumbFileName(), photoEntity.getComment());
-            issuePhotos.add(temp);
+            ListedPhoto temp = new ListedPhoto(i, photoEntity.getThumbFileName(), photoEntity.getComment());
+            listedPhotos.add(temp);
         }
 
-        issuePhotoListAdapter = new IssuePhotoListAdapter(context, issuePhotos, issue,
+        issuePhotoListAdapter = new IssuePhotoListAdapter(context, listedPhotos, issue,
                 new IssuePhotoListAdapter.OnDeleteItem() {
                     @Override
                     public void onDeleteItem(int position) {

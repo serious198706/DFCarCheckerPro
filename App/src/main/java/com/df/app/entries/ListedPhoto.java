@@ -3,15 +3,23 @@ package com.df.app.entries;
 /**
  * Created by 岩 on 14-3-5.
  */
-public class IssuePhoto {
+public class ListedPhoto {
     private int index;
     private String fileName;
     private String desc;
+    private int type;
 
-    public IssuePhoto(int index, String fileName, String desc) {
+    public ListedPhoto(int index, String fileName, String desc) {
         this.index = index;
         this.fileName = fileName;
         this.desc = desc;
+    }
+
+    public ListedPhoto(int index, String fileName, String desc, int type) {
+        this.index = index;
+        this.fileName = fileName;
+        this.desc = desc;
+        this.type = type;
     }
 
     public int getIndex() {
@@ -36,5 +44,13 @@ public class IssuePhoto {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.Issue;
-import com.df.app.entries.IssuePhoto;
+import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintview.FramePaintPreviewView;
@@ -127,9 +127,9 @@ public class AccidentResultLayout extends LinearLayout {
         thisTimeNewPhoto.add(photoEntity);
 
         int index = adapter.getCount() + 1;
-        IssuePhoto issuePhoto = new IssuePhoto(index, photoEntity.getThumbFileName(),
+        ListedPhoto listedPhoto = new ListedPhoto(index, photoEntity.getThumbFileName(),
                 photoEntity.getComment());
-        adapter.addItem(issuePhoto);
+        adapter.addItem(listedPhoto);
         adapter.notifyDataSetChanged();
 
         PhotoFaultLayout.photoListAdapter.addItem(photoEntity);

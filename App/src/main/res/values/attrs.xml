@@ -36,4 +36,12 @@
         <attr name="swipeDrawableChecked" format="reference"/>
         <attr name="swipeDrawableUnchecked" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="SlidingUpPanelLayout">
+        <attr name="collapsedHeight" format="dimension" />
+        <attr name="shadowHeight" format="dimension" />
+        <attr name="fadeColor" format="color" />
+        <attr name="flingVelocity" format="integer" />
+        <attr name="dragView" format="reference" />
+    </declare-styleable>
 </resources>
