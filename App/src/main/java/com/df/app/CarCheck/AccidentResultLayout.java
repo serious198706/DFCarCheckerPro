@@ -16,8 +16,8 @@ import com.df.app.entries.Issue;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
-import com.df.app.paintview.FramePaintPreviewView;
-import com.df.app.paintview.PaintPreviewView;
+import com.df.app.paintView.FramePaintPreviewView;
+import com.df.app.paintView.PaintPreviewView;
 import com.df.app.service.Adapter.IssuePhotoListAdapter;
 import com.df.app.util.Common;
 

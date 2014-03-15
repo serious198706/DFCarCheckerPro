@@ -590,10 +590,23 @@ public class VehicleInfoLayout extends LinearLayout {
 
     /**
      * 获取vin
-     * @return
      */
     public static String getVin() {
         return getEditViewText(rootView, R.id.vin_edit);
+    }
+
+    /**
+     * 获取出厂日期
+     */
+    public static String getBuiltDate() {
+        return getEditViewText(rootView, R.id.builtDate_edit);
+    }
+
+    /**
+     * 获取车身颜色
+     */
+    public static String getExteriorColor() {
+        return getEditViewText(rootView, R.id.exteriorColor_edit);
     }
 
     /**

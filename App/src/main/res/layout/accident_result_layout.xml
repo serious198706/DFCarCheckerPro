@@ -16,7 +16,7 @@
         android:layout_height="2dp"
         android:layout_marginTop="5dp"
         android:background="#AA030A"/>
-    <com.df.app.paintview.FramePaintPreviewView
+    <com.df.app.paintView.FramePaintPreviewView
         android:id="@+id/front_preview"
         android:layout_width="500dp"
         android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
         android:layout_height="2dp"
         android:layout_marginTop="5dp"
         android:background="#AA030A"/>
-    <com.df.app.paintview.FramePaintPreviewView
+    <com.df.app.paintView.FramePaintPreviewView
         android:id="@+id/rear_preview"
         android:layout_width="500dp"
         android:layout_height="wrap_content"

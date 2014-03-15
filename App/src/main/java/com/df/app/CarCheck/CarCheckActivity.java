@@ -15,8 +15,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.df.app.carsChecked.CarsCheckedActivity;
-import com.df.app.carsWaiting.CarsWaitingActivity;
+import com.df.app.carsChecked.CarsCheckedListActivity;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.Issue;
@@ -340,7 +339,7 @@ public class CarCheckActivity extends Activity {
             public void onFinished(String result) {
                 Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
                 clearCache();
-                Intent intent = new Intent(CarCheckActivity.this, CarsCheckedActivity.class);
+                Intent intent = new Intent(CarCheckActivity.this, CarsCheckedListActivity.class);
                 startActivity(intent);
                 finish();
 
@@ -381,7 +380,7 @@ public class CarCheckActivity extends Activity {
                         Toast.makeText(CarCheckActivity.this, "保存成功！", Toast.LENGTH_SHORT).show();
                         Log.d(Common.TAG, "保存成功！");
 //                        clearCache();
-//                        Intent intent = new Intent(CarCheckActivity.this, CarsWaitingActivity.class);
+//                        Intent intent = new Intent(CarCheckActivity.this, CarsWaitingListActivity.class);
 //                        startActivity(intent);
 //                        finish();
                     }
@@ -572,12 +571,7 @@ public class CarCheckActivity extends Activity {
                         e.printStackTrace();
                     }
 
-                    PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
-                    PhotoInteriorLayout.photoListAdapter.notifyDataSetChanged();
-                    PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
-                    PhotoProcedureLayout.photoListAdapter.notifyDataSetChanged();
-                    PhotoEngineLayout.photoListAdapter.notifyDataSetChanged();
-                    PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
+                    PhotoLayout.notifyDataSetChanget();
                 }
                 break;
         }

@@ -59,7 +59,8 @@
             android:layout_marginLeft="5dp"/>
     </RelativeLayout>
 
-    <com.df.app.paintview.FramePaintView android:id="@+id/image"
+    <com.df.app.paintView.FramePaintView
+        android:id="@+id/image"
         android:layout_width="500dp"
         android:layout_height="350dp"
         android:layout_centerHorizontal="true"

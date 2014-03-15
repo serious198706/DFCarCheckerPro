@@ -1,0 +1,115 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <RelativeLayout android:id="@+id/naviBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+        <ImageView android:id="@+id/banner"
+                   android:layout_width="match_parent"
+                   android:layout_height="52dp"
+                   android:background="#AA030A"/>
+    </RelativeLayout>
+
+    <RelativeLayout android:id="@+id/tabButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+        <Button android:id="@+id/buttonBack"
+                android:layout_width="40dp"
+                android:layout_height="36dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/back"/>
+
+        <TextView android:id="@+id/currentItem"
+                  android:layout_width="wrap_content"
+                  android:layout_height="36dp"
+                  android:layout_toRightOf="@id/buttonNavi"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginTop="6dp"
+                  android:textColor="#FFF"
+                  android:textSize="28sp"/>
+
+        <!--<Button android:id="@+id/buttonCommit"-->
+        <!--android:layout_width="40dp"-->
+        <!--android:layout_height="35dp"-->
+        <!--android:layout_margin="8dp"-->
+        <!--android:background="@drawable/commit"-->
+        <!--android:layout_alignParentRight="true"/>-->
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/naviBar"
+        android:paddingBottom="5dip"
+        android:paddingTop="10dip"
+        android:background="#edeceb" >
+
+        <TextView
+            android:id="@+id/basicTab"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="车辆信息"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/optionsTab"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="配置信息"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/accidentTab"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="事故排查"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/integratedTab"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="综合检查"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/photoTab"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="详细照片"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/otherTab"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:text="其他说明"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/linearLayout1"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:flipInterval="30"
+        android:persistentDrawingCache="animation" />
+</RelativeLayout>
+
+

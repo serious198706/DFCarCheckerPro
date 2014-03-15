@@ -1,4 +1,4 @@
-package com.df.app.paintview;
+package com.df.app.paintView;
 
 import android.content.Context;
 import android.graphics.Bitmap;

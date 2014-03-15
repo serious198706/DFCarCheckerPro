@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <View android:id="@+id/shadow"
+          android:layout_width="match_parent"
+          android:layout_height="7dp"
+          android:background="@drawable/shadow"
+          android:visibility="invisible"/>
+
+    <com.df.app.util.MyScrollView
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-7dp">
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="@string/paintResult"
+                      android:textSize="25sp"
+                      android:textColor="#555"
+                      android:textStyle="bold"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="308dp"
+                android:layout_marginTop="15dp">
+                <ImageView android:id="@+id/issue_image"
+                           android:layout_width="500dp"
+                           android:layout_height="match_parent"
+                           android:adjustViewBounds="true"
+                           android:layout_centerHorizontal="true"/>
+                <ProgressBar android:id="@+id/issueImageProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                android:baselineAligned="false">
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+                    <ImageView android:id="@+id/rectangle_normal"
+                               android:layout_width="18dp"
+                               android:layout_height="18dp"
+                               android:src="@drawable/rectangle_normal"
+                               android:layout_marginLeft="5dp"/>
+                    <TextView android:layout_height="wrap_content"
+                              android:layout_width="wrap_content"
+                              android:text="@string/normal"
+                              android:layout_marginLeft="5dp"
+                              android:layout_toRightOf="@id/rectangle_normal"/>
+                </RelativeLayout>
+
+                <RelativeLayout android:orientation="horizontal"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1">
+                    <ImageView android:id="@+id/rectangle_repaint"
+                               android:layout_width="18dp"
+                               android:layout_height="18dp"
+                               android:src="@drawable/rectangle_repaint"/>
+                    <TextView android:layout_height="wrap_content"
+                              android:layout_width="wrap_content"
+                              android:text="@string/repaint"
+                              android:layout_marginLeft="5dp"
+                              android:layout_toRightOf="@id/rectangle_repaint"/>
+                </RelativeLayout>
+
+                <RelativeLayout android:orientation="horizontal"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1">
+                    <ImageView android:id="@+id/rectangle_repaint_and_repair"
+                               android:layout_width="18dp"
+                               android:layout_height="18dp"
+                               android:src="@drawable/rectangle_repaint_and_repair"/>
+                    <TextView android:layout_height="wrap_content"
+                              android:layout_width="wrap_content"
+                              android:text="@string/repaint_and_repair"
+                              android:layout_marginLeft="5dp"
+                              android:layout_toRightOf="@id/rectangle_repaint_and_repair"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="@string/frameResult"
+                      android:textSize="25sp"
+                      android:textColor="#555"
+                      android:textStyle="bold"
+                      android:layout_marginTop="15dp"/>
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:orientation="horizontal"
+                          android:layout_marginTop="15dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/issueResult"
+                    android:textSize="22sp"
+                    android:textColor="#555"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"/>
+                <TableLayout android:id="@+id/issueResultTable"
+                             android:layout_width="0dp"
+                             android:layout_height="wrap_content"
+                             android:layout_weight="2">
+                </TableLayout>
+            </LinearLayout>
+
+            <TextView android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/front"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="5dp"
+                android:background="#AA030A"/>
+
+            <RelativeLayout android:layout_width="500dp"
+                android:layout_height="350dp">
+
+                <com.df.app.paintView.FramePaintPreviewView
+                android:id="@+id/front_preview"
+                android:layout_width="500dp"
+                android:layout_height="350dp"
+                android:layout_centerInParent="true"/>
+                <!--<View-->
+                    <!--android:id="@+id/front_preview"-->
+                    <!--android:layout_width="500dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center"/>-->
+                <ProgressBar android:id="@+id/frontProgressBar"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:layout_centerInParent="true"
+                             android:indeterminate="true"/>
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rear"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="5dp"
+                android:background="#AA030A"/>
+
+            <RelativeLayout android:layout_width="500dp"
+                            android:layout_height="350dp">
+                <com.df.app.paintView.FramePaintPreviewView
+                android:id="@+id/rear_preview"
+                android:layout_width="500dp"
+                android:layout_height="350dp"
+                android:layout_centerInParent="true"/>
+                <!--<View-->
+                    <!--android:id="@+id/rear_preview"-->
+                    <!--android:layout_width="500dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center"/>-->
+                <ProgressBar android:id="@+id/rearProgressBar"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:layout_centerInParent="true"
+                             android:indeterminate="true"/>
+            </RelativeLayout>
+        </TableLayout>
+    </com.df.app.util.MyScrollView>
+
+</LinearLayout>

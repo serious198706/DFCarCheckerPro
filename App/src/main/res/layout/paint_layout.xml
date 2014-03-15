@@ -60,13 +60,13 @@
                 android:layout_gravity="center"
                 android:orientation="vertical">
 
-                <com.df.app.paintview.ExteriorPaintView
+                <com.df.app.paintView.ExteriorPaintView
                 android:id="@+id/exterior_paint_view"
                 android:layout_width="500dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"/>
 
-                <com.df.app.paintview.InteriorPaintView
+                <com.df.app.paintView.InteriorPaintView
                 android:id="@+id/interior_paint_view"
                 android:layout_width="500dp"
                 android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
         <!-- drag area -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="850dp"
             android:background="#eee"
             android:orientation="vertical"
             android:clickable="true"
@@ -102,7 +102,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:background="#999">
 
                 <ImageView android:id="@+id/expandImage"
                            android:layout_width="match_parent"
@@ -111,10 +112,19 @@
 
             </LinearLayout>
 
+            <TextView android:id="@+id/listTitle"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:textSize="28sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
             <ListView android:id="@+id/paintPhotoList"
                       android:layout_width="match_parent"
                       android:layout_height="0dp"
-                      android:layout_weight="1"/>
+                      android:layout_weight="1"
+                      android:layout_marginTop="8dp"/>
         </LinearLayout>
 
     </com.df.app.util.SlidingUpPanelLayout>

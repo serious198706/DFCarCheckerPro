@@ -248,4 +248,13 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
         PhotoOtherLayout.photoListAdapter = null;
         PhotoOtherLayout.photoShotCount = 0;
     }
+
+    public static void notifyDataSetChanget() {
+        PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
+        PhotoInteriorLayout.photoListAdapter.notifyDataSetChanged();
+        PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+        PhotoProcedureLayout.photoListAdapter.notifyDataSetChanged();
+        PhotoEngineLayout.photoListAdapter.notifyDataSetChanged();
+        PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
+    }
 }

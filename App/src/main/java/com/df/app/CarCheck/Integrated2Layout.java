@@ -77,12 +77,12 @@ public class Integrated2Layout extends LinearLayout {
             R.id.seatSlide_spinner,
             R.id.ecu_spinner,
             R.id.roof_spinner,
-            R.id.backCorner_spinner,
+//            R.id.backCorner_spinner,
             R.id.discBox_spinner,
-            R.id.storageCorner_spinner,
-            R.id.newFuse_spinner,
-            R.id.fuse_spinner,
-            R.id.engineRoom_spinner,
+//            R.id.storageCorner_spinner,
+//            R.id.newFuse_spinner,
+//            R.id.fuse_spinner,
+//            R.id.engineRoom_spinner,
             R.id.patternMatch_spinner,
             R.id.formatMatch_spinner};
 
@@ -447,12 +447,12 @@ public class Integrated2Layout extends LinearLayout {
         flooded.put("seatSlide", getSpinnerSelectedText(rootView, R.id.seatSlide_spinner));
         flooded.put("ecu", getSpinnerSelectedText(rootView, R.id.ecu_spinner));
         flooded.put("roof", getSpinnerSelectedText(rootView, R.id.roof_spinner));
-        flooded.put("backCorner", getSpinnerSelectedText(rootView, R.id.backCorner_spinner));
+//        flooded.put("backCorner", getSpinnerSelectedText(rootView, R.id.backCorner_spinner));
         flooded.put("discBox", getSpinnerSelectedText(rootView, R.id.discBox_spinner));
-        flooded.put("storageCorner", getSpinnerSelectedText(rootView, R.id.storageCorner_spinner));
-        flooded.put("newFuse", getSpinnerSelectedText(rootView, R.id.newFuse_spinner));
-        flooded.put("fuse", getSpinnerSelectedText(rootView, R.id.fuse_spinner));
-        flooded.put("engineRoom", getSpinnerSelectedText(rootView, R.id.engineRoom_spinner));
+//        flooded.put("storageCorner", getSpinnerSelectedText(rootView, R.id.storageCorner_spinner));
+//        flooded.put("newFuse", getSpinnerSelectedText(rootView, R.id.newFuse_spinner));
+//        flooded.put("fuse", getSpinnerSelectedText(rootView, R.id.fuse_spinner));
+//        flooded.put("engineRoom", getSpinnerSelectedText(rootView, R.id.engineRoom_spinner));
 
         return flooded;
     }
@@ -473,12 +473,12 @@ public class Integrated2Layout extends LinearLayout {
         setSpinnerSelectionWithString(rootView, R.id.seatSlide_spinner, flooded.getString("seatSlide"));
         setSpinnerSelectionWithString(rootView, R.id.ecu_spinner, flooded.getString("ecu"));
         setSpinnerSelectionWithString(rootView, R.id.roof_spinner, flooded.getString("roof"));
-        setSpinnerSelectionWithString(rootView, R.id.backCorner_spinner, flooded.getString("backCorner"));
+//        setSpinnerSelectionWithString(rootView, R.id.backCorner_spinner, flooded.getString("backCorner"));
         setSpinnerSelectionWithString(rootView, R.id.discBox_spinner, flooded.getString("discBox"));
-        setSpinnerSelectionWithString(rootView, R.id.storageCorner_spinner, flooded.getString("storageCorner"));
-        setSpinnerSelectionWithString(rootView, R.id.newFuse_spinner, flooded.getString("newFuse"));
-        setSpinnerSelectionWithString(rootView, R.id.fuse_spinner, flooded.getString("fuse"));
-        setSpinnerSelectionWithString(rootView, R.id.engineRoom_spinner, flooded.getString("engineRoom"));
+//        setSpinnerSelectionWithString(rootView, R.id.storageCorner_spinner, flooded.getString("storageCorner"));
+//        setSpinnerSelectionWithString(rootView, R.id.newFuse_spinner, flooded.getString("newFuse"));
+//        setSpinnerSelectionWithString(rootView, R.id.fuse_spinner, flooded.getString("fuse"));
+//        setSpinnerSelectionWithString(rootView, R.id.engineRoom_spinner, flooded.getString("engineRoom"));
     }
 
     /**

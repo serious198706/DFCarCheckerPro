@@ -40,7 +40,7 @@ import static com.df.app.util.Helper.setTextView;
  *
  * 待检车辆列表
  */
-public class CarsWaitingActivity extends Activity {
+public class CarsWaitingListActivity extends Activity {
     private SwipeListView swipeListView;
     private ArrayList<CarsWaitingItem> data;
     private CarsWaitingListAdapter adapter;
@@ -67,7 +67,7 @@ public class CarsWaitingActivity extends Activity {
             @Override
             public void onModifyProcedure(int positon) {
                 CarsWaitingItem item = data.get(positon);
-                Intent intent = new Intent(CarsWaitingActivity.this, InputProceduresActivity.class);
+                Intent intent = new Intent(CarsWaitingListActivity.this, InputProceduresActivity.class);
                 intent.putExtra("jsonString", item.getJsonObject().toString());
                 startActivity(intent);
             }
@@ -83,7 +83,7 @@ public class CarsWaitingActivity extends Activity {
 
                 setTextView(view1, R.id.title, getResources().getString(R.string.alert));
 
-                AlertDialog dialog = new AlertDialog.Builder(CarsWaitingActivity.this)
+                AlertDialog dialog = new AlertDialog.Builder(CarsWaitingListActivity.this)
                         .setView(view1)
                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
@@ -167,7 +167,7 @@ public class CarsWaitingActivity extends Activity {
      * 刷新列表
      */
     private void refresh() {
-        GetCarsWaitingListTask getCarsWaitingListTask = new GetCarsWaitingListTask(CarsWaitingActivity.this, startNumber,
+        GetCarsWaitingListTask getCarsWaitingListTask = new GetCarsWaitingListTask(CarsWaitingListActivity.this, startNumber,
                 new GetCarsWaitingListTask.OnGetListFinish() {
                     @Override
                     public void onFinish(String result) {
@@ -176,7 +176,7 @@ public class CarsWaitingActivity extends Activity {
                     }
                     @Override
                     public void onFailed(String error) {
-                        Toast.makeText(CarsWaitingActivity.this, "获取待检车辆列表失败：" + error, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CarsWaitingListActivity.this, "获取待检车辆列表失败：" + error, Toast.LENGTH_SHORT).show();
                         Log.d("DFCarChecker", "获取待检车辆列表失败：" + error);
                     }
                 });
@@ -266,20 +266,20 @@ public class CarsWaitingActivity extends Activity {
      * @param activity
      */
     private void getCarDetail(final int carId, final Class activity) {
-        GetCarDetailTask getCarDetailTask = new GetCarDetailTask(CarsWaitingActivity.this, carId, new GetCarDetailTask.OnGetDetailFinished() {
+        GetCarDetailTask getCarDetailTask = new GetCarDetailTask(CarsWaitingListActivity.this, carId, new GetCarDetailTask.OnGetDetailFinished() {
             @Override
             public void onFinish(String result) {
-                Intent intent = new Intent(CarsWaitingActivity.this, activity);
+                Intent intent = new Intent(CarsWaitingListActivity.this, activity);
                 intent.putExtra("jsonString", result);
                 intent.putExtra("carId", carId);
-                intent.putExtra("activity", CarsWaitingActivity.class);
+                intent.putExtra("activity", CarsWaitingListActivity.class);
                 startActivity(intent);
                 finish();
             }
 
             @Override
             public void onFailed(String result) {
-                Toast.makeText(CarsWaitingActivity.this, result, Toast.LENGTH_SHORT).show();
+                Toast.makeText(CarsWaitingListActivity.this, result, Toast.LENGTH_SHORT).show();
                 finish();
 
                 Log.d(Common.TAG, result);
@@ -293,10 +293,10 @@ public class CarsWaitingActivity extends Activity {
      * 删除车辆
      */
     private void deleteCar(int carId) {
-        DeleteCarTask deleteCarTask = new DeleteCarTask(CarsWaitingActivity.this, carId, new DeleteCarTask.OnDeleteFinished() {
+        DeleteCarTask deleteCarTask = new DeleteCarTask(CarsWaitingListActivity.this, carId, new DeleteCarTask.OnDeleteFinished() {
             @Override
             public void onFinished(String result) {
-                Toast.makeText(CarsWaitingActivity.this, "删除成功！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CarsWaitingListActivity.this, "删除成功！", Toast.LENGTH_SHORT).show();
 
                 startNumber = 1;
                 data.clear();
@@ -308,7 +308,7 @@ public class CarsWaitingActivity extends Activity {
 
             @Override
             public void onFailed(String result) {
-                Toast.makeText(CarsWaitingActivity.this, "删除失败！" + result, Toast.LENGTH_SHORT).show();
+                Toast.makeText(CarsWaitingListActivity.this, "删除失败！" + result, Toast.LENGTH_SHORT).show();
                 Log.d(Common.TAG, "删除失败！" + result);
             }
         });

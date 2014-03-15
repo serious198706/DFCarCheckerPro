@@ -28,7 +28,7 @@ import com.df.app.entries.Issue;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
-import com.df.app.paintview.FramePaintView;
+import com.df.app.paintView.FramePaintView;
 import com.df.app.util.Common;
 
 import java.util.ArrayList;

@@ -26,9 +26,9 @@ import com.df.app.R;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
-import com.df.app.paintview.ExteriorPaintView;
-import com.df.app.paintview.InteriorPaintView;
-import com.df.app.paintview.PaintView;
+import com.df.app.paintView.ExteriorPaintView;
+import com.df.app.paintView.InteriorPaintView;
+import com.df.app.paintView.PaintView;
 import com.df.app.service.Adapter.PaintPhotoListAdapter;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
@@ -38,7 +38,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.df.app.util.Helper.getBitmapHeight;
@@ -179,34 +178,37 @@ public class PaintActivity extends Activity {
         });
 
         ImageView imageView = (ImageView)findViewById(R.id.expandImage);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!isExpanded) {
-                    slidingUpPanelLayout.expandPane(0.3f);
-                    isExpanded = true;
-                }
-                else {
-                    slidingUpPanelLayout.collapsePane();
-                    isExpanded = false;
-                }
-            }
-        });
+//        imageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(!isExpanded) {
+//                    slidingUpPanelLayout.expandPane(0.3f);
+//                    isExpanded = true;
+//                }
+//                else {
+//                    slidingUpPanelLayout.collapsePane();
+//                    isExpanded = false;
+//                }
+//            }
+//        });
 
         slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         slidingUpPanelLayout.setShadowDrawable(getResources().getDrawable(R.drawable.above_shadow));
         slidingUpPanelLayout.setAnchorPoint(0.3f);
-        slidingUpPanelLayout.setSlidingEnabled(false);
-        slidingUpPanelLayout.offsetTopAndBottom(150);
+        slidingUpPanelLayout.setDragView(imageView);
         slidingUpPanelLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-
+                paintView.setEnabled(false);
             }
 
             @Override
             public void onPanelExpanded(View panel) {
+                ImageView imageView = (ImageView) findViewById(R.id.expandImage);
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.expander_open_holo_light);
+                imageView.setImageBitmap(bitmap);
 
+                paintView.setEnabled(false);
             }
 
             @Override
@@ -214,6 +216,8 @@ public class PaintActivity extends Activity {
                 ImageView imageView = (ImageView) findViewById(R.id.expandImage);
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.expander_close_holo_light);
                 imageView.setImageBitmap(bitmap);
+
+                paintView.setEnabled(true);
             }
 
             @Override
@@ -221,6 +225,8 @@ public class PaintActivity extends Activity {
                 ImageView imageView = (ImageView) findViewById(R.id.expandImage);
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.expander_open_holo_light);
                 imageView.setImageBitmap(bitmap);
+
+                paintView.setEnabled(false);
             }
         });
     }
@@ -229,6 +235,15 @@ public class PaintActivity extends Activity {
      * 初始化照片列表（根据不同的布局）
      */
     private void initPhotoList() {
+        switch (PaintType.paintType(currentPaintView)) {
+            case EX_PAINT:
+                setTextView(getWindow().getDecorView(), R.id.listTitle, "外观缺陷照列表");
+                break;
+            case IN_PAINT:
+                setTextView(getWindow().getDecorView(), R.id.listTitle, "内饰缺陷照列表");
+                break;
+        }
+
         ListView photoListView = (ListView)findViewById(R.id.paintPhotoList);
 
         listedPhotos = new ArrayList<ListedPhoto>();

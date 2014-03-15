@@ -1,4 +1,4 @@
-package com.df.app.paintview;
+package com.df.app.paintView;
 
 /**
  * Created by 岩 on 13-9-26.
@@ -14,33 +14,24 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.df.app.carCheck.BasicInfoLayout;
 import com.df.app.carCheck.ExteriorLayout;
-import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.df.app.util.Helper.getBitmapHeight;
-import static com.df.app.util.Helper.getBitmapWidth;
 
 public class ExteriorPaintView extends PaintView {
     public interface OnAddEmptyPhoto {

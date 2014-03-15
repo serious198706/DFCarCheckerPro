@@ -87,4 +87,7 @@
     <string name="confirmDelete">确认删除此条目？</string>
     <string name="deleteRecord">&lt;删除损伤记录</string>
     <string name="deleteAlert">您将删除本查勘项的所有记录，且无法恢复，请核实后确认。</string>
+    <string name="paintResult">漆面检查</string>
+    <string name="frameResult">结构检查</string>
+    <string name="issueResult">问题查勘结果：</string>
 </resources>

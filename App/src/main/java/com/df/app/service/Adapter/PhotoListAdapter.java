@@ -86,6 +86,9 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
             photo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // 将要修改的photoEntity提取出来
+                    PhotoLayout.reTakePhotoEntity = photoEntity;
+
                     showPhoto(Common.photoDirectory + photoEntity.getFileName());
                 }
             });

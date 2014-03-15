@@ -1,4 +1,4 @@
-package com.df.app.paintview;
+package com.df.app.paintView;
 
 /**
  * Created by 岩 on 13-9-26.
@@ -13,7 +13,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.net.Uri;

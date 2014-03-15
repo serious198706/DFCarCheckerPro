@@ -90,6 +90,7 @@
     <orderEntry type="library" exported="" name="zip4j_1.3.1" level="project" />
     <orderEntry type="library" exported="" name="swipelistview-1.0-20130701.103547-12-jar-with-dependencies" level="project" />
     <orderEntry type="library" exported="" name="seriallib" level="project" />
+    <orderEntry type="library" exported="" name="PhotoView" level="project" />
   </component>
 </module>
 

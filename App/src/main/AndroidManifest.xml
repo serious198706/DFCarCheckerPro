@@ -76,12 +76,12 @@
             android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity
-            android:name="com.df.app.carsChecked.CarsCheckedActivity"
+            android:name=".carsChecked.CarsCheckedListActivity"
             android:label="@string/title_activity_cars_checked"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.df.app.carsWaiting.CarsWaitingActivity"
+            android:name=".carsWaiting.CarsWaitingListActivity"
             android:label="@string/title_activity_cars_waiting"
             android:screenOrientation="portrait" >
         </activity>
@@ -99,6 +99,10 @@
         <activity
             android:name="com.df.app.service.PhotoOperationActivity"
             android:label="@string/title_activity_photo_operation" >
+        </activity>
+        <activity
+            android:name="com.df.app.carsChecked.CarReportActivity"
+            android:label="@string/title_activity_car_report" >
         </activity>
     </application>
 

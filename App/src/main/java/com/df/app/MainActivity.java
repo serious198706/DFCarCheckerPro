@@ -15,8 +15,8 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.df.app.carsChecked.CarsCheckedActivity;
-import com.df.app.carsWaiting.CarsWaitingActivity;
+import com.df.app.carsChecked.CarsCheckedListActivity;
+import com.df.app.carsWaiting.CarsWaitingListActivity;
 import com.df.app.procedures.InputProceduresActivity;
 import com.df.app.entries.UserInfo;
 import com.df.app.entries.VehicleModel;
@@ -92,12 +92,12 @@ public class MainActivity extends Activity {
     }
 
     private void enterCarsWaiting() {
-        ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarsWaitingActivity.class);
+        ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarsWaitingListActivity.class);
         parseXmlTask.execute();
     }
 
     private void enterCarsChecked() {
-        ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarsCheckedActivity.class);
+        ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarsCheckedListActivity.class);
         parseXmlTask.execute();
     }
 

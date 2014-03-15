@@ -38,37 +38,41 @@
     </RelativeLayout>
 
     <ImageView android:id="@+id/image"
-               android:layout_width="600dp"
-               android:layout_height="wrap_content"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
                android:layout_marginTop="20dp"
                android:layout_centerHorizontal="true"
+               android:scaleType="center"
                android:layout_below="@id/naviBar"/>
 
     <LinearLayout android:orientation="horizontal"
                   android:layout_width="match_parent"
                   android:layout_height="80dp"
                   android:layout_alignParentBottom="true">
-        <ImageButton
+        <ImageButton android:id="@+id/edit"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:src="@drawable/edit"/>
-        <ImageButton
+        <ImageButton android:id="@+id/eraser"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:src="@drawable/eraser"/>
-        <ImageButton
+        <ImageButton android:id="@+id/zoom_in"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
-        <ImageButton
+            android:layout_weight="1"
+            android:src="@drawable/zoom_in"/>
+        <ImageButton android:id="@+id/zoom_out"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
-        <ImageButton
+            android:layout_weight="1"
+            android:src="@drawable/zoom_out"/>
+        <ImageButton android:id="@+id/reTake"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:src="@drawable/camera"/>
     </LinearLayout>
 </RelativeLayout>

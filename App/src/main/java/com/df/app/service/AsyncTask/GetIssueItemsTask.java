@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.df.app.carCheck.BasicInfoLayout;
 import com.df.app.MainActivity;
+import com.df.app.carCheck.VehicleInfoLayout;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 
@@ -53,7 +54,9 @@ public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("SeriesId", BasicInfoLayout.mCarSettings.getSeries().id);
-            jsonObject.put("Data", accidentData);
+            jsonObject.put("ExteriorColor", VehicleInfoLayout.getExteriorColor());
+            jsonObject.put("BuiltDate", VehicleInfoLayout.getBuiltDate());
+            jsonObject.put("PaintData", accidentData);
 
             soapService = new SoapService();
             soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.ANALYSIS_ACCIDENT_DATA);

@@ -1,4 +1,4 @@
-package com.df.app.paintview;
+package com.df.app.paintView;
 
 /**
  * Created by 岩 on 13-9-26.
