@@ -415,7 +415,7 @@ public class VehicleInfoLayout extends LinearLayout {
         if(manufacturer == null) {
             adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, Helper.getEmptyStringList());
         } else {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, manufacturer.getSerialNames());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, manufacturer.getSeriesNames());
         }
 
         seriesSpinner.setAdapter(adapter);
@@ -440,7 +440,7 @@ public class VehicleInfoLayout extends LinearLayout {
         });
 
         // 如果该项只有一个条目，则默认选中，否则选中上次记录的值
-        if(manufacturer != null && manufacturer.getSerialNames().size() == 2) {
+        if(manufacturer != null && manufacturer.getSeriesNames().size() == 2) {
             seriesSpinner.setSelection(1);
         } else {
             seriesSpinner.setSelection(lastSeriesIndex);
@@ -511,15 +511,50 @@ public class VehicleInfoLayout extends LinearLayout {
         try {
             mUiUpdatedCallback = listener;
 
+//            setEditViewText(rootView, R.id.vin_edit, procedures.getString("vin"));
+//            setEditViewText(rootView, R.id.engineSerial_edit, procedures.getString("engineSerial"));
+//            setEditViewText(rootView, R.id.plateNumber_edit, procedures.getString("plateNumber"));
+//            setEditViewText(rootView, R.id.licenseModel_edit, procedures.getString("licenseModel"));
+//            setEditViewText(rootView, R.id.vehicleType_edit, procedures.getString("vehicleType"));
+//            setEditViewText(rootView, R.id.mileage_edit, procedures.getString("mileage"));
+//            setEditViewText(rootView, R.id.exteriorColor_edit, procedures.getString("exteriorColor"));
+//            setEditViewText(rootView, R.id.regDate_edit, procedures.getString("regDate"));
+//            setEditViewText(rootView, R.id.builtDate_edit, procedures.getString("builtDate"));
+
             setEditViewText(rootView, R.id.vin_edit, procedures.getString("vin"));
-            setEditViewText(rootView, R.id.engineSerial_edit, procedures.getString("engineSerial"));
-            setEditViewText(rootView, R.id.plateNumber_edit, procedures.getString("plateNumber"));
-            setEditViewText(rootView, R.id.licenseModel_edit, procedures.getString("licenseModel"));
-            setEditViewText(rootView, R.id.vehicleType_edit, procedures.getString("vehicleType"));
-            setEditViewText(rootView, R.id.mileage_edit, procedures.getString("mileage"));
-            setEditViewText(rootView, R.id.exteriorColor_edit, procedures.getString("exteriorColor"));
-            setEditViewText(rootView, R.id.regDate_edit, procedures.getString("regDate"));
-            setEditViewText(rootView, R.id.builtDate_edit, procedures.getString("builtDate"));
+
+            if(procedures.has("engineSerial"))
+                setEditViewText(rootView, R.id.engineSerial_edit, procedures.getString("engineSerial"));
+            else
+                setEditViewText(rootView, R.id.engineSerial_edit, procedures.getString("engineno"));
+            if(procedures.has("plateNumber"))
+                setEditViewText(rootView, R.id.plateNumber_edit, procedures.getString("plateNumber"));
+            else
+                setEditViewText(rootView, R.id.plateNumber_edit, procedures.getString("license"));
+            if(procedures.has("licenseModel"))
+                setEditViewText(rootView, R.id.licenseModel_edit, procedures.getString("licenseModel"));
+            else
+                setEditViewText(rootView, R.id.licenseModel_edit, procedures.getString("model2"));
+            if(procedures.has("vehicleType"))
+                setEditViewText(rootView, R.id.vehicleType_edit, procedures.getString("vehicleType"));
+            else
+                setEditViewText(rootView, R.id.vehicleType_edit, procedures.getString("licensetype"));
+            if(procedures.has("mileage"))
+                setEditViewText(rootView, R.id.mileage_edit, procedures.getString("mileage"));
+            else
+                setEditViewText(rootView, R.id.mileage_edit, procedures.getString("mileage"));
+            if(procedures.has("exteriorColor"))
+                setEditViewText(rootView, R.id.exteriorColor_edit, procedures.getString("exteriorColor"));
+            else
+                setEditViewText(rootView, R.id.exteriorColor_edit, procedures.getString("color"));
+            if(procedures.has("regDate"))
+                setEditViewText(rootView, R.id.regDate_edit, procedures.getString("regDate"));
+            else
+                setEditViewText(rootView, R.id.regDate_edit, procedures.getString("regdate"));
+            if(procedures.has("builtDate"))
+                setEditViewText(rootView, R.id.builtDate_edit, procedures.getString("builtDate"));
+            else
+                setEditViewText(rootView, R.id.builtDate_edit, procedures.getString("leavefactorydate"));
 
             // 更新配置信息
             Country country = null;

@@ -88,10 +88,10 @@
     <string-array name="exterior_camera_item">
         <item>左前45°</item>
         <item>右前45°</item>
-        <item>左侧</item>
         <item>右侧</item>
-        <item>左后45°</item>
         <item>右后45°</item>
+        <item>左后45°</item>
+        <item>左侧</item>
         <item>其他</item>
     </string-array>
 
@@ -245,6 +245,15 @@
     <string name="engineRoom">发动机舱内清洁程度正常：</string>
 
     <string name="tire">轮胎检查</string>
+
+    <string-array name="tire_items">
+        <item>左前轮</item>
+        <item>右前轮</item>
+        <item>左后轮</item>
+        <item>右后轮</item>
+        <item>备胎轮</item>
+    </string-array>
+
     <string name="tireFormatMatch">轮胎与登记证规格相符：</string>
     <string name="tirePatternMatch">同轴轮胎花纹相符：</string>
     <string name="tireReplace">此轮胎已有照片，确定替换？</string>

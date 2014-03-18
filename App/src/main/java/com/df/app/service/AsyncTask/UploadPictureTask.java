@@ -63,31 +63,46 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                View view1 = ((Activity)context).getLayoutInflater().inflate(R.layout.popup_layout, null);
-                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-                TextView content = new TextView(view1.getContext());
-                content.setText(R.string.cancelUploading);
-                content.setTextSize(20f);
-                contentArea.addView(content);
-
-                setTextView(view1, R.id.title, context.getResources().getString(R.string.alert));
-
-                AlertDialog dialog = new AlertDialog.Builder(context)
-                        .setView(view1)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                            cancel(true);
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, null)
-                        .create();
-
-                dialog.show();
+                alertUser();
+            }
+        });
+        progressDialog.setButton(DialogInterface.BUTTON_POSITIVE, "取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                alertUser();
             }
         });
         progressDialog.setMax(total);
         progressDialog.show();
+    }
+
+    private void alertUser() {
+        View view1 = ((Activity) context).getLayoutInflater().inflate(R.layout.popup_layout, null);
+        TableLayout contentArea = (TableLayout) view1.findViewById(R.id.contentArea);
+        TextView content = new TextView(view1.getContext());
+        content.setText(R.string.cancelUploading);
+        content.setTextSize(20f);
+        contentArea.addView(content);
+
+        setTextView(view1, R.id.title, context.getResources().getString(R.string.alert));
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(view1)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        cancel(true);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        progressDialog.show();
+                    }
+                })
+                .create();
+
+        dialog.show();
     }
 
     @Override
@@ -98,6 +113,10 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
         soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.UPLOAD_PICTURE);
 
         for(int i = 0; i < photoEntityList.size(); i++) {
+            if(isCancelled()) {
+                break;
+            }
+
             PhotoEntity photoEntity = photoEntityList.get(i);
 
             // 获取照片的物理路径

@@ -367,7 +367,7 @@ public class IssueLayout extends LinearLayout {
 
     public void modifyComment(String comment) {
         photoEntityModify.setComment(comment);
-        listedPhoto.setDesc(comment);
+        listedPhoto.getPhotoEntity().setComment(comment);
         photoListAdapter.notifyDataSetChanged();
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }

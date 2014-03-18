@@ -1,6 +1,7 @@
 package com.df.app.carsChecked;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -127,5 +128,12 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
         integratedTab.setTextColor(currIndex == 3 ? selectedColor : unselectedColor);
         photoTab.setTextColor(currIndex == 4 ? selectedColor : unselectedColor);
         otherTab.setTextColor(currIndex == 5 ? selectedColor : unselectedColor);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, CarsCheckedListActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

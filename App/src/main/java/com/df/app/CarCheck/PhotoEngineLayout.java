@@ -74,7 +74,7 @@ public class PhotoEngineLayout extends LinearLayout {
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
-        photoListAdapter = new PhotoListAdapter(this.context, R.id.photo_engine_list, photoEntities);
+        photoListAdapter = new PhotoListAdapter(this.context, photoEntities, true);
 
         ListView engineList = (ListView) findViewById(R.id.photo_engine_list);
         engineList.setAdapter(photoListAdapter);

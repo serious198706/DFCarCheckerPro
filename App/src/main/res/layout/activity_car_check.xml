@@ -38,6 +38,13 @@
         android:layout_below="@id/naviBar"
         android:visibility="gone"/>
 
+    <com.df.app.carCheck.TransactionNotesLayout
+        android:id="@+id/transactionNotes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/naviBar"
+        android:visibility="gone"/>
+
     <RelativeLayout android:id="@+id/tabButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -84,8 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@id/buttonHome"
                 android:text="提交"
-                android:textColor="#fff"
-                />
+                android:textColor="#fff"/>
 
         <Button android:id="@+id/buttonBasicInfo"
                 android:layout_width="195dp"
@@ -107,6 +113,11 @@
                 android:layout_height="54dp"
                 android:background="@drawable/photo"
                 android:layout_below="@id/buttonIntegratedCheck"/>
+        <Button android:id="@+id/buttonTransactionNotes"
+                android:layout_width="195dp"
+                android:layout_height="54dp"
+                android:background="@drawable/transaction"
+                android:layout_below="@id/buttonPhoto"/>
     </RelativeLayout>
 </RelativeLayout>
 

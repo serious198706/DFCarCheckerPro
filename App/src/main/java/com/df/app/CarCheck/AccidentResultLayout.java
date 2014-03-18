@@ -127,8 +127,7 @@ public class AccidentResultLayout extends LinearLayout {
         thisTimeNewPhoto.add(photoEntity);
 
         int index = adapter.getCount() + 1;
-        ListedPhoto listedPhoto = new ListedPhoto(index, photoEntity.getThumbFileName(),
-                photoEntity.getComment());
+        ListedPhoto listedPhoto = new ListedPhoto(index, photoEntity);
         adapter.addItem(listedPhoto);
         adapter.notifyDataSetChanged();
 

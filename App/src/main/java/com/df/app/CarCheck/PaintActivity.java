@@ -252,7 +252,7 @@ public class PaintActivity extends Activity {
             PosEntity posEntity = paintView.getPosEntities().get(i);
             PhotoEntity photoEntity = paintView.getPhotoEntities().get(i);
 
-            ListedPhoto listedPhoto = new ListedPhoto(i, photoEntity.getThumbFileName(), photoEntity.getComment(), posEntity.getType());
+            ListedPhoto listedPhoto = new ListedPhoto(i, photoEntity, posEntity.getType());
             listedPhotos.add(listedPhoto);
         }
 
@@ -502,14 +502,23 @@ public class PaintActivity extends Activity {
                 }
 
                 break;
-            case Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO:
-                // 从备注界面返回时，先添加备注
-                Bundle bundle = data.getExtras();
-                posEntity.setComment(bundle.getString("COMMENT"));
+            case Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO: {
+                    // 从备注界面返回时，先添加备注
+                    Bundle bundle = data.getExtras();
+                    posEntity.setComment(bundle.getString("COMMENT"));
 
-                // 再生成PhotoEntity，并添加到列表
-                addPhotoToList();
+                    // 再生成PhotoEntity，并添加到列表
+                    addPhotoToList();
+                }
                 break;
+            case Common.MODIFY_PAINT_COMMENT: {
+                    Bundle bundle = data.getExtras();
+
+                    PhotoLayout.commentModEntity.setComment(bundle.getString("COMMENT"));
+                    PhotoLayout.listedPhoto.getPhotoEntity().setComment(bundle.getString("COMMENT"));
+                    PhotoLayout.paintPhotoListAdapter.notifyDataSetChanged();
+                    PhotoLayout.notifyDataSetChanged();
+                }
             default:
                 Log.d("DFCarChecker", "拍摄故障！！");
                 break;
@@ -525,9 +534,7 @@ public class PaintActivity extends Activity {
         paintView.getPhotoEntities().add(photoEntity);
 
         ListedPhoto listedPhoto = new ListedPhoto(paintView.getPosEntities().size(),
-                paintView.getPosEntity().getImageFileName(),
-                paintView.getPosEntity().getComment(),
-                paintView.getPosEntity().getType());
+                photoEntity, paintView.getPosEntity().getType());
 
         adapter.add(listedPhoto);
         adapter.notifyDataSetChanged();

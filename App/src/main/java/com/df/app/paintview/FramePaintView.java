@@ -213,8 +213,7 @@ public class FramePaintView extends PaintView {
                 issue.addPhoto(photoEntity);
 
                 int index = adapter.getCount();
-                ListedPhoto listedPhoto = new ListedPhoto(index, photoEntity.getThumbFileName(),
-                        photoEntity.getComment());
+                ListedPhoto listedPhoto = new ListedPhoto(index, photoEntity);
                 adapter.addItem(listedPhoto);
                 adapter.notifyDataSetChanged();
             }

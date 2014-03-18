@@ -48,7 +48,8 @@
                           android:layout_weight="1"
                           android:textSize="20sp"
                           android:textStyle="bold"
-                          android:gravity="left"/>
+                          android:gravity="left"
+                          android:tag="licensetype"/>
             </TableRow>
 
             <TableRow android:layout_marginTop="15dp">
@@ -367,7 +368,8 @@
                           android:layout_weight="1"
                           android:textSize="20sp"
                           android:textStyle="bold"
-                          android:gravity="left"/>
+                          android:gravity="left"
+                          android:tag="sfjk"/>
             </TableRow>
 
             <TableRow android:id="@+id/importWay_row"
@@ -438,7 +440,8 @@
                           android:layout_weight="2"
                           android:textSize="20sp"
                           android:textStyle="bold"
-                          android:gravity="left"/>
+                          android:gravity="left"
+                          android:tag="sxdd"/>
             </TableRow>
 
             <TextView android:layout_width="wrap_content"
@@ -498,7 +501,8 @@
                           android:layout_width="0dp"
                           android:textSize="20sp"
                           android:textStyle="bold"
-                          android:gravity="left"/>
+                          android:gravity="left"
+                          android:tag="invoice"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
@@ -834,25 +838,10 @@
                 <TextView android:id="@+id/exchangeCarModel_text"
                           android:layout_height="wrap_content"
                           android:layout_width="0dp"
-                          android:layout_weight="1"
+                          android:layout_weight="3"
                           android:textSize="20sp"
                           android:textStyle="bold"
                           android:gravity="left"/>
-                <TextView
-                    android:layout_height="wrap_content"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:textSize="20sp"
-                    android:textColor="#555"
-                    android:textStyle="bold"
-                    android:gravity="right"/>
-                <TextView
-                    android:layout_height="wrap_content"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:gravity="left"/>
             </TableRow>
 
             <!-- TODO:过户 -->

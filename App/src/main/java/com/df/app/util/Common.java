@@ -83,6 +83,7 @@ public class Common {
     public static final int OTHER = 5;      // 其它
     public static final int DIRTY = 6;      // 脏污
     public static final int BROKEN = 7;     // 破损
+    public static final int DAMAGE = 8;     // 损伤
 
     public static final int ENTER_EXTERIOR_PAINT = 0;
     public static final int ENTER_INTERIOR_PAINT = 1;
@@ -108,6 +109,7 @@ public class Common {
     public static final int PHOTO_FOR_OTHER_STANDARD = 16;
     public static final int PHOTO_RETAKE = 17;
     public static final int MODIFY_COMMENT = 18;
+    public static final int MODIFY_PAINT_COMMENT = 19;
 
     // DF5000消息代码
     // 为BluetoothService处理程序定义的消息类型

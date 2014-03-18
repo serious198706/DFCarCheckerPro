@@ -1,6 +1,10 @@
 package com.df.app.carCheck;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +12,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TextView;
 
 import com.df.app.R;
 import com.df.app.entries.CarSettings;
@@ -29,6 +35,8 @@ import static com.df.app.util.Helper.setTextView;
  * 配置信息
  */
 public class OptionsLayout extends LinearLayout {
+    private Context context;
+
     public interface OnLoadSettingsButtonClicked {
         public void onLoadSettings();
     }
@@ -41,20 +49,21 @@ public class OptionsLayout extends LinearLayout {
     public OptionsLayout(Context context, OnLoadSettingsButtonClicked listener) {
         super(context);
         this.mCallback = listener;
-        init(context);
+        this.context = context;
+        init();
     }
 
     public OptionsLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init();
     }
 
     public OptionsLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(context);
+        init();
     }
 
-    private void init(Context context) {
+    private void init() {
         rootView = LayoutInflater.from(context).inflate(R.layout.options_layout, this);
 
         mCarSettings = BasicInfoLayout.mCarSettings;
@@ -63,9 +72,52 @@ public class OptionsLayout extends LinearLayout {
         loadSettingsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCallback.onLoadSettings();
+                View view1 = ((Activity)context).getLayoutInflater().inflate(R.layout.popup_layout, null);
+                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+                TextView content = new TextView(view1.getContext());
+                content.setText(R.string.loadSettingsAlert);
+                content.setTextSize(20f);
+                contentArea.addView(content);
+
+                setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+                AlertDialog dialog = new AlertDialog.Builder(context)
+                        .setView(view1)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mCallback.onLoadSettings();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .create();
+
+                dialog.show();
             }
         });
+
+        fillInDefaultData();
+    }
+
+    private void fillInDefaultData() {
+        // 改动配置信息中的Spinner
+        String carConfigs = mCarSettings.getCarConfigs();
+        final String configArray[] = carConfigs.split(",");
+
+        for(int i = 0; i < configArray.length; i++) {
+            setSpinnerSelectionWithString(rootView, Common.carSettingsSpinnerMap[i][0], "无");
+        }
+    }
+
+    public void fillInSettings() {
+        // 改动配置信息中的Spinner
+        String carConfigs = mCarSettings.getCarConfigs();
+        final String configArray[] = carConfigs.split(",");
+
+        for(int i = 0; i < configArray.length; i++) {
+            int selection = Integer.parseInt(configArray[i]);
+            setSpinnerSelection(Common.carSettingsSpinnerMap[i][0], selection);
+        }
     }
 
     public void updateUi() {
@@ -75,17 +127,9 @@ public class OptionsLayout extends LinearLayout {
         // 设置驱动方式EditText
         setEditViewText(rootView, R.id.transmission_edit, mCarSettings.getTransmissionText());
 
-        // 改动配置信息中的Spinner
-        String carConfigs = mCarSettings.getCarConfigs();
-        final String configArray[] = carConfigs.split(",");
-
-        for(int i = 0; i < configArray.length; i++) {
-            int selection = Integer.parseInt(configArray[i]);
-            setSpinnerSelection(Common.carSettingsSpinnerMap[i][0], selection);
-        }
-
+        // 设置车辆型号textView
         setTextView(rootView, R.id.brandText, "车辆型号：" +
-            BasicInfoLayout.mCarSettings.getBrandString());
+                BasicInfoLayout.mCarSettings.getBrandString());
 
         // 改动“综合检查”里的档位类型选项
         Integrated1Layout.setGearType(mCarSettings.getTransmissionText());

@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.RectF;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +18,14 @@ import android.widget.TextView;
 
 import com.df.app.R;
 import com.df.app.carCheck.AddPhotoCommentActivity;
-import com.df.app.carCheck.IssueLayout;
+import com.df.app.carCheck.PhotoLayout;
 import com.df.app.entries.ListedPhoto;
+import com.df.app.entries.PhotoEntity;
+import com.df.app.service.PhotoOperationActivity;
 import com.df.app.util.Common;
 
 import java.util.List;
 
-import static com.df.app.util.Helper.drawTextToBitmap;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -54,6 +54,10 @@ public class PaintPhotoListAdapter extends BaseAdapter {
     @Override
     public Object getItem(int position) {
         return items.get(position);
+    }
+
+    public Object getItem(ListedPhoto listedPhoto) {
+        return getItem(items.indexOf(listedPhoto));
     }
 
     @Override
@@ -117,11 +121,13 @@ public class PaintPhotoListAdapter extends BaseAdapter {
 
             ImageView photo = (ImageView)view.findViewById(R.id.issuePhoto);
 
-            if(listedPhoto.getFileName() == null || listedPhoto.getFileName().equals("")) {
+            final PhotoEntity photoEntity = listedPhoto.getPhotoEntity();
+
+            if(photoEntity.getFileName() == null || photoEntity.getFileName().equals("")) {
                 final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera);
                 photo.setImageBitmap(bitmap);
             } else {
-                final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + listedPhoto.getFileName());
+                final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity.getThumbFileName());
                 photo.setImageBitmap(bitmap);
             }
 
@@ -129,23 +135,27 @@ public class PaintPhotoListAdapter extends BaseAdapter {
             photo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    // 将要修改的photoEntity提取出来
+                    PhotoLayout.reTakePhotoEntity = photoEntity;
+                    PhotoLayout.paintPhotoListAdapter = PaintPhotoListAdapter.this;
+                    PhotoLayout.listedPhoto = listedPhoto;
+                    showPhoto(photoEntity.getFileName());
                 }
             });
 
             TextView comment = (TextView)view.findViewById(R.id.issueComment);
-            comment.setText(listedPhoto.getDesc());
+            comment.setText(photoEntity.getComment());
             comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    IssueLayout.photoEntityModify = issue.getPhotoEntities().get(position);
-//                    IssueLayout.listedPhoto = listedPhoto;
-//                    IssueLayout.photoListAdapter = IssuePhotoListAdapter.this;
-//
-//                    Intent intent = new Intent(context, AddPhotoCommentActivity.class);
-//                    intent.putExtra("fileName", listedPhoto.getFileName());
-//                    intent.putExtra("comment", ((TextView)view).getText().toString());
-//                    ((Activity)context).startActivityForResult(intent, Common.MODIFY_COMMENT);
+                    PhotoLayout.commentModEntity = photoEntity;
+                    PhotoLayout.listedPhoto = listedPhoto;
+                    PhotoLayout.paintPhotoListAdapter = PaintPhotoListAdapter.this;
+
+                    Intent intent = new Intent(context, AddPhotoCommentActivity.class);
+                    intent.putExtra("fileName", photoEntity.getFileName());
+                    intent.putExtra("comment", ((TextView)view).getText().toString());
+                    ((Activity)context).startActivityForResult(intent, Common.MODIFY_PAINT_COMMENT);
                 }
             });
 
@@ -181,5 +191,15 @@ public class PaintPhotoListAdapter extends BaseAdapter {
 
 
         return view;
+    }
+
+    /**
+     * 点击缩略图时，显示对应的图片
+     * @param fileName
+     */
+    private void showPhoto(String fileName) {
+        Intent intent = new Intent(context, PhotoOperationActivity.class);
+        intent.putExtra("fileName", Common.photoDirectory + fileName);
+        context.startActivity(intent);
     }
 }

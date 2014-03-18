@@ -17,6 +17,12 @@
     </string-array>
 
     <string name="takePhotoForOther">拍摄协议组照片</string>
+    <string name="exterior_photo">外观组</string>
+    <string name="interior_photo">内饰组</string>
+    <string name="fault_photo">缺陷组</string>
+    <string name="procedures_photo">手续组</string>
+    <string name="engine_photo">机舱组</string>
+    <string name="agreement_photo">协议组</string>
     <string-array name="photoForOtherItems">
         <item>协议</item>
     </string-array>

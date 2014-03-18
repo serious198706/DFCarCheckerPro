@@ -22,14 +22,14 @@ public class Manufacturer {
      * 获取此品牌下的所有厂商名称
      * @return
      */
-    public List<String> getSerialNames() {
-        List<String> serialNames = new ArrayList<String>();
-        serialNames.add("");
+    public List<String> getSeriesNames() {
+        List<String> seriesNames = new ArrayList<String>();
+        seriesNames.add("");
         for(int i = 0; i < serieses.size(); i++) {
-            serialNames.add(serieses.get(i).name);
+            seriesNames.add(serieses.get(i).name);
         }
 
-        return serialNames;
+        return seriesNames;
     }
 
     /**

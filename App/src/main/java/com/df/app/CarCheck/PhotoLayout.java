@@ -11,7 +11,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.R;
+import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
+import com.df.app.service.Adapter.PaintPhotoListAdapter;
 import com.df.app.util.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
 
@@ -24,6 +26,9 @@ import java.util.List;
  * 照片列表，包括外观组标准照、内饰组标准照、缺陷组、机舱组、手续组和协议组
  */
 public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeListener {
+    public static PaintPhotoListAdapter paintPhotoListAdapter;
+    public static ListedPhoto listedPhoto;
+
     private View rootView;
 
     private ViewPager viewPager;
@@ -40,6 +45,7 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
     private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
 
     public static PhotoEntity reTakePhotoEntity;
+    public static PhotoEntity commentModEntity;
 
     public PhotoLayout(Context context) {
         super(context);
@@ -249,7 +255,7 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
         PhotoOtherLayout.photoShotCount = 0;
     }
 
-    public static void notifyDataSetChanget() {
+    public static void notifyDataSetChanged() {
         PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
         PhotoInteriorLayout.photoListAdapter.notifyDataSetChanged();
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();

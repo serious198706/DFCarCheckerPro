@@ -303,7 +303,6 @@ public class CarsWaitingListActivity extends Activity {
                 adapter.notifyDataSetChanged();
                 swipeListView.closeAnimate(lastPos);
                 refresh();
-                refresh();
             }
 
             @Override

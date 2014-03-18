@@ -88,7 +88,8 @@
         <activity
             android:name="com.df.app.procedures.InputProceduresActivity"
             android:label="@string/title_activity_procedures"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden">
         </activity>
         <activity
             android:name="com.df.app.carCheck.AddPhotoCommentActivity"

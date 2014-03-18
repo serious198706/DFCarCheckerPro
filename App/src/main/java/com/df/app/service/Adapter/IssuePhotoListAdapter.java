@@ -19,8 +19,11 @@ import android.widget.TextView;
 import com.df.app.R;
 import com.df.app.carCheck.AddPhotoCommentActivity;
 import com.df.app.carCheck.IssueLayout;
+import com.df.app.carCheck.PhotoLayout;
 import com.df.app.entries.Issue;
 import com.df.app.entries.ListedPhoto;
+import com.df.app.entries.PhotoEntity;
+import com.df.app.service.PhotoOperationActivity;
 import com.df.app.util.Common;
 
 import java.util.List;
@@ -42,11 +45,13 @@ public class IssuePhotoListAdapter extends BaseAdapter {
     private List<ListedPhoto> items;
     private Issue issue;
     private OnDeleteItem mCallback;
+    private boolean delete;
 
-    public IssuePhotoListAdapter(Context context, List<ListedPhoto> items, Issue issue, OnDeleteItem listener) {
+    public IssuePhotoListAdapter(Context context, List<ListedPhoto> items, Issue issue, boolean delete, OnDeleteItem listener) {
         this.context = context;
         this.items = items;
         this.issue = issue;
+        this.delete = delete;
         this.mCallback = listener;
     }
 
@@ -88,40 +93,24 @@ public class IssuePhotoListAdapter extends BaseAdapter {
             ImageView indexImage = (ImageView)view.findViewById(R.id.indexImage);
             indexImage.setImageBitmap(drawTextToBitmap(context, R.drawable.damage, position + 1));
 
+            final PhotoEntity photoEntity = listedPhoto.getPhotoEntity();
+
+            // 照片
             ImageView photo = (ImageView)view.findViewById(R.id.issuePhoto);
 
-            if(listedPhoto.getFileName() == null || listedPhoto.getFileName().equals("")) {
+            if(photoEntity.getFileName() == null || photoEntity.getFileName().equals("")) {
                 final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera);
                 photo.setImageBitmap(bitmap);
             } else {
-                final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + listedPhoto.getFileName());
+                final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity.getThumbFileName());
                 photo.setImageBitmap(bitmap);
             }
 
-            //TODO 点击图片之后要做什么？ 弹出照片编辑框
-            photo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                }
-            });
-
+            // 备注
             TextView comment = (TextView)view.findViewById(R.id.issueComment);
-            comment.setText(listedPhoto.getDesc());
-            comment.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    IssueLayout.photoEntityModify = issue.getPhotoEntities().get(position);
-                    IssueLayout.listedPhoto = listedPhoto;
-                    IssueLayout.photoListAdapter = IssuePhotoListAdapter.this;
+            comment.setText(photoEntity.getComment());
 
-                    Intent intent = new Intent(context, AddPhotoCommentActivity.class);
-                    intent.putExtra("fileName", listedPhoto.getFileName());
-                    intent.putExtra("comment", ((TextView)view).getText().toString());
-                    ((Activity)context).startActivityForResult(intent, Common.MODIFY_COMMENT);
-                }
-            });
-
+            // 删除按钮
             Button deleteButton = (Button)view.findViewById(R.id.delete);
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -150,10 +139,49 @@ public class IssuePhotoListAdapter extends BaseAdapter {
                     dialog.show();
                 }
             });
+
+            // 如果是删除模式，则禁用所有点击事件
+            if(!delete) {
+                photo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // 将要修改的photoEntity提取出来
+                        PhotoLayout.reTakePhotoEntity = issue.getPhotoEntities().get(position);
+                        PhotoLayout.listedPhoto = listedPhoto;
+                        IssueLayout.photoListAdapter = IssuePhotoListAdapter.this;
+                        showPhoto(photoEntity.getFileName());
+                    }
+                });
+
+                comment.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        IssueLayout.photoEntityModify = issue.getPhotoEntities().get(position);
+                        IssueLayout.listedPhoto = listedPhoto;
+                        IssueLayout.photoListAdapter = IssuePhotoListAdapter.this;
+
+                        Intent intent = new Intent(context, AddPhotoCommentActivity.class);
+                        intent.putExtra("fileName", photoEntity.getFileName());
+                        intent.putExtra("comment", ((TextView)view).getText().toString());
+                        ((Activity)context).startActivityForResult(intent, Common.MODIFY_COMMENT);
+                    }
+                });
+            }
+
+            deleteButton.setVisibility(delete ? View.INVISIBLE : View.VISIBLE);
         }
 
         return view;
     }
 
 
+    /**
+     * 点击缩略图时，显示对应的图片
+     * @param fileName
+     */
+    private void showPhoto(String fileName) {
+        Intent intent = new Intent(context, PhotoOperationActivity.class);
+        intent.putExtra("fileName", Common.photoDirectory + fileName);
+        context.startActivity(intent);
+    }
 }

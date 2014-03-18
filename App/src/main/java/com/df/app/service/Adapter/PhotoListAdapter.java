@@ -1,19 +1,17 @@
 package com.df.app.service.Adapter;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,6 +22,7 @@ import com.df.app.R;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.PhotoOperationActivity;
 import com.df.app.util.Common;
+import com.df.app.util.lazyLoadHelper.ImageLoader;
 
 import java.io.File;
 import java.util.List;
@@ -33,14 +32,18 @@ import java.util.List;
  *
  * 照片列表adapter
  */
-public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
+public class PhotoListAdapter extends BaseAdapter {
     private List<PhotoEntity> items;
     private Context context;
+    private boolean editable;
+    private ImageLoader imageLoader;
 
-    public PhotoListAdapter(Context context, int layoutResourceId, List<PhotoEntity> items) {
-        super(context, layoutResourceId, items);
+    public PhotoListAdapter(Context context, List<PhotoEntity> items, boolean editable) {
         this.context = context;
         this.items = items;
+        this.editable = editable;
+
+        imageLoader=new ImageLoader(context);
     }
 
     public void setItems(List<PhotoEntity> items) {
@@ -61,6 +64,25 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
     }
 
     @Override
+    public int getCount() {
+        return items.size();
+    }
+
+    @Override
+    public PhotoEntity getItem(int i) {
+        return items.get(i);
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
+
+    public void clear() {
+        items.clear();
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
@@ -78,21 +100,27 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
                 final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera);
                 photo.setImageBitmap(bitmap);
             } else {
-                final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity
-                        .getThumbFileName());
-                photo.setImageBitmap(bitmap);
+                if(editable) {
+                    final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity
+                            .getThumbFileName());
+                    photo.setImageBitmap(bitmap);
+                } else {
+                    // 如果是浏览模式，就意味着图片来自网络
+                    imageLoader.DisplayImage(photoEntity.getThumbFileName(), photo);
+                }
             }
 
-            photo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // 将要修改的photoEntity提取出来
-                    PhotoLayout.reTakePhotoEntity = photoEntity;
+            if(editable) {
+                photo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // 将要修改的photoEntity提取出来
+                        PhotoLayout.reTakePhotoEntity = photoEntity;
 
-                    showPhoto(Common.photoDirectory + photoEntity.getFileName());
-                }
-            });
-
+                        showPhoto(Common.photoDirectory + photoEntity.getFileName());
+                    }
+                });
+            }
 
             TextView photoName = (TextView) view.findViewById(R.id.photo_name);
             photoName.setText(photoEntity.getName());
@@ -135,6 +163,11 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
                     ((Activity)context).startActivityForResult(intent, Common.PHOTO_RETAKE);
                 }
             });
+
+            if(!editable) {
+                photoComment.setEnabled(false);
+                reTakeButton.setVisibility(View.INVISIBLE);
+            }
         }
         return view;
     }
@@ -144,20 +177,8 @@ public class PhotoListAdapter extends ArrayAdapter<PhotoEntity> {
      * @param fileName
      */
     private void showPhoto(String fileName) {
-        View view = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.picture_popup,
-                (ViewGroup)  ((Activity)getContext()).findViewById(R.id.layout_root));
-
-        ImageView image = (ImageView) view.findViewById(R.id.fullimage);
-
-        Bitmap bitmap = BitmapFactory.decodeFile(fileName);
-        image.setImageBitmap(bitmap);
-
         Intent intent = new Intent(context, PhotoOperationActivity.class);
-        intent.putExtra("fileName", fileName);
+        intent.putExtra("fileName", Common.photoDirectory + fileName);
         context.startActivity(intent);
-//        Dialog mPictureDialog = new Dialog(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
-//        mPictureDialog.setContentView(view);
-//        mPictureDialog.setCancelable(true);
-//        mPictureDialog.show();
     }
 }

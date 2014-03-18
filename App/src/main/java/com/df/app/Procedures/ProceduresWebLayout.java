@@ -141,13 +141,13 @@ public class ProceduresWebLayout extends LinearLayout {
     }
 
     public void updateUi(String carId) {
-        String url = "http://192.168.18.88:8001/Function/CarDetection2/Modify.aspx?";
+        String url = "http://192.168.18.88:8001/Function/CarDetection2/Modify3.aspx?";
 
         url += "userId=" + MainActivity.userInfo.getId();
         url += "&";
         url += "userName=" + MainActivity.userInfo.getName();
         url += "&";
-        url += "carId" + carId;
+        url += "carId=" + carId;
 
         proceduresWeb = (WebView)findViewById(R.id.proceduresWeb);
         proceduresWeb.loadUrl(url);

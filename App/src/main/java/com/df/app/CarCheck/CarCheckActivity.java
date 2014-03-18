@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
@@ -45,15 +46,19 @@ import static com.df.app.util.Helper.setTextView;
  *
  * 主activity，承载基本信息、事故排查、综合检查、拍摄照片四个模块
  */
-public class CarCheckActivity extends Activity {
+public class CarCheckActivity extends Activity implements View.OnTouchListener {
     private BasicInfoLayout basicInfoLayout;
     private AccidentCheckLayout accidentCheckLayout;
     private IntegratedCheckLayout integratedCheckLayout;
     private PhotoLayout photoLayout;
+    private TransactionNotesLayout transactionNotesLayout;
+
+    // 导航按钮
     private Button basicInfoButton;
     private Button accidentCheckButton;
     private Button integratedButton;
     private Button photoButton;
+    private Button transactionNotesButton;
 
     private int carId;
     private List<PhotoEntity> photoEntities;
@@ -68,7 +73,6 @@ public class CarCheckActivity extends Activity {
 
     // 最终json串
     private JSONObject jsonObject;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +93,7 @@ public class CarCheckActivity extends Activity {
         tabMap.put(R.id.accidentCheck, "事故排查");
         tabMap.put(R.id.integratedCheck, "综合检查");
         tabMap.put(R.id.photo, "照片拍摄");
+        tabMap.put(R.id.transactionNotes, "交易备注");
 
         Button navigateButton = (Button) findViewById(R.id.buttonNavi);
         navigateButton.setOnClickListener(new View.OnClickListener() {
@@ -135,6 +140,14 @@ public class CarCheckActivity extends Activity {
         photoButton.setVisibility(View.GONE);
         photoButton.setEnabled(false);
 
+        transactionNotesButton = (Button)findViewById(R.id.buttonTransactionNotes);
+        transactionNotesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) { selectTab(R.id.transactionNotes);}
+        });
+        transactionNotesButton.setVisibility(View.GONE);
+        transactionNotesButton.setEnabled(false);
+
         // 基本信息模块
         basicInfoLayout = (BasicInfoLayout)findViewById(R.id.basicInfo);
         basicInfoLayout.setUpdateUiListener(new BasicInfoLayout.OnGetCarSettings() {
@@ -144,6 +157,7 @@ public class CarCheckActivity extends Activity {
                 integratedButton.setEnabled(true);
                 integratedCheckLayout.updateUi();
                 photoButton.setEnabled(true);
+                transactionNotesButton.setEnabled(true);
 
                 accidentCheckLayout.updatePreviews();
             }
@@ -157,6 +171,10 @@ public class CarCheckActivity extends Activity {
 
         // 拍摄照片模块
         photoLayout = (PhotoLayout)findViewById(R.id.photo);
+
+        // 交易备注模块
+        transactionNotesLayout = (TransactionNotesLayout)findViewById(R.id.transactionNotes);
+        transactionNotesLayout.updateUi(BasicInfoLayout.carId);
 
         // 设置当前标题
         setTextView(getWindow().getDecorView(), R.id.currentItem, getString(R.string.title_basicInfo));
@@ -334,6 +352,8 @@ public class CarCheckActivity extends Activity {
         // 3.生成所有检测信息的Json数据
         generateJsonString();
 
+        transactionNotesLayout.commitTransactionNotes();
+
         CommitDataTask commitDataTask = new CommitDataTask(CarCheckActivity.this, new CommitDataTask.OnCommitDataFinished() {
             @Override
             public void onFinished(String result) {
@@ -412,6 +432,7 @@ public class CarCheckActivity extends Activity {
         accidentCheckButton.setVisibility(show ? View.VISIBLE : View.GONE);
         integratedButton.setVisibility(show ? View.VISIBLE : View.GONE);
         photoButton.setVisibility(show ? View.VISIBLE : View.GONE);
+        transactionNotesButton.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -439,6 +460,8 @@ public class CarCheckActivity extends Activity {
                 R.drawable.integrated_active : R.drawable.integrated);
         photoButton.setBackgroundResource(layoutId == R.id.photo ?
                 R.drawable.photo_active : R.drawable.photo);
+        transactionNotesButton.setBackgroundResource(layoutId == R.id.transactionNotes ?
+                R.drawable.transaction_active : R.drawable.transaction);
 
         showMenu = !showMenu;
         showNaviMenu(false);
@@ -498,10 +521,11 @@ public class CarCheckActivity extends Activity {
             case Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO:
                 break;
             // 修改备注
-            case Common.MODIFY_COMMENT:
-                Bundle bundle = data.getExtras();
+            case Common.MODIFY_COMMENT: {
+                    Bundle bundle = data.getExtras();
 
-                accidentCheckLayout.modifyComment(bundle.getString("COMMENT"));
+                    accidentCheckLayout.modifyComment(bundle.getString("COMMENT"));
+                }
                 break;
             // 外观标准照
             case Common.PHOTO_FOR_EXTERIOR_STANDARD:
@@ -571,7 +595,7 @@ public class CarCheckActivity extends Activity {
                         e.printStackTrace();
                     }
 
-                    PhotoLayout.notifyDataSetChanget();
+                    PhotoLayout.notifyDataSetChanged();
                 }
                 break;
         }
@@ -934,5 +958,19 @@ public class CarCheckActivity extends Activity {
         accidentCheckLayout.clearCache();
         integratedCheckLayout.clearCache();
         photoLayout.clearCache();
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if(!showMenu) {
+                    showMenu = !showMenu;
+                    showNaviMenu(showMenu);
+                }
+                break;
+        }
+
+        return true;
     }
 }

@@ -5,20 +5,17 @@ package com.df.app.entries;
  */
 public class ListedPhoto {
     private int index;
-    private String fileName;
-    private String desc;
+    private PhotoEntity photoEntity;
     private int type;
 
-    public ListedPhoto(int index, String fileName, String desc) {
+    public ListedPhoto(int index, PhotoEntity photoEntity) {
         this.index = index;
-        this.fileName = fileName;
-        this.desc = desc;
+        this.photoEntity = photoEntity;
     }
 
-    public ListedPhoto(int index, String fileName, String desc, int type) {
+    public ListedPhoto(int index, PhotoEntity photoEntity, int type) {
         this.index = index;
-        this.fileName = fileName;
-        this.desc = desc;
+        this.photoEntity = photoEntity;
         this.type = type;
     }
 
@@ -30,27 +27,19 @@ public class ListedPhoto {
         this.index = index;
     }
 
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
     public int getType() {
         return type;
     }
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public PhotoEntity getPhotoEntity() {
+        return photoEntity;
+    }
+
+    public void setPhotoEntity(PhotoEntity photoEntity) {
+        this.photoEntity = photoEntity;
     }
 }

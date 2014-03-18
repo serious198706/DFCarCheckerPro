@@ -98,7 +98,7 @@ public class IntegratedLayout extends LinearLayout {
             fillInData(conditions);
             updateImage(photo);
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -128,11 +128,11 @@ public class IntegratedLayout extends LinearLayout {
 
         JSONObject engine = conditions.getJSONObject("engine");
 
-        setTextView(rootView, R.id.engine_text, engine.get("engine") == JSONObject.NULL ? "正常" : engine.getString("summaryPro"));
+        setTextView(rootView, R.id.engine_text, engine.get("summaryPro") == JSONObject.NULL ? "正常" : engine.getString("summaryPro"));
 
         JSONObject gearbox = conditions.getJSONObject("gearbox");
 
-        setTextView(rootView, R.id.gear_text, gearbox.get("gearbox") == JSONObject.NULL ? "正常" : gearbox.getString("summaryPro"));
+        setTextView(rootView, R.id.gear_text, gearbox.get("summaryPro") == JSONObject.NULL ? "正常" : gearbox.getString("summaryPro"));
 
         JSONObject function = conditions.getJSONObject("function");
 

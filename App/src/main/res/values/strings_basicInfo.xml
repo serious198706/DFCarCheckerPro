@@ -5,6 +5,7 @@
     <string name="reRecognise">确定要重新识别行驶证信息？</string>
     <string name="reRecognise1">确定要重新识别行驶证信息？\n此操作将清空之前填写的手续内容。</string>
     <string name="reMatch">重新选择车型将清空之前填写的手续内容，是否继续？</string>
+    <string name="loadSettingsAlert">带入车辆配置信息？</string>
 
     <!-- 车型识别 -->
     <string name="type1">新版</string>

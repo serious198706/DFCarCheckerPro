@@ -19,7 +19,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="外观组"
+            android:text="@string/exterior_photo"
             android:textSize="20sp" />
 
         <TextView
@@ -28,7 +28,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="内饰组"
+            android:text="@string/interior_photo"
             android:textSize="20sp" />
 
         <TextView
@@ -37,7 +37,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="缺陷组"
+            android:text="@string/fault_photo"
             android:textSize="20sp" />
 
         <TextView
@@ -46,7 +46,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="手续组"
+            android:text="@string/procedures_photo"
             android:textSize="20sp" />
 
         <TextView
@@ -55,7 +55,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="机舱组"
+            android:text="@string/engine_photo"
             android:textSize="20sp" />
 
         <TextView
@@ -64,7 +64,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1.0"
             android:gravity="center"
-            android:text="协议组"
+            android:text="@string/agreement_photo"
             android:textSize="20sp" />
     </LinearLayout>
 

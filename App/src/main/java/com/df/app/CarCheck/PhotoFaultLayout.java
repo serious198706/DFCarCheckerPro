@@ -3,6 +3,7 @@ package com.df.app.carCheck;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -42,10 +43,11 @@ public class PhotoFaultLayout extends LinearLayout {
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
-        photoListAdapter = new PhotoListAdapter(context, R.id.photo_fault_list, photoEntities);
+        photoListAdapter = new PhotoListAdapter(context, photoEntities, true);
 
         ListView faultList = (ListView) findViewById(R.id.photo_fault_list);
         faultList.setAdapter(photoListAdapter);
+        //faultList.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
     }
 
     /**

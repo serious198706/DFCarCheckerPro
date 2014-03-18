@@ -77,7 +77,7 @@ public class PhotoExteriorLayout extends LinearLayout {
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
-        photoListAdapter = new PhotoListAdapter(context, R.id.photo_exterior_list, photoEntities);
+        photoListAdapter = new PhotoListAdapter(context, photoEntities, true);
         exteriorList.setAdapter(photoListAdapter);
 
         Button startCameraButton = (Button)findViewById(R.id.photoButton);
@@ -193,16 +193,16 @@ public class PhotoExteriorLayout extends LinearLayout {
                     currentPart = "rightFront45";
                     break;
                 case 2:
-                    currentPart = "left";
+                    currentPart = "right";
                     break;
                 case 3:
-                    currentPart = "right";
+                    currentPart = "rightRear45";
                     break;
                 case 4:
                     currentPart = "leftRear45";
                     break;
                 case 5:
-                    currentPart = "rightRear45";
+                    currentPart = "left";
                     break;
                 case 6:
                     currentPart = "other";

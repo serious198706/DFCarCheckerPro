@@ -238,11 +238,11 @@ public class IssueListAdapter extends BaseAdapter {
 
         for(int i = 0; i < issue.getPhotoEntities().size(); i++) {
             PhotoEntity photoEntity = issue.getPhotoEntities().get(i);
-            ListedPhoto temp = new ListedPhoto(i, photoEntity.getThumbFileName(), photoEntity.getComment());
+            ListedPhoto temp = new ListedPhoto(i, photoEntity);
             listedPhotos.add(temp);
         }
 
-        issuePhotoListAdapter = new IssuePhotoListAdapter(context, listedPhotos, issue,
+        issuePhotoListAdapter = new IssuePhotoListAdapter(context, listedPhotos, issue, delete,
                 new IssuePhotoListAdapter.OnDeleteItem() {
                     @Override
                     public void onDeleteItem(int position) {
@@ -291,6 +291,13 @@ public class IssueListAdapter extends BaseAdapter {
         } else {
             radioGroup.clearCheck();
         }
+
+        // 如果是delete模式，禁用一些修改功能
+        for(int i = 0; i < radioGroup.getChildCount(); i++) {
+            radioGroup.getChildAt(i).setEnabled(!delete);
+        }
+
+        framePaintView.setEnabled(!delete);
 
         // 选择当前绘图类型（结构检查只有一个）
         framePaintView.setType(Common.COLOR_DIFF);

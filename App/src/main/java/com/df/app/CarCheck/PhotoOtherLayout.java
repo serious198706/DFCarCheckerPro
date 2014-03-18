@@ -69,7 +69,7 @@ public class PhotoOtherLayout extends LinearLayout {
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
-        photoListAdapter = new PhotoListAdapter(context, R.id.photo_other_list, photoEntities);
+        photoListAdapter = new PhotoListAdapter(context, photoEntities, true);
 
         ListView otherList = (ListView) findViewById(R.id.photo_other_list);
         otherList.setAdapter(photoListAdapter);

@@ -217,7 +217,7 @@
                     <com.df.app.paintView.InteriorPaintPreviewView
                         android:id="@+id/interior_image"
                         android:layout_width="500dp"
-                        android:layout_height="703dp"
+                        android:layout_height="558dp"
                         android:layout_centerHorizontal="true"/>
                     <ProgressBar android:id="@+id/inProgressBar"
                                  android:layout_width="wrap_content"

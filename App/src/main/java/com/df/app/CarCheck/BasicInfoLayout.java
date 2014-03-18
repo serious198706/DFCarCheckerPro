@@ -78,7 +78,7 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
                 mOnGetCarSettingsCallback.onGetCarSettings();
 
                 // 更新配置信息页面
-                optionsLayout.updateUi();
+                optionsLayout.fillInSettings();
             }
         });
 
@@ -93,12 +93,15 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
                     viewPager.setAdapter(new MyViewPagerAdapter(views));
                 }
 
-                if(CarCheckActivity.saved) {
-                    // 更新结构、外观、内饰
-                    mOnGetCarSettingsCallback.onGetCarSettings();
+                // 更新结构、外观、内饰
+                mOnGetCarSettingsCallback.onGetCarSettings();
 
+                // 填入排量、变速器形式
+                optionsLayout.updateUi();
+
+                if(CarCheckActivity.saved) {
                     // 更新配置信息页面
-                    optionsLayout.updateUi();
+                    optionsLayout.fillInSettings();
                 }
             }
         });

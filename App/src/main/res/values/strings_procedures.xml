@@ -55,4 +55,9 @@
     <string name="exchangeCarModel">置换车型：</string>
     <string name="isImport">是否进口：</string>
     <string name="carSource">车辆来源：</string>
+    <string name="chooseCountry">选择国家</string>
+    <string name="chooseBrand">选择品牌</string>
+    <string name="chooseManufacturer">选择厂商</string>
+    <string name="chooseSeries">选择车系</string>
+    <string name="chooseModel">选择车型</string>
 </resources>
