@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.util.Common;
 
 /**
  * Created by 岩 on 14-3-17.
@@ -43,6 +44,7 @@ public class TransactionNotesLayout extends LinearLayout {
     }
 
     public boolean commitTransactionNotes() {
+        commit();
         return true;
     }
 
@@ -55,8 +57,7 @@ public class TransactionNotesLayout extends LinearLayout {
 
     @JavascriptInterface
     public void commit() {
-        Toast.makeText(rootView.getContext(), "提交成功！", Toast.LENGTH_SHORT).show();
-        ((Activity)getContext()).finish();
+        transactionNotesWeb.loadUrl("javascript:SaveNode()");
     }
 
     @JavascriptInterface
@@ -84,11 +85,16 @@ public class TransactionNotesLayout extends LinearLayout {
     /**
      * 确定车辆基本信息后，将以下信息作为参数提交到网页
      * @param carId carId
+     * @param modify
      */
-    public void updateUi(int carId) {
-        String url = "http://192.168.18.88:8001/Function/CarDetection2/TransactionNotes.aspx?";
+    public void updateUi(int carId, boolean modify) {
+        String url = Common.PROCEDURES_ADDRESS + "Function/CarDetection2/TransactionNotes.aspx?";
 
-        url += "carId=" + Integer.toString(carId);
+        url += "id=" + Integer.toString(carId);
+
+        if(modify) {
+            url += "&edit=1";
+        }
 
         transactionNotesWeb = (WebView)findViewById(R.id.transactionNotesWeb);
         transactionNotesWeb.loadUrl(url);

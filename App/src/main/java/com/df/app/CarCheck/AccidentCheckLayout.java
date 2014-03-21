@@ -276,4 +276,31 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         issueLayout.clearCache();
         accidentResultLayout.clearCache();
     }
+
+    public void fillInData(JSONObject accident, JSONObject photo, Handler handler) {
+        try {
+            // 测量数据
+            JSONObject data = accident.getJSONObject("data");
+
+            collectDataLayout.fillInData(data);
+
+            // 问题查勘
+            JSONObject issue = accident.getJSONObject("issue");
+
+            // 如果有sketch节点，表示已经获取过问题查勘了，直接赋值
+            if(issue.get("sketch") != null) {
+                handler.sendEmptyMessage(1);
+                issueLayout.fillInData(issue);
+            }
+
+            issueLayout.fillInData(issue, photo);
+            accidentResultLayout.fillInData(photo);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void unbindDrawables() {
+        issueLayout.unbindDrawables();
+    }
 }

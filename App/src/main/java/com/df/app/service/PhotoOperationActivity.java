@@ -13,21 +13,31 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.df.app.R;
 import com.df.app.carCheck.IssueLayout;
 import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.carCheck.PhotoLayout;
+import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
+import com.df.app.service.AsyncTask.DownloadImageTask;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
+import com.df.app.util.lazyLoadHelper.ImageLoader;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.DataOutput;
 import java.io.File;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
+import static com.df.app.util.Helper.parsePhotoData;
 import static com.df.app.util.Helper.setTextView;
 
 public class PhotoOperationActivity extends Activity {
@@ -37,7 +47,10 @@ public class PhotoOperationActivity extends Activity {
     private float currentZoomScale = 1.0f;
 
     // 用来还原之前的photoEntity状态
-    private PhotoEntity tempPhotoEntity;
+    private PhotoEntity tempPhotoEntity = null;
+
+    private ImageLoader imageLoader = new ImageLoader(this);
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +63,31 @@ public class PhotoOperationActivity extends Activity {
             fileName = bundle.getString("fileName");
         }
 
-        Bitmap bitmap = BitmapFactory.decodeFile(fileName);
-
         imageView = (ImageView)findViewById(R.id.image);
-        imageView.setImageBitmap(bitmap);
+        progressBar = (ProgressBar)findViewById(R.id.progressBar);
+
+        if(fileName.contains("http")) {
+            DownloadImageTask downloadImageTask = new DownloadImageTask(fileName, new DownloadImageTask.OnDownloadFinished() {
+                @Override
+                public void onFinish(Bitmap bitmap) {
+                    imageView.setImageBitmap(bitmap);
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+
+                @Override
+                public void onFailed() {
+                    Toast.makeText(PhotoOperationActivity.this, "下载图片失败！", Toast.LENGTH_SHORT).show();
+                    imageView.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.no_image));
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            });
+
+            downloadImageTask.execute();
+        } else {
+            Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + fileName);
+            imageView.setImageBitmap(bitmap);
+            progressBar.setVisibility(View.INVISIBLE);
+        }
 
         attacher = new PhotoViewAttacher(imageView);
         attacher.setMaximumScale(2.0f);
@@ -100,32 +134,22 @@ public class PhotoOperationActivity extends Activity {
                 tempPhotoEntity = new PhotoEntity();
                 tempPhotoEntity.setFileName(Long.toString(fileName) + ".jpg");
                 tempPhotoEntity.setThumbFileName(Long.toString(fileName) + "_t.jpg");
+                tempPhotoEntity.setIndex(PhotoLayout.reTakePhotoEntity.getIndex());
+                tempPhotoEntity.setModifyAction(Action.MODIFY);
+
+                try {
+                    JSONObject jsonObject = new JSONObject(PhotoLayout.reTakePhotoEntity.getJsonString());
+                    jsonObject.put("Action", tempPhotoEntity.getModifyAction());
+
+                    tempPhotoEntity.setJsonString(jsonObject.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 Uri fileUri = Uri.fromFile(new File(Common.photoDirectory + tempPhotoEntity.getFileName()));
                 Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
                 startActivityForResult(intent, Common.PHOTO_RETAKE);
-
-
-//                PhotoEntity photoEntity = PhotoLayout.reTakePhotoEntity;
-//
-//                String filePath = Common.photoDirectory;
-//                String fileName;
-//
-//                // 如果当前要重拍的照片没有内容，则给其命名
-//                if(photoEntity.getFileName().equals("")) {
-//                    fileName = tempPhotoEntity.getFileName();
-//                    filePath += fileName;
-//                    photoEntity.setFileName(fileName);
-//                    photoEntity.setThumbFileName(fileName.substring(0, fileName.length() - 4) + "_t.jpg");
-//                } else {
-//                    filePath += photoEntity.getFileName();
-//                }
-//
-//                Uri fileUri = Uri.fromFile(new File(filePath));
-//                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
-//                startActivityForResult(intent, Common.PHOTO_RETAKE);
             }
         });
     }
@@ -141,6 +165,8 @@ public class PhotoOperationActivity extends Activity {
                     Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + tempPhotoEntity.getFileName());
                     imageView.setImageBitmap(bitmap);
                     attacher.update();
+                } else {
+                    tempPhotoEntity = null;
                 }
                 break;
         }
@@ -179,17 +205,28 @@ public class PhotoOperationActivity extends Activity {
     }
 
     private void save() {
-        File file = new File(Common.photoDirectory + PhotoLayout.reTakePhotoEntity.getFileName());
-        file.delete();
-        file = new File(Common.photoDirectory + PhotoLayout.reTakePhotoEntity.getThumbFileName());
-        file.delete();
+        if(tempPhotoEntity != null) {
+            File file = new File(Common.photoDirectory + PhotoLayout.reTakePhotoEntity.getFileName());
+            file.delete();
+            file = new File(Common.photoDirectory + PhotoLayout.reTakePhotoEntity.getThumbFileName());
+            file.delete();
 
-        int index = PhotoFaultLayout.photoListAdapter.getItems().indexOf(PhotoLayout.reTakePhotoEntity);
-        PhotoEntity photoEntity = PhotoFaultLayout.photoListAdapter.getItem(index);
-        photoEntity.setFileName(tempPhotoEntity.getFileName());
-        photoEntity.setThumbFileName(tempPhotoEntity.getThumbFileName());
+            int index = PhotoFaultLayout.photoListAdapter.getItems().indexOf(PhotoLayout.reTakePhotoEntity);
 
-        PhotoLayout.listedPhoto.setPhotoEntity(tempPhotoEntity);
+            if(index < 0) {
+                PhotoLayout.reTakePhotoEntity.setFileName(tempPhotoEntity.getFileName());
+                PhotoLayout.reTakePhotoEntity.setThumbFileName(tempPhotoEntity.getThumbFileName());
+                PhotoLayout.reTakePhotoEntity.setJsonString(tempPhotoEntity.getJsonString());
+                PhotoLayout.reTakePhotoEntity.setModifyAction(tempPhotoEntity.getModifyAction());
+            } else {
+                PhotoEntity photoEntity = PhotoFaultLayout.photoListAdapter.getItem(index);
+                photoEntity.setFileName(tempPhotoEntity.getFileName());
+                photoEntity.setThumbFileName(tempPhotoEntity.getThumbFileName());
+                photoEntity.setJsonString(tempPhotoEntity.getJsonString());
+                photoEntity.setModifyAction(tempPhotoEntity.getModifyAction());
+            }
+        }
+
         finish();
     }
 

@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.PhotoListAdapter;
 import com.df.app.util.Common;
@@ -86,7 +87,9 @@ public class PhotoProcedureLayout extends LinearLayout {
     private void startCamera() {
         String[] itemArray = getResources().getStringArray(R.array.photoForProceduresItems);
 
-        for(int i = 0; i < itemArray.length; i++) {
+        int length = itemArray.length;
+
+        for(int i = 0; i < length; i++) {
             itemArray[i] += " (";
             itemArray[i] += Integer.toString(photoShotCount[i]);
             itemArray[i] += ") ";
@@ -147,6 +150,26 @@ public class PhotoProcedureLayout extends LinearLayout {
      * @return
      */
     private PhotoEntity generatePhotoEntity() {
+
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
+        if(!photoEntity.getFileName().equals(""))
+            photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
+        else
+            photoEntity.setThumbFileName("");
+
+        String group = getResources().getStringArray(R.array.photoForProceduresItems)[currentShotPart];
+        photoEntity.setName(group);
+        photoEntity.setIndex(PhotoLayout.photoIndex++);
+
+        // 如果是走了这段代码，则一定是添加照片
+        // 如果是修改模式，则Action就是add
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setModifyAction(Action.ADD);
+        } else {
+            photoEntity.setModifyAction(Action.MODIFY);
+        }
+
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
 
@@ -177,19 +200,13 @@ public class PhotoProcedureLayout extends LinearLayout {
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
-        if(!photoEntity.getFileName().equals(""))
-            photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
-        else
-            photoEntity.setThumbFileName("");
         photoEntity.setJsonString(jsonObject.toString());
-        String group = getResources().getStringArray(R.array.photoForProceduresItems)[currentShotPart];
-        photoEntity.setName(group);
 
         return photoEntity;
     }

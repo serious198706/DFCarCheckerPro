@@ -11,4 +11,5 @@
     <string name="addComment">&lt;添加照片备注</string>
     <string name="discardComment">放弃已填写的备注信息？</string>
     <string name="photoOperation">编辑照片</string>
+    <string name="commitEditMsg">确定保存修改？</string>
 </resources>

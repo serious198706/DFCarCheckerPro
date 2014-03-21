@@ -11,6 +11,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.df.app.carsChecked.CarsCheckedListActivity;
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Action;
 import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
@@ -46,7 +48,9 @@ import static com.df.app.util.Helper.setTextView;
  *
  * 主activity，承载基本信息、事故排查、综合检查、拍摄照片四个模块
  */
-public class CarCheckActivity extends Activity implements View.OnTouchListener {
+public class CarCheckActivity extends Activity /*implements View.OnTouchListener */{
+    private static boolean modify;
+
     private BasicInfoLayout basicInfoLayout;
     private AccidentCheckLayout accidentCheckLayout;
     private IntegratedCheckLayout integratedCheckLayout;
@@ -86,6 +90,7 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
         final String jsonString = bundle.getString("jsonString");
         carId = bundle.getInt("carId");
         activity = (Class)getIntent().getSerializableExtra("activity");
+        modify = bundle.getBoolean("modify");
 
         photoEntities = new ArrayList<PhotoEntity>();
 
@@ -174,7 +179,7 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
 
         // 交易备注模块
         transactionNotesLayout = (TransactionNotesLayout)findViewById(R.id.transactionNotes);
-        transactionNotesLayout.updateUi(BasicInfoLayout.carId);
+        transactionNotesLayout.updateUi(carId, modify);
 
         // 设置当前标题
         setTextView(getWindow().getDecorView(), R.id.currentItem, getString(R.string.title_basicInfo));
@@ -211,7 +216,10 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
                             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    generatePhotoEntities();
+                                    if(modify)
+                                        findModifiedPicture();
+                                    else
+                                        generatePhotoEntities();
                                 }
                             })
                             .setNegativeButton(R.string.cancel, null)
@@ -244,7 +252,7 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
                 View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
                 TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
                 TextView content = new TextView(view1.getContext());
-                content.setText(R.string.saveMsg);
+                content.setText(modify ? R.string.commitEditMsg : R.string.saveMsg);
                 content.setTextSize(22f);
                 contentArea.addView(content);
 
@@ -312,7 +320,7 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
             @Override
             public void onFinished(List<PhotoEntity> photoEntities) {
                 // 2.上传图片
-                uploadPictures();
+                uploadPictures(photoEntities);
             }
 
             @Override
@@ -328,7 +336,7 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
     /**
      * 上传所有照片
      */
-    private void uploadPictures() {
+    private void uploadPictures(List<PhotoEntity> photoEntities) {
         UploadPictureTask uploadPictureTask = new UploadPictureTask(CarCheckActivity.this, photoEntities, new UploadPictureTask.UploadFinished() {
             @Override
             public void onFinish() {
@@ -345,6 +353,34 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
         uploadPictureTask.execute();
     }
 
+    private void findModifiedPicture() {
+        GeneratePhotoEntitiesTask generatePhotoEntitiesTask = new GeneratePhotoEntitiesTask(this, photoEntities,
+                accidentCheckLayout, integratedCheckLayout, true, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
+            @Override
+            public void onFinished(List<PhotoEntity> photoEntities) {
+                // 找出需要修改的图片
+                List<PhotoEntity> photoEntitiesMod = new ArrayList<PhotoEntity>();
+
+                for(PhotoEntity photoEntity : photoEntities) {
+                    if(!photoEntity.getModifyAction().equals(Action.NORMAL)) {
+                        photoEntitiesMod.add(photoEntity);
+                    }
+                }
+
+                // 上传
+                uploadPictures(photoEntitiesMod);
+            }
+
+            @Override
+            public void onFailed() {
+                Toast.makeText(CarCheckActivity.this, "处理失败！", Toast.LENGTH_SHORT).show();
+                Log.d(Common.TAG, "生成草图失败！");
+            }
+        });
+
+        generatePhotoEntitiesTask.execute();
+    }
+
     /**
      * 提交检测数据
      */
@@ -358,7 +394,6 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
             @Override
             public void onFinished(String result) {
                 Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
-                clearCache();
                 Intent intent = new Intent(CarCheckActivity.this, CarsCheckedListActivity.class);
                 startActivity(intent);
                 finish();
@@ -442,7 +477,9 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
         String title = tabMap.get(layoutId);
         setTextView(getWindow().getDecorView(), R.id.currentItem, title);
 
-        for(int i = 0; i < tabMap.size(); i++) {
+        int length = tabMap.size();
+
+        for(int i = 0; i < length; i++) {
             int id = tabMap.keyAt(i);
 
             if(id != layoutId) {
@@ -575,6 +612,7 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
                     accidentCheckLayout.stopBluetoothService();
                 }
                 break;
+            // TODO 去掉这个玩意，也就是去掉照片列表里的那个重拍按钮
             case Common.PHOTO_RETAKE:
                 if(resultCode == Activity.RESULT_OK) {
                     PhotoEntity temp = PhotoLayout.reTakePhotoEntity;
@@ -641,37 +679,54 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
             // 如果有事故节点，则更新事故页面
             if(jsonObject.has("accident")) {
                 JSONObject accident = jsonObject.getJSONObject("accident");
-                accidentCheckLayout.fillInData(accident, new Handler(new Handler.Callback() {
-                    @Override
-                    public boolean handleMessage(Message message) {
-                        accidentCheckLayout.showIssueAndResultTabs();
-                        return true;
-                    }
-                }));
+
+                if(modify) {
+                    accidentCheckLayout.fillInData(accident, jsonObject.getJSONObject("photos"), new Handler(new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            accidentCheckLayout.showIssueAndResultTabs();
+                            return true;
+                        }
+                    }));
+                } else {
+                    accidentCheckLayout.fillInData(accident, new Handler(new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            accidentCheckLayout.showIssueAndResultTabs();
+                            return true;
+                        }
+                    }));
+                }
             }
 
             // 如果有综合检查节点，则更新综合检查页面
             if(jsonObject.has("conditions")) {
-                JSONObject conditions = jsonObject.getJSONObject("conditions");
-                integratedCheckLayout.fillInData(conditions);
+                integratedCheckLayout.fillInData(jsonObject);
             }
 
             // 如果有照片节点，则更新照片list
             if(jsonObject.has("photos")) {
                 List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
-                JSONArray jsonArray = jsonObject.getJSONArray("photos");
+                if(jsonObject.get("photos") instanceof JSONArray) {
+                    JSONArray jsonArray = jsonObject.getJSONArray("photos");
 
-                for(int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject entity = jsonArray.getJSONObject(i);
-                    PhotoEntity photoEntity = new PhotoEntity();
-                    photoEntity.setJsonString(entity.getString("jsonString"));
-                    photoEntity.setComment(entity.has("comment") ? entity.getString("comment") : "");
-                    photoEntity.setName(entity.has("name") ? entity.getString("name") : "");
-                    photoEntity.setFileName(entity.has("fileName") ? entity.getString("fileName") : "");
-                    photoEntity.setThumbFileName(entity.has("thumbFileName") ? entity.getString("thumbFileName") : "");
+                    int length = jsonArray.length();
 
-                    photoEntities.add(photoEntity);
+                    for(int i = 0; i < length; i++) {
+                        JSONObject entity = jsonArray.getJSONObject(i);
+                        PhotoEntity photoEntity = new PhotoEntity();
+                        photoEntity.setJsonString(entity.getString("jsonString"));
+                        photoEntity.setComment(entity.has("comment") ? entity.getString("comment") : "");
+                        photoEntity.setName(entity.has("name") ? entity.getString("name") : "");
+                        photoEntity.setFileName(entity.has("fileName") ? entity.getString("fileName") : "");
+                        photoEntity.setThumbFileName(entity.has("thumbFileName") ? entity.getString("thumbFileName") : "");
+                        photoEntity.setIndex(entity.has("index") ? entity.getInt("index") : 0);
+
+                        photoEntities.add(photoEntity);
+                    }
+                } else {
+                    parsePhoto(jsonObject.getJSONObject("photos"), photoEntities);
                 }
 
                 for(PhotoEntity photoEntity : photoEntities) {
@@ -684,15 +739,40 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
                 integratedCheckLayout.fillInData(jsonObject.getString("checkCooperatorName"));
             }
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
     }
+
+    // 修改时，解析图片
+    private void parsePhoto(JSONObject photos, List<PhotoEntity> photoEntities)  throws JSONException {
+        List<PhotoEntity> exteriorPhotos = new ArrayList<PhotoEntity>();
+        List<PhotoEntity> interiorPhotos = new ArrayList<PhotoEntity>();
+        List<PhotoEntity> faultPhotos = new ArrayList<PhotoEntity>();
+        List<PhotoEntity> proceduresPhotos = new ArrayList<PhotoEntity>();
+        List<PhotoEntity> enginePhotos = new ArrayList<PhotoEntity>();
+        List<PhotoEntity> agreementPhotos = new ArrayList<PhotoEntity>();
+
+        Helper.parsePhotoData(CarCheckActivity.this, photos,
+                exteriorPhotos, interiorPhotos, faultPhotos, proceduresPhotos, enginePhotos, agreementPhotos);
+
+        photoEntities.addAll(exteriorPhotos);
+        photoEntities.addAll(interiorPhotos);
+        photoEntities.addAll(faultPhotos);
+        photoEntities.addAll(proceduresPhotos);
+        photoEntities.addAll(enginePhotos);
+        photoEntities.addAll(agreementPhotos);
+    }
+
 
     /**
      * 对PhotoEntity中，根据不同的group，做不同的处理
      * @param photoEntity
      */
     private void addPhotoEntityToGroup(PhotoEntity photoEntity) throws JSONException{
+        if(photoEntity.getIndex() >= PhotoLayout.photoIndex) {
+            PhotoLayout.photoIndex = photoEntity.getIndex() + 1;
+        }
+
         JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
         String group = jsonObject.getString("Group");
 
@@ -741,7 +821,7 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
 
                 int startX, startY, endX, endY, radius;
 
-                if(type == Common.TRANS || type == Common.BROKEN) {
+                if(type == Common.TRANS) {
                     radius = photoData.getInt("radius");
                     startX = photoData.getInt("startX") - radius;
                     startY = photoData.getInt("startY") - radius;
@@ -805,7 +885,24 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
                 posEntity.setStart(photoData.getInt("startX"), photoData.getInt("startY"));
                 posEntity.setMaxX(1000);
                 posEntity.setMaxY(2000);
-                //posEntity.setMaxY(1383);
+
+                int startX, startY, endX, endY, radius;
+
+                if(type == Common.BROKEN) {
+                    radius = photoData.getInt("radius");
+                    startX = photoData.getInt("startX") - radius;
+                    startY = photoData.getInt("startY") - radius;
+                    endX = photoData.getInt("startX") + radius;
+                    endY = photoData.getInt("startY") + radius;
+                } else {
+                    startX = photoData.getInt("startX");
+                    startY = photoData.getInt("startY");
+                    endX = photoData.getInt("endX");
+                    endY = photoData.getInt("endY");
+                }
+
+                posEntity.setStart(startX, startY);
+                posEntity.setEnd(endX, endY);
                 posEntity.setComment(photoData.getString("comment"));
 
                 InteriorLayout.posEntities.add(posEntity);
@@ -936,8 +1033,6 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        clearCache();
-
                         Intent intent = new Intent(CarCheckActivity.this, activity);
                         startActivity(intent);
                         finish();
@@ -958,19 +1053,33 @@ public class CarCheckActivity extends Activity implements View.OnTouchListener {
         accidentCheckLayout.clearCache();
         integratedCheckLayout.clearCache();
         photoLayout.clearCache();
+        accidentCheckLayout.unbindDrawables();
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        switch (motionEvent.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if(!showMenu) {
-                    showMenu = !showMenu;
-                    showNaviMenu(showMenu);
-                }
-                break;
-        }
+    protected void onDestroy() {
+        super.onDestroy();
 
-        return true;
+        clearCache();
+        System.gc();
     }
+
+//    @Override
+//    public boolean onTouch(View view, MotionEvent motionEvent) {
+//        switch (motionEvent.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                if(!showMenu) {
+//                    showMenu = !showMenu;
+//                    showNaviMenu(showMenu);
+//                }
+//                break;
+//        }
+//
+//        return true;
+//    }
+
+    /**
+     * 当前是否为修改模式
+     */
+    public static boolean isModify() { return modify; }
 }

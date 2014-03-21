@@ -16,12 +16,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.R;
+import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 
 import java.util.List;
 
+import static com.df.app.util.Helper.getOutputMediaFileUri;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -123,6 +125,10 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
             Bitmap bitmap;
             String path = Common.photoDirectory;
             String fileName = photoEntity.getFileName();
+
+            if(photoEntity.getModifyAction().equals(Action.DELETE)) {
+                fileName = "";
+            }
 
             Log.d(Common.TAG, "正在上传...");
             Log.d(Common.TAG, photoEntity.getJsonString());

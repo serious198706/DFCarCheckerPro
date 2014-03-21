@@ -23,9 +23,12 @@ import android.view.View;
 
 import com.df.app.carCheck.AccidentResultLayout;
 import com.df.app.carCheck.BasicInfoLayout;
+import com.df.app.carCheck.CarCheckActivity;
 import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.carCheck.PhotoLayout;
+import com.df.app.entries.Action;
 import com.df.app.entries.Issue;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
@@ -225,14 +228,31 @@ public class FramePaintView extends PaintView {
     private PhotoEntity generatePhotoEntity() {
         PhotoEntity photoEntity = new PhotoEntity();
 
+        PosEntity posEntity = getPosEntity();
+
+        photoEntity.setName("结构缺陷");
+        photoEntity.setFileName(posEntity.getImageFileName());
+        photoEntity.setIndex(PhotoLayout.photoIndex++);
+        if(photoEntity.getFileName().equals("")) {
+            photoEntity.setThumbFileName("");
+        } else {
+            photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
+        }
+
+        // 如果是走了这段代码，则一定是添加照片
+        // 如果是修改模式，则Action就是add
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setModifyAction(Action.ADD);
+        } else {
+            photoEntity.setModifyAction(Action.MODIFY);
+        }
+
         JSONObject jsonObject = new JSONObject();
         try {
             JSONObject photoJsonObject = new JSONObject();
 
             jsonObject.put("Group", "frame");
             jsonObject.put("Part", sight.equals("F") ? "front" : "rear");
-
-            PosEntity posEntity = getPosEntity();
 
             photoJsonObject.put("x", posEntity.getStartX());
             photoJsonObject.put("y", posEntity.getStartY());
@@ -245,18 +265,14 @@ public class FramePaintView extends PaintView {
             jsonObject.put("CarId", BasicInfoLayout.carId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
 
-            photoEntity.setName("结构缺陷");
-            photoEntity.setFileName(posEntity.getImageFileName());
-            if(photoEntity.getFileName().equals("")) {
-                photoEntity.setThumbFileName("");
-            } else {
-                photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
-            }
-            photoEntity.setJsonString(jsonObject.toString());
         } catch (JSONException e) {
             Log.d(Common.TAG, e.getMessage());
         }
+
+        photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;
     }

@@ -273,6 +273,7 @@ public class CarsWaitingListActivity extends Activity {
                 intent.putExtra("jsonString", result);
                 intent.putExtra("carId", carId);
                 intent.putExtra("activity", CarsWaitingListActivity.class);
+                intent.putExtra("modify", false);
                 startActivity(intent);
                 finish();
             }

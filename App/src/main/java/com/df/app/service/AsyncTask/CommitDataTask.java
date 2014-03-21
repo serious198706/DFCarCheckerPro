@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.df.app.carCheck.BasicInfoLayout;
 import com.df.app.MainActivity;
+import com.df.app.carCheck.CarCheckActivity;
 import com.df.app.service.SoapService;
 import com.df.app.util.Common;
 

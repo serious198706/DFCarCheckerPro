@@ -182,9 +182,9 @@ public class Integrated1Layout extends LinearLayout{
         int interSpinnerId;
 
         // 在map里查找对应的spinnerID
-        for(int i = 0; i < Common.carSettingsSpinnerMap.length; i++) {
-            if(spinnerId == Common.carSettingsSpinnerMap[i][0]) {
-                interSpinnerId = Common.carSettingsSpinnerMap[i][1];
+        for(int[] id : Common.carSettingsSpinnerMap) {
+            if(spinnerId == id[0]) {
+                interSpinnerId = id[1];
 
                 if(interSpinnerId == 0)
                     continue;
@@ -451,6 +451,7 @@ public class Integrated1Layout extends LinearLayout{
      */
     private void fillCommentWithString(String comment) {
         setEditViewText(rootView, R.id.it1_comment_edit, comment);
+
     }
 
     /**

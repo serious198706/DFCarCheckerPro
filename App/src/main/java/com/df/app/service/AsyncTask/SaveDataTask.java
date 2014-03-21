@@ -72,6 +72,7 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
                 jsonObject.put("thumbFileName", photoEntity.getThumbFileName());
                 jsonObject.put("jsonString", photoEntity.getJsonString());
                 jsonObject.put("name", photoEntity.getName());
+                jsonObject.put("index", photoEntity.getIndex());
 
                 photos.put(jsonObject);
             }

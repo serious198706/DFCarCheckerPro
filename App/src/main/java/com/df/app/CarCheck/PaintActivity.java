@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Action;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
@@ -34,6 +35,7 @@ import com.df.app.util.Common;
 import com.df.app.util.Helper;
 import com.df.app.util.SlidingUpPanelLayout;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import java.util.Map;
 
 import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
+import static com.df.app.util.Helper.parsePhotoData;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -178,19 +181,6 @@ public class PaintActivity extends Activity {
         });
 
         ImageView imageView = (ImageView)findViewById(R.id.expandImage);
-//        imageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if(!isExpanded) {
-//                    slidingUpPanelLayout.expandPane(0.3f);
-//                    isExpanded = true;
-//                }
-//                else {
-//                    slidingUpPanelLayout.collapsePane();
-//                    isExpanded = false;
-//                }
-//            }
-//        });
 
         slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         slidingUpPanelLayout.setShadowDrawable(getResources().getDrawable(R.drawable.above_shadow));
@@ -248,7 +238,9 @@ public class PaintActivity extends Activity {
 
         listedPhotos = new ArrayList<ListedPhoto>();
 
-        for(int i = 0; i < paintView.getPosEntities().size(); i++) {
+        int length = paintView.getPosEntities().size();
+
+        for(int i = 0; i < length; i++) {
             PosEntity posEntity = paintView.getPosEntities().get(i);
             PhotoEntity photoEntity = paintView.getPhotoEntities().get(i);
 
@@ -259,7 +251,23 @@ public class PaintActivity extends Activity {
          adapter = new PaintPhotoListAdapter(this, listedPhotos, new PaintPhotoListAdapter.OnDeleteItem() {
             @Override
             public void onDeleteItem(int position) {
-                paintView.getPhotoEntities().remove(position);
+                if(CarCheckActivity.isModify()) {
+                    PhotoEntity photoEntity = paintView.getPhotoEntities().get(position);
+
+                    photoEntity.setModifyAction(Action.DELETE);
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+                        jsonObject.put("Action", Action.DELETE);
+                        photoEntity.setJsonString(jsonObject.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else {
+                    paintView.getPhotoEntities().remove(position);
+                }
+
                 paintView.getPosEntities().remove(position);
                 paintView.invalidate();
                 adapter.remove(position);
@@ -570,6 +578,7 @@ public class PaintActivity extends Activity {
      * @return
      */
     private PhotoEntity generatePhotoEntity(PosEntity posEntity) {
+
         int startX, startY, endX, endY;
         int radius = 0;
 
@@ -598,6 +607,27 @@ public class PaintActivity extends Activity {
             radius = dr / 2;
         }
 
+        // 组建PhotoEntity
+        PhotoEntity photoEntity = new PhotoEntity();
+
+        photoEntity.setName(paintView.getTypeName());
+        photoEntity.setFileName(posEntity.getImageFileName());
+        if(photoEntity.getFileName().equals("")) {
+            photoEntity.setThumbFileName("");
+        } else {
+            photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
+        }
+        photoEntity.setComment(posEntity.getComment());
+        photoEntity.setIndex(PhotoLayout.photoIndex++);
+
+        // 如果是走了这段代码，则一定是添加照片
+        // 如果是修改模式，则Action就是add
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setModifyAction(Action.ADD);
+        } else {
+            photoEntity.setModifyAction(Action.MODIFY);
+        }
+
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
 
@@ -621,21 +651,12 @@ public class PaintActivity extends Activity {
             jsonObject.put("CarId", BasicInfoLayout.carId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
         } catch (Exception e) {
             Log.d("DFCarChecker", "Json组织错误：" + e.getMessage());
         }
 
-        // 组建PhotoEntity
-        PhotoEntity photoEntity = new PhotoEntity();
-
-        photoEntity.setName(paintView.getTypeName());
-        photoEntity.setFileName(posEntity.getImageFileName());
-        if(photoEntity.getFileName().equals("")) {
-            photoEntity.setThumbFileName("");
-        } else {
-            photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
-        }
-        photoEntity.setComment(posEntity.getComment());
         photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;

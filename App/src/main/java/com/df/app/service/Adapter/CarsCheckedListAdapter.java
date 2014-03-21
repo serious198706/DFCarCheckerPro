@@ -21,8 +21,9 @@ import static com.df.app.util.Helper.setTextView;
  * 已检车辆adapter
  */
 public class CarsCheckedListAdapter extends BaseAdapter {
-    public interface OnImport {
+    public interface OnAction {
         public void onImport(int carId);
+        public void onModify(int carId);
     }
 
     public interface OnEditPressed {
@@ -31,10 +32,10 @@ public class CarsCheckedListAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<CarsCheckedItem> items;
-    private OnImport mCallback;
+    private OnAction mCallback;
     private OnEditPressed mEditCallback;
 
-    public CarsCheckedListAdapter(Context context, ArrayList<CarsCheckedItem> objects, OnImport listener,  OnEditPressed listener1) {
+    public CarsCheckedListAdapter(Context context, ArrayList<CarsCheckedItem> objects, OnAction listener,  OnEditPressed listener1) {
         this.context = context;
         this.items = objects;
         this.mCallback = listener;
@@ -103,6 +104,14 @@ public class CarsCheckedListAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     mEditCallback.onEditPressed(position);
+                }
+            });
+
+            Button button1 = (Button)view.findViewById(R.id.example_row_b_action_1);
+            button1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mCallback.onModify(carsCheckedItem.getCarId());
                 }
             });
 

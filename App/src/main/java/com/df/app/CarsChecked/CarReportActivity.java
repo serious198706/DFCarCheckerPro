@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.df.app.R;
@@ -17,6 +18,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.df.app.util.Helper.setTextView;
 
 public class CarReportActivity extends Activity implements ViewPager.OnPageChangeListener{
     private ViewPager viewPager;
@@ -43,6 +46,8 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
         }
 
         String jsonString = bundle.getString("jsonString");
+
+
 
         InitViewPager(jsonString);
         InitTextView();
@@ -80,6 +85,16 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
             viewPager.setAdapter(new MyViewPagerAdapter(views));
             viewPager.setCurrentItem(0);
             viewPager.setOnPageChangeListener(this);
+
+            setTextView(getWindow().getDecorView(), R.id.currentItem, features.getJSONObject("procedures").getString("license"));
+
+            Button backButton = (Button)findViewById(R.id.buttonBack);
+            backButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }

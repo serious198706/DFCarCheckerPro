@@ -13,19 +13,23 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Action;
 import com.df.app.entries.Issue;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.IssueListAdapter;
 import com.df.app.service.Adapter.IssuePhotoListAdapter;
+import com.df.app.service.AsyncTask.DownloadImageTask;
 import com.df.app.util.Common;
 
 import org.json.JSONArray;
@@ -36,6 +40,8 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -52,6 +58,8 @@ public class IssueLayout extends LinearLayout {
     public static ListedPhoto listedPhoto;
     public static PhotoEntity photoEntityModify;
     public static IssuePhotoListAdapter photoListAdapter;
+
+    public static int sketchIndex;
 
     // 图片层
     private ArrayList<Drawable> drawableList;
@@ -126,67 +134,8 @@ public class IssueLayout extends LinearLayout {
     }
 
     public void updateUi(String result, ProgressDialog progressDialog) {
-        fillInData(result, progressDialog);
-    }
-
-    /**
-     * 修改或者半路检测时，填上已经保存的内容
-     * @param result
-     * @param progressDialog
-     */
-    private void fillInData(String result, final ProgressDialog progressDialog) {
-        issueList.clear();
-
-        try {
-            JSONObject jsonObject = new JSONObject(result);
-
-            // 获取覆盖件等级
-            sketch = jsonObject.getJSONObject("sketch");
-
-            level1 = sketch.getString("level1");
-            level2 = sketch.getString("level2");
-
-            // 获取问题列表
-            JSONArray jsonArray = jsonObject.getJSONArray("issueItem");
-
-            for(int i = 0; i < jsonArray.length(); i++) {
-                JSONObject issueObject = jsonArray.getJSONObject(i);
-
-                Issue issue = new Issue(issueObject.getInt("issueId"),
-                        issueObject.getString("desc"), issueObject.getString("view"), "", "", "");
-
-                if(issueObject.has("select")) {
-                    issue.setSelect(issueObject.getString("select"));
-                }
-
-                if(issueObject.has("serious") && !issueObject.getString("serious").equals("")) {
-                    issue.setSerious(issueObject.getString("serious"));
-                }
-
-                issueList.add(issue);
-            }
-
-            adapter.notifyDataSetChanged();
-
-            Handler handler = new Handler();
-
-            // 画图
-            r = new Runnable() {
-                @Override
-                public void run() {
-                    drawBase();
-                    drawSketch(handelLevelNames(level1, 1));
-                    drawSketch(handelLevelNames(level2, 2));
-
-                    if(progressDialog != null)
-                        progressDialog.dismiss();
-                }
-            };
-            handler.postDelayed(r, 3000);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        fillInData(result);
+        drawImage(progressDialog);
     }
 
     /**
@@ -258,24 +207,6 @@ public class IssueLayout extends LinearLayout {
     }
 
     /**
-     * 填入测试数据
-     * @return
-     */
-    private ArrayList<Issue> fillInDummyData() {
-        issueList  = new ArrayList<Issue>();
-
-        issueList.add(new Issue(1, "右前门铰链处是否平整、无修复焊接痕迹", "F", "", "", ""));
-        issueList.add(new Issue(2, "前杠与前翼子板之间的缝隙是否整齐均匀", "R", "", "", ""));
-        issueList.add(new Issue(3, "右前翼子板和翼子板内衬连接处的胶体是否规整",  "R", "", "", ""));
-        issueList.add(new Issue(4, "右前翼子板内侧是否平整、无回火焊点或折痕", "R", "", "", ""));
-        issueList.add(new Issue(5, "右前翼子板内衬板是否平整、无钣金修复痕迹","F", "", "", ""));
-        issueList.add(new Issue(6, "右前减震器座是否平整、无钣金修复痕迹", "N", "", "", ""));
-        issueList.add(new Issue(7, "引擎盖内侧封边及内衬是否整齐、无修复焊接痕迹", "R", "", "", ""));
-
-        return issueList;
-    }
-
-    /**
      * 生成事故检查JSONObject
      * @return
      * @throws JSONException
@@ -324,6 +255,18 @@ public class IssueLayout extends LinearLayout {
             e.printStackTrace();
         }
 
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("accident_sketch");
+
+        // 如果是修改模式下，就是modify
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setModifyAction(Action.MODIFY);
+            photoEntity.setIndex(sketchIndex);
+        } else {
+            photoEntity.setModifyAction(Action.NORMAL);
+            photoEntity.setIndex(PhotoLayout.photoIndex++);
+        }
+
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -338,24 +281,93 @@ public class IssueLayout extends LinearLayout {
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName("accident_sketch");
         photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;
+    }
+
+    private void drawImage(final ProgressDialog progressDialog) {
+
+        Handler handler = new Handler();
+
+        // 画图
+        r = new Runnable() {
+            @Override
+            public void run() {
+                drawBase();
+                drawSketch(handelLevelNames(level1, 1));
+                drawSketch(handelLevelNames(level2, 2));
+
+                if(progressDialog != null) {
+                    progressDialog.dismiss();
+                    ProgressBar progressBar = (ProgressBar)findViewById(R.id.issueImageProgressBar);
+                    progressBar.setVisibility(GONE);
+                }
+            }
+        };
+        handler.postDelayed(r, 3000);
     }
 
     /**
      * 修改或者半路检测时，填上已经保存的内容
      * @param issue
      */
-    public void fillInData(JSONObject issue) {
-        fillInData(issue.toString(), null);
+    public void fillInData(JSONObject issue) throws JSONException {
+        fillInData(issue.toString());
+        drawImage(null);
     }
+
+    public void fillInData(JSONObject issue, JSONObject photo) throws JSONException {
+        fillInData(issue.toString());
+        updateImage(photo);
+    }
+
+    private void fillInData(String result) {
+        issueList.clear();
+
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+
+            // 获取覆盖件等级
+            sketch = jsonObject.getJSONObject("sketch");
+
+            level1 = sketch.getString("level1");
+            level2 = sketch.getString("level2");
+
+            // 获取问题列表
+            JSONArray jsonArray = jsonObject.getJSONArray("issueItem");
+
+            int length = jsonArray.length();
+
+            for(int i = 0; i < length; i++) {
+                JSONObject issueObject = jsonArray.getJSONObject(i);
+
+                Issue issue = new Issue(issueObject.getInt("issueId"),
+                        issueObject.getString("desc"), issueObject.getString("view"), "", "", "");
+
+                if(issueObject.has("select")) {
+                    issue.setSelect(issueObject.getString("select"));
+                }
+
+                if(issueObject.has("serious") && !issueObject.getString("serious").equals("")) {
+                    issue.setSerious(issueObject.getString("serious"));
+                }
+
+                issueList.add(issue);
+            }
+
+            adapter.notifyDataSetChanged();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public List<Issue> getIssues() {
         return issueList;
@@ -376,5 +388,45 @@ public class IssueLayout extends LinearLayout {
         listedPhoto = null;
         photoListAdapter = null;
         photoEntityModify = null;
+    }
+
+    private void updateImage(JSONObject photo) throws JSONException {
+        showView(rootView, R.id.issueImageProgressBar, true);
+        JSONObject accident = photo.getJSONObject("accident");
+
+        JSONObject accidentSketch = accident.getJSONObject("sketch");
+        if(accidentSketch != JSONObject.NULL) {
+            sketchIndex = accidentSketch.getInt("index");
+            String accidentSketchUrl = accidentSketch.getString("photo");
+            new DownloadImageTask(Common.PICTURE_ADDRESS + accidentSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+                @Override
+                public void onFinish(Bitmap bitmap) {
+                    showView(rootView, R.id.issueImageProgressBar, false);
+                    ImageView imageView = (ImageView)findViewById(R.id.issue_image);
+                    imageView.setImageBitmap(bitmap);
+                }
+
+                @Override
+                public void onFailed() {
+
+                }
+            }).execute();
+        }
+    }
+
+    public void unbindDrawables() {
+        unbindDrawables(findViewById(R.id.issue_image));
+    }
+
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }
     }
 }

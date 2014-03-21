@@ -12,6 +12,18 @@ public class PhotoEntity {
     private String jsonString;
     private String comment;
     private String name;
+    private int index;
+    private String modifyAction;
+
+    public PhotoEntity() {
+        fileName = "";
+        thumbFileName = "";
+        jsonString = "";
+        comment = "";
+        name = "";
+        index = 0;
+        modifyAction = "";
+    }
 
     public String getFileName() {
         return fileName;
@@ -51,5 +63,21 @@ public class PhotoEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public String getModifyAction() {
+        return modifyAction;
+    }
+
+    public void setModifyAction(String modifyAction) {
+        this.modifyAction = modifyAction;
     }
 }

@@ -23,6 +23,7 @@ import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.PhotoOperationActivity;
 import com.df.app.util.Common;
+import com.df.app.util.lazyLoadHelper.ImageLoader;
 
 import java.util.List;
 
@@ -32,6 +33,8 @@ import static com.df.app.util.Helper.setTextView;
  * Created by 岩 on 14-3-13.
  */
 public class PaintPhotoListAdapter extends BaseAdapter {
+    private ImageLoader imageLoader;
+
     public interface OnDeleteItem {
         public void onDeleteItem(int position);
     }
@@ -44,6 +47,8 @@ public class PaintPhotoListAdapter extends BaseAdapter {
         this.context = context;
         this.items = items;
         this.mCallback = listener;
+
+        imageLoader = new ImageLoader(context);
     }
 
     @Override
@@ -127,11 +132,16 @@ public class PaintPhotoListAdapter extends BaseAdapter {
                 final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera);
                 photo.setImageBitmap(bitmap);
             } else {
-                final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity.getThumbFileName());
-                photo.setImageBitmap(bitmap);
+                // 如果图片名称中有http，则表示是来自网络的图片
+                if(photoEntity.getThumbFileName().contains("http")) {
+                    imageLoader.DisplayImage(photoEntity.getThumbFileName(), photo);
+                } else {
+                    Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity
+                            .getThumbFileName());
+                    photo.setImageBitmap(bitmap);
+                }
             }
 
-            //TODO 点击图片之后要做什么？ 弹出照片编辑框
             photo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -199,7 +209,7 @@ public class PaintPhotoListAdapter extends BaseAdapter {
      */
     private void showPhoto(String fileName) {
         Intent intent = new Intent(context, PhotoOperationActivity.class);
-        intent.putExtra("fileName", Common.photoDirectory + fileName);
+        intent.putExtra("fileName", fileName);
         context.startActivity(intent);
     }
 }

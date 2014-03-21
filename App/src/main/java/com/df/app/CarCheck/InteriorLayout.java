@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,15 +17,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintView.InteriorPaintPreviewView;
+import com.df.app.service.AsyncTask.DownloadImageTask;
 import com.df.app.util.MyScrollView;
 import com.df.app.util.Common;
 
@@ -44,6 +48,7 @@ import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setSpinnerSelectionWithString;
+import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -68,6 +73,9 @@ public class InteriorLayout extends LinearLayout {
 
     // 记录破损部位
     private String brokenResult = "";
+
+    public static int sketchIndex;
+    private int figure;
 
     public InteriorLayout(Context context) {
         super(context);
@@ -140,7 +148,7 @@ public class InteriorLayout extends LinearLayout {
      * 更新界面
      */
     public void updateUi() {
-        int figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
+        figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
         Bitmap previewViewBitmap = getBitmapFromFigure(figure);
 
         interiorPaintPreviewView = (InteriorPaintPreviewView) findViewById(R.id.interior_image);
@@ -391,6 +399,20 @@ public class InteriorLayout extends LinearLayout {
             e.printStackTrace();
         }
 
+        // 如果是修改模式，则Action就是add
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("interior");
+
+        // 如果是走了这段代码，则一定是添加照片
+        // 如果是修改模式，则Action就是modify
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setIndex(sketchIndex);
+            photoEntity.setModifyAction(Action.MODIFY);
+        } else {
+            photoEntity.setIndex(PhotoLayout.photoIndex++);
+            photoEntity.setModifyAction(Action.NORMAL);
+        }
+
         // 组织jsonString
         JSONObject jsonObject = new JSONObject();
 
@@ -406,25 +428,116 @@ public class InteriorLayout extends LinearLayout {
             jsonObject.put("CarId", BasicInfoLayout.carId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName("interior");
         photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;
     }
 
+    //    /**
+//     * 生成草图(干净的)
+//     */
+//    public PhotoEntity generateSketch() {
+//        Bitmap bitmap = getBitmapFromFigure(figure);
+//
+//        try {
+//            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure)),
+//                    new File(Common.photoDirectory + "exterior"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        PhotoEntity photoEntity = new PhotoEntity();
+//        photoEntity.setFileName("exterior");
+//
+//        // 如果是修改模式，则Action就是modify
+//        if(CarCheckActivity.isModify()) {
+//            photoEntity.setIndex(sketchIndex);
+//            photoEntity.setModifyAction(Action.MODIFY);
+//        } else {
+//            photoEntity.setIndex(PhotoLayout.photoIndex++);
+//            photoEntity.setModifyAction(Action.NORMAL);
+//        }
+//
+//        // 组织jsonString
+//        JSONObject jsonObject = new JSONObject();
+//
+//        try {
+//            jsonObject.put("Group", "exterior");
+//            jsonObject.put("Part", "sketch");
+//
+//            JSONObject photoData = new JSONObject();
+//
+//            photoData.put("height", bitmap.getHeight());
+//            photoData.put("width", bitmap.getWidth());
+//
+//            jsonObject.put("PhotoData", photoData);
+//            jsonObject.put("CarId", BasicInfoLayout.carId);
+//            jsonObject.put("UserId", MainActivity.userInfo.getId());
+//            jsonObject.put("Key", MainActivity.userInfo.getKey());
+//            jsonObject.put("Action", photoEntity.getModifyAction());
+//            jsonObject.put("Index", photoEntity.getIndex());
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        photoEntity.setJsonString(jsonObject.toString());
+//
+//        return photoEntity;
+//    }
+
     /**
      * 修改或者半路检测时，填上已经保存的内容
+     *
      * @param interior
      * @throws JSONException
      */
     public void fillInData(JSONObject interior) throws JSONException{
         setSpinnerSelectionWithString(rootView, R.id.sealingStrip_spinner, interior.getString("sealingStrip"));
-        setEditViewText(rootView, R.id.interior_comment_edit, interior.getString("comment"));
+        setEditViewText(rootView, R.id.interior_comment_edit, interior.get("comment") == JSONObject.NULL ? "" : interior.getString("comment"));
+    }
+
+    public void fillInData(JSONObject interior, JSONObject photo) throws JSONException {
+        fillInData(interior);
+        updateImage(photo);
+    }
+
+    private void updateImage(JSONObject photo) throws JSONException{
+        showView(rootView, R.id.inProgressBar, true);
+        rootView.findViewById(R.id.tipOnPreview).setVisibility(View.GONE);
+
+        JSONObject interior = photo.getJSONObject("interior");
+
+        // 结构草图 - 后视角
+        JSONObject inSketch = interior.getJSONObject("sketch");
+
+        if(inSketch != JSONObject.NULL) {
+            sketchIndex = inSketch.getInt("index");
+
+            if(sketchIndex >= PhotoLayout.photoIndex) {
+                PhotoLayout.photoIndex = sketchIndex + 1;
+            }
+
+            String sketchUrl = inSketch.getString("photo");
+            new DownloadImageTask(Common.PICTURE_ADDRESS + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
+                @Override
+                public void onFinish(Bitmap bitmap) {
+                    showView(rootView, R.id.inProgressBar, false);
+                    interiorPaintPreviewView.init(bitmap, posEntities);
+                    interiorPaintPreviewView.invalidate();
+                }
+
+                @Override
+                public void onFailed() {
+                    Log.d(Common.TAG, "下载后视角草图失败！");
+                }
+            }).execute();
+        }
     }
 
     public void clearCache() {

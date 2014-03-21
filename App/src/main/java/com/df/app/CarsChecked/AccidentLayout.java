@@ -119,7 +119,9 @@ public class AccidentLayout extends LinearLayout {
 
         TableLayout tableLayout = (TableLayout)findViewById(R.id.issueResultTable);
 
-        for(int i = 0; i < jsonArray.length(); i++) {
+        int length = jsonArray.length();
+
+        for(int i = 0; i < length; i++) {
             JSONObject issueObject = jsonArray.getJSONObject(i);
 
             if(issueObject.get("summary") != JSONObject.NULL) {

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -23,9 +24,11 @@ import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintView.ExteriorPaintPreviewView;
+import com.df.app.service.AsyncTask.DownloadImageTask;
 import com.df.app.util.MyScrollView;
 import com.df.app.util.Common;
 
@@ -46,6 +49,7 @@ import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setSpinnerSelectionWithIndex;
 import static com.df.app.util.Helper.setSpinnerSelectionWithString;
+import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -72,6 +76,8 @@ public class ExteriorLayout extends LinearLayout {
 
     // 承载所有的checkbox
     private TableLayout root;
+    private int sketchIndex;
+    private int figure;
 
     public ExteriorLayout(Context context) {
         super(context);
@@ -154,7 +160,7 @@ public class ExteriorLayout extends LinearLayout {
 
     public void updateUi() {
         // 点击图片进入绘制界面
-        int figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
+        figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
         Bitmap previewViewBitmap = getBitmapFromFigure(figure);
 
         exteriorPaintPreviewView = (ExteriorPaintPreviewView) findViewById(R.id.exterior_image);
@@ -313,23 +319,6 @@ public class ExteriorLayout extends LinearLayout {
     }
 
     /**
-     * 拷贝草图
-     */
-    public static void copy(File src, File dst) throws IOException {
-        InputStream in = new FileInputStream(src);
-        OutputStream out = new FileOutputStream(dst);
-
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
-    }
-
-    /**
      * 根据车型信息调用不同的预览图
      * @param figure 车辆类型代码
      * @return 图片
@@ -395,6 +384,18 @@ public class ExteriorLayout extends LinearLayout {
             e.printStackTrace();
         }
 
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("exterior");
+
+        // 如果是修改模式，则Action就是modify
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setIndex(sketchIndex);
+            photoEntity.setModifyAction(Action.MODIFY);
+        } else {
+            photoEntity.setIndex(PhotoLayout.photoIndex++);
+            photoEntity.setModifyAction(Action.NORMAL);
+        }
+
         // 组织jsonString
         JSONObject jsonObject = new JSONObject();
 
@@ -411,16 +412,68 @@ public class ExteriorLayout extends LinearLayout {
             jsonObject.put("CarId", BasicInfoLayout.carId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName("exterior");
         photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;
     }
+
+//    /**
+//     * 生成草图(干净的)
+//     */
+//    public PhotoEntity generateSketch() {
+//        Bitmap bitmap = getBitmapFromFigure(figure);
+//
+//        try {
+//            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure)),
+//                    new File(Common.photoDirectory + "exterior"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        PhotoEntity photoEntity = new PhotoEntity();
+//        photoEntity.setFileName("exterior");
+//
+//        // 如果是修改模式，则Action就是modify
+//        if(CarCheckActivity.isModify()) {
+//            photoEntity.setIndex(sketchIndex);
+//            photoEntity.setModifyAction(Action.MODIFY);
+//        } else {
+//            photoEntity.setIndex(PhotoLayout.photoIndex++);
+//            photoEntity.setModifyAction(Action.NORMAL);
+//        }
+//
+//        // 组织jsonString
+//        JSONObject jsonObject = new JSONObject();
+//
+//        try {
+//            jsonObject.put("Group", "exterior");
+//            jsonObject.put("Part", "sketch");
+//
+//            JSONObject photoData = new JSONObject();
+//
+//            photoData.put("height", bitmap.getHeight());
+//            photoData.put("width", bitmap.getWidth());
+//
+//            jsonObject.put("PhotoData", photoData);
+//            jsonObject.put("CarId", BasicInfoLayout.carId);
+//            jsonObject.put("UserId", MainActivity.userInfo.getId());
+//            jsonObject.put("Key", MainActivity.userInfo.getKey());
+//            jsonObject.put("Action", photoEntity.getModifyAction());
+//            jsonObject.put("Index", photoEntity.getIndex());
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        photoEntity.setJsonString(jsonObject.toString());
+//
+//        return photoEntity;
+//    }
 
     /**
      * 生成外观检查JSON串
@@ -445,14 +498,52 @@ public class ExteriorLayout extends LinearLayout {
      */
     public void fillInData(JSONObject exterior) throws JSONException{
         setSpinnerSelectionWithString(rootView, R.id.smooth_spinner, exterior.getString("smooth"));
-        setEditViewText(rootView, R.id.exterior_comment_edit, exterior.getString("comment"));
-        setEditViewText(rootView, R.id.glass_edit, exterior.getString("glass"));
+        setEditViewText(rootView, R.id.exterior_comment_edit, exterior.get("comment") == JSONObject.NULL ? "" : exterior.getString("comment"));
+        setEditViewText(rootView, R.id.glass_edit, exterior.get("glass") == JSONObject.NULL ? "" : exterior.getString("glass"));
         glassResult = exterior.getString("glass");
-        setEditViewText(rootView, R.id.screw_edit, exterior.getString("screw"));
+        setEditViewText(rootView, R.id.screw_edit, exterior.get("screw") == JSONObject.NULL ? "" : exterior.getString("screw"));
         screwResult = exterior.getString("screw");
 
         CheckBox checkBox = (CheckBox)findViewById(R.id.needRepair);
         checkBox.setChecked(exterior.getString("needRepair").equals("是"));
+    }
+
+    public void fillInData(JSONObject exterior, JSONObject photo) throws JSONException {
+        fillInData(exterior);
+        updateImage(photo);
+    }
+
+    private void updateImage(JSONObject photo) throws JSONException{
+        showView(rootView, R.id.exProgressBar, true);
+        rootView.findViewById(R.id.tipOnPreview).setVisibility(View.GONE);
+
+        JSONObject exterior = photo.getJSONObject("exterior");
+
+        // 结构草图 - 前视角
+        JSONObject exSketch = exterior.getJSONObject("sketch");
+
+        if(exSketch != JSONObject.NULL) {
+            sketchIndex = exSketch.getInt("index");
+
+            if(sketchIndex >= PhotoLayout.photoIndex) {
+                PhotoLayout.photoIndex = sketchIndex + 1;
+            }
+
+            String sketchUrl = exSketch.getString("photo");
+            new DownloadImageTask(Common.PICTURE_ADDRESS + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
+                @Override
+                public void onFinish(Bitmap bitmap) {
+                    showView(rootView, R.id.exProgressBar, false);
+                    exteriorPaintPreviewView.init(bitmap, posEntities);
+                    exteriorPaintPreviewView.invalidate();
+                }
+
+                @Override
+                public void onFailed() {
+
+                }
+            }).execute();
+        }
     }
 
     public void clearCache() {

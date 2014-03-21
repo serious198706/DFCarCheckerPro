@@ -251,6 +251,7 @@ public class SoapService implements ISoapService {
         // 成功
         if(result.equals("0")) {
             // JSON格式数据
+            Log.d(Common.TAG, resultMessage);
             errorMessage = "";
             return true;
         }

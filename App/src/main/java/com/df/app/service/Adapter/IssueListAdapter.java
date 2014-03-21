@@ -21,9 +21,11 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.df.app.carCheck.AccidentResultLayout;
+import com.df.app.carCheck.CarCheckActivity;
 import com.df.app.carCheck.ExteriorLayout;
 import com.df.app.carCheck.InteriorLayout;
 import com.df.app.carCheck.PhotoFaultLayout;
+import com.df.app.entries.Action;
 import com.df.app.entries.Issue;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
@@ -35,6 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.df.app.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static com.df.app.util.Helper.setTextView;
 import static com.df.app.util.Helper.showView;
@@ -200,19 +205,45 @@ public class IssueListAdapter extends BaseAdapter {
             }
         });
 
-        // 确认删除按钮
+        // 全部删除 - 确认删除按钮
         Button deleteButton = (Button)rootView.findViewById(R.id.deleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (PhotoEntity photoEntity : issue.getPhotoEntities()) {
-                    if (issue.getView().equals("F")) {
-                        AccidentResultLayout.photoEntitiesFront.remove(photoEntity);
-                    } else {
-                        AccidentResultLayout.photoEntitiesRear.remove(photoEntity);
-                    }
+                // 如果为修改模式
+                if(CarCheckActivity.isModify()) {
+                    for(PhotoEntity photoEntity : issue.getPhotoEntities()) {
+                        if (issue.getView().equals("F")) {
+                            int index = AccidentResultLayout.photoEntitiesFront.indexOf(photoEntity);
+                            AccidentResultLayout.photoEntitiesFront.get(index).setModifyAction(Action.DELETE);
+                        } else {
+                            int index = AccidentResultLayout.photoEntitiesRear.indexOf(photoEntity);
+                            AccidentResultLayout.photoEntitiesRear.get(index).setModifyAction(Action.DELETE);
+                        }
 
-                    PhotoFaultLayout.photoListAdapter.removeItem(photoEntity);
+                        PhotoEntity temp1 = PhotoFaultLayout.photoListAdapter.getItem(photoEntity);
+                        temp1.setModifyAction(Action.DELETE);
+
+                        try {
+                            JSONObject jsonObject = new JSONObject(temp1.getJsonString());
+                            jsonObject.put("Action", Action.DELETE);
+                            temp1.setJsonString(jsonObject.toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                // 普通模式
+                else {
+                    for (PhotoEntity photoEntity : issue.getPhotoEntities()) {
+                        if (issue.getView().equals("F")) {
+                            AccidentResultLayout.photoEntitiesFront.remove(photoEntity);
+                        } else {
+                            AccidentResultLayout.photoEntitiesRear.remove(photoEntity);
+                        }
+
+                        PhotoFaultLayout.photoListAdapter.removeItem(photoEntity);
+                    }
                 }
 
                 PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
@@ -253,14 +284,63 @@ public class IssueListAdapter extends BaseAdapter {
                         // 删除issue中的posEntity
                         issue.getPosEntities().remove(position);
 
-                        // 删除照片列表里的照片
-                        PhotoEntity temp = issue.getPhotoEntities().get(position);
-                        PhotoFaultLayout.photoListAdapter.removeItem(temp);
-                        PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+                        if(CarCheckActivity.isModify()) {
+                            // 更新查勘结果中的图片
+                            if(issue.getView().equals("F")) {
+                                AccidentResultLayout.photoEntitiesFront.get(position).setModifyAction(Action.DELETE);
+                                AccidentResultLayout.posEntitiesFront.remove(position);
+                                AccidentResultLayout.framePaintPreviewViewFront.invalidate();
+                            }
+                            else {
+                                AccidentResultLayout.photoEntitiesRear.get(position).setModifyAction(Action.DELETE);
+                                AccidentResultLayout.posEntitiesRear.remove(position);
+                                AccidentResultLayout.framePaintPreviewViewRear.invalidate();
+                            }
 
-                        // 现删除issue本身的照片
-                        issue.getPhotoEntities().remove(temp);
+                            // 删除照片列表里的照片
+                            PhotoEntity temp = issue.getPhotoEntities().get(position);
 
+                            PhotoFaultLayout.photoListAdapter.getItem(position).setModifyAction(Action.DELETE);
+                            PhotoEntity temp1 = PhotoFaultLayout.photoListAdapter.getItem(position);
+                            temp1.setModifyAction(Action.DELETE);
+
+                            try {
+                                JSONObject jsonObject = new JSONObject(temp1.getJsonString());
+                                jsonObject.put("Action", Action.DELETE);
+                                temp1.setJsonString(jsonObject.toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            issue.getPhotoEntities().remove(position);
+                            PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+
+                            // 现删除issue本身的照片
+                            issue.getPhotoEntities().remove(temp);
+                        } else {
+                            // 更新查勘结果中的图片
+                            if(issue.getView().equals("F")) {
+                                AccidentResultLayout.photoEntitiesFront.remove(position);
+                                AccidentResultLayout.posEntitiesFront.remove(position);
+                                AccidentResultLayout.framePaintPreviewViewFront.invalidate();
+                            }
+                            else {
+                                AccidentResultLayout.photoEntitiesRear.remove(position);
+                                AccidentResultLayout.posEntitiesRear.remove(position);
+                                AccidentResultLayout.framePaintPreviewViewRear.invalidate();
+                            }
+
+                            // 删除照片列表里的照片
+                            PhotoEntity temp = issue.getPhotoEntities().get(position);
+                            PhotoFaultLayout.photoListAdapter.removeItem(temp);
+                            issue.getPhotoEntities().remove(position);
+                            PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+
+                            // 现删除issue本身的照片
+                            issue.getPhotoEntities().remove(temp);
+                        }
+
+                        // 更新绘图
                         framePaintView.invalidate();
                     }
                 });
@@ -383,7 +463,12 @@ public class IssueListAdapter extends BaseAdapter {
 
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(view1)
-                .setNegativeButton(R.string.cancel, null)
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mPictureDialog.show();
+                    }
+                })
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

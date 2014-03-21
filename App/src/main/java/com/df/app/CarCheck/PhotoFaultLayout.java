@@ -47,7 +47,7 @@ public class PhotoFaultLayout extends LinearLayout {
 
         ListView faultList = (ListView) findViewById(R.id.photo_fault_list);
         faultList.setAdapter(photoListAdapter);
-        //faultList.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+        faultList.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
     }
 
     /**

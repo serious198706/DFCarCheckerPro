@@ -53,6 +53,8 @@ public class CarsCheckedListActivity extends Activity {
     private String lastSellerName;
     private int lastPos;
 
+    public static boolean modify;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,10 +64,15 @@ public class CarsCheckedListActivity extends Activity {
 
         data = new ArrayList<CarsCheckedItem>();
 
-        adapter = new CarsCheckedListAdapter(this, data, new CarsCheckedListAdapter.OnImport() {
+        adapter = new CarsCheckedListAdapter(this, data, new CarsCheckedListAdapter.OnAction() {
             @Override
             public void onImport(int carId) {
                 selectPlatform(carId);
+            }
+
+            @Override
+            public void onModify(int carId) {
+                getCarDetail(carId, CarCheckActivity.class, true);
             }
         }, new CarsCheckedListAdapter.OnEditPressed() {
             @Override
@@ -78,7 +85,7 @@ public class CarsCheckedListActivity extends Activity {
         swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
             @Override
             public void onClickFrontView(int position) {
-                getCarDetail(data.get(position).getCarId(), CarReportActivity.class);
+                getCarDetail(data.get(position).getCarId(), CarReportActivity.class, false);
             }
 
             @Override
@@ -157,7 +164,9 @@ public class CarsCheckedListActivity extends Activity {
         try {
             JSONArray jsonArray = new JSONArray(result);
 
-            for(int i = 0; i < jsonArray.length(); i++) {
+            int length = jsonArray.length();
+
+            for(int i = 0; i < length; i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                 CarsCheckedItem item = new CarsCheckedItem();
@@ -210,12 +219,15 @@ public class CarsCheckedListActivity extends Activity {
      * @param carId
      * @param activity
      */
-    private void getCarDetail(final int carId, final Class activity) {
+    private void getCarDetail(final int carId, final Class activity, final boolean modify) {
         GetCarDetailTask getCarDetailTask = new GetCarDetailTask(CarsCheckedListActivity.this, carId, new GetCarDetailTask.OnGetDetailFinished() {
             @Override
             public void onFinish(String result) {
                 Intent intent = new Intent(CarsCheckedListActivity.this, activity);
                 intent.putExtra("jsonString", result);
+                intent.putExtra("carId", carId);
+                intent.putExtra("activity", CarsCheckedListActivity.class);
+                intent.putExtra("modify", modify);
                 startActivity(intent);
                 finish();
             }

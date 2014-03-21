@@ -75,7 +75,9 @@ public class Integrated3Layout extends LinearLayout {
                 try {
                     JSONArray jsonArray = new JSONArray(result);
 
-                    for(int i = 0; i < jsonArray.length(); i++) {
+                    int length = jsonArray.length();
+
+                    for(int i = 0; i < length; i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                         Cooperator cooperator = new Cooperator(jsonObject.getInt("CheckCooperatorId"),
@@ -148,5 +150,7 @@ public class Integrated3Layout extends LinearLayout {
 
     public void fillInData(String checkCooperatorName) {
         this.storedCooperatorName = checkCooperatorName;
+
+        setSpinnerSelectionWithString(rootView, R.id.cooperatorName_spinner, this.storedCooperatorName);
     }
 }

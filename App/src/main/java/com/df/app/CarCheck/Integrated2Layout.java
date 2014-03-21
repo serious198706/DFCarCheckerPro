@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.util.MyScrollView;
 import com.df.app.util.Common;
@@ -106,7 +107,7 @@ public class Integrated2Layout extends LinearLayout {
 
     private MyScrollView scrollView;
 
-    public enum PaintType {
+    private enum PaintType {
         leftFront, rightFront, leftRear, rightRear, spare, NOVALUE;
 
         public static PaintType paintType(String str)
@@ -119,6 +120,12 @@ public class Integrated2Layout extends LinearLayout {
             }
         }
     }
+
+    public static int leftFrontIndex;
+    public static int rightFrontIndex;
+    public static int leftRearIndex;
+    public static int rightRearIndex;
+    public static int spareIndex;
 
     private Map<String, PhotoEntity> photoEntityMap;
 
@@ -333,6 +340,36 @@ public class Integrated2Layout extends LinearLayout {
      * @return
      */
     private PhotoEntity generatePhotoEntity() {
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
+        photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
+        photoEntity.setName(currentTireName);
+
+        // 如果是修改模式，则Action就是modify（每个轮胎照只有一张）
+        if(CarCheckActivity.isModify()) {
+            switch (PaintType.paintType(currentTire)) {
+                case leftFront:
+                    photoEntity.setIndex(leftFrontIndex);
+                    break;
+                case rightFront:
+                    photoEntity.setIndex(rightFrontIndex);
+                    break;
+                case leftRear:
+                    photoEntity.setIndex(leftRearIndex);
+                    break;
+                case rightRear:
+                    photoEntity.setIndex(rightRearIndex);
+                    break;
+                case spare:
+                    photoEntity.setIndex(spareIndex);
+                    break;
+            }
+        } else {
+            photoEntity.setIndex(PhotoLayout.photoIndex++);
+        }
+
+        photoEntity.setModifyAction(Action.MODIFY);
+
         // 组织JsonString
         JSONObject jsonObject = new JSONObject();
 
@@ -372,15 +409,13 @@ public class Integrated2Layout extends LinearLayout {
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
-        photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
         photoEntity.setJsonString(jsonObject.toString());
-        photoEntity.setName(currentTireName);
 
         return photoEntity;
     }
@@ -506,11 +541,11 @@ public class Integrated2Layout extends LinearLayout {
      * @throws JSONException
      */
     private void fillTiresWithJSONObject(JSONObject tires) throws JSONException{
-        setEditViewText(rootView, R.id.leftFront_edit, tires.getString("leftFront"));
-        setEditViewText(rootView, R.id.rightFront_edit, tires.getString("rightFront"));
-        setEditViewText(rootView, R.id.leftRear_edit, tires.getString("leftRear"));
-        setEditViewText(rootView, R.id.rightRear_edit, tires.getString("rightRear"));
-        setEditViewText(rootView, R.id.spare_edit, tires.getString("spare"));
+        setEditViewText(rootView, R.id.leftFront_edit, tires.get("leftFront") == JSONObject.NULL ? "" : tires.getString("leftFront"));
+        setEditViewText(rootView, R.id.rightFront_edit, tires.get("rightFront") == JSONObject.NULL ? "" : tires.getString("rightFront"));
+        setEditViewText(rootView, R.id.leftRear_edit, tires.get("leftRear") == JSONObject.NULL ? "" : tires.getString("leftRear"));
+        setEditViewText(rootView, R.id.rightRear_edit, tires.get("rightRear") == JSONObject.NULL ? "" : tires.getString("rightRear"));
+        setEditViewText(rootView, R.id.spare_edit, tires.get("spare") == JSONObject.NULL ? "" : tires.getString("spare"));
         setSpinnerSelectionWithString(rootView, R.id.formatMatch_spinner, tires.getString("formatMatch"));
         setSpinnerSelectionWithString(rootView, R.id.patternMatch_spinner, tires.getString("patternMatch"));
     }
@@ -549,6 +584,13 @@ public class Integrated2Layout extends LinearLayout {
             e.printStackTrace();
         }
 
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("tire_sketch");
+        photoEntity.setIndex(PhotoLayout.photoIndex++);
+
+        // 不需要修改
+        photoEntity.setModifyAction(Action.NORMAL);
+
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -563,12 +605,12 @@ public class Integrated2Layout extends LinearLayout {
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName("tire_sketch");
         photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;
@@ -585,6 +627,19 @@ public class Integrated2Layout extends LinearLayout {
         fillFloodWithJSONObject(flooded);
         fillTiresWithJSONObject(tires);
         fillCommentWithString(comment2);
+    }
+
+
+    public void fillInData(JSONObject flooded, JSONObject tires, JSONObject photos, String comment2) throws JSONException {
+        fillInData(flooded, tires, comment2);
+
+        JSONObject tiresPhoto = photos.getJSONObject("tire");
+        JSONObject sketch = tiresPhoto.getJSONObject("sketch");
+        int index = sketch.getInt("index");
+
+        if(index >= PhotoLayout.photoIndex) {
+            PhotoLayout.photoIndex = index + 1;
+        }
     }
 
     /**

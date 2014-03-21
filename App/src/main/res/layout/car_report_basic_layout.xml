@@ -764,14 +764,16 @@
                     android:textSize="20sp"
                     android:textColor="#555"
                     android:textStyle="bold"
-                    android:gravity="right"/>
+                    android:gravity="right"
+                    android:layout_gravity="center"/>
                 <TextView android:id="@+id/source_text"
                           android:layout_height="wrap_content"
                           android:layout_width="0dp"
                           android:layout_weight="1"
                           android:textSize="20sp"
                           android:textStyle="bold"
-                          android:gravity="left"/>
+                          android:gravity="left"
+                          android:singleLine="false"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"

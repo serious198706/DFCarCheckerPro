@@ -105,7 +105,8 @@ public class OptionsLayout extends LinearLayout {
         final String configArray[] = carConfigs.split(",");
 
         for(int i = 0; i < configArray.length; i++) {
-            setSpinnerSelectionWithString(rootView, Common.carSettingsSpinnerMap[i][0], "无");
+            setSpinnerSelection(Common.carSettingsSpinnerMap[i][0], "无");
+            //setSpinnerSelectionWithString(rootView, Common.carSettingsSpinnerMap[i][0], "无");
         }
     }
 
@@ -148,6 +149,27 @@ public class OptionsLayout extends LinearLayout {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     Integrated1Layout.updateAssociatedSpinners(spinnerId, adapterView.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+    }
+
+    /**
+     * 设置配置信息中的Spinner，并与综合检查中的Spinner产生联动
+     * @param spinnerId
+     * @param selection
+     */
+    private void setSpinnerSelection(final int spinnerId, String selection) {
+        final Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
+        setSpinnerSelectionWithString(rootView, spinnerId, selection);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Integrated1Layout.updateAssociatedSpinners(spinnerId, adapterView.getSelectedItem().toString());
             }
 
             @Override
@@ -261,13 +283,14 @@ public class OptionsLayout extends LinearLayout {
      */
     public void fillInData(JSONObject options) {
         try {
-            setEditViewText(rootView, R.id.displacement_edit, options.getString("displacement"));
-            setEditViewText(rootView, R.id.transmission_edit, options.getString("transmission"));
-
-            setSpinnerSelectionWithString(rootView, R.id.driveType_spinner, options.getString("driveType"));
-            setSpinnerSelectionWithString(rootView, R.id.airBag_spinner, options.getString("airBags"));
-
-            // 有则放入无则放无
+            if(options.has("displacement"))
+                setEditViewText(rootView, R.id.displacement_edit, Double.toString(options.getDouble("displacement")));
+            if(options.has("transmission"))
+                setEditViewText(rootView, R.id.transmission_edit, options.getString("transmission"));
+            if(options.has("driveType"))
+                setSpinnerSelectionWithString(rootView, R.id.driveType_spinner, options.getString("driveType"));
+            if(options.has("airBags"))
+                setSpinnerSelectionWithString(rootView, R.id.airBag_spinner, options.isNull("airBags") ? "无" : options.getString("airBags"));
             if(options.has("abs"))
                 setSpinnerSelectionWithString(rootView, R.id.abs_spinner, options.isNull("abs") ? "无" : options.getString("abs"));
             if(options.has("powerSteering"))

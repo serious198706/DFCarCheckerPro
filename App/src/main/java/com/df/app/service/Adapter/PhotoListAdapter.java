@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.df.app.carCheck.PhotoLayout;
 import com.df.app.R;
+import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.PhotoOperationActivity;
 import com.df.app.util.Common;
@@ -78,6 +79,10 @@ public class PhotoListAdapter extends BaseAdapter {
         return i;
     }
 
+    public PhotoEntity getItem(PhotoEntity photoEntity) {
+        return items.get(items.indexOf(photoEntity));
+    }
+
     public void clear() {
         items.clear();
     }
@@ -94,6 +99,9 @@ public class PhotoListAdapter extends BaseAdapter {
         final PhotoEntity photoEntity = items.get(position);
 
         if (photoEntity != null) {
+            if(photoEntity.getModifyAction() != null && photoEntity.getModifyAction().equals(Action.DELETE))
+                view.setAlpha(0.3f);
+
             ImageView photo = (ImageView) view.findViewById(R.id.photo);
 
             if(photoEntity.getThumbFileName() == null || photoEntity.getThumbFileName().equals("")) {
@@ -101,9 +109,14 @@ public class PhotoListAdapter extends BaseAdapter {
                 photo.setImageBitmap(bitmap);
             } else {
                 if(editable) {
-                    final Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity
-                            .getThumbFileName());
-                    photo.setImageBitmap(bitmap);
+                    // 如果图片名称中有http，则表示是来自网络的图片
+                    if(photoEntity.getThumbFileName().contains("http")) {
+                        imageLoader.DisplayImage(photoEntity.getThumbFileName(), photo);
+                    } else {
+                        Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity
+                                .getThumbFileName());
+                        photo.setImageBitmap(bitmap);
+                    }
                 } else {
                     // 如果是浏览模式，就意味着图片来自网络
                     imageLoader.DisplayImage(photoEntity.getThumbFileName(), photo);
@@ -117,7 +130,7 @@ public class PhotoListAdapter extends BaseAdapter {
                         // 将要修改的photoEntity提取出来
                         PhotoLayout.reTakePhotoEntity = photoEntity;
 
-                        showPhoto(Common.photoDirectory + photoEntity.getFileName());
+                        showPhoto(photoEntity.getFileName());
                     }
                 });
             }
@@ -178,7 +191,7 @@ public class PhotoListAdapter extends BaseAdapter {
      */
     private void showPhoto(String fileName) {
         Intent intent = new Intent(context, PhotoOperationActivity.class);
-        intent.putExtra("fileName", Common.photoDirectory + fileName);
+        intent.putExtra("fileName", fileName);
         context.startActivity(intent);
     }
 }

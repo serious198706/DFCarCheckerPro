@@ -16,11 +16,24 @@
         android:layout_height="2dp"
         android:layout_marginTop="5dp"
         android:background="#AA030A"/>
-    <com.df.app.paintView.FramePaintPreviewView
-        android:id="@+id/front_preview"
+
+    <RelativeLayout
         android:layout_width="500dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_height="350dp"
+        android:layout_gravity="center">
+        <com.df.app.paintView.FramePaintPreviewView
+            android:id="@+id/front_preview"
+            android:layout_width="500dp"
+            android:layout_height="350dp"
+            android:layout_centerInParent="true"/>
+
+        <ProgressBar android:id="@+id/frontProgressBar"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:indeterminate="true"
+                     android:layout_centerInParent="true"
+                     android:visibility="gone"/>
+    </RelativeLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -33,9 +46,22 @@
         android:layout_height="2dp"
         android:layout_marginTop="5dp"
         android:background="#AA030A"/>
-    <com.df.app.paintView.FramePaintPreviewView
-        android:id="@+id/rear_preview"
+
+    <RelativeLayout
         android:layout_width="500dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_height="350dp"
+        android:layout_gravity="center">
+        <com.df.app.paintView.FramePaintPreviewView
+            android:id="@+id/rear_preview"
+            android:layout_width="500dp"
+            android:layout_height="350dp"
+            android:layout_centerInParent="true"/>
+
+        <ProgressBar android:id="@+id/rearProgressBar"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:indeterminate="true"
+                     android:layout_centerInParent="true"
+                     android:visibility="gone"/>
+    </RelativeLayout>
 </LinearLayout>

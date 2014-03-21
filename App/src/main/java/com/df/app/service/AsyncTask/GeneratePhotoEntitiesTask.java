@@ -39,15 +39,6 @@ public class GeneratePhotoEntitiesTask extends AsyncTask<JSONObject, Void, Boole
     private IntegratedCheckLayout integratedCheckLayout;
     private boolean generateSketch;
 
-    public GeneratePhotoEntitiesTask(Context context, List<PhotoEntity> photoEntities, AccidentCheckLayout accidentCheckLayout,
-                                     IntegratedCheckLayout integratedCheckLayout, OnGenerateFinished listener) {
-        this.context = context;
-        this.photoEntities = photoEntities;
-        this.accidentCheckLayout = accidentCheckLayout;
-        this.integratedCheckLayout = integratedCheckLayout;
-        this.mCallback = listener;
-    }
-
     /**
      * 构造方法
      * @param context 上下文
@@ -105,20 +96,20 @@ public class GeneratePhotoEntitiesTask extends AsyncTask<JSONObject, Void, Boole
         if(generateSketch)
             photoEntities.addAll(generateSketches());
 
-        try {
-            for(int i = 0; i < photoEntities.size(); i++) {
-                PhotoEntity photoEntity = photoEntities.get(i);
-                JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
-
-                // 给每张图片设置序列号
-                jsonObject.put("Index", i + 1);
-
-                // 更新photoEntity
-                photoEntity.setJsonString(jsonObject.toString());
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            for(int i = 0; i < photoEntities.size(); i++) {
+//                PhotoEntity photoEntity = photoEntities.get(i);
+//                JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+//
+//                // 给每张图片设置序列号
+//                jsonObject.put("Index", i + 1);
+//
+//                // 更新photoEntity
+//                photoEntity.setJsonString(jsonObject.toString());
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
         return true;
     }

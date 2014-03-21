@@ -78,7 +78,7 @@ public class CarRecogniseLayout extends LinearLayout {
     private int lastCountryIndex = 0;
     private int lastBrandIndex = 0;
     private int lastManufacturerIndex = 0;
-    private int lastSeriesIndex = 0;
+    private int lastSeriesIndex = -50;
     private int lastModelIndex = 0;
 
     // 车辆配置信息
@@ -582,13 +582,6 @@ public class CarRecogniseLayout extends LinearLayout {
                 .setView(view)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // 记录用户选择的位置
-//                        lastCountryIndex = countrySpinner.getSelectedItemPosition();
-//                        lastBrandIndex = brandSpinner.getSelectedItemPosition();
-//                        lastManufacturerIndex = manufacturerSpinner.getSelectedItemPosition();
-//                        lastSeriesIndex = seriesSpinner.getSelectedItemPosition();
-//                        lastModelIndex = modelSpinner.getSelectedItemPosition();
-
                         // 如果用户点击确定，则必须要求所有的Spinner为选中状态
                         if (lastCountryIndex == 0 ||
                                 lastBrandIndex == 0 ||
@@ -610,106 +603,11 @@ public class CarRecogniseLayout extends LinearLayout {
                         getCarSettingsFromServer(series.id + "," + model.id);
                     }
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // 取消
-//                        lastCountryIndex = countrySpinner.getSelectedItemPosition();
-//                        lastBrandIndex = brandSpinner.getSelectedItemPosition();
-//                        lastManufacturerIndex = manufacturerSpinner.getSelectedItemPosition();
-//                        lastSeriesIndex = seriesSpinner.getSelectedItemPosition();
-//                        lastModelIndex = modelSpinner.getSelectedItemPosition();
-                    }
-                })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
-                        // 记录用户选择的位置
-//                        lastCountryIndex = countrySpinner.getSelectedItemPosition();
-//                        lastBrandIndex = brandSpinner.getSelectedItemPosition();
-//                        lastManufacturerIndex = manufacturerSpinner.getSelectedItemPosition();
-//                        lastSeriesIndex = seriesSpinner.getSelectedItemPosition();
-//                        lastModelIndex = modelSpinner.getSelectedItemPosition();
-                    }
-                })
+                .setNegativeButton(R.string.cancel, null)
                 .create();
-
-//        setCountrySpinner(vehicleModel);
 
         dialog.show();
     }
-
-//    private void showSelectCarDialog() {
-//        View view = LayoutInflater.from(rootView.getContext()).inflate(R.layout
-//                .dialog_vehiclemodel_select, null);
-//
-//        TextView title = (TextView)view.findViewById(R.id.title);
-//        title.setText(R.string.select_model);
-//
-//        countrySpinner = (Spinner) view.findViewById(R.id.country_spinner);
-//        brandSpinner = (Spinner) view.findViewById(R.id.brand_spinner);
-//        manufacturerSpinner = (Spinner) view.findViewById(R.id.manufacturer_spinner);
-//        seriesSpinner = (Spinner) view.findViewById(R.id.series_spinner);
-//        modelSpinner = (Spinner) view.findViewById(R.id.model_spinner);
-//
-//        AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
-//                .setView(view)
-//                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        // 记录用户选择的位置
-//                        lastCountryIndex = countrySpinner.getSelectedItemPosition();
-//                        lastBrandIndex = brandSpinner.getSelectedItemPosition();
-//                        lastManufacturerIndex = manufacturerSpinner.getSelectedItemPosition();
-//                        lastSeriesIndex = seriesSpinner.getSelectedItemPosition();
-//                        lastModelIndex = modelSpinner.getSelectedItemPosition();
-//
-//                        // 如果用户点击确定，则必须要求所有的Spinner为选中状态
-//                        if (lastCountryIndex == 0 ||
-//                                lastBrandIndex == 0 ||
-//                                lastManufacturerIndex == 0 ||
-//                                lastSeriesIndex == 0 ||
-//                                lastModelIndex == 0) {
-//                            Toast.makeText(rootView.getContext(), "请选择所有项目", Toast.LENGTH_SHORT).show();
-//
-//                            return;
-//                        }
-//
-//                        Country country = vehicleModel.countries.get(lastCountryIndex - 1);
-//                        Brand brand = country.brands.get(lastBrandIndex - 1);
-//                        Manufacturer manufacturer = brand.manufacturers.get(lastManufacturerIndex - 1);
-//                        Series series = manufacturer.serieses.get(lastSeriesIndex - 1);
-//                        Model model = series.models.get(lastModelIndex - 1);
-//
-//                        // 根据seriesId和modelId从服务器获取车辆配置信息  config:powerWindows,powerSeats...
-//                        getCarSettingsFromServer(series.id + "," + model.id);
-//                    }
-//                })
-//                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        // 取消
-//                        lastCountryIndex = countrySpinner.getSelectedItemPosition();
-//                        lastBrandIndex = brandSpinner.getSelectedItemPosition();
-//                        lastManufacturerIndex = manufacturerSpinner.getSelectedItemPosition();
-//                        lastSeriesIndex = seriesSpinner.getSelectedItemPosition();
-//                        lastModelIndex = modelSpinner.getSelectedItemPosition();
-//                    }
-//                })
-//                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-//                    @Override
-//                    public void onDismiss(DialogInterface dialogInterface) {
-//                        // 记录用户选择的位置
-//                        lastCountryIndex = countrySpinner.getSelectedItemPosition();
-//                        lastBrandIndex = brandSpinner.getSelectedItemPosition();
-//                        lastManufacturerIndex = manufacturerSpinner.getSelectedItemPosition();
-//                        lastSeriesIndex = seriesSpinner.getSelectedItemPosition();
-//                        lastModelIndex = modelSpinner.getSelectedItemPosition();
-//                    }
-//                })
-//                .create();
-//
-//        setCountrySpinner(vehicleModel);
-//
-//        dialog.show();
-//    }
 
     /**
      * 更新UI
@@ -853,11 +751,29 @@ public class CarRecogniseLayout extends LinearLayout {
                 showListDialog(R.string.chooseCountry, adapter, new Handler(new Handler.Callback() {
                     @Override
                     public boolean handleMessage(Message message) {
-                        lastCountryIndex = message.what;
-                        Country country = vehicleModel.getCountries().get(message.what - 1);
-                        countryEdit.setText(country.name);
+                        if(message.what == 0) {
+                            countryEdit.setText("");
+                            brandEdit.setText("");
+                            manufacturerEdit.setText("");
+                            seriesEdit.setText("");
+                            modelEdit.setText("");
+                        } else {
+                            Country country = vehicleModel.getCountries().get(message.what - 1);
+                            countryEdit.setText(country.name);
 
-                        setBrandEdit(country);
+                            // 如果此次选择与上次不同，则清空下方edit
+                            if(lastCountryIndex != message.what) {
+                                brandEdit.setText("");
+                                manufacturerEdit.setText("");
+                                seriesEdit.setText("");
+                                modelEdit.setText("");
+                            }
+
+                            setBrandEdit(country);
+                        }
+
+                        lastCountryIndex = message.what;
+
                         return true;
                     }
                 }));
@@ -881,11 +797,27 @@ public class CarRecogniseLayout extends LinearLayout {
         final Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
-                lastBrandIndex = message.what;
-                Brand brand = country.brands.get(message.what - 1);
-                brandEdit.setText(brand.name);
+                if(message.what == 0) {
+                    brandEdit.setText("");
+                    manufacturerEdit.setText("");
+                    seriesEdit.setText("");
+                    modelEdit.setText("");
+                } else {
+                    Brand brand = country.brands.get(message.what - 1);
+                    brandEdit.setText(brand.name);
 
-                setManufacturerEdit(brand);
+                    // 如果此次选择与上次不同，则清空下方edit
+                    if(lastBrandIndex != message.what) {
+                        manufacturerEdit.setText("");
+                        seriesEdit.setText("");
+                        modelEdit.setText("");
+                    }
+
+                    setManufacturerEdit(brand);
+                }
+
+                lastBrandIndex = message.what;
+
                 return true;
             }
         });
@@ -927,11 +859,25 @@ public class CarRecogniseLayout extends LinearLayout {
         final Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
-                lastManufacturerIndex = message.what;
-                Manufacturer manufacturer = brand.manufacturers.get(message.what - 1);
-                brandEdit.setText(manufacturer.name);
+                if(message.what == 0) {
+                    manufacturerEdit.setText("");
+                    seriesEdit.setText("");
+                    modelEdit.setText("");
+                } else {
+                    Manufacturer manufacturer = brand.manufacturers.get(message.what - 1);
+                    manufacturerEdit.setText(manufacturer.name);
 
-                setSeriesEdit(manufacturer);
+                    // 如果此次选择与上次不同，则清空下方edit
+                    if(lastManufacturerIndex != message.what) {
+                        seriesEdit.setText("");
+                        modelEdit.setText("");
+                    }
+
+                    setSeriesEdit(manufacturer);
+                }
+
+                lastManufacturerIndex = message.what;
+
                 return true;
             }
         });
@@ -973,11 +919,23 @@ public class CarRecogniseLayout extends LinearLayout {
         final Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
-                lastSeriesIndex = message.what;
-                Series series = manufacturer.serieses.get(message.what - 1);
-                seriesEdit.setText(series.name);
+                if(message.what == 0) {
+                    seriesEdit.setText("");
+                    modelEdit.setText("");
+                } else {
+                    Series series = manufacturer.serieses.get(message.what - 1);
+                    seriesEdit.setText(series.name);
 
-                setModelEdit(series);
+                    // 如果此次选择与上次不同，则清空下方edit
+                    if(lastSeriesIndex != message.what) {
+                        modelEdit.setText("");
+                    }
+
+                    setModelEdit(series);
+                }
+
+                lastSeriesIndex = message.what;
+
                 return true;
             }
         });
@@ -1020,8 +978,14 @@ public class CarRecogniseLayout extends LinearLayout {
             @Override
             public boolean handleMessage(Message message) {
                 lastModelIndex = message.what;
-                Model model = series.models.get(message.what - 1);
-                modelEdit.setText(model.name);
+
+                if(message.what == 0) {
+                    modelEdit.setText("");
+                } else {
+                    Model model = series.models.get(message.what - 1);
+                    modelEdit.setText(model.name);
+                }
+
                 return true;
             }
         });

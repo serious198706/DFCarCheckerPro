@@ -319,10 +319,12 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
 
     /**
      * 修改或者半路检测时，填上已经保存的内容
-     * @param conditions
+     * @param jsonObject 大json串
      */
-    public void fillInData(JSONObject conditions) {
+    public void fillInData(JSONObject jsonObject) {
         try {
+            JSONObject conditions = jsonObject.getJSONObject("conditions");
+
             JSONObject exterior = conditions.getJSONObject("exterior");
             JSONObject interior = conditions.getJSONObject("interior");
             JSONObject engine = conditions.getJSONObject("engine");
@@ -332,14 +334,27 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
             JSONObject tires = conditions.getJSONObject("tires");
 
             // 综合检查 - 备注
-            String comment1 = conditions.getString("comment1");
-            String comment2 = conditions.getString("comment2");
-            String comment3 = conditions.getString("comment3");
+            String comment1 = conditions.get("comment1") == JSONObject.NULL ? "" : conditions.getString("comment1");
+            String comment2 = conditions.get("comment2") == JSONObject.NULL ? "" : conditions.getString("comment2");
+            String comment3 = conditions.get("comment3") == JSONObject.NULL ? "" : conditions.getString("comment3");
 
-            exteriorLayout.fillInData(exterior);
-            interiorLayout.fillInData(interior);
+            if(CarCheckActivity.isModify()) {
+                exteriorLayout.fillInData(exterior, jsonObject.getJSONObject("photos"));
+                interiorLayout.fillInData(interior, jsonObject.getJSONObject("photos"));
+            } else {
+                exteriorLayout.fillInData(exterior);
+                interiorLayout.fillInData(interior);
+            }
+
             integrated1Layout.fillInData(engine, gearbox, function, comment1);
-            integrated2Layout.fillInData(flooded, tires, comment2);
+
+            if(CarCheckActivity.isModify()) {
+                integrated2Layout.fillInData(flooded, tires, jsonObject.getJSONObject("photos"), comment2);
+            } else {
+                integrated2Layout.fillInData(flooded, tires, comment2);
+            }
+
+
 
 
         } catch (JSONException e) {

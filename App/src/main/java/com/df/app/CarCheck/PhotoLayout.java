@@ -26,6 +26,8 @@ import java.util.List;
  * 照片列表，包括外观组标准照、内饰组标准照、缺陷组、机舱组、手续组和协议组
  */
 public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeListener {
+    public static int photoIndex;
+
     public static PaintPhotoListAdapter paintPhotoListAdapter;
     public static ListedPhoto listedPhoto;
 
@@ -253,6 +255,7 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
 
         PhotoOtherLayout.photoListAdapter = null;
         PhotoOtherLayout.photoShotCount = 0;
+        PhotoLayout.photoIndex = 1;
     }
 
     public static void notifyDataSetChanged() {

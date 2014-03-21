@@ -1,5 +1,6 @@
 package com.df.app.carCheck;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,9 +10,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.entries.Action;
 import com.df.app.entries.Issue;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
@@ -19,17 +24,22 @@ import com.df.app.entries.PosEntity;
 import com.df.app.paintView.FramePaintPreviewView;
 import com.df.app.paintView.PaintPreviewView;
 import com.df.app.service.Adapter.IssuePhotoListAdapter;
+import com.df.app.service.AsyncTask.DownloadImageTask;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
+import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -53,13 +63,19 @@ public class AccidentResultLayout extends LinearLayout {
     public static List<PhotoEntity> photoEntitiesFront;
     public static List<PhotoEntity> photoEntitiesRear;
 
+    public static int fSketchIndex;
+    public static int rSketchIndex;
+
+    private View rootView;
+    private int figure;
+
     public AccidentResultLayout(Context context) {
         super(context);
         init(context);
     }
 
     private void init(Context context) {
-        View rootView = LayoutInflater.from(context).inflate(R.layout.accident_result_layout, this);
+        rootView = LayoutInflater.from(context).inflate(R.layout.accident_result_layout, this);
 
         posEntitiesFront = new ArrayList<PosEntity>();
         posEntitiesRear = new ArrayList<PosEntity>();
@@ -72,17 +88,12 @@ public class AccidentResultLayout extends LinearLayout {
 
         previewBitmapFront = BitmapFactory.decodeFile(Common.utilDirectory + "d4_f", options);
 
-        LayoutParams layoutParams = new LayoutParams(previewBitmapFront.getWidth(), previewBitmapFront.getHeight());
-        layoutParams.gravity = Gravity.CENTER;
-
         framePaintPreviewViewFront = (FramePaintPreviewView) rootView.findViewById(R.id.front_preview);
         framePaintPreviewViewFront.init(previewBitmapFront, posEntitiesFront);
-        framePaintPreviewViewFront.setLayoutParams(layoutParams);
 
         previewBitmapRear = BitmapFactory.decodeFile(Common.utilDirectory + "d4_r", options);
         framePaintPreviewViewRear = (FramePaintPreviewView) rootView.findViewById(R.id.rear_preview);
         framePaintPreviewViewRear.init(previewBitmapRear, posEntitiesRear);
-        framePaintPreviewViewRear.setLayoutParams(layoutParams);
     }
 
     /**
@@ -152,6 +163,25 @@ public class AccidentResultLayout extends LinearLayout {
 
             PosEntity posEntity = getPosEntity(flag);
 
+            photoEntity.setName("结构缺陷");
+            photoEntity.setFileName(posEntity.getImageFileName());
+            photoEntity.setIndex(PhotoLayout.photoIndex++);
+
+            // 如果是走了这段代码，则一定是添加照片
+            // 如果是修改模式，则Action就是add
+            if(CarCheckActivity.isModify()) {
+                photoEntity.setModifyAction(Action.MODIFY);
+            } else {
+                photoEntity.setModifyAction(Action.MODIFY);
+            }
+
+            if(photoEntity.getFileName().equals("")) {
+                photoEntity.setThumbFileName("");
+            } else {
+                photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
+            }
+            photoEntity.setComment(posEntity.getComment());
+
             photoJsonObject.put("x", posEntity.getStartX());
             photoJsonObject.put("y", posEntity.getStartY());
             photoJsonObject.put("width", getBitmapWidth(posEntity.getImageFileName()));
@@ -163,16 +193,9 @@ public class AccidentResultLayout extends LinearLayout {
             jsonObject.put("CarId", BasicInfoLayout.carId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
 
-            photoEntity.setName("结构缺陷");
-            photoEntity.setFileName(posEntity.getImageFileName());
-
-            if(photoEntity.getFileName().equals("")) {
-                photoEntity.setThumbFileName("");
-            } else {
-                photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
-            }
-            photoEntity.setComment(posEntity.getComment());
             photoEntity.setJsonString(jsonObject.toString());
         } catch (JSONException e) {
             Log.d(Common.TAG, e.getMessage());
@@ -187,35 +210,58 @@ public class AccidentResultLayout extends LinearLayout {
      * 参数：车辆类型代码
      */
     private void setFigureImage(int figure) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        this.figure = figure;
 
-        String path = Common.utilDirectory;
-
-        // 默认为4门图
-        String front = "d4_f";
-        String rear = "d4_r";
-
-        // 只有当figure为2、3时才是2门图
-        switch (figure) {
-            case 2:
-            case 3:
-                front = "d2_f";
-                rear = "d2_r";
-                break;
-        }
-
-        previewBitmapFront = BitmapFactory.decodeFile(path + front, options);
-
-        LayoutParams layoutParams = new LayoutParams(previewBitmapFront.getWidth(), previewBitmapFront.getHeight());
-        layoutParams.gravity = Gravity.CENTER;
+        previewBitmapFront = getBitmapFromFigure(figure, "fSketch");
+        previewBitmapRear = getBitmapFromFigure(figure, "rSketch");
 
         framePaintPreviewViewFront.init(previewBitmapFront, posEntitiesFront);
-        framePaintPreviewViewFront.setLayoutParams(layoutParams);
-
-        previewBitmapRear = BitmapFactory.decodeFile(path + rear, options);
         framePaintPreviewViewRear.init(previewBitmapRear, posEntitiesRear);
-        framePaintPreviewViewRear.setLayoutParams(layoutParams);
+    }
+
+    private Bitmap getBitmapFromFigure(int figure, String view) {
+        Bitmap bitmap = null;
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+            bitmap = BitmapFactory.decodeFile(getBitmapNameFromFigure(figure, view), options);
+        } catch (OutOfMemoryError e) {
+            Toast.makeText(rootView.getContext(), "内存不足，请稍候重试！", Toast.LENGTH_SHORT).show();
+            ((Activity)rootView.getContext()).finish();
+        }
+
+        return bitmap;
+    }
+
+    private String getBitmapNameFromFigure(int figure, String view) {
+        return Common.utilDirectory + getNameFromFigure(figure, view);
+    }
+
+    private static String getNameFromFigure(int figure, String view) {
+        String name;
+
+        if(view.equals("fSketch")) {
+            name = "d4_f";
+
+            switch (figure) {
+                case 2:
+                case 3:
+                    name = "d2_f";
+                    break;
+            }
+        } else {
+            name = "d2_r";
+
+            switch (figure) {
+                case 2:
+                case 3:
+                    name = "d2_r";
+                    break;
+            }
+        }
+
+        return name;
     }
 
     /**
@@ -252,6 +298,18 @@ public class AccidentResultLayout extends LinearLayout {
             e.printStackTrace();
         }
 
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName(sketchName);
+
+        // 修改时，添加Action，并且将原来的index填写进去
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setModifyAction(Action.MODIFY);
+            photoEntity.setIndex(sketchName.equals("fSketch") ? fSketchIndex : rSketchIndex);
+        } else {
+            photoEntity.setModifyAction(Action.NORMAL);
+            photoEntity.setIndex(PhotoLayout.photoIndex++);
+        }
+
         JSONObject jsonObject = new JSONObject();
 
         try {
@@ -266,14 +324,64 @@ public class AccidentResultLayout extends LinearLayout {
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
             jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
         } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        photoEntity.setJsonString(jsonObject.toString());
+        return photoEntity;
+    }
+
+    /**
+     * 根据视角生成不同草图(干净的)
+     *
+     * 参数:1.视角 2.草图名称
+     */
+    private PhotoEntity generateSketch(String sketchName) {
+        Bitmap bitmap = getBitmapFromFigure(figure, sketchName);
+
+        try {
+            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure, "sketchName")),
+                    new File(Common.photoDirectory + sketchName));
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         PhotoEntity photoEntity = new PhotoEntity();
         photoEntity.setFileName(sketchName);
-        photoEntity.setJsonString(jsonObject.toString());
 
+        // 修改时，添加Action，并且将原来的index填写进去
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setModifyAction(Action.MODIFY);
+            photoEntity.setIndex(sketchName.equals("fSketch") ? fSketchIndex : rSketchIndex);
+        } else {
+            photoEntity.setModifyAction(Action.NORMAL);
+            photoEntity.setIndex(PhotoLayout.photoIndex++);
+        }
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            JSONObject photoJsonObject = new JSONObject();
+
+            photoJsonObject.put("height", bitmap.getHeight());
+            photoJsonObject.put("width", bitmap.getWidth());
+
+            jsonObject.put("Group", "frame");
+            jsonObject.put("Part", sketchName);
+            jsonObject.put("PhotoData", photoJsonObject);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        photoEntity.setJsonString(jsonObject.toString());
         return photoEntity;
     }
 
@@ -289,5 +397,64 @@ public class AccidentResultLayout extends LinearLayout {
         posEntitiesRear = null;
         photoEntitiesFront = null;
         photoEntitiesRear = null;
+    }
+
+    public void fillInData(JSONObject photo) throws JSONException {
+        showView(rootView, R.id.frontProgressBar, true);
+        showView(rootView, R.id.rearProgressBar, true);
+        JSONObject frame = photo.getJSONObject("frame");
+
+        // 结构草图 - 前视角
+        JSONObject fSketch = frame.getJSONObject("fSketch");
+
+        if(fSketch != JSONObject.NULL) {
+            fSketchIndex = fSketch.getInt("index");
+
+            if(fSketchIndex >= PhotoLayout.photoIndex) {
+                PhotoLayout.photoIndex = fSketchIndex + 1;
+            }
+
+            String fSketchUrl = fSketch.getString("photo");
+            new DownloadImageTask(Common.PICTURE_ADDRESS + fSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+                @Override
+                public void onFinish(Bitmap bitmap) {
+                    showView(rootView, R.id.frontProgressBar, false);
+                    framePaintPreviewViewFront.init(bitmap, posEntitiesFront);
+                    framePaintPreviewViewFront.invalidate();
+                }
+
+                @Override
+                public void onFailed() {
+
+                }
+            }).execute();
+        }
+
+        // 结构草图 - 后视角
+
+        JSONObject rSketch = frame.getJSONObject("rSketch");
+
+        if(rSketch != JSONObject.NULL) {
+            rSketchIndex = rSketch.getInt("index");
+
+            if(rSketchIndex >= PhotoLayout.photoIndex) {
+                PhotoLayout.photoIndex = rSketchIndex + 1;
+            }
+
+            String rSketchUrl = rSketch.getString("photo");
+            new DownloadImageTask(Common.PICTURE_ADDRESS + rSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+                @Override
+                public void onFinish(Bitmap bitmap) {
+                    showView(rootView, R.id.rearProgressBar, false);
+                    framePaintPreviewViewRear.init(bitmap, posEntitiesRear);
+                    framePaintPreviewViewRear.invalidate();
+                }
+
+                @Override
+                public void onFailed() {
+                    Log.d(Common.TAG, "下载后视角草图失败！");
+                }
+            }).execute();
+        }
     }
 }

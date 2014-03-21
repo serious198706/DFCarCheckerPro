@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
+import com.df.app.util.Common;
 
 /**
  * Created by 岩 on 14-1-13.
@@ -102,7 +103,7 @@ public class ProceduresWebLayout extends LinearLayout {
      * @param modelId 车型id
      */
     public void updateUi(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial, String seriesId, String modelId) {
-        String url = "http://192.168.18.88:8001/Function/CarDetection2/Default.aspx?";
+        String url =  Common.PROCEDURES_ADDRESS + "Function/CarDetection2/Default.aspx?";
 
         url += "userId=" + MainActivity.userInfo.getId();
         url += "&";
@@ -141,7 +142,7 @@ public class ProceduresWebLayout extends LinearLayout {
     }
 
     public void updateUi(String carId) {
-        String url = "http://192.168.18.88:8001/Function/CarDetection2/Modify3.aspx?";
+        String url = Common.PROCEDURES_ADDRESS + "Function/CarDetection2/Modify3.aspx?";
 
         url += "userId=" + MainActivity.userInfo.getId();
         url += "&";

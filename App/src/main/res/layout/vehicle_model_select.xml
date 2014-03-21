@@ -35,7 +35,8 @@
                      android:layout_weight="3"
                      android:background="@drawable/edittext_border"
                      android:paddingLeft="10dp"
-                     android:editable="false"/>
+                     android:editable="false"
+                     android:focusableInTouchMode="false"/>
         </TableRow>
         <TableRow android:layout_marginTop="15dp">
             <TextView android:layout_width="0dp"
@@ -50,7 +51,8 @@
                      android:layout_weight="3"
                      android:background="@drawable/edittext_border"
                      android:paddingLeft="10dp"
-                     android:editable="false"/>
+                     android:editable="false"
+                     android:focusableInTouchMode="false"/>
         </TableRow>
         <TableRow android:layout_marginTop="15dp">
             <TextView android:layout_width="0dp"
@@ -65,7 +67,8 @@
                      android:layout_weight="3"
                      android:background="@drawable/edittext_border"
                      android:paddingLeft="10dp"
-                     android:editable="false"/>
+                     android:editable="false"
+                     android:focusableInTouchMode="false"/>
         </TableRow>
         <TableRow android:layout_marginTop="15dp">
             <TextView android:layout_width="0dp"
@@ -80,7 +83,8 @@
                      android:layout_weight="3"
                      android:background="@drawable/edittext_border"
                      android:paddingLeft="10dp"
-                     android:editable="false"/>
+                     android:editable="false"
+                     android:focusableInTouchMode="false"/>
         </TableRow>
         <TableRow android:layout_marginTop="15dp">
             <TextView android:layout_width="0dp"
@@ -95,7 +99,8 @@
                      android:layout_weight="3"
                      android:background="@drawable/edittext_border"
                      android:paddingLeft="10dp"
-                     android:editable="false"/>
+                     android:editable="false"
+                     android:focusableInTouchMode="false"/>
         </TableRow>
     </TableLayout>
 </LinearLayout>

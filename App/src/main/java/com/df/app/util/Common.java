@@ -11,21 +11,27 @@ import com.df.app.R;
  * 常量
  */
 public class Common {
-    public static String utilDirectory = Environment.getExternalStorageDirectory().getPath() +
+    public static final String utilDirectory = Environment.getExternalStorageDirectory().getPath() +
             "/.cheyipaiPro/";
-    public static String photoDirectory = Environment.getExternalStorageDirectory().getPath() +
+    public static final String photoDirectory = Environment.getExternalStorageDirectory().getPath() +
             "/Pictures/DFCarCheckerPro/";
-    public static String savedDirectory = utilDirectory +
+    public static final String savedDirectory = utilDirectory +
             "saved/";
 
-    public static String TAG = "DFCarCheckerPro";
+    public static final String TAG = "DFCarCheckerPro";
 
-    public static String NAMESPACE = "http://cheyipai";
+    public static final String NAMESPACE = "http://cheyipai";
 
     // 地址
-    public static final String SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
-    //public static final String SERVER_ADDRESS = "http://192.168.8.33:810/Services/";
-    public static final String PICTURE_ADDRESS = "http://192.168.100.6:8006/";
+//    public static final String SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
+//    public static final String PICTURE_ADDRESS = "http://192.168.100.6:8006/";
+//    public static final String THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
+//    public static final String PROCEDURES_ADDRESS = "http://192.168.18.88:8001/";
+
+    public static final String SERVER_ADDRESS = "http://114.112.88.216:9133/Services/";
+    public static final String PICTURE_ADDRESS = "http://i.268v.com/pro/";
+    public static final String THUMB_ADDRESS = "http://i.268v.com/pro/small/";
+    public static final String PROCEDURES_ADDRESS = "http://truetest.cheyipai.com:20002/";
 
     // 服务名称
     public static final String CAR_CHECK_SERVICE = "CarCheckService.svc";
@@ -43,7 +49,6 @@ public class Common {
     public static final String UPLOAD_PICTURE = "UploadPictureTagKey";
     public static final String ANALYSIS_ACCIDENT_DATA = "AnalysisAccidentData";
     public static final String COMMIT_DATA = "SubmitCarCheckData";
-    //public static final String SAVE_DATA = "SaveCarCheckData";
     public static final String GET_COOPERATORS = "GetCheckCooperates";
     public static final String GET_CHECKED_CARS = "ListCheckedCarsByUserId";
     public static final String GET_WAITING_CARS = "ListPendingCarsByUserId";
@@ -131,4 +136,11 @@ public class Common {
     // 设备类型代码
     public static final int DF3000 = 200;
     public static final int DF5000 = 201;
+
+    // 拍摄标准照的位置
+    public static final String[] exteriorPartArray = {"leftFront45", "rightFront45", "right", "rightRear45", "leftRear45", "left", "other"};
+    public static final String[] interiorPartArray = {"workbench", "steeringWheel", "dashboard", "leftDoor+steeringWheel", "rearSeats", "coDriverSeat", "other"};
+    public static final String[] proceduresPartArray = {"plate", "procedures", "keys", "other"};
+    public static final String[] enginePartArray = {"overview", "left", "right", "other"};
+    public static final String[] tirePartArray = {"leftFront", "rightFront", "leftRear", "rightRear", "spare"};
 }

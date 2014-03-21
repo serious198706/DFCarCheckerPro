@@ -411,7 +411,7 @@ public class CollectDataLayout extends LinearLayout {
      * 清空已填入的数据
      */
     private void clearData() {
-        for(final int[] n : overIdMap.keySet()) {
+        for(int[] n : overIdMap.keySet()) {
             EditText editText = (EditText) rootView.findViewById(n[0]);
             editText.setText("");
         }
@@ -862,7 +862,7 @@ public class CollectDataLayout extends LinearLayout {
 
             // 加强件填充数据
             for(int i = 0; i < enhanceIdMap.size(); i++) {
-                String s = enhance.getString(enhanceIdMap.valueAt(i));
+                String s = enhance.get(enhanceIdMap.valueAt(i)) == JSONObject.NULL ? "" : enhance.getString(enhanceIdMap.valueAt(i));
                 setEditViewText(rootView, enhanceIdMap.keyAt(i), s);
             }
 
