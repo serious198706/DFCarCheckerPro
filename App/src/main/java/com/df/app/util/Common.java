@@ -29,8 +29,8 @@ public class Common {
 //    public static final String PROCEDURES_ADDRESS = "http://192.168.18.88:8001/";
 
     public static final String SERVER_ADDRESS = "http://114.112.88.216:9133/Services/";
-    public static final String PICTURE_ADDRESS = "http://i.268v.com/pro/";
-    public static final String THUMB_ADDRESS = "http://i.268v.com/pro/small/";
+    public static final String PICTURE_ADDRESS = "http://i.268v.com:8092/";
+    public static final String THUMB_ADDRESS = "http://i.268v.com:8092/small/";
     public static final String PROCEDURES_ADDRESS = "http://truetest.cheyipai.com:20002/";
 
     // 服务名称
