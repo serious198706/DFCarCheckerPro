@@ -66,11 +66,16 @@ public class PhotoOperationActivity extends Activity {
         imageView = (ImageView)findViewById(R.id.image);
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
 
+        attacher = new PhotoViewAttacher(imageView);
+        attacher.setMaximumScale(2.0f);
+        attacher.setMinimumScale(0.4f);
+
         if(fileName.contains("http")) {
             DownloadImageTask downloadImageTask = new DownloadImageTask(fileName, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     imageView.setImageBitmap(bitmap);
+                    attacher.update();
                     progressBar.setVisibility(View.INVISIBLE);
                 }
 
@@ -78,6 +83,7 @@ public class PhotoOperationActivity extends Activity {
                 public void onFailed() {
                     Toast.makeText(PhotoOperationActivity.this, "下载图片失败！", Toast.LENGTH_SHORT).show();
                     imageView.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.no_image));
+                    attacher.update();
                     progressBar.setVisibility(View.INVISIBLE);
                 }
             });
@@ -88,10 +94,6 @@ public class PhotoOperationActivity extends Activity {
             imageView.setImageBitmap(bitmap);
             progressBar.setVisibility(View.INVISIBLE);
         }
-
-        attacher = new PhotoViewAttacher(imageView);
-        attacher.setMaximumScale(2.0f);
-        attacher.setMinimumScale(0.4f);
 
         Button backButton = (Button)findViewById(R.id.back);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -165,6 +167,21 @@ public class PhotoOperationActivity extends Activity {
                     Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + tempPhotoEntity.getFileName());
                     imageView.setImageBitmap(bitmap);
                     attacher.update();
+
+                    // 新照片的宽高也要更新一下
+                    try {
+                        JSONObject jsonObject = new JSONObject(PhotoLayout.reTakePhotoEntity.getJsonString());
+                        JSONObject photoData = jsonObject.getJSONObject("PhotoData");
+
+                        photoData.put("width", bitmap.getWidth());
+                        photoData.put("height", bitmap.getHeight());
+
+                        jsonObject.put("PhotoData", photoData);
+
+                        tempPhotoEntity.setJsonString(jsonObject.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     tempPhotoEntity = null;
                 }

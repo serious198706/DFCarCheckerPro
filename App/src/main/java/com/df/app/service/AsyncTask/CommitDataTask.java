@@ -62,7 +62,7 @@ public class CommitDataTask extends AsyncTask<JSONObject, Void, Boolean> {
         }
 
         soapService = new SoapService();
-        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.COMMIT_DATA);
+        soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.COMMIT_DATA);
 
         success = soapService.communicateWithServer(jsonObject.toString());
 

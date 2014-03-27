@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.text.InputFilter;
@@ -33,7 +34,9 @@ import com.df.app.entries.Model;
 import com.df.app.entries.Series;
 import com.df.app.entries.VehicleModel;
 import com.df.app.service.AsyncTask.GetCarSettingsByVinTask;
+import com.df.app.service.AsyncTask.GetCarSettingsTask;
 import com.df.app.util.Helper;
+import com.df.app.util.MyAlertDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -208,32 +211,23 @@ public class CarRecogniseLayout extends LinearLayout {
      * 重新识别提示框
      */
     private void reRecognise(final int text) {
-        View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
-        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-        TextView content = new TextView(view1.getContext());
-        content.setText(text);
-        content.setTextSize(20f);
-        contentArea.addView(content);
-
-        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
-
-        AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
-                .setView(view1)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+        MyAlertDialog.showAlert(getContext(), text, R.string.alert, MyAlertDialog.BUTTON_STYLE_OK_CANCEL,
+                new Handler(new Handler.Callback() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        fillInDummyData();
-                        if(text == R.string.reRecognise1)
-                            mHideContentCallback.hideContent();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                }).create();
+                    public boolean handleMessage(Message message) {
+                        switch (message.what) {
+                            case MyAlertDialog.POSITIVE_PRESSED:
+                                fillInDummyData();
+                                if(text == R.string.reRecognise1)
+                                    mHideContentCallback.hideContent();
+                                break;
+                            case MyAlertDialog.NEGATIVE_PRESSED:
+                                break;
+                        }
 
-        dialog.show();
+                        return true;
+                    }
+                }));
     }
 
     /**
@@ -330,8 +324,8 @@ public class CarRecogniseLayout extends LinearLayout {
      * @param seriesId seriesId + modelId
      */
     private void getCarSettingsFromServer(String seriesId) {
-        com.df.app.service.AsyncTask.GetCarSettingsTask getCarSettingsTask = new com.df.app.service.AsyncTask.GetCarSettingsTask(getContext(), seriesId,
-                new com.df.app.service.AsyncTask.GetCarSettingsTask.OnGetCarSettingsFinished() {
+        GetCarSettingsTask getCarSettingsTask = new GetCarSettingsTask(getContext(),
+                seriesId, new GetCarSettingsTask.OnGetCarSettingsFinished() {
                     @Override
                     public void onFinished(String result) {
                         // 更新车辆配置
@@ -344,8 +338,8 @@ public class CarRecogniseLayout extends LinearLayout {
                     @Override
                     public void onFailed(String result) {
                         // 传输失败，获取错误信息并显示
+                        Toast.makeText(rootView.getContext(), result, Toast.LENGTH_SHORT).show();
                         Log.d("DFCarChecker", "获取车辆配置信息失败：" + result);
-                        Toast.makeText(rootView.getContext(), result, Toast.LENGTH_LONG).show();
                     }
                 });
         getCarSettingsTask.execute();

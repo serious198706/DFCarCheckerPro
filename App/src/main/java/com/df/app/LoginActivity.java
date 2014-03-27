@@ -64,7 +64,16 @@ public class LoginActivity extends Activity {
 
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            appVersionText.setText("V" + pInfo.versionName);
+
+            String versionText = "V" + pInfo.versionName + " - ";
+
+            if(Common.getEnvironment().equals("i")) {
+                versionText += "内网测试";
+            } else if(Common.getEnvironment().equals("o")) {
+                versionText += "外网测试";
+            }
+
+            appVersionText.setText(versionText);
         } catch (PackageManager.NameNotFoundException e) {
             appVersionText.setText("");
             e.printStackTrace();

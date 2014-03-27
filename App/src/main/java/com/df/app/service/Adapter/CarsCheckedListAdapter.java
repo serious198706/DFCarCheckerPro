@@ -22,8 +22,8 @@ import static com.df.app.util.Helper.setTextView;
  */
 public class CarsCheckedListAdapter extends BaseAdapter {
     public interface OnAction {
-        public void onImport(int carId);
-        public void onModify(int carId);
+        public void onImport(int position);
+        public void onModify(int position);
     }
 
     public interface OnEditPressed {
@@ -111,7 +111,7 @@ public class CarsCheckedListAdapter extends BaseAdapter {
             button1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mCallback.onModify(carsCheckedItem.getCarId());
+                    mCallback.onModify(position);
                 }
             });
 
@@ -119,7 +119,7 @@ public class CarsCheckedListAdapter extends BaseAdapter {
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mCallback.onImport(carsCheckedItem.getCarId());
+                    mCallback.onImport(position);
                 }
             });
         }

@@ -58,7 +58,7 @@ public class GetCooperatorTask extends AsyncTask<JSONObject, Void, Boolean> {
         }
 
         soapService = new SoapService();
-        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_COOPERATORS);
+        soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.GET_COOPERATORS);
 
         success = soapService.communicateWithServer(jsonObject.toString());
 

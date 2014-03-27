@@ -88,7 +88,7 @@ public class TransactionNotesLayout extends LinearLayout {
      * @param modify
      */
     public void updateUi(int carId, boolean modify) {
-        String url = Common.PROCEDURES_ADDRESS + "Function/CarDetection2/TransactionNotes.aspx?";
+        String url = Common.getPROCEDURES_ADDRESS() + "Function/CarDetection2/TransactionNotes.aspx?";
 
         url += "id=" + Integer.toString(carId);
 

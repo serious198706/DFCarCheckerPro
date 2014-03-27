@@ -182,6 +182,9 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
      */
     public void fillInData(String jsonString) {
         carRecogniseLayout.fillInData(jsonString);
+        carRecogniseTab.setVisibility(GONE);
+        views.remove(0);
+        adapter.notifyDataSetChanged();
     }
 
 

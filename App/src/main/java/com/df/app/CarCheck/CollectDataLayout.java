@@ -74,6 +74,9 @@ public class CollectDataLayout extends LinearLayout {
 
     MyScrollView scrollView;
 
+    // 是否已经采集数据
+    private boolean dataCollected = false;
+
     // 覆盖件map
     // 1. EditText的id
     // 2. CheckBox的id
@@ -158,6 +161,8 @@ public class CollectDataLayout extends LinearLayout {
 
     // 连接上的设备，包含设备的所有信息
     private static BluetoothDevice device;
+    private Button getIssueButton;
+    private ImageView collapseBar;
 
 //    private int[] enhanceIdMap = {
 //            R.id.M1_edit,
@@ -246,20 +251,55 @@ public class CollectDataLayout extends LinearLayout {
         startButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (currentDeviceType) {
-                    case Common.DF3000:
-                        collectData();
-                        break;
-                    case Common.DF5000:
-                        collectData(requestCmd);
-                        break;
+                if(dataCollected) {
+                    View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+                    TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+                    TextView content = new TextView(view1.getContext());
+                    content.setText(R.string.reCollect_alert);
+                    content.setTextSize(20f);
+                    contentArea.addView(content);
+
+                    setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+                    AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
+                            .setView(view1)
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    switch (currentDeviceType) {
+                                        case Common.DF3000:
+                                            collectData();
+                                            break;
+                                        case Common.DF5000:
+                                            collectData(requestCmd);
+                                            break;
+                                    }
+
+                                    startButton.setText(R.string.collecting);
+                                    startButton.setEnabled(false);
+
+                                    // 清空已填写的数据
+                                    clearData();
+                                }
+                            }).create();
+
+                    dialog.show();
+                } else {
+                    switch (currentDeviceType) {
+                        case Common.DF3000:
+                            collectData();
+                            break;
+                        case Common.DF5000:
+                            collectData(requestCmd);
+                            break;
+                    }
+
+                    startButton.setText(R.string.collecting);
+                    startButton.setEnabled(false);
+
+                    // 清空已填写的数据
+                    clearData();
                 }
-
-                startButton.setText(R.string.collecting);
-                startButton.setEnabled(false);
-
-                // 清空已填写的数据
-                clearData();
             }
         });
 
@@ -282,23 +322,14 @@ public class CollectDataLayout extends LinearLayout {
         carImg = (ImageView)findViewById(R.id.standard_image);
         Bitmap bitmap = BitmapFactory.decodeFile(Common.utilDirectory + "L");
         carImg.setImageBitmap(bitmap);
+        bitmap = null;
 
         // 隐藏图片的bar
-        final ImageView collapseBar = (ImageView)findViewById(R.id.collapseBar);
+        collapseBar = (ImageView)findViewById(R.id.collapseBar);
         collapseBar.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), carImg.getVisibility() == VISIBLE ?
-                    R.drawable.expand : R.drawable.collapse);
-
-                collapseBar.setImageBitmap(bitmap);
-                carImg.setVisibility(carImg.getVisibility() == VISIBLE ? GONE : VISIBLE);
-//                RelativeLayout relativeLayout = (RelativeLayout)findViewById(R.id.aniArea);
-//
-//                TranslateAnimation anim=new TranslateAnimation(0,0,0,-220);
-//                anim.setFillAfter(true);
-//                anim.setDuration(500);
-//                relativeLayout.startAnimation(anim);
+                showImage();
             }
         });
 
@@ -332,11 +363,21 @@ public class CollectDataLayout extends LinearLayout {
         initEdits();
 
         // 填写测试数据
-        Button dummyRecordButton = (Button)findViewById(R.id.dummyRecord);
+        Button dummyRecordButton = (Button)findViewById(R.id.dummyRecordButton);
         dummyRecordButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 fillInDummyData();
+            }
+        });
+        dummyRecordButton.setVisibility(GONE);
+
+        getIssueButton = (Button)findViewById(R.id.getIssueButton);
+        getIssueButton.setVisibility(GONE);
+        getIssueButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getIssueItems();
             }
         });
     }
@@ -347,6 +388,24 @@ public class CollectDataLayout extends LinearLayout {
     private void showShadow(boolean show) {
         findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
     }
+
+    /**
+     * 显示或隐藏图片
+     */
+    private void showImage() {
+        Bitmap bitmap = BitmapFactory.decodeResource(rootView.getContext().getResources(), carImg.getVisibility() == VISIBLE ?
+                R.drawable.expand : R.drawable.collapse);
+
+        collapseBar.setImageBitmap(bitmap);
+        carImg.setVisibility(carImg.getVisibility() == VISIBLE ? GONE : VISIBLE);
+//                RelativeLayout relativeLayout = (RelativeLayout)findViewById(R.id.aniArea);
+//
+//                TranslateAnimation anim=new TranslateAnimation(0,0,0,-220);
+//                anim.setFillAfter(true);
+//                anim.setDuration(500);
+//                relativeLayout.startAnimation(anim);
+    }
+
 
 
     /**
@@ -390,7 +449,7 @@ public class CollectDataLayout extends LinearLayout {
         TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
         TextView content = new TextView(view1.getContext());
         content.setText(R.string.collect_finished);
-        content.setTextSize(22f);
+        content.setTextSize(20f);
         contentArea.addView(content);
 
         setTextView(view1, R.id.title, getResources().getString(R.string.alert));
@@ -400,7 +459,7 @@ public class CollectDataLayout extends LinearLayout {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        getIssueItems();
+                        getIssueButton.setVisibility(VISIBLE);
                     }
                 }).create();
 
@@ -500,7 +559,7 @@ public class CollectDataLayout extends LinearLayout {
                                 TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
                                 TextView content = new TextView(view1.getContext());
                                 content.setText(R.string.collect_finished);
-                                content.setTextSize(22f);
+                                content.setTextSize(20f);
                                 contentArea.addView(content);
 
                                 setTextView(view1, R.id.title, getResources().getString(R.string.alert));
@@ -512,7 +571,7 @@ public class CollectDataLayout extends LinearLayout {
                                         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                getIssueItems();
+                                                getIssueButton.setVisibility(VISIBLE);
                                             }
                                         })
                                         .setCancelable(false)
@@ -621,6 +680,7 @@ public class CollectDataLayout extends LinearLayout {
                         // 已连接
                         case com.df.app.service.DF5000Service.STATE_CONNECTED:
                             showView(rootView, R.id.start_button, true);
+                            showImage();
                             isConnected = true;
                             break;
                         // 正在连接
@@ -658,13 +718,27 @@ public class CollectDataLayout extends LinearLayout {
                     break;
                 // 数据读取完毕
                 case Common.MESSAGE_READ_OVER:
+                    View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+                    TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+                    TextView content = new TextView(view1.getContext());
+                    content.setText(R.string.collect_finished);
+                    content.setTextSize(20f);
+                    contentArea.addView(content);
+
+                    setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
                     AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
-                            .setTitle(R.string.alert)
-                            .setMessage(R.string.collect_finished)
+                            .setView(view1)
+
+                                    // 当点击弹出的确定按钮后，获取问题查勘的内容
                             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    getIssueItems();
+                                    getIssueButton.setVisibility(VISIBLE);
+                                    startButton.setText("重新获取数据");
+                                    startButton.setEnabled(true);
+
+                                    dataCollected = true;
                                 }
                             })
                             .setCancelable(false)

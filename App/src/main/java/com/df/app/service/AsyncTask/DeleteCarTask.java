@@ -52,7 +52,7 @@ public class DeleteCarTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("Key", MainActivity.userInfo.getKey());
 
             soapService = new SoapService();
-            soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.DELETE_CAR);
+            soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.DELETE_CAR);
 
             success = soapService.communicateWithServer(jsonObject.toString());
         } catch (JSONException e) {

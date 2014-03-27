@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,7 @@ public class IssueListAdapter extends BaseAdapter {
     private View rootView;
     private ListView issuePhotoListView;
     private IssuePhotoListAdapter issuePhotoListAdapter;
+    private AlertDialog dialog;
 
     public IssueListAdapter(Context context, List<Issue> items) {
         this.context = context;
@@ -115,6 +117,7 @@ public class IssueListAdapter extends BaseAdapter {
                             drawIssuePoint(issue, false);
                         } else if(issue.getView().equals("")) {
                             issue.setSelect(b ? "否" : "是");
+                            issue.setLastSelect(b);
                         }
                     }
                 });
@@ -171,7 +174,6 @@ public class IssueListAdapter extends BaseAdapter {
                     issue.setLastSelect(false);
                     alertUser(R.string.cancel_confirm);
                 }
-
             }
         });
 
@@ -396,20 +398,23 @@ public class IssueListAdapter extends BaseAdapter {
                 notifyDataSetChanged();
             }
         });
-        mPictureDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+        mPictureDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                if(delete) {
-                    // 如果取消删除，则要将将switch改为“否”
-                    //issueSwitch.setChecked(true);
-                    issue.setSelect("否");
-                } else {
-                    alertUser(R.string.cancel_confirm);
+            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                // 返回按钮有按下和抬起两种状态，如果不判断抬起状态，则会触发两次下面的代码
+                if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP) {
+                    if(delete) {
+                        issue.setLastSelect(true);
+                        issue.setSelect("否");
+
+                        mPictureDialog.dismiss();
+                    } else {
+                        issue.setLastSelect(false);
+                        alertUser(R.string.cancel_confirm);
+                    }
                 }
 
-                issue.setLastSelect(true);
-
-                mPictureDialog.dismiss();
+                return true;
             }
         });
         mPictureDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -461,7 +466,7 @@ public class IssueListAdapter extends BaseAdapter {
 
         setTextView(view1, R.id.title, context.getResources().getString(R.string.alert));
 
-        AlertDialog dialog = new AlertDialog.Builder(context)
+        dialog = new AlertDialog.Builder(context)
                 .setView(view1)
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
@@ -476,6 +481,7 @@ public class IssueListAdapter extends BaseAdapter {
                             // 退出
                             framePaintView.cancel();
                             mPictureDialog.dismiss();
+                            dialog.dismiss();
                             issuePhotoListAdapter.notifyDataSetChanged();
                         } else if(msgId == R.string.clear_confirm) {
                             framePaintView.clear();

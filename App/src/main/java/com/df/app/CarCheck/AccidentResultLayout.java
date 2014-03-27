@@ -69,6 +69,10 @@ public class AccidentResultLayout extends LinearLayout {
     private View rootView;
     private int figure;
 
+    private DownloadImageTask downloadImageTask;
+    private DownloadImageTask downloadImageTaskF;
+    private DownloadImageTask downloadImageTaskR;
+
     public AccidentResultLayout(Context context) {
         super(context);
         init(context);
@@ -397,11 +401,13 @@ public class AccidentResultLayout extends LinearLayout {
         posEntitiesRear = null;
         photoEntitiesFront = null;
         photoEntitiesRear = null;
+
+        destroyTask();
     }
 
     public void fillInData(JSONObject photo) throws JSONException {
-        showView(rootView, R.id.frontProgressBar, true);
-        showView(rootView, R.id.rearProgressBar, true);
+//        showView(rootView, R.id.frontProgressBar, true);
+//        showView(rootView, R.id.rearProgressBar, true);
         JSONObject frame = photo.getJSONObject("frame");
 
         // 结构草图 - 前视角
@@ -414,20 +420,21 @@ public class AccidentResultLayout extends LinearLayout {
                 PhotoLayout.photoIndex = fSketchIndex + 1;
             }
 
-            String fSketchUrl = fSketch.getString("photo");
-            new DownloadImageTask(Common.PICTURE_ADDRESS + fSketchUrl, new DownloadImageTask.OnDownloadFinished() {
-                @Override
-                public void onFinish(Bitmap bitmap) {
-                    showView(rootView, R.id.frontProgressBar, false);
-                    framePaintPreviewViewFront.init(bitmap, posEntitiesFront);
-                    framePaintPreviewViewFront.invalidate();
-                }
-
-                @Override
-                public void onFailed() {
-
-                }
-            }).execute();
+//            String fSketchUrl = fSketch.getString("photo");
+//            downloadImageTaskF = new DownloadImageTask(Common.getPICTURE_ADDRESS() + fSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+//                @Override
+//                public void onFinish(Bitmap bitmap) {
+//                    showView(rootView, R.id.frontProgressBar, false);
+//                    framePaintPreviewViewFront.init(bitmap, posEntitiesFront);
+//                    framePaintPreviewViewFront.invalidate();
+//                }
+//
+//                @Override
+//                public void onFailed() {
+//
+//                }
+//            });
+//            downloadImageTaskF.execute();
         }
 
         // 结构草图 - 后视角
@@ -441,20 +448,30 @@ public class AccidentResultLayout extends LinearLayout {
                 PhotoLayout.photoIndex = rSketchIndex + 1;
             }
 
-            String rSketchUrl = rSketch.getString("photo");
-            new DownloadImageTask(Common.PICTURE_ADDRESS + rSketchUrl, new DownloadImageTask.OnDownloadFinished() {
-                @Override
-                public void onFinish(Bitmap bitmap) {
-                    showView(rootView, R.id.rearProgressBar, false);
-                    framePaintPreviewViewRear.init(bitmap, posEntitiesRear);
-                    framePaintPreviewViewRear.invalidate();
-                }
+//            String rSketchUrl = rSketch.getString("photo");
+//            downloadImageTaskR = new DownloadImageTask(Common.getPICTURE_ADDRESS() + rSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+//                @Override
+//                public void onFinish(Bitmap bitmap) {
+//                    showView(rootView, R.id.rearProgressBar, false);
+//                    framePaintPreviewViewRear.init(bitmap, posEntitiesRear);
+//                    framePaintPreviewViewRear.invalidate();
+//                }
+//
+//                @Override
+//                public void onFailed() {
+//                    Log.d(Common.TAG, "下载后视角草图失败！");
+//                }
+//            });
+//            downloadImageTaskR.execute();
+        }
+    }
 
-                @Override
-                public void onFailed() {
-                    Log.d(Common.TAG, "下载后视角草图失败！");
-                }
-            }).execute();
+    public void destroyTask() {
+        if(downloadImageTaskF != null) {
+            downloadImageTaskF.cancel(true);
+        }
+        if(downloadImageTaskR != null) {
+            downloadImageTaskR.cancel(true);
         }
     }
 }

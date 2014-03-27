@@ -83,7 +83,12 @@ public class DownloadNewVersionTask extends AsyncTask<String, Integer, Boolean> 
                 File downloadPath = new File(Environment.getExternalStorageDirectory().getPath() +
                         "/Download");
 
-                if(downloadPath.mkdirs()) {
+                boolean success = true;
+                if (!downloadPath.exists()) {
+                    success = downloadPath.mkdir();
+                }
+
+                if (success) {
                     output = new FileOutputStream(downloadPath.getPath() + "/DFCarCheckerPro.apk");
 
                     byte data[] = new byte[4096];

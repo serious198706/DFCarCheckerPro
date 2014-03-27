@@ -103,7 +103,7 @@ public class ProceduresWebLayout extends LinearLayout {
      * @param modelId 车型id
      */
     public void updateUi(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial, String seriesId, String modelId) {
-        String url =  Common.PROCEDURES_ADDRESS + "Function/CarDetection2/Default.aspx?";
+        String url =  Common.getPROCEDURES_ADDRESS() + "Function/CarDetection2/Default.aspx?";
 
         url += "userId=" + MainActivity.userInfo.getId();
         url += "&";
@@ -142,7 +142,7 @@ public class ProceduresWebLayout extends LinearLayout {
     }
 
     public void updateUi(String carId) {
-        String url = Common.PROCEDURES_ADDRESS + "Function/CarDetection2/Modify3.aspx?";
+        String url = Common.getPROCEDURES_ADDRESS() + "Function/CarDetection2/Modify3.aspx?";
 
         url += "userId=" + MainActivity.userInfo.getId();
         url += "&";

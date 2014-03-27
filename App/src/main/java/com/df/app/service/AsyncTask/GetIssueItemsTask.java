@@ -59,7 +59,7 @@ public class GetIssueItemsTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("PaintData", accidentData);
 
             soapService = new SoapService();
-            soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.ANALYSIS_ACCIDENT_DATA);
+            soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.ANALYSIS_ACCIDENT_DATA);
 
             success = soapService.communicateWithServer(jsonObject.toString());
         } catch (JSONException e) {

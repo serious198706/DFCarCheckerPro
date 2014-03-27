@@ -43,7 +43,7 @@ public class PhotoFaultLayout extends LinearLayout {
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
-        photoListAdapter = new PhotoListAdapter(context, photoEntities, true);
+        photoListAdapter = new PhotoListAdapter(context, photoEntities, true, true);
 
         ListView faultList = (ListView) findViewById(R.id.photo_fault_list);
         faultList.setAdapter(photoListAdapter);

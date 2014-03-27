@@ -84,6 +84,14 @@ public class MainActivity extends Activity {
             userInfo.setName(bundle.getString("UserName"));
             userInfo.setOrid(bundle.getString("Orid"));
         }
+
+        if(Common.getEnvironment().equals("i")) {
+            setTextView(getWindow().getDecorView(), R.id.environmentText, "内网测试");
+        } else if(Common.getEnvironment().equals("i_i")) {
+            setTextView(getWindow().getDecorView(), R.id.environmentText, "内网测试");
+        } else if(Common.getEnvironment().equals("o")) {
+            setTextView(getWindow().getDecorView(), R.id.environmentText, "外网测试");
+        }
     }
 
     private void enterInputProcedures() {

@@ -46,7 +46,7 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
         boolean success;
 
         soapService = new SoapService();
-        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_APP_NEW_VERSION);
+        soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.GET_APP_NEW_VERSION);
 
         success = soapService.communicateWithServer();
 
@@ -117,19 +117,19 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
         String[] localVersionArray = localVersion.split("\\.");
         String[] serverVersionArray = serverVersion.split("\\.");
 
-        if(Integer.parseInt(localVersionArray[0]) < Integer.parseInt(serverVersionArray[0])) {
-            return true;
+        if(Integer.parseInt(localVersionArray[0]) > Integer.parseInt(serverVersionArray[0])) {
+            return false;
         }
 
-        if(Integer.parseInt(localVersionArray[1]) < Integer.parseInt(serverVersionArray[1])) {
-            return true;
+        if(Integer.parseInt(localVersionArray[1]) > Integer.parseInt(serverVersionArray[1])) {
+            return false;
         }
 
-        if(Integer.parseInt(localVersionArray[2]) < Integer.parseInt(serverVersionArray[2])) {
-            return true;
+        if(Integer.parseInt(localVersionArray[2]) >= Integer.parseInt(serverVersionArray[2])) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 }
 

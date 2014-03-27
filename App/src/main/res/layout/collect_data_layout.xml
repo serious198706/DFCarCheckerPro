@@ -118,26 +118,42 @@
                 android:text="@string/tip"
                 android:textColor="#F00"/>
 
-            <Button android:id="@+id/dummyRecord"
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:layout_margin="15dp"
-                    android:layout_below="@id/tip"
-                    android:text="录入测试数据"
-                    android:textColor="#FFF"
-                    android:background="@drawable/button_custom"
-                    android:padding="-5dp"/>
+            <LinearLayout android:id="@+id/dummyRecord"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tip"
+                android:orientation="horizontal">
+                <Button android:id="@+id/dummyRecordButton"
+                        android:layout_width="0dp"
+                        android:layout_height="35dp"
+                        android:layout_weight="1"
+                        android:layout_margin="15dp"
+                        android:text="录入测试数据"
+                        android:textColor="#FFF"
+                        android:background="@drawable/button_custom"
+                        android:padding="-5dp"/>
 
-            <Button android:id="@+id/start_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:layout_below="@id/tip"
-                    android:text="@string/start"
-                    android:visibility="gone"
-                    android:textColor="#FFF"
-                    android:background="@drawable/button_custom"
-                    android:padding="-5dp"
-                    android:layout_marginTop="5dp"/>
+                <Button android:id="@+id/start_button"
+                        android:layout_width="0dp"
+                        android:layout_height="35dp"
+                        android:layout_weight="1"
+                        android:layout_margin="15dp"
+                        android:text="@string/start"
+                        android:visibility="gone"
+                        android:textColor="#FFF"
+                        android:background="@drawable/button_custom"
+                        android:padding="-5dp"/>
+
+                <Button android:id="@+id/getIssueButton"
+                        android:layout_width="0dp"
+                        android:layout_height="35dp"
+                        android:layout_weight="1"
+                        android:layout_margin="15dp"
+                        android:text="提交漆面数据"
+                        android:textColor="#FFF"
+                        android:background="@drawable/button_custom"
+                        android:padding="-5dp"/>
+            </LinearLayout>
 
             <TextView android:id="@+id/partsText"
                 android:layout_width="wrap_content"

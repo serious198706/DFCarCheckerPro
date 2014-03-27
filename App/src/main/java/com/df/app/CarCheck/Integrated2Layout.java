@@ -42,6 +42,7 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.df.app.util.Helper.generatePhotoThumbnail;
 import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
 import static com.df.app.util.Helper.getEditViewText;
@@ -127,7 +128,7 @@ public class Integrated2Layout extends LinearLayout {
     public static int rightRearIndex;
     public static int spareIndex;
 
-    private Map<String, PhotoEntity> photoEntityMap;
+    public static Map<String, PhotoEntity> photoEntityMap;
 
     public Integrated2Layout(Context context) {
         super(context);
@@ -257,7 +258,7 @@ public class Integrated2Layout extends LinearLayout {
      */
     private void takePhotoForTires(final String tire) {
         // 如果此轮胎已经有照片，则询问用户是否要替换
-        if(photoShotCount[tireMap.get(currentTire)] == 1) {
+        if(photoShotCount[tireMap.get(currentTire)] >= 1) {
             View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
             TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
             TextView content = new TextView(view1.getContext());
@@ -273,7 +274,14 @@ public class Integrated2Layout extends LinearLayout {
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            startCamera(tire, photoEntityMap.get(currentTire).getFileName());
+                            if(photoEntityMap.get(currentTire) != null) {
+                                if(photoEntityMap.get(currentTire).getFileName().contains("http:")) {
+                                    currentTimeMillis = System.currentTimeMillis();
+                                    startCamera(tire, Long.toString(currentTimeMillis) + ".jpg");
+                                } else {
+                                    startCamera(tire, photoEntityMap.get(currentTire).getFileName());
+                                }
+                            }
                         }
                     })
                     // 不替换
@@ -292,13 +300,34 @@ public class Integrated2Layout extends LinearLayout {
      */
     public void saveTirePhoto() {
         // 如果此轮胎已经有照片，则替换之
-        if(photoShotCount[tireMap.get(currentTire)] == 1) {
-            PhotoEntity temp = photoEntityMap.get(currentTire);
+        if(photoShotCount[tireMap.get(currentTire)] >= 1) {
+            // 如果是含有http的文件名（表示为修改模式）
+            if(photoEntityMap.get(currentTire).getFileName().contains("http:")) {
+                Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
+                Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
 
-            Helper.setPhotoSize(temp.getFileName(), 800);
-            Helper.generatePhotoThumbnail(temp.getFileName(), 400);
+                PhotoEntity photoEntity = PhotoExteriorLayout.photoListAdapter.getItem(photoEntityMap.get(currentTire));
+                PhotoEntity temp = generatePhotoEntity();
+                photoEntity.setFileName(temp.getFileName());
+                photoEntity.setThumbFileName(temp.getThumbFileName());
+                photoEntity.setModifyAction(temp.getModifyAction());
+                photoEntity.setJsonString(temp.getJsonString());
 
-            PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
+                if(photoEntityMap.containsKey(currentTire))
+                    photoEntityMap.remove(currentTire);
+                else
+                    photoEntityMap.put(currentTire, temp);
+
+                PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
+            } else {
+                PhotoEntity temp = photoEntityMap.get(currentTire);
+
+                Helper.setPhotoSize(temp.getFileName(), 800);
+                Helper.generatePhotoThumbnail(temp.getFileName(), 400);
+
+                PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
+            }
+
         }
         // 如果此轮胎没有照片，则生成新的照片
         else {
@@ -314,7 +343,7 @@ public class Integrated2Layout extends LinearLayout {
 
             PhotoExteriorLayout.photoListAdapter.addItem(photoEntity);
             PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
-            photoShotCount[tireMap.get(currentTire)]++;
+            photoShotCount[tireMap.get(currentTire)] = 1;
         }
     }
 

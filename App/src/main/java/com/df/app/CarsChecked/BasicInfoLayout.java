@@ -10,8 +10,14 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.carCheck.ExteriorLayout;
+import com.df.app.entries.Brand;
+import com.df.app.entries.Country;
+import com.df.app.entries.Manufacturer;
+import com.df.app.entries.Model;
+import com.df.app.entries.Series;
 import com.df.app.util.Common;
 import com.df.app.util.MyScrollView;
 
@@ -28,9 +34,9 @@ import static com.df.app.util.Helper.setTextView;
 public class BasicInfoLayout extends LinearLayout {
     private ViewGroup rootView;
 
-    public BasicInfoLayout(Context context, JSONObject procedures) {
+    public BasicInfoLayout(Context context, JSONObject procedures, String seriesId, String modelId) {
         super(context);
-        init(context, procedures);
+        init(context, procedures, seriesId, modelId);
     }
 
     public BasicInfoLayout(Context context, AttributeSet attrs) {
@@ -41,7 +47,7 @@ public class BasicInfoLayout extends LinearLayout {
         super(context, attrs, defStyle);
     }
 
-    private void init(Context context, JSONObject procedures) {
+    private void init(Context context, JSONObject procedures, String seriesId, String modelId) {
         rootView = (ViewGroup)LayoutInflater.from(context).inflate(R.layout.car_report_basic_layout, this);
 
         MyScrollView scrollView = (MyScrollView) findViewById(R.id.root);
@@ -69,7 +75,7 @@ public class BasicInfoLayout extends LinearLayout {
         });
 
         try {
-            fillInData(procedures);
+            fillInData(procedures, seriesId, modelId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -102,7 +108,7 @@ public class BasicInfoLayout extends LinearLayout {
         return view;
     }
 
-    private void fillInData(JSONObject procedures) throws JSONException {
+    private void fillInData(JSONObject procedures, String seriesId, String modelId) throws JSONException {
 
 //        Iterator iterator = procedures.keys();
 //        try {
@@ -189,5 +195,45 @@ public class BasicInfoLayout extends LinearLayout {
         setTextView(rootView, R.id.carProperty_text, procedures.get("CarAttributeName") == JSONObject.NULL ? "无" : procedures.getString("CarAttributeName"));
         setTextView(rootView, R.id.exchangeRequirement_text, procedures.get("zhxq") == JSONObject.NULL ? "无" : procedures.getString("zhxq"));
         setTextView(rootView, R.id.exchangeCarModel_text, procedures.get("zhxh") == JSONObject.NULL ? "无" : procedures.getString("zhxh"));
+
+
+        // 更新配置信息
+        Country country = null;
+        Brand brand = null;
+        Manufacturer manufacturer = null;
+        Series series = null;
+        Model model = null;
+
+        boolean found = false;
+
+        for(Country country1 : MainActivity.vehicleModel.getCountries()) {
+            for(Brand brand1 : country1.brands) {
+                for(Manufacturer manufacturer1 : brand1.manufacturers) {
+                    for(Series series1 : manufacturer1.serieses) {
+                        if(series1.id.equals(seriesId)) {
+                            manufacturer = manufacturer1;
+                            brand = brand1;
+                            country = country1;
+                            series = series1;
+                            model = series.getModelById(modelId);
+
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(found)
+                        break;
+                }
+                if(found)
+                    break;
+            }
+            if(found)
+                break;
+        }
+
+        // 车型
+        String brandString = manufacturer.name + " " + series.name + " " + model.name;
+
+        setTextView(rootView, R.id.brandText, brandString);
     }
 }

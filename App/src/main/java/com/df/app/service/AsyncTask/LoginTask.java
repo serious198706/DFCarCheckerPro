@@ -77,7 +77,7 @@ public class LoginTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("SerialNumber", serialNumber);
 
             soapService = new SoapService();
-            soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.USER_LOGIN);
+            soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.USER_LOGIN);
 
             success = soapService.communicateWithServer(jsonObject.toString());
         } catch (JSONException e) {

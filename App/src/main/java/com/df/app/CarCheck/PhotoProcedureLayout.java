@@ -67,7 +67,7 @@ public class PhotoProcedureLayout extends LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.photo_procedure_list, this);
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
-        photoListAdapter = new PhotoListAdapter(context, photoEntities, true);
+        photoListAdapter = new PhotoListAdapter(context, photoEntities, true, false);
 
         ListView procedureList = (ListView) findViewById(R.id.photo_procedure_list);
         procedureList.setAdapter(photoListAdapter);

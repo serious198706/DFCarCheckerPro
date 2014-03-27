@@ -66,13 +66,17 @@ public class CarsCheckedListActivity extends Activity {
 
         adapter = new CarsCheckedListAdapter(this, data, new CarsCheckedListAdapter.OnAction() {
             @Override
-            public void onImport(int carId) {
-                selectPlatform(carId);
+            public void onImport(int position) {
+                selectPlatform(position);
             }
 
             @Override
-            public void onModify(int carId) {
-                getCarDetail(carId, CarCheckActivity.class, true);
+            public void onModify(int position) {
+                if("234".contains(data.get(position).getStatus())) {
+                    showErrorDialog("该车辆当前不可修改！");
+                } else {
+                    getCarDetail(position, CarCheckActivity.class, true);
+                }
             }
         }, new CarsCheckedListAdapter.OnEditPressed() {
             @Override
@@ -85,7 +89,7 @@ public class CarsCheckedListActivity extends Activity {
         swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
             @Override
             public void onClickFrontView(int position) {
-                getCarDetail(data.get(position).getCarId(), CarReportActivity.class, false);
+                getCarDetail(position, CarReportActivity.class, false);
             }
 
             @Override
@@ -216,10 +220,12 @@ public class CarsCheckedListActivity extends Activity {
 
     /**
      * 点击已检列表中的某一项时，根据carId获取该车的详细信息
-     * @param carId
-     * @param activity
+     * @param position 第几条
+     * @param activity 要进入的activity的class
      */
-    private void getCarDetail(final int carId, final Class activity, final boolean modify) {
+    private void getCarDetail(final int position, final Class activity, final boolean modify) {
+        final int carId = data.get(position).getCarId();
+
         GetCarDetailTask getCarDetailTask = new GetCarDetailTask(CarsCheckedListActivity.this, carId, new GetCarDetailTask.OnGetDetailFinished() {
             @Override
             public void onFinish(String result) {
@@ -244,9 +250,11 @@ public class CarsCheckedListActivity extends Activity {
 
     /**
      * 选择导入的平台（大众版、专业版）
-     * @param carId
+     * @param position 条目位置
      */
-    private void selectPlatform(final int carId) {
+    private void selectPlatform(int position) {
+        final int carId = data.get(position).getCarId();
+
         View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
 
         final AlertDialog dialog = new AlertDialog.Builder(this)
@@ -352,7 +360,7 @@ public class CarsCheckedListActivity extends Activity {
             TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
             TextView content = new TextView(view1.getContext());
             content.setText(message);
-            content.setTextSize(22f);
+            content.setTextSize(20f);
             contentArea.addView(content);
 
             setTextView(view1, R.id.title, getResources().getString(R.string.alert));
@@ -385,7 +393,7 @@ public class CarsCheckedListActivity extends Activity {
         TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
         TextView content = new TextView(view1.getContext());
         content.setText(message);
-        content.setTextSize(22f);
+        content.setTextSize(20f);
         contentArea.addView(content);
 
         setTextView(view1, R.id.title, getResources().getString(R.string.alert));
@@ -399,6 +407,31 @@ public class CarsCheckedListActivity extends Activity {
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
+                .create();
+
+        dialog.show();
+    }
+
+    /**
+     * 显示出错信息
+     */
+    private void showErrorDialog(String message) {
+        View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        TextView content = new TextView(view1.getContext());
+        content.setText(message);
+        content.setTextSize(20f);
+        contentArea.addView(content);
+
+        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(view1)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                })
                 .create();
 
         dialog.show();

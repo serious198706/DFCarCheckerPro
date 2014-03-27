@@ -19,6 +19,7 @@ import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.carCheck.BasicInfoLayout;
 import com.df.app.carCheck.ExteriorLayout;
+import com.df.app.carCheck.Integrated2Layout;
 import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
 
@@ -498,8 +499,8 @@ public class Helper {
             String thumbUrl;
 
             if(!url.equals("")) {
-                thumbUrl = Common.THUMB_ADDRESS + url + "?w=150";
-                url = Common.PICTURE_ADDRESS + url;
+                thumbUrl = Common.getTHUMB_ADDRESS() + url + "?w=150";
+                url = Common.getPICTURE_ADDRESS() + url;
             } else {
                 thumbUrl = "";
             }
@@ -522,6 +523,7 @@ public class Helper {
             if(tire.get(Common.tirePartArray[i]) != JSONObject.NULL) {
                 JSONObject jsonObject = tire.getJSONObject(Common.tirePartArray[i]);
                 addTire(tireArray[i], Common.tirePartArray[i], jsonObject, exteriorPhotos);
+                Integrated2Layout.photoShotCount[i] = 1;
             }
         }
     }
@@ -534,8 +536,8 @@ public class Helper {
             String thumbUrl;
 
             if(!url.equals("")) {
-                thumbUrl = Common.THUMB_ADDRESS + url + "?w=150";
-                url = Common.PICTURE_ADDRESS + url;
+                thumbUrl = Common.getTHUMB_ADDRESS() + url + "?w=150";
+                url = Common.getPICTURE_ADDRESS() + url;
             } else {
                 thumbUrl = "";
             }
@@ -545,9 +547,26 @@ public class Helper {
             photoEntity.setIndex(temp.getInt("index"));
             photoEntity.setName(name);
             photoEntity.setModifyAction(Action.NORMAL);
-            makeJsonString(photoEntity, temp, "tires", part);
+            makeJsonString(photoEntity, temp, "tire", part);
 
             exteriorPhotos.add(photoEntity);
+
+            // 当为报告预览模式时，It2.photoEntityMap为null
+            if(Integrated2Layout.photoEntityMap != null) {
+                Integrated2Layout.photoEntityMap.put(part, photoEntity);
+
+                if(part.equals("leftFront")) {
+                    Integrated2Layout.leftFrontIndex = photoEntity.getIndex();
+                } else if(part.equals("rightFront")) {
+                    Integrated2Layout.rightFrontIndex = photoEntity.getIndex();
+                } else if(part.equals("leftRear")) {
+                    Integrated2Layout.leftRearIndex = photoEntity.getIndex();
+                } else if(part.equals("rightRear")) {
+                    Integrated2Layout.rightRearIndex = photoEntity.getIndex();
+                } else if(part.equals("spare")) {
+                    Integrated2Layout.spareIndex = photoEntity.getIndex();
+                }
+            }
         }
     }
 
@@ -571,8 +590,8 @@ public class Helper {
             String thumbUrl;
 
             if(!url.equals("")) {
-                thumbUrl = Common.THUMB_ADDRESS + url + "?w=150";
-                url = Common.PICTURE_ADDRESS + url;
+                thumbUrl = Common.getTHUMB_ADDRESS() + url + "?w=150";
+                url = Common.getPICTURE_ADDRESS() + url;
             } else {
                 thumbUrl = "";
             }
@@ -613,10 +632,10 @@ public class Helper {
         }
 
         if(photo.getJSONObject("exterior").get("fault") != JSONObject.NULL)
-            addFault(photo.getJSONObject("exterior").getJSONArray("fault"), faultPhotos, "exterior");
+            addFault(photo.getJSONObject("exterior").getJSONArray("fault"), faultPhotos, "fault");
 
         if(photo.getJSONObject("interior").get("fault") != JSONObject.NULL)
-            addFault(photo.getJSONObject("interior").getJSONArray("fault"), faultPhotos, "interior");
+            addFault(photo.getJSONObject("interior").getJSONArray("fault"), faultPhotos, "fault");
 
         if(photo.getJSONObject("frame").get("front") != JSONObject.NULL)
             addFault(photo.getJSONObject("frame").getJSONArray("front"), faultPhotos, "front");
@@ -688,8 +707,8 @@ public class Helper {
             String thumbUrl;
 
             if(!url.equals("")) {
-                thumbUrl = Common.THUMB_ADDRESS + url + "?w=150";
-                url = Common.PICTURE_ADDRESS + url;
+                thumbUrl = Common.getTHUMB_ADDRESS() + url + "?w=150";
+                url = Common.getPICTURE_ADDRESS() + url;
             } else {
                 thumbUrl = "";
             }
@@ -745,4 +764,7 @@ public class Helper {
         in.close();
         out.close();
     }
+
+
+
 }

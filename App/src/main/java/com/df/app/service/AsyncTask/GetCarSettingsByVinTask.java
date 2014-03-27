@@ -54,7 +54,7 @@ public class GetCarSettingsByVinTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("Key", MainActivity.userInfo.getKey());
 
             soapService = new SoapService();
-            soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_OPTIONS_BY_VIN);
+            soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.GET_OPTIONS_BY_VIN);
 
             success = soapService.communicateWithServer(jsonObject.toString());
         } catch (JSONException e) {

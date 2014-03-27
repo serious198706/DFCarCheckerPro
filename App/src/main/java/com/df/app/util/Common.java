@@ -22,16 +22,64 @@ public class Common {
 
     public static final String NAMESPACE = "http://cheyipai";
 
-    // 地址
-//    public static final String SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
-//    public static final String PICTURE_ADDRESS = "http://192.168.100.6:8006/";
-//    public static final String THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
-//    public static final String PROCEDURES_ADDRESS = "http://192.168.18.88:8001/";
+    private static String ENVIRONMENT;
 
-    public static final String SERVER_ADDRESS = "http://114.112.88.216:9133/Services/";
-    public static final String PICTURE_ADDRESS = "http://i.268v.com:8092/";
-    public static final String THUMB_ADDRESS = "http://i.268v.com:8092/small/";
-    public static final String PROCEDURES_ADDRESS = "http://truetest.cheyipai.com:20002/";
+    private static String SERVER_ADDRESS;
+    private static String PICTURE_ADDRESS;
+    private static String THUMB_ADDRESS;
+    private static String PROCEDURES_ADDRESS;
+
+    public static String getSERVER_ADDRESS() {
+        return SERVER_ADDRESS;
+    }
+
+    public static String getPICTURE_ADDRESS() {
+        return PICTURE_ADDRESS;
+    }
+
+    public static String getTHUMB_ADDRESS() {
+        return THUMB_ADDRESS;
+    }
+
+    public static String getPROCEDURES_ADDRESS() {
+        return PROCEDURES_ADDRESS;
+    }
+
+    public static void setEnvironment(String environment) {
+        ENVIRONMENT = environment;
+        // 外网测试
+        if(environment.equals("o")) {
+            SERVER_ADDRESS = "http://114.112.88.216:9133/Services/";
+            PICTURE_ADDRESS = "http://i.268v.com:8092/";
+            THUMB_ADDRESS = "http://i.268v.com:8092/small/";
+            PROCEDURES_ADDRESS = "http://truetest.cheyipai.com:20002/";
+        }
+        // 内网测试 （100.3）
+        else if(environment.equals("i")) {
+            SERVER_ADDRESS = "http://192.168.100.3:40005/services/";
+            PICTURE_ADDRESS = "http://192.168.100.6:8006/";
+            THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
+            PROCEDURES_ADDRESS = "http://192.168.100.3:40001/";
+        }
+        // 内网测试（100.6）
+        else if(environment.equals("i_i")) {
+            SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
+            PICTURE_ADDRESS = "http://192.168.100.6:8006/";
+            THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
+            PROCEDURES_ADDRESS = "http://192.168.18.200:9901/";
+        }
+        // 正式
+        else {
+//            SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
+//            PICTURE_ADDRESS = "http://192.168.100.6:8006/";
+//            THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
+//            PROCEDURES_ADDRESS = "http://192.168.18.200:9901/";
+        }
+    }
+
+    public static String getEnvironment() {
+        return ENVIRONMENT;
+    }
 
     // 服务名称
     public static final String CAR_CHECK_SERVICE = "CarCheckService.svc";
@@ -115,6 +163,7 @@ public class Common {
     public static final int PHOTO_RETAKE = 17;
     public static final int MODIFY_COMMENT = 18;
     public static final int MODIFY_PAINT_COMMENT = 19;
+    public static final int PHOTO_FOR_TIRES_MODIFY = 20;
 
     // DF5000消息代码
     // 为BluetoothService处理程序定义的消息类型
@@ -143,4 +192,7 @@ public class Common {
     public static final String[] proceduresPartArray = {"plate", "procedures", "keys", "other"};
     public static final String[] enginePartArray = {"overview", "left", "right", "other"};
     public static final String[] tirePartArray = {"leftFront", "rightFront", "leftRear", "rightRear", "spare"};
+
+    public static final String EXTERIOR = "exterior";
+    public static final String INTERIOR = "interior";
 }

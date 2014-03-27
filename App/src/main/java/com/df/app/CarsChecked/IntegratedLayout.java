@@ -41,6 +41,8 @@ public class IntegratedLayout extends LinearLayout {
     private ArrayList<PosEntity> inPosEntities;
     private ArrayList<PhotoEntity> inPhotoEntities;
     private View rootView;
+    private DownloadImageTask downloadImageTask;
+    private DownloadImageTask downloadImage1Task;
 
     public IntegratedLayout(Context context, JSONObject conditions, JSONObject photo) {
         super(context);
@@ -245,7 +247,7 @@ public class IntegratedLayout extends LinearLayout {
 
         if(exSketch != JSONObject.NULL) {
             String sketchUrl = exSketch.getString("photo");
-            new DownloadImageTask(Common.PICTURE_ADDRESS + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImageTask = new DownloadImageTask(Common.getPICTURE_ADDRESS() + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     ProgressBar progressBar = (ProgressBar)findViewById(R.id.exProgressBar);
@@ -258,7 +260,8 @@ public class IntegratedLayout extends LinearLayout {
                 public void onFailed() {
 
                 }
-            }).execute();
+            });
+            downloadImageTask.execute();
         }
 
         JSONObject interior = photo.getJSONObject("interior");
@@ -268,7 +271,7 @@ public class IntegratedLayout extends LinearLayout {
 
         if(inSketch != JSONObject.NULL) {
             String sketchUrl = inSketch.getString("photo");
-            new DownloadImageTask(Common.PICTURE_ADDRESS + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImage1Task = new DownloadImageTask(Common.getPICTURE_ADDRESS() + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     ProgressBar progressBar = (ProgressBar)findViewById(R.id.inProgressBar);
@@ -281,11 +284,22 @@ public class IntegratedLayout extends LinearLayout {
                 public void onFailed() {
                     Log.d(Common.TAG, "下载后视角草图失败！");
                 }
-            }).execute();
+            });
+
+            downloadImage1Task.execute();
         }
     }
 
     private void showShadow(boolean show) {
         findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
+    }
+
+    public void destroyTask() {
+        if(downloadImageTask != null) {
+            downloadImageTask.cancel(true);
+        }
+        if(downloadImage1Task != null) {
+            downloadImage1Task.cancel(true);
+        }
     }
 }

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">268V检测端专业版</string>
+    <!--<string name="app_name">268V检测端专业版</string>-->
+    <string name="app_name">268V正式</string>
+    <string name="app_name_i_i">268v内网-100.6</string>
+    <string name="app_name_i">268v内网-100.3</string>
+    <string name="app_name_o">268v外网</string>
     <string name="title_activity_startup">StartupActivity</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>

@@ -55,7 +55,7 @@ public class CheckSellerNameTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("SellerName", this.sellerNameValue);
 
             soapService = new SoapService();
-            soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.CHECK_SELLER_NAME);
+            soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.CHECK_SELLER_NAME);
 
             success = soapService.communicateWithServer(jsonObject.toString());
         } catch (JSONException e) {

@@ -123,7 +123,6 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
      */
     public void updatePreviews() {
         accidentResultLayout.updateUi();
-        issueLayout.drawSketch();
     }
 
     /**

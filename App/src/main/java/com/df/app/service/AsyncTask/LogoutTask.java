@@ -70,7 +70,7 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
         }
 
         soapService = new SoapService();
-        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.USER_LOGOUT);
+        soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.USER_LOGOUT);
 
         success = soapService.communicateWithServer(jsonObject.toString());
 

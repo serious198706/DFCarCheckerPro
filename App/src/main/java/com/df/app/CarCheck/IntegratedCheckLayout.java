@@ -176,7 +176,8 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
         String currentField = "";
 
         // 综合检查二
-        //currentField = integrated2Layout.checkAllFields();
+        if(!Common.getEnvironment().equals("i"))
+            currentField = integrated2Layout.checkAllFields();
 
         if(currentField.equals("leftFront")) {
             Toast.makeText(rootView.getContext(), "未拍摄左前轮照片！", Toast.LENGTH_SHORT).show();
@@ -338,6 +339,7 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
             String comment2 = conditions.get("comment2") == JSONObject.NULL ? "" : conditions.getString("comment2");
             String comment3 = conditions.get("comment3") == JSONObject.NULL ? "" : conditions.getString("comment3");
 
+
             if(CarCheckActivity.isModify()) {
                 exteriorLayout.fillInData(exterior, jsonObject.getJSONObject("photos"));
                 interiorLayout.fillInData(interior, jsonObject.getJSONObject("photos"));
@@ -354,9 +356,6 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
                 integrated2Layout.fillInData(flooded, tires, comment2);
             }
 
-
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -369,6 +368,7 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
     public void clearCache() {
         exteriorLayout.clearCache();
         interiorLayout.clearCache();
+        Integrated2Layout.photoEntityMap.clear();
     }
 
     /**
@@ -395,7 +395,7 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
                 soapService = new SoapService();
 
                 // 设置soap的配置
-                soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.GET_STANDARD_REMARKS);
+                soapService.setUtils(Common.getPICTURE_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.GET_STANDARD_REMARKS);
 
                 success = soapService.communicateWithServer(jsonObject.toString());
             } catch (JSONException e) {

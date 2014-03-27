@@ -76,6 +76,7 @@ public class InteriorLayout extends LinearLayout {
 
     public static int sketchIndex;
     private int figure;
+    private DownloadImageTask downloadImageTask;
 
     public InteriorLayout(Context context) {
         super(context);
@@ -251,7 +252,7 @@ public class InteriorLayout extends LinearLayout {
             for(int j = 0; j < 2; j++) {
                 CheckBox checkBox = new CheckBox(view.getContext());
                 checkBox.setText(array[i * 2 + j]);
-                checkBox.setTextSize(22f);
+                checkBox.setTextSize(20f);
                 checkBox.setButtonDrawable(R.drawable.checkbox_button);
                 checkBox.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT, 1f));
@@ -523,20 +524,22 @@ public class InteriorLayout extends LinearLayout {
                 PhotoLayout.photoIndex = sketchIndex + 1;
             }
 
-            String sketchUrl = inSketch.getString("photo");
-            new DownloadImageTask(Common.PICTURE_ADDRESS + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
-                @Override
-                public void onFinish(Bitmap bitmap) {
-                    showView(rootView, R.id.inProgressBar, false);
-                    interiorPaintPreviewView.init(bitmap, posEntities);
-                    interiorPaintPreviewView.invalidate();
-                }
-
-                @Override
-                public void onFailed() {
-                    Log.d(Common.TAG, "下载后视角草图失败！");
-                }
-            }).execute();
+//            String sketchUrl = inSketch.getString("photo");
+//            downloadImageTask = new DownloadImageTask(Common.getPICTURE_ADDRESS() + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
+//                @Override
+//                public void onFinish(Bitmap bitmap) {
+//                    showView(rootView, R.id.inProgressBar, false);
+//                    interiorPaintPreviewView.init(bitmap, posEntities);
+//                    interiorPaintPreviewView.setAlpha(1.0f);
+//                    interiorPaintPreviewView.invalidate();
+//                }
+//
+//                @Override
+//                public void onFailed() {
+//                    Log.d(Common.TAG, "下载后视角草图失败！");
+//                }
+//            });
+//            downloadImageTask.execute();
         }
     }
 
@@ -544,5 +547,9 @@ public class InteriorLayout extends LinearLayout {
         posEntities = null;
         photoEntities = null;
         interiorPaintPreviewView = null;
+
+        if(downloadImageTask != null) {
+            downloadImageTask.cancel(true);
+        }
     }
 }

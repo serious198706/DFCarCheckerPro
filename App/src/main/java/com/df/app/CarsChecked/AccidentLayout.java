@@ -44,6 +44,9 @@ public class AccidentLayout extends LinearLayout {
     private Bitmap previewBitmapRear;
     private FramePaintPreviewView framePaintPreviewViewRear;
     private View rootView;
+    private DownloadImageTask downloadImageTask;
+    private DownloadImageTask downloadImageTaskF;
+    private DownloadImageTask downloadImageTaskR;
 
     public AccidentLayout(Context context, JSONObject accident, JSONObject photo) {
         super(context);
@@ -128,7 +131,7 @@ public class AccidentLayout extends LinearLayout {
                 TableRow tableRow = new TableRow(rootView.getContext());
                 TextView textView = new TextView(rootView.getContext());
                 textView.setText(issueObject.getString("summary"));
-                textView.setTextSize(22);
+                textView.setTextSize(20);
                 textView.setTextColor(Color.rgb(0x55, 0x55, 0x55));
                 tableRow.addView(textView);
                 tableLayout.addView(tableRow);
@@ -142,7 +145,7 @@ public class AccidentLayout extends LinearLayout {
         JSONObject accidentSketch = accident.getJSONObject("sketch");
         if(accidentSketch != JSONObject.NULL) {
             String accidentSketchUrl = accidentSketch.getString("photo");
-            new DownloadImageTask(Common.PICTURE_ADDRESS + accidentSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImageTask = new DownloadImageTask(Common.getPICTURE_ADDRESS() + accidentSketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     ProgressBar progressBar = (ProgressBar)findViewById(R.id.issueImageProgressBar);
@@ -155,7 +158,8 @@ public class AccidentLayout extends LinearLayout {
                 public void onFailed() {
 
                 }
-            }).execute();
+            });
+            downloadImageTask.execute();
         }
 
         JSONObject frame = photo.getJSONObject("frame");
@@ -165,7 +169,7 @@ public class AccidentLayout extends LinearLayout {
 
         if(fSketch != JSONObject.NULL) {
             String fSketchUrl = fSketch.getString("photo");
-            new DownloadImageTask(Common.PICTURE_ADDRESS + fSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImageTaskF = new DownloadImageTask(Common.getPICTURE_ADDRESS() + fSketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     ProgressBar progressBar = (ProgressBar)findViewById(R.id.frontProgressBar);
@@ -178,7 +182,8 @@ public class AccidentLayout extends LinearLayout {
                 public void onFailed() {
 
                 }
-            }).execute();
+            });
+            downloadImageTaskF.execute();
         }
 
         // 结构草图 - 后视角
@@ -186,7 +191,7 @@ public class AccidentLayout extends LinearLayout {
 
         if(fSketch != JSONObject.NULL) {
             String rSketchUrl = rSketch.getString("photo");
-            new DownloadImageTask(Common.PICTURE_ADDRESS + rSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImageTaskR = new DownloadImageTask(Common.getPICTURE_ADDRESS() + rSketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     ProgressBar progressBar = (ProgressBar)findViewById(R.id.rearProgressBar);
@@ -199,11 +204,24 @@ public class AccidentLayout extends LinearLayout {
                 public void onFailed() {
                     Log.d(Common.TAG, "下载后视角草图失败！");
                 }
-            }).execute();
+            });
+            downloadImageTaskR.execute();
         }
     }
 
     private void showShadow(boolean show) {
         findViewById(R.id.shadow).setVisibility(show ? VISIBLE : INVISIBLE);
+    }
+
+    public void destroyTask() {
+        if(downloadImageTask != null) {
+            downloadImageTask.cancel(true);
+        }
+        if(downloadImageTaskF != null) {
+            downloadImageTaskF.cancel(true);
+        }
+        if(downloadImageTaskR != null) {
+            downloadImageTaskR.cancel(true);
+        }
     }
 }

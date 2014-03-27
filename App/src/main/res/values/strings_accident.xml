@@ -18,8 +18,9 @@
     </string-array>
 
     <string name="start">开始获取数据</string>
-    <string name="collecting">正在获取，请稍候&#8320;</string>
+    <string name="collecting">正在获取，请稍候&#8230;</string>
     <string name="collect_finished">数据获取完成！</string>
+    <string name="reCollect_alert">确定要重新采集数据？这将清除问题查勘中的所有内容。</string>
 
     <string name="parts">部件: </string>
 

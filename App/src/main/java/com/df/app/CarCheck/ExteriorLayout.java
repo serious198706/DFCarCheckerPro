@@ -78,6 +78,7 @@ public class ExteriorLayout extends LinearLayout {
     private TableLayout root;
     private int sketchIndex;
     private int figure;
+    private DownloadImageTask downloadImageTask;
 
     public ExteriorLayout(Context context) {
         super(context);
@@ -264,7 +265,7 @@ public class ExteriorLayout extends LinearLayout {
             for(int j = 0; j < 2; j++) {
                 CheckBox checkBox = new CheckBox(view.getContext());
                 checkBox.setText(array[i * 2 + j]);
-                checkBox.setTextSize(22f);
+                checkBox.setTextSize(20f);
                 checkBox.setButtonDrawable(R.drawable.checkbox_button);
                 checkBox.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT, 1f));
@@ -529,20 +530,22 @@ public class ExteriorLayout extends LinearLayout {
                 PhotoLayout.photoIndex = sketchIndex + 1;
             }
 
-            String sketchUrl = exSketch.getString("photo");
-            new DownloadImageTask(Common.PICTURE_ADDRESS + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
-                @Override
-                public void onFinish(Bitmap bitmap) {
-                    showView(rootView, R.id.exProgressBar, false);
-                    exteriorPaintPreviewView.init(bitmap, posEntities);
-                    exteriorPaintPreviewView.invalidate();
-                }
-
-                @Override
-                public void onFailed() {
-
-                }
-            }).execute();
+//            String sketchUrl = exSketch.getString("photo");
+//            downloadImageTask = new DownloadImageTask(Common.getPICTURE_ADDRESS() + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
+//                @Override
+//                public void onFinish(Bitmap bitmap) {
+//                    showView(rootView, R.id.exProgressBar, false);
+//                    exteriorPaintPreviewView.init(bitmap, posEntities);
+//                    exteriorPaintPreviewView.setAlpha(1.0f);
+//                    exteriorPaintPreviewView.invalidate();
+//                }
+//
+//                @Override
+//                public void onFailed() {
+//
+//                }
+//            });
+//            downloadImageTask.execute();
         }
     }
 
@@ -550,5 +553,9 @@ public class ExteriorLayout extends LinearLayout {
         posEntities = null;
         photoEntities = null;
         exteriorPaintPreviewView = null;
+
+        if(downloadImageTask != null) {
+            downloadImageTask.cancel(true);
+        }
     }
 }

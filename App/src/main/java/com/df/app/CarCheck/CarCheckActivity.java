@@ -30,6 +30,7 @@ import com.df.app.service.AsyncTask.SaveDataTask;
 import com.df.app.service.AsyncTask.UploadPictureTask;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
+import com.df.app.util.MyAlertDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +43,7 @@ import java.util.List;
 import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
 import static com.df.app.util.Helper.setTextView;
+import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -202,30 +204,24 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
 
                 // 如果所有项目都已经填写完毕
                 if(pass.equals("")) {
-                    View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
-                    TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-                    TextView content = new TextView(view1.getContext());
-                    content.setText(R.string.commitMsg);
-                    content.setTextSize(22f);
-                    contentArea.addView(content);
-
-                    setTextView(view1, R.id.title, getResources().getString(R.string.alert));
-
-                    AlertDialog dialog = new AlertDialog.Builder(CarCheckActivity.this)
-                            .setView(view1)
-                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    MyAlertDialog.showAlert(CarCheckActivity.this, R.string.commitMsg, R.string.alert, MyAlertDialog.BUTTON_STYLE_OK_CANCEL,
+                            new Handler(new Handler.Callback() {
                                 @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    if(modify)
-                                        findModifiedPicture();
-                                    else
-                                        generatePhotoEntities();
-                                }
-                            })
-                            .setNegativeButton(R.string.cancel, null)
-                            .create();
+                                public boolean handleMessage(Message message) {
+                                    switch (message.what) {
+                                        case MyAlertDialog.POSITIVE_PRESSED:
+                                            if(modify)
+                                                findModifiedPicture();
+                                            else
+                                                generatePhotoEntities();
+                                            break;
+                                        case MyAlertDialog.NEGATIVE_PRESSED:
+                                            break;
+                                    }
 
-                    dialog.show();
+                                    return true;
+                                }
+                            }));
                 } else {
                     if(pass.equals("accidentCheck")) {
                         Toast.makeText(CarCheckActivity.this, "未完成事故检测！", Toast.LENGTH_SHORT).show();
@@ -249,30 +245,25 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
-                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-                TextView content = new TextView(view1.getContext());
-                content.setText(modify ? R.string.commitEditMsg : R.string.saveMsg);
-                content.setTextSize(22f);
-                contentArea.addView(content);
-
-                setTextView(view1, R.id.title, getResources().getString(R.string.alert));
-
-                AlertDialog dialog = new AlertDialog.Builder(CarCheckActivity.this)
-                        .setView(view1)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                MyAlertDialog.showAlert(CarCheckActivity.this, modify ? R.string.commitEditMsg : R.string.saveMsg,
+                        R.string.alert, MyAlertDialog.BUTTON_STYLE_OK_CANCEL,
+                        new Handler(new Handler.Callback() {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                // 3.生成所有检测信息的Json数据
-                                generateJsonString();
-                                // 4.提交检测信息
-                                saveData();
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, null)
-                        .create();
+                            public boolean handleMessage(Message message) {
+                                switch (message.what) {
+                                    case MyAlertDialog.POSITIVE_PRESSED:
+                                        // 生成所有检测信息的Json数据
+                                        generateJsonString();
+                                        // 保存检测信息
+                                        saveData();
+                                        break;
+                                    case MyAlertDialog.NEGATIVE_PRESSED:
+                                        break;
+                                }
 
-                dialog.show();
+                                return true;
+                            }
+                        }));
             }
         });
 
@@ -283,6 +274,11 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
                 commitData();
             }
         });
+        comB.setVisibility(View.GONE);
+
+        if(modify) {
+            showView(getWindow().getDecorView(), R.id.buttonSave, false);
+        }
 
         fillInData(carId, jsonString);
     }
@@ -341,7 +337,7 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
             @Override
             public void onFinish() {
                 // 4.提交检测信息
-                //commitData();
+                commitData();
             }
 
             @Override
@@ -353,6 +349,9 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
         uploadPictureTask.execute();
     }
 
+    /**
+     * 在修改模式中，找到需要修改的图片（Action不为NORMAL的图片）
+     */
     private void findModifiedPicture() {
         GeneratePhotoEntitiesTask generatePhotoEntitiesTask = new GeneratePhotoEntitiesTask(this, photoEntities,
                 accidentCheckLayout, integratedCheckLayout, true, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
@@ -434,10 +433,6 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
                     public void onFinished() {
                         Toast.makeText(CarCheckActivity.this, "保存成功！", Toast.LENGTH_SHORT).show();
                         Log.d(Common.TAG, "保存成功！");
-//                        clearCache();
-//                        Intent intent = new Intent(CarCheckActivity.this, CarsWaitingListActivity.class);
-//                        startActivity(intent);
-//                        finish();
                     }
 
                     @Override
@@ -538,6 +533,7 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
                 } else {
                     // 如果取消了拍摄，则置照片名为空
                     posEntity.setImageFileName("");
+                    posEntity.setComment("");
                     accidentCheckLayout.saveAccidentPhoto(requestCode);
                 }
             }
@@ -1019,29 +1015,23 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
      * 退出前的确认，如果确定退出，关闭activity，并做一些销毁的操作
      */
     private void quitConfirm() {
-        View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
-        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-        TextView content = new TextView(view1.getContext());
-        content.setText(R.string.quitCheckMsg);
-        content.setTextSize(20f);
-        contentArea.addView(content);
-
-        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
-
-        AlertDialog dialog = new AlertDialog.Builder(CarCheckActivity.this)
-                .setView(view1)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+        MyAlertDialog.showAlert(CarCheckActivity.this, R.string.quitCheckMsg, R.string.alert, MyAlertDialog.BUTTON_STYLE_OK_CANCEL,
+                new Handler(new Handler.Callback() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(CarCheckActivity.this, activity);
-                        startActivity(intent);
-                        finish();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .create();
+                    public boolean handleMessage(Message message) {
+                        switch (message.what) {
+                            case MyAlertDialog.POSITIVE_PRESSED:
+                                Intent intent = new Intent(CarCheckActivity.this, activity);
+                                startActivity(intent);
+                                finish();
+                                break;
+                            case MyAlertDialog.NEGATIVE_PRESSED:
+                                break;
+                        }
 
-        dialog.show();
+                        return true;
+                    }
+                }));
     }
 
     /**

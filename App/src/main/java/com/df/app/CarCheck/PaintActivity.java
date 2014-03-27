@@ -254,20 +254,21 @@ public class PaintActivity extends Activity {
                 if(CarCheckActivity.isModify()) {
                     PhotoEntity photoEntity = paintView.getPhotoEntities().get(position);
 
-                    photoEntity.setModifyAction(Action.DELETE);
+                    PhotoEntity temp = PhotoFaultLayout.photoListAdapter.getItem(photoEntity);
+                    temp.setModifyAction(Action.DELETE);
 
                     try {
                         JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
                         jsonObject.put("Action", Action.DELETE);
-                        photoEntity.setJsonString(jsonObject.toString());
+                        temp.setJsonString(jsonObject.toString());
+
+                        PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                } else {
-                    paintView.getPhotoEntities().remove(position);
                 }
 
+                //paintView.getPhotoEntities().remove(position);
                 paintView.getPosEntities().remove(position);
                 paintView.invalidate();
                 adapter.remove(position);
@@ -504,6 +505,7 @@ public class PaintActivity extends Activity {
                 } else {
                     // 如果取消了拍摄，将照片名称置空
                     paintView.getPosEntity().setImageFileName("");
+                    paintView.getPosEntity().setComment("");
 
                     // 生成PhotoEntity
                     addPhotoToList();
@@ -521,9 +523,33 @@ public class PaintActivity extends Activity {
                 break;
             case Common.MODIFY_PAINT_COMMENT: {
                     Bundle bundle = data.getExtras();
+                    String comment = bundle.getString("COMMENT");
 
-                    PhotoLayout.commentModEntity.setComment(bundle.getString("COMMENT"));
-                    PhotoLayout.listedPhoto.getPhotoEntity().setComment(bundle.getString("COMMENT"));
+                    PhotoEntity photoEntity = PhotoLayout.commentModEntity;
+                    try {
+                        JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+                        JSONObject photoData = jsonObject.getJSONObject("PhotoData");
+                        photoData.put("comment", comment);
+                        jsonObject.put("PhotoData", photoData);
+                        photoEntity.setJsonString(jsonObject.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    photoEntity.setComment(comment);
+
+                    photoEntity = PhotoLayout.listedPhoto.getPhotoEntity();
+                    try {
+                        JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+                        JSONObject photoData = jsonObject.getJSONObject("PhotoData");
+                        photoData.put("comment", comment);
+                        jsonObject.put("PhotoData", photoData);
+                        photoEntity.setJsonString(jsonObject.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    photoEntity.setComment(comment);
                     PhotoLayout.paintPhotoListAdapter.notifyDataSetChanged();
                     PhotoLayout.notifyDataSetChanged();
                 }

@@ -77,6 +77,7 @@ public class IssueLayout extends LinearLayout {
     private Runnable r;
     private String level1;
     private String level2;
+    private DownloadImageTask downloadImageTask;
 
     public IssueLayout(Context context) {
         super(context);
@@ -180,7 +181,7 @@ public class IssueLayout extends LinearLayout {
         try {
             String[] partNames = level.split(",");
 
-            // 根据名称添加其他图
+            // 根据名称添加其他图  TODO 优化
             for(String layerName : partNames) {
                 Bitmap bitmap = BitmapFactory.decodeFile(Common.utilDirectory + layerName);
                 Drawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
@@ -363,6 +364,28 @@ public class IssueLayout extends LinearLayout {
             }
 
             adapter.notifyDataSetChanged();
+
+            for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesFront) {
+                if(PhotoFaultLayout.photoListAdapter.getItem(photoEntity) != null) {
+                    PhotoFaultLayout.photoListAdapter.removeItem(photoEntity);
+                }
+            }
+
+            for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesRear) {
+                if(PhotoFaultLayout.photoListAdapter.getItem(photoEntity) != null) {
+                    PhotoFaultLayout.photoListAdapter.removeItem(photoEntity);
+                }
+            }
+
+            PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+
+            AccidentResultLayout.photoEntitiesFront.clear();
+            AccidentResultLayout.photoEntitiesRear.clear();
+            AccidentResultLayout.posEntitiesFront.clear();
+            AccidentResultLayout.posEntitiesRear.clear();
+            AccidentResultLayout.framePaintPreviewViewFront.invalidate();
+            AccidentResultLayout.framePaintPreviewViewRear.invalidate();
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -371,10 +394,6 @@ public class IssueLayout extends LinearLayout {
 
     public List<Issue> getIssues() {
         return issueList;
-    }
-
-    public void drawSketch() {
-
     }
 
     public void modifyComment(String comment) {
@@ -388,6 +407,10 @@ public class IssueLayout extends LinearLayout {
         listedPhoto = null;
         photoListAdapter = null;
         photoEntityModify = null;
+
+        if(downloadImageTask != null) {
+            downloadImageTask.cancel(true);
+        }
     }
 
     private void updateImage(JSONObject photo) throws JSONException {
@@ -398,7 +421,7 @@ public class IssueLayout extends LinearLayout {
         if(accidentSketch != JSONObject.NULL) {
             sketchIndex = accidentSketch.getInt("index");
             String accidentSketchUrl = accidentSketch.getString("photo");
-            new DownloadImageTask(Common.PICTURE_ADDRESS + accidentSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImageTask = new DownloadImageTask(Common.getPICTURE_ADDRESS() + accidentSketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     showView(rootView, R.id.issueImageProgressBar, false);
@@ -410,7 +433,8 @@ public class IssueLayout extends LinearLayout {
                 public void onFailed() {
 
                 }
-            }).execute();
+            });
+            downloadImageTask.execute();
         }
     }
 

@@ -15,15 +15,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class StartupActivity extends Activity {
+    public static String environment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Bundle bundle = getIntent().getExtras();
+        environment = bundle.getString("environment");
+
+        Common.setEnvironment(environment);
+
         SetDirectory();
         Intent intent = new Intent(StartupActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
+
     }
 
     /**

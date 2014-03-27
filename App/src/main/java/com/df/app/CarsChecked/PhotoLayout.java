@@ -61,7 +61,7 @@ public class PhotoLayout extends LinearLayout {
         agreementPhotos = new ArrayList<PhotoEntity>();
 
         listView = (ListView)findViewById(R.id.photoList);
-        adapter = new PhotoListAdapter(context, exteriorPhotos, false);
+        adapter = new PhotoListAdapter(context, exteriorPhotos, false, false);
         listView.setAdapter(adapter);
 
         Button exteriorButton = (Button)findViewById(R.id.exteriorPhotoButton);
@@ -146,7 +146,7 @@ public class PhotoLayout extends LinearLayout {
     }
 
     private void load(List<PhotoEntity> photoEntities) throws JSONException {
-        adapter = new PhotoListAdapter(context, photoEntities, false);
+        adapter = new PhotoListAdapter(context, photoEntities, false, false);
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
     }

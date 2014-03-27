@@ -23,7 +23,8 @@
             android:text="外观组 - 前45度"
             android:textSize="22sp"
             android:textColor="#555"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:singleLine="false"/>
         <TextView android:id="@+id/comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,8 +42,8 @@
             android:inputType="textMultiLine"
             android:minHeight="95dp"
             android:background="@drawable/edittext_border"
-            android:paddingLeft="10dp"/>
-
+            android:paddingLeft="10dp"
+            android:descendantFocusability="beforeDescendants"/>
         <Button android:id="@+id/reTake"
             android:layout_width="40dp"
             android:layout_height="30dp"

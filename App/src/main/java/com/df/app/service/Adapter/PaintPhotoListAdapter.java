@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.df.app.R;
 import com.df.app.carCheck.AddPhotoCommentActivity;
 import com.df.app.carCheck.PhotoLayout;
+import com.df.app.entries.Action;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.PhotoOperationActivity;
@@ -94,6 +95,9 @@ public class PaintPhotoListAdapter extends BaseAdapter {
         final ListedPhoto listedPhoto = items.get(position);
 
         if(listedPhoto != null) {
+            if(listedPhoto.getPhotoEntity().getModifyAction() != null && listedPhoto.getPhotoEntity().getModifyAction().equals(Action.DELETE))
+                view.setAlpha(0.3f);
+
             ImageView indexImage = (ImageView)view.findViewById(R.id.indexImage);
             int imageId = 0;
 

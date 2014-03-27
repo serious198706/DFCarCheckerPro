@@ -78,7 +78,7 @@ public class PhotoExteriorLayout extends LinearLayout {
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
-        photoListAdapter = new PhotoListAdapter(context, photoEntities, true);
+        photoListAdapter = new PhotoListAdapter(context, photoEntities, true, false);
         exteriorList.setAdapter(photoListAdapter);
 
         Button startCameraButton = (Button)findViewById(R.id.photoButton);

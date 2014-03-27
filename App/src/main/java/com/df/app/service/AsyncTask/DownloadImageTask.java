@@ -49,4 +49,9 @@ public class DownloadImageTask extends AsyncTask<Void, Void, Bitmap> {
             mCallback.onFinish(result);
         }
     }
+
+    @Override
+    protected void onCancelled() {
+        mCallback.onFailed();
+    }
 }

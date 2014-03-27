@@ -77,8 +77,6 @@
                 android:background="@drawable/save"
                 android:layout_toLeftOf="@id/buttonCommit"/>
 
-
-
         <Button android:id="@+id/buttonHome"
                 android:layout_width="35dp"
                 android:layout_height="35dp"

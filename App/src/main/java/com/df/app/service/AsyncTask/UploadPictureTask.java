@@ -112,7 +112,7 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
         boolean success = false;
 
         SoapService soapService = new SoapService();
-        soapService.setUtils(Common.SERVER_ADDRESS + Common.CAR_CHECK_SERVICE, Common.UPLOAD_PICTURE);
+        soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.UPLOAD_PICTURE);
 
         for(int i = 0; i < photoEntityList.size(); i++) {
             if(isCancelled()) {
@@ -126,7 +126,7 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
             String path = Common.photoDirectory;
             String fileName = photoEntity.getFileName();
 
-            if(photoEntity.getModifyAction().equals(Action.DELETE)) {
+            if(photoEntity.getModifyAction().equals(Action.DELETE) || photoEntity.getModifyAction().equals(Action.COMMENT)) {
                 fileName = "";
             }
 

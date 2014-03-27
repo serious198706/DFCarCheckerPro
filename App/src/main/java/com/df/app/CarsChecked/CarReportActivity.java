@@ -34,6 +34,14 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
     private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
     private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
 
+
+    private BasicInfoLayout basicInfoLayout;
+    private OptionsLayout optionsLayout;
+    private AccidentLayout accidentResultLayout;
+    private IntegratedLayout integratedLayout;
+    private OtherLayout otherLayout;
+    private PhotoLayout photoLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +54,6 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
         }
 
         String jsonString = bundle.getString("jsonString");
-
-
 
         InitViewPager(jsonString);
         InitTextView();
@@ -68,12 +74,16 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
             JSONObject conditions = jsonObject.getJSONObject("conditions");
             JSONObject photos = jsonObject.getJSONObject("photos");
 
-            BasicInfoLayout basicInfoLayout = new BasicInfoLayout(this, features.getJSONObject("procedures"));
-            OptionsLayout optionsLayout = new OptionsLayout(this, features.getJSONObject("options"));
-            AccidentLayout accidentResultLayout = new AccidentLayout(this, accident, photos);
-            IntegratedLayout integratedLayout = new IntegratedLayout(this, conditions, photos);
-            PhotoLayout photoLayout = new PhotoLayout(this, photos);
-            OtherLayout otherLayout = new OtherLayout(this, photos);
+            JSONObject procedures = features.getJSONObject("procedures");
+            JSONObject options = features.getJSONObject("options");
+
+            basicInfoLayout = new BasicInfoLayout(this, procedures, Integer.toString(options.getInt("seriesId")),
+                    Integer.toString(options.getInt("modelId")));
+            optionsLayout = new OptionsLayout(this, options);
+            accidentResultLayout = new AccidentLayout(this, accident, photos);
+            integratedLayout = new IntegratedLayout(this, conditions, photos);
+            photoLayout = new PhotoLayout(this, photos);
+            otherLayout = new OtherLayout(this, photos);
 
             views.add(basicInfoLayout);
             views.add(optionsLayout);
@@ -150,5 +160,13 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
         Intent intent = new Intent(this, CarsCheckedListActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        integratedLayout.destroyTask();
+        accidentResultLayout.destroyTask();
     }
 }
