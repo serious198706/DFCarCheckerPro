@@ -109,10 +109,12 @@ public class IssueListAdapter extends BaseAdapter {
                         }
 
                         // 如果该issue当前为“否”，并且有视角
-                        if(!b && issue.getSelect().equals("否") && !issue.getView().equals("")) {
+                        if(!b && issue.getSelect().equals("否") &&
+                                (issue.getView().equals("F") || issue.getView().equals("R"))) {
                             // 清除此issue的数据
                             closeIssue(issue);
-                        } else if(!issue.getSelect().equals("否") && !issue.getView().equals("")) {
+                        } else if(!issue.getSelect().equals("否") &&
+                                (issue.getView().equals("F") || issue.getView().equals("R"))) {
                             // 弹出绘制界面
                             drawIssuePoint(issue, false);
                         } else if(issue.getView().equals("")) {
@@ -172,7 +174,7 @@ public class IssueListAdapter extends BaseAdapter {
                     mPictureDialog.dismiss();
                 } else {
                     issue.setLastSelect(false);
-                    alertUser(R.string.cancel_confirm);
+                    alertUser(R.string.cancel_confirm, issue);
                 }
             }
         });
@@ -203,6 +205,8 @@ public class IssueListAdapter extends BaseAdapter {
                 issue.setSerious(radioButton.getText().toString());
                 issue.setSelect("否");
                 issue.setLastSelect(true);
+
+                reallyDeleteItems(issue);
                 mPictureDialog.dismiss();
             }
         });
@@ -212,51 +216,11 @@ public class IssueListAdapter extends BaseAdapter {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 如果为修改模式
-                if(CarCheckActivity.isModify()) {
-                    for(PhotoEntity photoEntity : issue.getPhotoEntities()) {
-                        if (issue.getView().equals("F")) {
-                            int index = AccidentResultLayout.photoEntitiesFront.indexOf(photoEntity);
-                            AccidentResultLayout.photoEntitiesFront.get(index).setModifyAction(Action.DELETE);
-                        } else {
-                            int index = AccidentResultLayout.photoEntitiesRear.indexOf(photoEntity);
-                            AccidentResultLayout.photoEntitiesRear.get(index).setModifyAction(Action.DELETE);
-                        }
-
-                        PhotoEntity temp1 = PhotoFaultLayout.photoListAdapter.getItem(photoEntity);
-                        temp1.setModifyAction(Action.DELETE);
-
-                        try {
-                            JSONObject jsonObject = new JSONObject(temp1.getJsonString());
-                            jsonObject.put("Action", Action.DELETE);
-                            temp1.setJsonString(jsonObject.toString());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                // 普通模式
-                else {
-                    for (PhotoEntity photoEntity : issue.getPhotoEntities()) {
-                        if (issue.getView().equals("F")) {
-                            AccidentResultLayout.photoEntitiesFront.remove(photoEntity);
-                        } else {
-                            AccidentResultLayout.photoEntitiesRear.remove(photoEntity);
-                        }
-
-                        PhotoFaultLayout.photoListAdapter.removeItem(photoEntity);
-                    }
+                for(ListedPhoto listedPhoto : issuePhotoListAdapter.getItems()) {
+                    listedPhoto.setDelete(true);
                 }
 
-                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
-
-                for (PosEntity posEntity : issue.getPosEntities()) {
-                    if (issue.getView().equals("F")) {
-                        AccidentResultLayout.posEntitiesFront.remove(posEntity);
-                    } else {
-                        AccidentResultLayout.posEntitiesRear.remove(posEntity);
-                    }
-                }
+                reallyDeleteItems(issue);
 
                 issue.getPhotoEntities().clear();
                 issue.getPosEntities().clear();
@@ -275,77 +239,15 @@ public class IssueListAdapter extends BaseAdapter {
             listedPhotos.add(temp);
         }
 
-        issuePhotoListAdapter = new IssuePhotoListAdapter(context, listedPhotos, issue, delete,
-                new IssuePhotoListAdapter.OnDeleteItem() {
-                    @Override
-                    public void onDeleteItem(int position) {
-                        // 删除条目
-                        issuePhotoListAdapter.remove(position);
-                        issuePhotoListAdapter.notifyDataSetChanged();
-
-                        // 删除issue中的posEntity
-                        issue.getPosEntities().remove(position);
-
-                        if(CarCheckActivity.isModify()) {
-                            // 更新查勘结果中的图片
-                            if(issue.getView().equals("F")) {
-                                AccidentResultLayout.photoEntitiesFront.get(position).setModifyAction(Action.DELETE);
-                                AccidentResultLayout.posEntitiesFront.remove(position);
-                                AccidentResultLayout.framePaintPreviewViewFront.invalidate();
-                            }
-                            else {
-                                AccidentResultLayout.photoEntitiesRear.get(position).setModifyAction(Action.DELETE);
-                                AccidentResultLayout.posEntitiesRear.remove(position);
-                                AccidentResultLayout.framePaintPreviewViewRear.invalidate();
-                            }
-
-                            // 删除照片列表里的照片
-                            PhotoEntity temp = issue.getPhotoEntities().get(position);
-
-                            PhotoFaultLayout.photoListAdapter.getItem(position).setModifyAction(Action.DELETE);
-                            PhotoEntity temp1 = PhotoFaultLayout.photoListAdapter.getItem(position);
-                            temp1.setModifyAction(Action.DELETE);
-
-                            try {
-                                JSONObject jsonObject = new JSONObject(temp1.getJsonString());
-                                jsonObject.put("Action", Action.DELETE);
-                                temp1.setJsonString(jsonObject.toString());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                            issue.getPhotoEntities().remove(position);
-                            PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
-
-                            // 现删除issue本身的照片
-                            issue.getPhotoEntities().remove(temp);
-                        } else {
-                            // 更新查勘结果中的图片
-                            if(issue.getView().equals("F")) {
-                                AccidentResultLayout.photoEntitiesFront.remove(position);
-                                AccidentResultLayout.posEntitiesFront.remove(position);
-                                AccidentResultLayout.framePaintPreviewViewFront.invalidate();
-                            }
-                            else {
-                                AccidentResultLayout.photoEntitiesRear.remove(position);
-                                AccidentResultLayout.posEntitiesRear.remove(position);
-                                AccidentResultLayout.framePaintPreviewViewRear.invalidate();
-                            }
-
-                            // 删除照片列表里的照片
-                            PhotoEntity temp = issue.getPhotoEntities().get(position);
-                            PhotoFaultLayout.photoListAdapter.removeItem(temp);
-                            issue.getPhotoEntities().remove(position);
-                            PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
-
-                            // 现删除issue本身的照片
-                            issue.getPhotoEntities().remove(temp);
-                        }
-
-                        // 更新绘图
-                        framePaintView.invalidate();
-                    }
-                });
+        issuePhotoListAdapter = new IssuePhotoListAdapter(context, listedPhotos, issue, delete, new IssuePhotoListAdapter.OnDeleteItem() {
+            @Override
+            public void onDeleteItem(int position) {
+                issue.getPosEntities().get(position).setDelete(true);
+                framePaintView.invalidate();
+                issuePhotoListAdapter.getItem(position).setDelete(true);
+                issuePhotoListAdapter.notifyDataSetChanged();
+            }
+        });
 
         issuePhotoListView = (ListView)rootView.findViewById(R.id.issuePhotoList);
         issuePhotoListView.setAdapter(issuePhotoListAdapter);
@@ -410,7 +312,7 @@ public class IssueListAdapter extends BaseAdapter {
                         mPictureDialog.dismiss();
                     } else {
                         issue.setLastSelect(false);
-                        alertUser(R.string.cancel_confirm);
+                        alertUser(R.string.cancel_confirm, issue);
                     }
                 }
 
@@ -419,6 +321,90 @@ public class IssueListAdapter extends BaseAdapter {
         });
         mPictureDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mPictureDialog.show();
+    }
+
+    private void reallyDeleteItems(Issue issue) {
+        for(int i = issuePhotoListAdapter.getCount() - 1; i >= 0; i--) {
+            ListedPhoto listedPhoto = issuePhotoListAdapter.getItem(i);
+
+            if(!listedPhoto.isDelete()) {
+                continue;
+            }
+
+            int position = listedPhoto.getIndex();
+
+            // 删除posEntity
+            issue.getPosEntities().remove(position);
+
+            if(CarCheckActivity.isModify()) {
+                // 更新查勘结果中的图片
+                if(issue.getView().equals("F")) {
+                    AccidentResultLayout.photoEntitiesFront.get(position).setModifyAction(Action.DELETE);
+                    AccidentResultLayout.posEntitiesFront.remove(position);
+                    AccidentResultLayout.framePaintPreviewViewFront.invalidate();
+                }
+                else {
+                    AccidentResultLayout.photoEntitiesRear.get(position).setModifyAction(Action.DELETE);
+                    AccidentResultLayout.posEntitiesRear.remove(position);
+                    AccidentResultLayout.framePaintPreviewViewRear.invalidate();
+                }
+
+                // 删除照片列表里的照片
+                PhotoEntity temp = issue.getPhotoEntities().get(position);
+
+                PhotoFaultLayout.photoListAdapter.getItem(position).setModifyAction(Action.DELETE);
+                PhotoEntity temp1 = PhotoFaultLayout.photoListAdapter.getItem(position);
+                temp1.setModifyAction(Action.DELETE);
+
+                try {
+                    JSONObject jsonObject = new JSONObject(temp1.getJsonString());
+                    jsonObject.put("Action", Action.DELETE);
+                    temp1.setJsonString(jsonObject.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                issue.getPhotoEntities().remove(position);
+                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+
+                // 现删除issue本身的照片
+                issue.getPhotoEntities().remove(temp);
+            } else {
+                // 更新查勘结果中的图片
+                if(issue.getView().equals("F")) {
+                    AccidentResultLayout.photoEntitiesFront.remove(position);
+                    AccidentResultLayout.posEntitiesFront.remove(position);
+                    AccidentResultLayout.framePaintPreviewViewFront.invalidate();
+                }
+                else {
+                    AccidentResultLayout.photoEntitiesRear.remove(position);
+                    AccidentResultLayout.posEntitiesRear.remove(position);
+                    AccidentResultLayout.framePaintPreviewViewRear.invalidate();
+                }
+
+                // 删除照片列表里的照片
+                PhotoEntity temp = issue.getPhotoEntities().get(position);
+                PhotoFaultLayout.photoListAdapter.removeItem(temp);
+                issue.getPhotoEntities().remove(position);
+                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+
+                // 现删除issue本身的照片
+                issue.getPhotoEntities().remove(temp);
+            }
+
+            // 更新绘图
+            framePaintView.invalidate();
+        }
+    }
+
+    private void cancelOperations(Issue issue) {
+        for(ListedPhoto listedPhoto : issuePhotoListAdapter.getItems()) {
+            int position = listedPhoto.getIndex();
+
+            issue.getPosEntities().get(position).setDelete(false);
+            issuePhotoListAdapter.getItem(position).setDelete(false);
+            issuePhotoListAdapter.notifyDataSetChanged();
+        }
     }
 
     /**
@@ -455,8 +441,9 @@ public class IssueListAdapter extends BaseAdapter {
     /**
      * 在弹出页面点击取消时提醒用户是否要取消
      * @param msgId 车辆id
+     * @param issue
      */
-    private void alertUser(final int msgId) {
+    private void alertUser(final int msgId, final Issue issue) {
         View view1 = ((Activity)context).getLayoutInflater().inflate(R.layout.popup_layout, null);
         TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
         TextView content = new TextView(view1.getContext());
@@ -479,6 +466,7 @@ public class IssueListAdapter extends BaseAdapter {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if(msgId == R.string.cancel_confirm) {
                             // 退出
+                            cancelOperations(issue);
                             framePaintView.cancel();
                             mPictureDialog.dismiss();
                             dialog.dismiss();

@@ -41,7 +41,8 @@
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <EditText
                     android:id="@+id/displacement_edit"
                     android:layout_height="40dp"
@@ -59,7 +60,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/driveType_spinner"
                     android:layout_height="wrap_content"
@@ -78,7 +80,8 @@
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <EditText
                     android:id="@+id/transmission_edit"
                     android:layout_height="40dp"
@@ -96,8 +99,8 @@
                     android:layout_marginRight="8dp"
                     android:entries="@array/transmission_item"
                     android:popupBackground="@drawable/spinner_bg"
-                android:background="@drawable/spinner_selector"
-                android:visibility="gone"/>
+                    android:background="@drawable/spinner_selector"
+                    android:visibility="gone"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
@@ -106,7 +109,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/airBag_spinner"
                     android:layout_height="wrap_content"
@@ -125,7 +129,8 @@
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/abs_spinner"
                     android:layout_height="wrap_content"
@@ -143,7 +148,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/powerSteering_spinner"
                     android:layout_height="wrap_content"
@@ -162,7 +168,8 @@
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/powerWindows_spinner"
                     android:layout_height="wrap_content"
@@ -180,7 +187,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/sunroof_spinner"
                     android:layout_height="wrap_content"
@@ -199,7 +207,8 @@
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/airConditioning_spinner"
                     android:layout_height="wrap_content"
@@ -217,7 +226,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/leatherSeats_spinner"
                     android:layout_height="wrap_content"
@@ -236,7 +246,8 @@
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/powerSeats_spinner"
                     android:layout_height="wrap_content"
@@ -254,7 +265,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/powerMirror_spinner"
                     android:layout_height="wrap_content"
@@ -273,7 +285,8 @@
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/reversingRadar_spinner"
                     android:layout_height="wrap_content"
@@ -291,7 +304,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/reversingCamera_spinner"
                     android:layout_height="wrap_content"
@@ -310,7 +324,8 @@
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/ccs_spinner"
                     android:layout_height="wrap_content"
@@ -328,7 +343,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/softCloseDoors_spinner"
                     android:layout_height="wrap_content"
@@ -347,7 +363,8 @@
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/rearPowerSeats_spinner"
                     android:layout_height="wrap_content"
@@ -365,7 +382,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/ahc_spinner"
                     android:layout_height="wrap_content"
@@ -384,7 +402,8 @@
                     android:layout_weight="1"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/parkAssist_spinner"
                     android:layout_height="wrap_content"
@@ -402,7 +421,8 @@
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
                     android:textColor="#555"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="right"/>
                 <Spinner
                     android:id="@+id/clapboard_spinner"
                     android:layout_height="wrap_content"
@@ -412,7 +432,6 @@
                     android:popupBackground="@drawable/spinner_bg"
                     android:background="@drawable/spinner_selector"/>
             </TableRow>
-            <!-- 隐藏配置信息结束 -->
         </TableLayout>
     </ScrollView>
 

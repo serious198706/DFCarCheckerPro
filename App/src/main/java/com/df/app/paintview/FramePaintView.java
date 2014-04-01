@@ -173,6 +173,10 @@ public class FramePaintView extends PaintView {
     }
 
     private void paint(PosEntity entity, int index, Canvas canvas) {
+        if(entity.isDelete()) {
+            return;
+        }
+
         damageBitmap = drawTextToBitmap(context, R.drawable.damage, index + 1);
         canvas.drawBitmap(damageBitmap, entity.getStartX(), entity.getStartY(), null);
     }
@@ -383,7 +387,10 @@ public class FramePaintView extends PaintView {
             for(int i = 0; i < thisTimeNewData.size(); i++) {
                 data.remove(thisTimeNewData.get(i));
                 issue.remove(thisTimeNewData.get(i));
-                adapter.remove(adapter.getCount() - 1);
+
+                if(adapter.getCount() >= 1) {
+                    adapter.remove(adapter.getCount() - 1);
+                }
             }
         }
         if(!thisTimeNewPhoto.isEmpty()) {

@@ -97,6 +97,7 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
                             .create();
 
                     dialog.setCanceledOnTouchOutside(false);
+                    dialog.setCancelable(false);
                     dialog.show();
                 }
             } catch (Exception e) {
@@ -117,19 +118,18 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
         String[] localVersionArray = localVersion.split("\\.");
         String[] serverVersionArray = serverVersion.split("\\.");
 
-        if(Integer.parseInt(localVersionArray[0]) > Integer.parseInt(serverVersionArray[0])) {
-            return false;
+        return makeVersionCode(localVersionArray) < makeVersionCode(serverVersionArray);
+    }
+
+    private int makeVersionCode(String[] array) {
+        int sum = 0;
+
+        for(int i = 0; i < array.length; i++) {
+            int n = Integer.parseInt(array[i]) * (int)Math.pow((double)10, (double)array.length - i - 1);
+            sum += n;
         }
 
-        if(Integer.parseInt(localVersionArray[1]) > Integer.parseInt(serverVersionArray[1])) {
-            return false;
-        }
-
-        if(Integer.parseInt(localVersionArray[2]) >= Integer.parseInt(serverVersionArray[2])) {
-            return false;
-        }
-
-        return true;
+        return sum;
     }
 }
 

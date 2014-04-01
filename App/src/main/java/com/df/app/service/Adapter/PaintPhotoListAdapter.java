@@ -58,11 +58,15 @@ public class PaintPhotoListAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public ListedPhoto getItem(int position) {
         return items.get(position);
     }
 
-    public Object getItem(ListedPhoto listedPhoto) {
+    public List<ListedPhoto> getItems() {
+        return this.items;
+    }
+
+    public ListedPhoto getItem(ListedPhoto listedPhoto) {
         return getItem(items.indexOf(listedPhoto));
     }
 
@@ -201,6 +205,12 @@ public class PaintPhotoListAdapter extends BaseAdapter {
                     dialog.show();
                 }
             });
+
+            if(listedPhoto.isDelete()) {
+                view.setAlpha(0.3f);
+            } else {
+                view.setAlpha(1.0f);
+            }
         }
 
 

@@ -405,7 +405,6 @@
                          android:layout_width="0dp"
                          android:layout_height="wrap_content"
                          android:layout_weight="1"
-                         android:text="@string/tire"
                          android:entries="@array/existornot"
                          android:popupBackground="@drawable/spinner_bg"
                          android:background="@drawable/spinner_selector"/>

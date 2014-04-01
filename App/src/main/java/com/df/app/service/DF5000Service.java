@@ -178,7 +178,6 @@ public class DF5000Service {
         setState(STATE_CONNECTED);
     }
 
-
     // 停止所有的线程
     public synchronized void stop() {
         if (D)
@@ -202,7 +201,6 @@ public class DF5000Service {
         setState(STATE_NONE);
     }
 
-
     // 使用异步方式运行ConnectedThread写数据
     public void write(byte[] out) {
         ConnectedThread r;
@@ -217,7 +215,6 @@ public class DF5000Service {
         r.write(out);
     }
 
-
     // 连接请求失败，通知界面
     private void connectionFailed() {
         setState(STATE_LISTEN);
@@ -228,7 +225,6 @@ public class DF5000Service {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
     }
-
 
     // 连接断开，通知界面
     private void connectionLost() {
@@ -242,7 +238,6 @@ public class DF5000Service {
 
         setState(STATE_CONNECTION_LOST);
     }
-
 
     private class AcceptThread extends Thread {
 
@@ -312,7 +307,6 @@ public class DF5000Service {
             }
         }
     }
-
 
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
@@ -389,7 +383,6 @@ public class DF5000Service {
         return  Integer.toHexString(serial);
     }
 
-
     public static String[] parsePackage(String str) {
         final String P_START = "AA0A";
         final String P_PARA = "0111";
@@ -428,8 +421,8 @@ public class DF5000Service {
                 // data[0]指的是什么部位数据
                 data[0] = str.substring(12, 14);
 
-                StringBuffer str1 = new StringBuffer(str.substring(14, len - 4));
-                StringBuffer str2 = new StringBuffer();
+                String str1 = new String(str.substring(14, len - 4));
+                String str2 = new String();
 
                 // 如果部位数据长度大于4,表示为真正的数据
                 if (str1.length() >= 4) {
@@ -446,7 +439,15 @@ public class DF5000Service {
                             a = a / 10;
                         }
                         count++;
-                        str2.append(String.valueOf(a)).append(",");
+
+                        str2 += String.valueOf(a);
+                        str2 += ",";
+
+                        //str2.append(String.valueOf(a)).append(",");
+                    }
+
+                    if(str2.length() >= 2) {
+                        str2 = str2.substring(0, str2.length() - 1);
                     }
 
                     data[1] = String.valueOf(str2);

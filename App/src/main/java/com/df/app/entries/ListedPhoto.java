@@ -7,6 +7,7 @@ public class ListedPhoto {
     private int index;
     private PhotoEntity photoEntity;
     private int type;
+    private boolean delete;
 
     public ListedPhoto(int index, PhotoEntity photoEntity) {
         this.index = index;
@@ -41,5 +42,13 @@ public class ListedPhoto {
 
     public void setPhotoEntity(PhotoEntity photoEntity) {
         this.photoEntity = photoEntity;
+    }
+
+    public boolean isDelete() {
+        return delete;
+    }
+
+    public void setDelete(boolean delete) {
+        this.delete = delete;
     }
 }

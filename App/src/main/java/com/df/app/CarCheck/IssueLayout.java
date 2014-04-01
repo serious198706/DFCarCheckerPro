@@ -172,21 +172,20 @@ public class IssueLayout extends LinearLayout {
         drawableList = new ArrayList<Drawable>();
         drawableList.add(new BitmapDrawable(getResources(), baseBitmap));
     }
-
     /**
      * 设置漆面预览图
      * @param level
      */
     private void drawSketch(String level) {
         try {
-            String[] partNames = level.split(",");
+            if(!level.equals("")) {
+                String[] partNames = level.split(",");
 
-            // 根据名称添加其他图  TODO 优化
-            for(String layerName : partNames) {
-                Bitmap bitmap = BitmapFactory.decodeFile(Common.utilDirectory + layerName);
-                Drawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
-                bitmap = null;
-                drawableList.add(bitmapDrawable);
+                // 根据名称添加其他图
+                for(String layerName : partNames) {
+                    Drawable bitmapDrawable = Drawable.createFromPath(Common.utilDirectory + layerName);
+                    drawableList.add(bitmapDrawable);
+                }
             }
 
             // 创建LayerDrawable
@@ -198,6 +197,8 @@ public class IssueLayout extends LinearLayout {
             Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             layerDrawable.setBounds(0, 0, width, height);
             layerDrawable.draw(new Canvas(bitmap));
+
+            System.gc();
 
             // 将LayerDrawable添加到imageView中
             imageView.setImageBitmap(bitmap);
@@ -294,7 +295,6 @@ public class IssueLayout extends LinearLayout {
     }
 
     private void drawImage(final ProgressDialog progressDialog) {
-
         Handler handler = new Handler();
 
         // 画图
@@ -312,6 +312,10 @@ public class IssueLayout extends LinearLayout {
                 }
             }
         };
+
+//        Thread thread = new Thread(r);
+//        thread.start();
+
         handler.postDelayed(r, 3000);
     }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--<string name="app_name">268V检测端专业版</string>-->
+    <!-- <string name="app_name">268V检测端专业版</string> -->
     <string name="app_name">268V正式</string>
     <string name="app_name_i_i">268v内网-100.6</string>
     <string name="app_name_i">268v内网-100.3</string>
@@ -31,5 +31,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_photo_operation">PhotoOperationActivity</string>
     <string name="title_activity_car_report">CarReportActivity</string>
+    <string name="title_activity_mask_photo">MaskPhotoActivity</string>
 
 </resources>

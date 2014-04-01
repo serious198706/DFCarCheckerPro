@@ -2,12 +2,15 @@ package com.df.app.carCheck;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -125,6 +128,32 @@ public class Integrated1Layout extends LinearLayout{
             }
         });
 
+        EditText airConditioningTempEdit = (EditText)findViewById(R.id.airConditioningTemp_edit);
+        airConditioningTempEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // 第一个输入的文字不能是'.'
+                String temp = editable.toString();
+
+                if(!temp.equals("")) {
+                    if(temp.charAt(0) == '.') {
+                        editable.delete(0, 1);
+                    }
+                }
+            }
+        });
+        airConditioningTempEdit.setText("");
+
         // 移除输入框的焦点，避免每次输入完成后界面滚动
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
         scrollView.setFocusable(true);
@@ -175,8 +204,8 @@ public class Integrated1Layout extends LinearLayout{
 
     /**
      * 更新相关的Spinner
-     * @param spinnerId
-     * @param selectedItemText
+     * @param spinnerId id
+     * @param selectedItemText 选择的文字
      */
     public static void updateAssociatedSpinners(int spinnerId, String selectedItemText) {
         int interSpinnerId;
@@ -201,7 +230,7 @@ public class Integrated1Layout extends LinearLayout{
 
     /**
      * 设置spinner选择“无”之后的颜色
-     * @param spinnerId
+     * @param spinnerId id
      */
     private static void setSpinnerColor(int spinnerId) {
         Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
@@ -228,9 +257,9 @@ public class Integrated1Layout extends LinearLayout{
     }
 
     /**
-     * 根据配置信息，将该spinner无效化
-     * @param spinnerId
-     * @param enable
+     * 根据配置信息，将该spinner启用/禁用
+     * @param spinnerId id
+     * @param enable 启用/禁用
      */
     private static void enableSpinner(int spinnerId, boolean enable) {
         Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
@@ -239,8 +268,23 @@ public class Integrated1Layout extends LinearLayout{
         if(!enable) {
             spinner.setSelection(2);
         }
-        spinner.setClickable(enable);
-        spinner.setAlpha(enable ? 1.0f : 0.3f);
+        spinner.setEnabled(enable);
+
+        if(!enable) {
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    ((TextView) adapterView.getChildAt(0)).setTextColor(Color.GRAY);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+        } else {
+            setSpinnerColor(spinnerId);
+        }
     }
 
     /**
@@ -349,10 +393,10 @@ public class Integrated1Layout extends LinearLayout{
             function.put("sunroof", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.airConditioning_spinner).equals("无")) {
             function.put("airConditioning", getSpinnerSelectedText(rootView, R.id.airConditioning_spinner));
-            function.put("airConditioningTemp", Integer.parseInt(getEditViewText(rootView, R.id.airConditioningTemp_edit)));
+            function.put("airConditioningTemp", getEditViewText(rootView, R.id.airConditioningTemp_edit));
         } else {
             function.put("airConditioning", JSONObject.NULL);
-            function.put("airConditioningTemp", 0);
+            function.put("airConditioningTemp", JSONObject.NULL);
         }
         if(!getSpinnerSelectedText(rootView, R.id.powerSeats_spinner).equals("无"))
             function.put("powerSeats", getSpinnerSelectedText(rootView, R.id.powerSeats_spinner));
@@ -414,7 +458,8 @@ public class Integrated1Layout extends LinearLayout{
                 enableSpinner(R.id.airConditioning_spinner, false);
             } else {
                 setSpinnerSelectionWithString(rootView, R.id.airConditioning_spinner, function.getString("airConditioning"));
-                setEditViewText(rootView, R.id.airConditioningTemp_edit, Integer.toString(function.getInt("airConditioningTemp")));
+                setEditViewText(rootView, R.id.airConditioningTemp_edit,
+                        function.get("airConditioningTemp") == JSONObject.NULL ? "" : function.getString("airConditioningTemp"));
             }
         }
 

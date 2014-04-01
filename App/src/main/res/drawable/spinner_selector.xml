@@ -14,7 +14,7 @@
         android:state_window_focused="false" android:state_enabled="true"
         android:drawable="@drawable/spinner_normal" />
     <item
-        android:state_window_focused="false" android:state_enabled="false"
+        android:state_enabled="false"
         android:drawable="@drawable/spinner_disabled" />
     <item
         android:state_pressed="true"

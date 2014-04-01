@@ -126,9 +126,11 @@ public class Integrated3Layout extends LinearLayout {
 
         if(index == 0) {
             return -1;
-        } else {
+        } else if(index >= 1) {
             Cooperator cooperator = cooperators.get(index - 1);
             return cooperator.getId();
+        } else {
+            return -1;
         }
     }
 
@@ -137,7 +139,10 @@ public class Integrated3Layout extends LinearLayout {
      * @return
      */
     public String getCooperatorName() {
-        return getSpinnerSelectedText(rootView, R.id.cooperatorName_spinner);
+        if(cooperatorNames.size() == 1)
+            return "";
+        else
+            return getSpinnerSelectedText(rootView, R.id.cooperatorName_spinner);
     }
 
     /**

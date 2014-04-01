@@ -15,14 +15,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class StartupActivity extends Activity {
-    public static String environment;
+    public static int environment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Bundle bundle = getIntent().getExtras();
-        environment = bundle.getString("environment");
+        environment = bundle.getInt("environment");
 
         Common.setEnvironment(environment);
 

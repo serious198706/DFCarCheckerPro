@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -24,6 +26,7 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.PhotoListAdapter;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
+import com.df.app.util.MyAlertDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,6 +46,8 @@ public class PhotoExteriorLayout extends LinearLayout {
 
     // 记录已经拍摄的照片数
     public static int[] photoShotCount = {0, 0, 0, 0, 0, 0, 0};
+
+    public static long[] photoNames = {0, 0, 0, 0, 0, 0, 0};
 
     // 记录当前拍摄的文件名
     private long currentTimeMillis;
@@ -141,16 +146,52 @@ public class PhotoExteriorLayout extends LinearLayout {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 dialog.dismiss();
                 currentShotPart = i;
-                String group = getResources().getStringArray(R.array.exterior_camera_item)[currentShotPart];
-                Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
 
-                // 使用当前毫秒数当作照片名
-                currentTimeMillis = System.currentTimeMillis();
-                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
+                if(photoShotCount[currentShotPart] == 1) {
+                    MyAlertDialog.showAlert(context, R.string.rePhoto, R.string.alert,
+                            MyAlertDialog.BUTTON_STYLE_OK_CANCEL, new Handler(new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            switch (message.what) {
+                                case MyAlertDialog.POSITIVE_PRESSED:
+                                    currentTimeMillis = photoNames[currentShotPart];
 
-                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
-                ((Activity) getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_STANDARD);
+                                    photoNames[currentShotPart] = currentTimeMillis;
+
+
+                                    // TODO 找到列表中相应的图片
+
+                                    String group = getResources().getStringArray(R.array.exterior_camera_item)[currentShotPart];
+                                    Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
+
+                                    Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
+
+                                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
+                                    ((Activity) getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_STANDARD);
+                                    break;
+                                case MyAlertDialog.NEGATIVE_PRESSED:
+                                    break;
+                            }
+
+                            return true;
+                        }
+                    }));
+                } else {
+                    // 使用当前毫秒数当作照片名
+                    currentTimeMillis = System.currentTimeMillis();
+
+                    photoNames[currentShotPart] = currentTimeMillis;
+
+                    String group = getResources().getStringArray(R.array.exterior_camera_item)[currentShotPart];
+                    Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
+
+                    Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
+
+                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
+                    ((Activity) getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_STANDARD);
+                }
             }
         });
         contentArea.addView(listView);

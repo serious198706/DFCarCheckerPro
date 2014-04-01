@@ -202,6 +202,10 @@ public class ExteriorPaintView extends PaintView {
     }
 
     private void paint(PosEntity entity, Canvas canvas) {
+        if(entity.isDelete()) {
+            return;
+        }
+
         int type = entity.getType();
 
         switch (type) {
@@ -282,12 +286,11 @@ public class ExteriorPaintView extends PaintView {
         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
-
                 getPosEntity().setImageFileName("");
                 getPosEntity().setComment("");
 
                 mCallback.onAddEmptyPhoto(getPosEntity());
+                thisTimeNewPhoto.add(getPhotoEntities().get(getPhotoEntities().size() - 1));
             }
         }).setCancelable(false);
         builder.show();

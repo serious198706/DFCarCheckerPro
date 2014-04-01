@@ -185,6 +185,10 @@ public class InteriorPaintView extends PaintView {
     }
 
     private void paint(PosEntity entity, Canvas canvas) {
+        if(entity.isDelete()) {
+            return;
+        }
+
         int type = entity.getType();
 
         switch (type) {
@@ -257,6 +261,7 @@ public class InteriorPaintView extends PaintView {
                 getPosEntity().setComment("");
 
                 mCallback.onAddEmptyPhoto(getPosEntity());
+                thisTimeNewPhoto.add(getPhotoEntities().get(getPhotoEntities().size() - 1));
             }
         }).setCancelable(false);
 

@@ -50,6 +50,7 @@ import java.util.Map;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
+import static com.df.app.util.Helper.setSpinnerSelectionWithIndex;
 import static com.df.app.util.Helper.setTextView;
 import static com.df.app.util.Helper.showView;
 
@@ -163,6 +164,7 @@ public class CollectDataLayout extends LinearLayout {
     private static BluetoothDevice device;
     private Button getIssueButton;
     private ImageView collapseBar;
+    private String deviceSerial = "";
 
 //    private int[] enhanceIdMap = {
 //            R.id.M1_edit,
@@ -209,9 +211,10 @@ public class CollectDataLayout extends LinearLayout {
                     currentDeviceType = Common.DF3000;
                     df3000Dialog = new Device3000ListDialog(rootView.getContext(), new Device3000ListDialog.OnSelectDeviceFinished() {
                         @Override
-                        public void onFinished(UsbSerialDriver sDriver) {
+                        public void onFinished(UsbSerialDriver sDriver, Long serialNumber) {
                             CollectDataLayout.sDriver = sDriver;
                             showView(rootView, R.id.start_button, true);
+                            deviceSerial = Long.toString(serialNumber);
                         }
                     });
                     df3000Dialog.show();
@@ -370,7 +373,7 @@ public class CollectDataLayout extends LinearLayout {
                 fillInDummyData();
             }
         });
-        dummyRecordButton.setVisibility(GONE);
+        //dummyRecordButton.setVisibility(GONE);
 
         getIssueButton = (Button)findViewById(R.id.getIssueButton);
         getIssueButton.setVisibility(GONE);
@@ -572,6 +575,11 @@ public class CollectDataLayout extends LinearLayout {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 getIssueButton.setVisibility(VISIBLE);
+
+                                                startButton.setText("重新获取数据");
+                                                startButton.setEnabled(true);
+
+                                                dataCollected = true;
                                             }
                                         })
                                         .setCancelable(false)
@@ -751,6 +759,7 @@ public class CollectDataLayout extends LinearLayout {
                     // 保存设备的名称
                     String mConnectedDeviceName = msg.getData().getString("device_name");
                     Toast.makeText(rootView.getContext(), "已连接 " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    deviceSerial = mConnectedDeviceName;
 
                     if (!isConnected) {
                         if (t == null) {
@@ -883,25 +892,7 @@ public class CollectDataLayout extends LinearLayout {
         JSONObject device = new JSONObject();
 
         device.put("type", getSpinnerSelectedText(rootView, R.id.device_type_spinner));
-
-        switch (currentDeviceType) {
-            case Common.DF3000:
-                if(DF3000Service == null)
-                {
-                    device.put("serial", "");
-                } else {
-                    device.put("serial", DF3000Service.getSerialNumber());
-                }
-                break;
-            case Common.DF5000:
-                if(DF5000Service == null)
-                {
-                    device.put("serial", "");
-                } else {
-                    device.put("serial", CollectDataLayout.device.getName());
-                }
-                break;
-        }
+        device.put("serial", deviceSerial);
 
         data.put("overlap", overlap);
         data.put("enhance", enhance);
@@ -919,6 +910,7 @@ public class CollectDataLayout extends LinearLayout {
             JSONObject overlap = data.getJSONObject("overlap");
             JSONObject enhance = data.getJSONObject("enhance");
             JSONObject options = data.getJSONObject("options");
+            JSONObject device = data.getJSONObject("device");
 
             String cannotMeasure = options.getString("cannotMeasure");
 
@@ -962,6 +954,14 @@ public class CollectDataLayout extends LinearLayout {
                 CheckBox checkBox = (CheckBox)findViewById(R.id.bn);
                 checkBox.setChecked(true);
             }
+
+            if(device.getString("type").equals("DF3000")) {
+                setSpinnerSelectionWithIndex(rootView, R.id.device_type_spinner, 0);
+            } else {
+                setSpinnerSelectionWithIndex(rootView, R.id.device_type_spinner, 1);
+            }
+
+            deviceSerial = device.getString("serial");
         } catch(JSONException e) {
             e.printStackTrace();
         }

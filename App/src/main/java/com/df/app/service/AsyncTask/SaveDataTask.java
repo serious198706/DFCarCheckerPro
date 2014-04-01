@@ -90,9 +90,6 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
             writer.close();
 
             success = true;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            success = false;
         } catch (Exception e) {
             e.printStackTrace();
             success = false;

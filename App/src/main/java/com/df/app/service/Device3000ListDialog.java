@@ -255,10 +255,10 @@ public class Device3000ListDialog extends Dialog {
                 }
 
                 final SerialNumber serialNumber = mSerialNumbers.get(position);
-                final String title = String.format("%d 号设备，序列号：%d", (position+1), serialNumber.getSerialNumber());
+                final String title = String.format("%d 号设备，序列号：%d", (position + 1), serialNumber.getSerialNumber());
                 row.getText1().setText(title);
 
-                final String subtitle = "点击设备";
+                final String subtitle = "点击连接此设备";
                 row.getText2().setText(subtitle);
 
                 return row;
@@ -270,7 +270,7 @@ public class Device3000ListDialog extends Dialog {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DF3000Service.selectSerial(position);
-                mCallback.onFinished(sDriver);
+                mCallback.onFinished(sDriver, mSerialNumbers.get(position).getSerialNumber());
                 dismiss();
             }
         });
@@ -304,6 +304,6 @@ public class Device3000ListDialog extends Dialog {
      * CollectDataLayout实现此接口，当选择设备完成后调用此接口
      */
     public interface OnSelectDeviceFinished {
-        public void onFinished(UsbSerialDriver sDriver);
+        public void onFinished(UsbSerialDriver sDriver, Long serialNumber);
     }
 }

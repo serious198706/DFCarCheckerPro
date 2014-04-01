@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="maskphoto">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/App/lib/maskphoto.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

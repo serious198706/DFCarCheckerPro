@@ -30,6 +30,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
 import static com.df.app.util.Helper.setTextView;
@@ -85,12 +87,22 @@ public class MainActivity extends Activity {
             userInfo.setOrid(bundle.getString("Orid"));
         }
 
-        if(Common.getEnvironment().equals("i")) {
-            setTextView(getWindow().getDecorView(), R.id.environmentText, "内网测试");
-        } else if(Common.getEnvironment().equals("i_i")) {
-            setTextView(getWindow().getDecorView(), R.id.environmentText, "内网测试");
-        } else if(Common.getEnvironment().equals("o")) {
-            setTextView(getWindow().getDecorView(), R.id.environmentText, "外网测试");
+        switch (Common.getEnvironment()) {
+            case Common.EXTERNAL_VERSION:
+                setTextView(getWindow().getDecorView(), R.id.environmentText, "外网测试");
+                break;
+            case Common.INTERNAL_VERSION:
+                setTextView(getWindow().getDecorView(), R.id.environmentText, "内网测试(100.3)");
+                break;
+            case Common.INTERNAL_S_VERSION:
+                setTextView(getWindow().getDecorView(), R.id.environmentText, "内网测试(100.6)");
+                break;
+            case Common.FORMAL_VERSION:
+//            SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
+//            PICTURE_ADDRESS = "http://192.168.100.6:8006/";
+//            THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
+//            PROCEDURES_ADDRESS = "http://192.168.18.200:9901/";
+                break;
         }
     }
 
@@ -187,7 +199,7 @@ public class MainActivity extends Activity {
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            Log.d(Common.TAG, "文件操作出错!");
+            e.printStackTrace();
         }
     }
 

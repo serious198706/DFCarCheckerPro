@@ -2,6 +2,7 @@ package com.df.app.carCheck;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,8 +30,10 @@ import com.df.app.service.AsyncTask.GeneratePhotoEntitiesTask;
 import com.df.app.service.AsyncTask.SaveDataTask;
 import com.df.app.service.AsyncTask.UploadPictureTask;
 import com.df.app.util.Common;
+import com.df.app.util.DeleteFiles;
 import com.df.app.util.Helper;
 import com.df.app.util.MyAlertDialog;
+import com.df.app.util.MyApplication;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,6 +75,8 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
 
     private boolean showMenu = false;
 
+    private List<String> filesDelete;
+
     // 按钮内容与按钮id的map
     SparseArray<String> tabMap = new SparseArray<String>();
 
@@ -108,6 +113,15 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
             public void onClick(View view) {
                 showMenu = !showMenu;
                 showNaviMenu(showMenu);
+            }
+        });
+        navigateButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b) {
+                    showMenu = !showMenu;
+                    showNaviMenu(showMenu);
+                }
             }
         });
 
@@ -281,6 +295,10 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
         }
 
         fillInData(carId, jsonString);
+
+       //MyApplication myApplication = (MyApplication)getApplication();
+
+
     }
 
     /**
@@ -315,6 +333,15 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
                 accidentCheckLayout, integratedCheckLayout, true, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
             @Override
             public void onFinished(List<PhotoEntity> photoEntities) {
+                // 找出所有需要删除的文件
+                filesDelete = new ArrayList<String>();
+
+//                for(PhotoEntity photoEntity : photoEntities) {
+//                    // 不需要判断文件名
+//                    filesDelete.add(photoEntity.getFileName());
+//                    filesDelete.add(photoEntity.getThumbFileName());
+//                }
+
                 // 2.上传图片
                 uploadPictures(photoEntities);
             }
@@ -403,6 +430,9 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
                     if(file.exists()) {
                         file.delete();
                     }
+
+//                    DeleteFiles deleteFiles = new DeleteFiles(Common.photoDirectory, filesDelete);
+//                    deleteFiles.deleteFiles();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -557,7 +587,8 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
             case Common.MODIFY_COMMENT: {
                     Bundle bundle = data.getExtras();
 
-                    accidentCheckLayout.modifyComment(bundle.getString("COMMENT"));
+                    if(bundle.containsKey("COMMENT"))
+                        accidentCheckLayout.modifyComment(bundle.getString("COMMENT"));
                 }
                 break;
             // 外观标准照

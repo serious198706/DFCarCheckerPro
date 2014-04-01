@@ -20,6 +20,16 @@ public class PosEntity implements Serializable {
     private String imageFileName;
     private Bitmap bitmap = null;
 
+    private boolean delete = false;
+
+    public boolean isDelete() {
+        return delete;
+    }
+
+    public void setDelete(boolean delete) {
+        this.delete = delete;
+    }
+
     public PosEntity(int type) {
         this.type = type;
     }

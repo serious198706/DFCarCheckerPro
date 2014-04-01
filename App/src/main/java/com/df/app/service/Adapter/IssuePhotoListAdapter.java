@@ -66,8 +66,12 @@ public class IssuePhotoListAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public ListedPhoto getItem(int position) {
         return items.get(position);
+    }
+
+    public List<ListedPhoto> getItems() {
+        return this.items;
     }
 
     @Override
@@ -77,6 +81,10 @@ public class IssuePhotoListAdapter extends BaseAdapter {
 
     public void addItem(ListedPhoto listedPhoto) {
         this.items.add(listedPhoto);
+    }
+
+    public void setItems(List<ListedPhoto> items) {
+        this.items = items;
     }
 
     public void remove(int position) {
@@ -180,6 +188,13 @@ public class IssuePhotoListAdapter extends BaseAdapter {
             }
 
             deleteButton.setVisibility(delete ? View.INVISIBLE : View.VISIBLE);
+
+            // 如果在之前的操作里选择了删除
+            if(listedPhoto.isDelete()) {
+                view.setAlpha(0.3f);
+            } else {
+                view.setAlpha(1.0f);
+            }
         }
 
         return view;

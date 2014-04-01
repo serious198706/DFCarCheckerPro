@@ -22,7 +22,7 @@ public class Common {
 
     public static final String NAMESPACE = "http://cheyipai";
 
-    private static String ENVIRONMENT;
+    private static int ENVIRONMENT;
 
     private static String SERVER_ADDRESS;
     private static String PICTURE_ADDRESS;
@@ -45,39 +45,44 @@ public class Common {
         return PROCEDURES_ADDRESS;
     }
 
-    public static void setEnvironment(String environment) {
+    public static final int EXTERNAL_VERSION = 50;
+    public static final int INTERNAL_VERSION = 51;
+    public static final int INTERNAL_S_VERSION = 52;
+    public static final int FORMAL_VERSION = 53;
+
+
+    public static void setEnvironment(int environment) {
         ENVIRONMENT = environment;
-        // 外网测试
-        if(environment.equals("o")) {
-            SERVER_ADDRESS = "http://114.112.88.216:9133/Services/";
-            PICTURE_ADDRESS = "http://i.268v.com:8092/";
-            THUMB_ADDRESS = "http://i.268v.com:8092/small/";
-            PROCEDURES_ADDRESS = "http://truetest.cheyipai.com:20002/";
-        }
-        // 内网测试 （100.3）
-        else if(environment.equals("i")) {
-            SERVER_ADDRESS = "http://192.168.100.3:40005/services/";
-            PICTURE_ADDRESS = "http://192.168.100.6:8006/";
-            THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
-            PROCEDURES_ADDRESS = "http://192.168.100.3:40001/";
-        }
-        // 内网测试（100.6）
-        else if(environment.equals("i_i")) {
-            SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
-            PICTURE_ADDRESS = "http://192.168.100.6:8006/";
-            THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
-            PROCEDURES_ADDRESS = "http://192.168.18.200:9901/";
-        }
-        // 正式
-        else {
+
+        switch (environment) {
+            case EXTERNAL_VERSION:
+                SERVER_ADDRESS = "http://114.112.88.216:9133/Services/";
+                PICTURE_ADDRESS = "http://i.268v.com:8092/c/";
+                THUMB_ADDRESS = "http://i.268v.com:8092/small/c/";
+                PROCEDURES_ADDRESS = "http://truetest.cheyipai.com:20002/";
+                break;
+            case INTERNAL_VERSION:
+                SERVER_ADDRESS = "http://192.168.100.3:40005/services/";
+                PICTURE_ADDRESS = "http://192.168.100.6:8006/c/";
+                THUMB_ADDRESS = "http://192.168.100.6:8006/small/c/";
+                PROCEDURES_ADDRESS = "http://192.168.100.3:40001/";
+                break;
+            case INTERNAL_S_VERSION:
+                SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
+                PICTURE_ADDRESS = "http://192.168.100.6:8006/c/";
+                THUMB_ADDRESS = "http://192.168.100.6:8006/small/c/";
+                PROCEDURES_ADDRESS = "http://192.168.18.200:9901/";
+                break;
+            case FORMAL_VERSION:
 //            SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
 //            PICTURE_ADDRESS = "http://192.168.100.6:8006/";
 //            THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
 //            PROCEDURES_ADDRESS = "http://192.168.18.200:9901/";
+                break;
         }
     }
 
-    public static String getEnvironment() {
+    public static int getEnvironment() {
         return ENVIRONMENT;
     }
 
@@ -140,6 +145,8 @@ public class Common {
 
     public static final int ENTER_EXTERIOR_PAINT = 0;
     public static final int ENTER_INTERIOR_PAINT = 1;
+
+    public static final int MASK_PHOTO = 10;
 
     // 绘制颜色
     public static int PAINTCOLOR = Color.rgb(0xEA, 0x55, 0x04);

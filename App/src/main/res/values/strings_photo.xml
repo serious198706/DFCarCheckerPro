@@ -23,6 +23,7 @@
     <string name="procedures_photo">手续组</string>
     <string name="engine_photo">机舱组</string>
     <string name="agreement_photo">协议组</string>
+    <string name="rePhoto">此部位已有照片，是否替换？</string>
     <string-array name="photoForOtherItems">
         <item>协议</item>
     </string-array>

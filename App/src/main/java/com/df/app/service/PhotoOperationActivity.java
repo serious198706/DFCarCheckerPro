@@ -49,6 +49,8 @@ public class PhotoOperationActivity extends Activity {
     // 用来还原之前的photoEntity状态
     private PhotoEntity tempPhotoEntity = null;
 
+    private Bitmap downloadedBitmap;
+
     private ImageLoader imageLoader = new ImageLoader(this);
     private ProgressBar progressBar;
 
@@ -74,6 +76,7 @@ public class PhotoOperationActivity extends Activity {
             DownloadImageTask downloadImageTask = new DownloadImageTask(fileName, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
+                    downloadedBitmap = bitmap;
                     imageView.setImageBitmap(bitmap);
                     attacher.update();
                     progressBar.setVisibility(View.INVISIBLE);
@@ -94,6 +97,27 @@ public class PhotoOperationActivity extends Activity {
             imageView.setImageBitmap(bitmap);
             progressBar.setVisibility(View.INVISIBLE);
         }
+
+        ImageButton editButton = (ImageButton)findViewById(R.id.edit);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(fileName.equals("")) {
+                    Toast.makeText(PhotoOperationActivity.this, "没有图片", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(PhotoOperationActivity.this, MaskPhotoActivity.class);
+
+                if(downloadedBitmap != null) {
+                    intent.putExtra("bitmap", downloadedBitmap);
+                } else {
+                    intent.putExtra("fileName", fileName);
+                }
+
+                startActivityForResult(intent, Common.MASK_PHOTO);
+            }
+        });
 
         Button backButton = (Button)findViewById(R.id.back);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -159,8 +183,32 @@ public class PhotoOperationActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
         switch (requestCode) {
+            case Common.MASK_PHOTO:
+                if(resultCode == Activity.RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    fileName = bundle.getString("fileName");
+
+                    Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + fileName);
+                    imageView.setImageBitmap(bitmap);
+                    attacher.update();
+
+                    PhotoLayout.reTakePhotoEntity.setFileName(fileName);
+                    PhotoLayout.reTakePhotoEntity.setThumbFileName(fileName.substring(0, fileName.length() - 4) + "_t.jpg");
+                    PhotoLayout.reTakePhotoEntity.setModifyAction(Action.MODIFY);
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(PhotoLayout.reTakePhotoEntity.getJsonString());
+                        jsonObject.put("Action", Action.MODIFY);
+                        PhotoLayout.reTakePhotoEntity.setJsonString(jsonObject.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
             case Common.PHOTO_RETAKE:
                 if(resultCode == Activity.RESULT_OK) {
+                    fileName = tempPhotoEntity.getFileName();
+
                     Helper.setPhotoSize(tempPhotoEntity.getFileName(), 800);
                     Helper.generatePhotoThumbnail(tempPhotoEntity.getFileName(), 400);
 

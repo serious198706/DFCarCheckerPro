@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.df.app.R;
+import com.df.app.carCheck.Integrated2Layout;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintView.ExteriorPaintPreviewView;
@@ -300,6 +301,10 @@ public class IntegratedLayout extends LinearLayout {
         }
         if(downloadImage1Task != null) {
             downloadImage1Task.cancel(true);
+        }
+
+        for(int i = 0; i < Integrated2Layout.photoShotCount.length; i++) {
+            Integrated2Layout.photoShotCount[i] = 0;
         }
     }
 }

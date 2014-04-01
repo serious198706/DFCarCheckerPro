@@ -176,7 +176,7 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
         String currentField = "";
 
         // 综合检查二
-        if(!Common.getEnvironment().equals("i"))
+        if(Common.getEnvironment() != Common.INTERNAL_S_VERSION)
             currentField = integrated2Layout.checkAllFields();
 
         if(currentField.equals("leftFront")) {

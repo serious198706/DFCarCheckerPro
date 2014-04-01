@@ -141,7 +141,7 @@ public class AccidentResultLayout extends LinearLayout {
         issue.addPhoto(photoEntity);
         thisTimeNewPhoto.add(photoEntity);
 
-        int index = adapter.getCount() + 1;
+        int index = adapter.getCount();
         ListedPhoto listedPhoto = new ListedPhoto(index, photoEntity);
         adapter.addItem(listedPhoto);
         adapter.notifyDataSetChanged();
@@ -172,7 +172,7 @@ public class AccidentResultLayout extends LinearLayout {
             photoEntity.setIndex(PhotoLayout.photoIndex++);
 
             // 如果是走了这段代码，则一定是添加照片
-            // 如果是修改模式，则Action就是add
+            // 如果是修改模式，则Action就是modify
             if(CarCheckActivity.isModify()) {
                 photoEntity.setModifyAction(Action.MODIFY);
             } else {

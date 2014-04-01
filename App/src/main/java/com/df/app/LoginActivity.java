@@ -45,7 +45,7 @@ public class LoginActivity extends Activity {
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                if (id == R.id.login || id == EditorInfo.IME_ACTION_GO) {
                     attemptLogin();
                     return true;
                 }
@@ -67,10 +67,22 @@ public class LoginActivity extends Activity {
 
             String versionText = "V" + pInfo.versionName + " - ";
 
-            if(Common.getEnvironment().equals("i")) {
-                versionText += "内网测试";
-            } else if(Common.getEnvironment().equals("o")) {
-                versionText += "外网测试";
+            switch (Common.getEnvironment()) {
+                case Common.EXTERNAL_VERSION:
+                    versionText += "外网测试";
+                    break;
+                case Common.INTERNAL_VERSION:
+                    versionText += "内网测试(100.3)";
+                    break;
+                case Common.INTERNAL_S_VERSION:
+                    versionText += "内网测试(100.6)";
+                    break;
+                case Common.FORMAL_VERSION:
+//            SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
+//            PICTURE_ADDRESS = "http://192.168.100.6:8006/";
+//            THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
+//            PROCEDURES_ADDRESS = "http://192.168.18.200:9901/";
+                    break;
             }
 
             appVersionText.setText(versionText);
@@ -119,8 +131,7 @@ public class LoginActivity extends Activity {
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
+            // 出错时，让相应的控件获取焦点
             focusView.requestFocus();
         } else {
             // 进行登录

@@ -1,5 +1,6 @@
 package com.df.app;
 
+import com.df.app.util.Common;
 import com.df.app.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -125,7 +126,7 @@ public class Welcome_o_Activity extends Activity {
                 // This method will be executed once the timer is over
                 // Start your app main activity
                 Intent intent = new Intent(Welcome_o_Activity.this, StartupActivity.class);
-                intent.putExtra("environment", "o");
+                intent.putExtra("environment", Common.EXTERNAL_VERSION);
                 startActivity(intent);
 
                 // close this activity

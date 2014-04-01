@@ -1,8 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+              android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="wrap_content">
 
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow android:layout_marginTop="15dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="买方负责："
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="right"
+                android:layout_gravity="center"/>
+            <TextView android:id="@+id/duty_buyer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:textSize="20sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="left"
+                android:singleLine="false"/>
+        </TableRow>
+        <TableRow android:layout_marginTop="15dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="卖方负责："
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="right"
+                android:layout_gravity="center"/>
+            <TextView android:id="@+id/duty_seller"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:textSize="20sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="left"/>
+        </TableRow>
+        <TableRow android:layout_marginTop="15dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="卖方约定："
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="right"/>
+            <TextView android:id="@+id/shouxu"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="4"
+                      android:textSize="20sp"
+                      android:textColor="#555"
+                      android:textStyle="bold"
+                      android:gravity="left"/>
+        </TableRow>
+        <TableRow android:layout_marginTop="15dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="right"
+                android:layout_gravity="center"/>
+            <TextView android:id="@+id/chekuang"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="4"
+                      android:textSize="20sp"
+                      android:textColor="#555"
+                      android:textStyle="bold"
+                      android:gravity="left"/>
+        </TableRow>
+        <TableRow android:layout_marginTop="15dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="right"
+                android:layout_gravity="center"/>
+            <TextView android:id="@+id/qita"
+                      android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:layout_weight="4"
+                      android:textSize="20sp"
+                      android:textColor="#555"
+                      android:textStyle="bold"
+                      android:gravity="left"/>
+        </TableRow>
+    </TableLayout>
 </LinearLayout>

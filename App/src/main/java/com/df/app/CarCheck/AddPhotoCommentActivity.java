@@ -27,6 +27,7 @@ import static com.df.app.util.Helper.setTextView;
  */
 public class AddPhotoCommentActivity extends Activity {
     private String fileName;
+    private String lastComment = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,8 @@ public class AddPhotoCommentActivity extends Activity {
         });
 
         if(bundle.containsKey("comment")) {
-            setEditViewText(getWindow().getDecorView(), R.id.comment, bundle.getString("comment"));
+            lastComment = bundle.getString("comment");
+            setEditViewText(getWindow().getDecorView(), R.id.comment, lastComment);
         }
     }
 
@@ -71,35 +73,38 @@ public class AddPhotoCommentActivity extends Activity {
     }
 
     private void alert() {
-        // 如果备注框不为空
-        if(!getEditViewText(getWindow().getDecorView(), R.id.comment).trim().equals("")) {
-            View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
-            TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-            TextView content = new TextView(view1.getContext());
-            content.setText(R.string.discardComment);
-            content.setTextSize(20f);
-            contentArea.addView(content);
+        View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        TextView content = new TextView(view1.getContext());
+        content.setText(R.string.discardComment);
+        content.setTextSize(20f);
+        contentArea.addView(content);
 
-            setTextView(view1, R.id.title, getResources().getString(R.string.alert));
+        setTextView(view1, R.id.title, getResources().getString(R.string.alert));
 
-            AlertDialog dialog = new AlertDialog.Builder(AddPhotoCommentActivity.this)
-                    .setView(view1)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+        AlertDialog dialog = new AlertDialog.Builder(AddPhotoCommentActivity.this)
+                .setView(view1)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (lastComment.equals(getEditViewText(getWindow().getDecorView(), R.id.comment).trim())) {
+                            lastComment = getEditViewText(getWindow().getDecorView(), R.id.comment).trim();
                             Intent intent = new Intent();
-                            intent.putExtra("COMMENT", "");
+                            intent.putExtra("COMMENT", lastComment);
+                            setResult(Activity.RESULT_OK, intent);
+                            finish();
+                        } else {
+                            Intent intent = new Intent();
+                            intent.putExtra("COMMENT", lastComment);
                             setResult(Activity.RESULT_OK, intent);
                             finish();
                         }
-                    })
-                    .setNegativeButton(R.string.cancel, null)
-                    .create();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .create();
 
-            dialog.show();
-        } else {
-            saveResult();
-        }
+        dialog.show(); 
     }
 
     /**
