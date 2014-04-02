@@ -83,7 +83,7 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
             accidentResultLayout = new AccidentLayout(this, accident, photos);
             integratedLayout = new IntegratedLayout(this, conditions, photos);
             photoLayout = new PhotoLayout(this, photos);
-            otherLayout = new OtherLayout(this, photos);
+            otherLayout = new OtherLayout(this, procedures);
 
             views.add(basicInfoLayout);
             views.add(optionsLayout);

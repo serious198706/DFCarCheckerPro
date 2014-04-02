@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
 import static com.df.app.util.Helper.parsePhotoData;
@@ -175,6 +177,7 @@ public class PaintActivity extends Activity {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                reallyDeleteItems();
                 notifyPhotoList();
                 finish();
             }
@@ -219,6 +222,8 @@ public class PaintActivity extends Activity {
                 paintView.setEnabled(false);
             }
         });
+
+        //PhotoViewAttacher attacher = new PhotoViewAttacher(paintView);
     }
 
     /**
@@ -251,32 +256,64 @@ public class PaintActivity extends Activity {
          adapter = new PaintPhotoListAdapter(this, listedPhotos, new PaintPhotoListAdapter.OnDeleteItem() {
             @Override
             public void onDeleteItem(int position) {
-                if(CarCheckActivity.isModify()) {
-                    PhotoEntity photoEntity = paintView.getPhotoEntities().get(position);
-
-                    PhotoEntity temp = PhotoFaultLayout.photoListAdapter.getItem(photoEntity);
-                    temp.setModifyAction(Action.DELETE);
-
-                    try {
-                        JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
-                        jsonObject.put("Action", Action.DELETE);
-                        temp.setJsonString(jsonObject.toString());
-
-                        PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                //paintView.getPhotoEntities().remove(position);
-                paintView.getPosEntities().remove(position);
+                paintView.getPosEntities().get(position).setDelete(true);
                 paintView.invalidate();
-                adapter.remove(position);
+                adapter.getItem(position).setDelete(true);
                 adapter.notifyDataSetChanged();
             }
         });
 
         photoListView.setAdapter(adapter);
+    }
+
+    private void reallyDeleteItems() {
+        for(int i = adapter.getCount() - 1; i >= 0; i--) {
+            ListedPhoto listedPhoto = adapter.getItem(i);
+
+            if(!listedPhoto.isDelete()) {
+                continue;
+            }
+
+            int position = listedPhoto.getIndex();
+
+            if(CarCheckActivity.isModify()) {
+                PhotoEntity photoEntity = paintView.getPhotoEntities().get(position);
+
+                PhotoEntity temp = PhotoFaultLayout.photoListAdapter.getItem(photoEntity);
+                temp.setModifyAction(Action.DELETE);
+
+                try {
+                    JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+                    jsonObject.put("Action", Action.DELETE);
+                    temp.setJsonString(jsonObject.toString());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                if(position < paintView.getPhotoEntities().size()) {
+                    PhotoEntity photoEntity = paintView.getPhotoEntities().get(position);
+                    PhotoFaultLayout.photoListAdapter.removeItem(photoEntity);
+                }
+
+                paintView.getPhotoEntities().remove(position);
+            }
+
+            paintView.getPosEntities().remove(position);
+        }
+
+        paintView.invalidate();
+        PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+    }
+
+    private void cancelOperations() {
+        for(ListedPhoto listedPhoto : adapter.getItems()) {
+            int position = listedPhoto.getIndex();
+
+            paintView.getPosEntities().get(position).setDelete(false);
+            adapter.getItem(position).setDelete(false);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     /**
@@ -471,6 +508,7 @@ public class PaintActivity extends Activity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if(msgId == R.string.cancel_confirm) {
                             // 退出
+                            cancelOperations();
                             paintView.cancel();
                             finish();
                         } else if(msgId == R.string.clear_confirm) {
@@ -567,7 +605,8 @@ public class PaintActivity extends Activity {
 
         paintView.getPhotoEntities().add(photoEntity);
 
-        ListedPhoto listedPhoto = new ListedPhoto(paintView.getPosEntities().size(),
+        // 此处为index，使用size时要-1
+        ListedPhoto listedPhoto = new ListedPhoto(paintView.getPosEntities().size() - 1,
                 photoEntity, paintView.getPosEntity().getType());
 
         adapter.add(listedPhoto);
