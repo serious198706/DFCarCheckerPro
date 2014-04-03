@@ -145,9 +145,10 @@ public class UploadPictureTask extends AsyncTask<Void, Integer, Boolean> {
             if(success) {
                 // 如果成功上传，推动进度条
                 Log.d(Common.TAG, "上传成功！");
-                publishProgress(i);
+                publishProgress(i + 1);
             } else {
                i--;
+
             }
         }
 

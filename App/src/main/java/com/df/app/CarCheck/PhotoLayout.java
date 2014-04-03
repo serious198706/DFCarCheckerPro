@@ -41,7 +41,7 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
     public static PhotoFaultLayout photoFaultLayout;
     public static PhotoProcedureLayout photoProcedureLayout;
     public static PhotoEngineLayout photoEngineLayout;
-    public static PhotoOtherLayout photoOtherLayout;
+    public static PhotoAgreement photoAgreement;
 
     private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
     private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
@@ -79,14 +79,14 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
         photoFaultLayout = new PhotoFaultLayout(context);
         photoProcedureLayout = new PhotoProcedureLayout(context);
         photoEngineLayout = new PhotoEngineLayout(context);
-        photoOtherLayout = new PhotoOtherLayout(context);
+        photoAgreement = new PhotoAgreement(context);
 
         views.add(photoExteriorLayout);
         views.add(photoInteriorLayout);
         views.add(photoFaultLayout);
         views.add(photoProcedureLayout);
         views.add(photoEngineLayout);
-        views.add(photoOtherLayout);
+        views.add(photoAgreement);
 
         viewPager.setAdapter(new MyViewPagerAdapter(views));
         viewPager.setCurrentItem(0);
@@ -147,7 +147,7 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
      * 保存协议组照片
      */
     public void saveOtherStandardPhoto() {
-        photoOtherLayout.saveOtherStandardPhoto();
+        photoAgreement.saveAgreementPhoto();
     }
 
     /**
@@ -186,7 +186,7 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
         }
 
         // 协议组照片必拍
-        currentField = photoOtherLayout.check();
+        currentField = photoAgreement.check();
 
         if(!currentField.equals("")) {
             Toast.makeText(rootView.getContext(), "协议组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
@@ -248,8 +248,8 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
             Integrated2Layout.photoShotCount[i] = 0;
         }
 
-        PhotoOtherLayout.photoListAdapter = null;
-        PhotoOtherLayout.photoShotCount = 0;
+        PhotoAgreement.photoListAdapter = null;
+        PhotoAgreement.photoShotCount = 0;
         PhotoLayout.photoIndex = 1;
     }
 
@@ -259,6 +259,6 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
         PhotoProcedureLayout.photoListAdapter.notifyDataSetChanged();
         PhotoEngineLayout.photoListAdapter.notifyDataSetChanged();
-        PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
+        PhotoAgreement.photoListAdapter.notifyDataSetChanged();
     }
 }

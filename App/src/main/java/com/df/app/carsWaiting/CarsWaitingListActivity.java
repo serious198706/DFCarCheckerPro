@@ -24,6 +24,8 @@ import com.df.app.service.AsyncTask.DeleteCarTask;
 import com.df.app.service.AsyncTask.GetCarDetailTask;
 import com.df.app.service.AsyncTask.GetCarsWaitingListTask;
 import com.df.app.util.Common;
+import com.df.app.util.DeleteFiles;
+import com.df.app.util.Helper;
 import com.fortysevendeg.android.swipelistview.BaseSwipeListViewListener;
 import com.fortysevendeg.android.swipelistview.SwipeListView;
 
@@ -47,7 +49,7 @@ public class CarsWaitingListActivity extends Activity {
 
     public int startNumber = 1;
     private View footerView;
-    private int lastPos;
+    private int lastPos = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +118,9 @@ public class CarsWaitingListActivity extends Activity {
 
             @Override
             public void onStartOpen(int position, int action, boolean right) {
-                swipeListView.closeAnimate(lastPos);
+                if(lastPos != -1)
+                    swipeListView.closeAnimate(lastPos);
+
                 lastPos = position;
             }
         });
@@ -155,7 +159,10 @@ public class CarsWaitingListActivity extends Activity {
                 startNumber = 1;
                 data.clear();
                 adapter.notifyDataSetChanged();
-                swipeListView.closeAnimate(lastPos);
+
+                if(lastPos != -1)
+                    swipeListView.closeAnimate(lastPos);
+
                 refresh();
             }
         });
@@ -217,6 +224,12 @@ public class CarsWaitingListActivity extends Activity {
         } else {
             footerView.setVisibility(View.VISIBLE);
         }
+
+//        // 如果待检车辆为0, 表示没有保存的数据，删掉相关目录下的文件(正式环境下）
+//        if(data.size() == 0) {
+//            DeleteFiles.deleteFiles(Common.photoDirectory);
+//            DeleteFiles.deleteFiles(Common.savedDirectory);
+//        }
     }
 
     /**

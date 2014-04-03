@@ -3,7 +3,9 @@ package com.df.app.carCheck;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ public class TransactionNotesLayout extends LinearLayout {
     private View rootView;
     private ProgressBar pb;
     private WebView transactionNotesWeb;
+    private Handler handler;
 
     public TransactionNotesLayout(Context context) {
         super(context);
@@ -43,9 +46,8 @@ public class TransactionNotesLayout extends LinearLayout {
         init(context);
     }
 
-    public boolean commitTransactionNotes() {
-        commit();
-        return true;
+    public void commitTransactionNotes(Handler handler) {
+        commit(handler);
     }
 
     @JavascriptInterface
@@ -56,13 +58,33 @@ public class TransactionNotesLayout extends LinearLayout {
     }
 
     @JavascriptInterface
-    public void commit() {
+    public void commit(Handler handler) {
+        this.handler = handler;
         transactionNotesWeb.loadUrl("javascript:SaveNode()");
     }
 
+    /**
+     * 提交交易备注
+     * @param result
+     */
     @JavascriptInterface
     public void commit(final String result) {
         Toast.makeText(rootView.getContext(), result, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 交易备注提交成功后
+     * @param val
+     */
+    @JavascriptInterface
+    public void commitResult(boolean val) {
+        if(val) {
+            Log.d(Common.TAG, "交易备注提交成功！");
+            handler.sendEmptyMessage(0);
+        } else {
+            Log.d(Common.TAG, "交易备注提交失败！");
+            handler.sendEmptyMessage(1);
+        }
     }
 
     /**

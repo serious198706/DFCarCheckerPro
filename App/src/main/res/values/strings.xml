@@ -3,8 +3,9 @@
 
     <!-- <string name="app_name">268V检测端专业版</string> -->
     <string name="app_name">268V正式</string>
-    <string name="app_name_i_i">268v内网-100.6</string>
-    <string name="app_name_i">268v内网-100.3</string>
+    <string name="app_name_100_110">268v内网-100.110</string>
+    <string name="app_name_100_6">268v内网-100.6</string>
+    <string name="app_name_100_3">268v内网-100.3</string>
     <string name="app_name_o">268v外网</string>
     <string name="title_activity_startup">StartupActivity</string>
     <string name="ok">确定</string>
@@ -32,5 +33,6 @@
     <string name="title_activity_photo_operation">PhotoOperationActivity</string>
     <string name="title_activity_car_report">CarReportActivity</string>
     <string name="title_activity_mask_photo">MaskPhotoActivity</string>
+    <string name="title_activity_welcome_100_110_activity">Welcome_100_110_activity</string>
 
 </resources>

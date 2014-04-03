@@ -82,41 +82,15 @@
 
     <string name="needRepair">车身覆盖件有需要修复的部位</string>
     <string name="needRepair1">车身覆盖件有需要修复的部位：</string>
-
-    <string name="exterior_camera">拍摄外观组标准组照片</string>
-
-    <string-array name="exterior_camera_item">
-        <item>左前45°</item>
-        <item>右前45°</item>
-        <item>右侧</item>
-        <item>右后45°</item>
-        <item>左后45°</item>
-        <item>左侧</item>
-        <item>其他</item>
-    </string-array>
-
     <string name="exterior_comment">外观检查备注：</string>
 
     <!-- 内饰检查 -->
     <string name="interior">内饰检查</string>
     <string name="interior_dirty">脏污</string>
     <string name="interior_broken">破损</string>
-    <string name="interior_camera">拍摄内饰组照片</string>
-
-    <string-array name="interior_camera_item">
-        <item>工作台</item>
-        <item>方向盘</item>
-        <item>仪表盘</item>
-        <item>左门+方向盘</item>
-        <item>后排座椅</item>
-        <item>副驾座椅</item>
-        <item>其他</item>
-    </string-array>
-
     <string name="sealingStrip">门窗密封条良好无老化、破损：</string>
 
     <string name="in_broken">车内部件破损部位：</string>
-
     <string-array name="in_broken_item">
         <item>仪表台</item>
         <item>方向盘</item>
@@ -151,7 +125,6 @@
     </string-array>
 
     <string name="dirty">车内部件脏污部位：</string>
-
     <string-array name="dirty_item">
         <item>仪表台</item>
         <item>方向盘</item>

@@ -29,6 +29,7 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintView.InteriorPaintPreviewView;
 import com.df.app.service.AsyncTask.DownloadImageTask;
+import com.df.app.util.Helper;
 import com.df.app.util.MyScrollView;
 import com.df.app.util.Common;
 
@@ -379,83 +380,32 @@ public class InteriorLayout extends LinearLayout {
         return interior;
     }
 
-    /**
-     * 生成内饰草图
-     * @return
-     */
-    public PhotoEntity generateSketch() {
-        Bitmap bitmap = null;
-        Canvas c;
-
-        try {
-            bitmap = Bitmap.createBitmap(interiorPaintPreviewView.getMaxWidth(),interiorPaintPreviewView.getMaxHeight(),
-                    Bitmap.Config.ARGB_8888);
-            c = new Canvas(bitmap);
-            interiorPaintPreviewView.draw(c);
-
-            FileOutputStream out = new FileOutputStream(Common.photoDirectory + "interior");
-            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // 如果是修改模式，则Action就是add
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName("interior");
-
-        // 如果是走了这段代码，则一定是添加照片
-        // 如果是修改模式，则Action就是modify
-        if(CarCheckActivity.isModify()) {
-            photoEntity.setIndex(sketchIndex);
-            photoEntity.setModifyAction(Action.MODIFY);
-        } else {
-            photoEntity.setIndex(PhotoLayout.photoIndex++);
-            photoEntity.setModifyAction(Action.NORMAL);
-        }
-
-        // 组织jsonString
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            jsonObject.put("Group", "interior");
-            jsonObject.put("Part", "sketch");
-
-            JSONObject photoData = new JSONObject();
-            photoData.put("height", bitmap.getHeight());
-            photoData.put("width", bitmap.getWidth());
-
-            jsonObject.put("PhotoData", photoData);
-            jsonObject.put("CarId", BasicInfoLayout.carId);
-            jsonObject.put("UserId", MainActivity.userInfo.getId());
-            jsonObject.put("Key", MainActivity.userInfo.getKey());
-            jsonObject.put("Action", photoEntity.getModifyAction());
-            jsonObject.put("Index", photoEntity.getIndex());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        photoEntity.setJsonString(jsonObject.toString());
-
-        return photoEntity;
-    }
-
-    //    /**
-//     * 生成草图(干净的)
+//    /**
+//     * 生成内饰草图
+//     * @return
 //     */
 //    public PhotoEntity generateSketch() {
-//        Bitmap bitmap = getBitmapFromFigure(figure);
+//        Bitmap bitmap = null;
+//        Canvas c;
 //
 //        try {
-//            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure)),
-//                    new File(Common.photoDirectory + "exterior"));
-//        } catch (IOException e) {
+//            bitmap = Bitmap.createBitmap(interiorPaintPreviewView.getMaxWidth(),interiorPaintPreviewView.getMaxHeight(),
+//                    Bitmap.Config.ARGB_8888);
+//            c = new Canvas(bitmap);
+//            interiorPaintPreviewView.draw(c);
+//
+//            FileOutputStream out = new FileOutputStream(Common.photoDirectory + "interior");
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
+//            out.close();
+//        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
 //
+//        // 如果是修改模式，则Action就是add
 //        PhotoEntity photoEntity = new PhotoEntity();
-//        photoEntity.setFileName("exterior");
+//        photoEntity.setFileName("interior");
 //
+//        // 如果是走了这段代码，则一定是添加照片
 //        // 如果是修改模式，则Action就是modify
 //        if(CarCheckActivity.isModify()) {
 //            photoEntity.setIndex(sketchIndex);
@@ -469,11 +419,10 @@ public class InteriorLayout extends LinearLayout {
 //        JSONObject jsonObject = new JSONObject();
 //
 //        try {
-//            jsonObject.put("Group", "exterior");
+//            jsonObject.put("Group", "interior");
 //            jsonObject.put("Part", "sketch");
 //
 //            JSONObject photoData = new JSONObject();
-//
 //            photoData.put("height", bitmap.getHeight());
 //            photoData.put("width", bitmap.getWidth());
 //
@@ -493,6 +442,58 @@ public class InteriorLayout extends LinearLayout {
 //    }
 
     /**
+     * 生成草图(干净的)
+     */
+    public PhotoEntity generateSketch() {
+        Bitmap bitmap = getBitmapFromFigure(figure);
+
+        try {
+            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure)),
+                    new File(Common.photoDirectory + "interior"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("interior");
+
+        // 如果是修改模式，则Action就是modify
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setIndex(sketchIndex);
+            photoEntity.setModifyAction(Action.MODIFY);
+        } else {
+            photoEntity.setIndex(PhotoLayout.photoIndex++);
+            photoEntity.setModifyAction(Action.NORMAL);
+        }
+
+        // 组织jsonString
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("Group", "interior");
+            jsonObject.put("Part", "sketch");
+
+            JSONObject photoData = new JSONObject();
+
+            photoData.put("height", bitmap.getHeight());
+            photoData.put("width", bitmap.getWidth());
+
+            jsonObject.put("PhotoData", photoData);
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        photoEntity.setJsonString(jsonObject.toString());
+
+        return photoEntity;
+    }
+
+    /**
      * 修改或者半路检测时，填上已经保存的内容
      *
      * @param interior
@@ -509,7 +510,7 @@ public class InteriorLayout extends LinearLayout {
     }
 
     private void updateImage(JSONObject photo) throws JSONException{
-        showView(rootView, R.id.inProgressBar, true);
+        showView(rootView, R.id.inProgressBar, false);
         rootView.findViewById(R.id.tipOnPreview).setVisibility(View.GONE);
 
         JSONObject interior = photo.getJSONObject("interior");

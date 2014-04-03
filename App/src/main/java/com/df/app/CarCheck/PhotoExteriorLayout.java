@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.MainActivity;
@@ -45,9 +46,9 @@ public class PhotoExteriorLayout extends LinearLayout {
     private Context context;
 
     // 记录已经拍摄的照片数
-    public static int[] photoShotCount = {0, 0, 0, 0, 0, 0, 0};
+    public static int[] photoShotCount = {0, 0, 0, 0, 0, 0, 0, 0};
 
-    public static long[] photoNames = {0, 0, 0, 0, 0, 0, 0};
+    public static long[] photoNames = {0, 0, 0, 0, 0, 0, 0, 0};
 
     // 记录当前拍摄的文件名
     private long currentTimeMillis;
@@ -96,41 +97,10 @@ public class PhotoExteriorLayout extends LinearLayout {
     }
 
     /**
-     * 生成测试数据
-     * @return
-     */
-    private ArrayList<PhotoEntity> generateDummyPhoto() {
-        ArrayList<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
-
-        PhotoEntity photoEntity1 = new PhotoEntity();
-        photoEntity1.setComment("还行");
-        photoEntity1.setFileName("ex1");
-        photoEntity1.setName("外观 - 左前45");
-
-        PhotoEntity photoEntity2 = new PhotoEntity();
-        photoEntity2.setComment("一般");
-        photoEntity2.setFileName("ex2");
-        photoEntity2.setName("外观 - 右前45");
-
-        photoEntities.add(photoEntity1);
-        photoEntities.add(photoEntity2);
-
-        return photoEntities;
-    }
-
-    /**
      * 拍摄外观组照片
      */
     private void startCamera() {
-        String[] itemArray = getResources().getStringArray(R.array.exterior_camera_item);
-
-        int length = itemArray.length;
-
-        for(int i = 0; i < length; i++) {
-            itemArray[i] += " (";
-            itemArray[i] += Integer.toString(photoShotCount[i]);
-            itemArray[i] += ") ";
-        }
+        String[] itemArray = getItemArray();
 
         View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
 
@@ -143,7 +113,7 @@ public class PhotoExteriorLayout extends LinearLayout {
         listView.setAdapter(new ArrayAdapter<String>(view1.getContext(), android.R.layout.simple_list_item_1, itemArray));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, final View view, int i, long l) {
                 dialog.dismiss();
                 currentShotPart = i;
 
@@ -156,19 +126,8 @@ public class PhotoExteriorLayout extends LinearLayout {
                                 case MyAlertDialog.POSITIVE_PRESSED:
                                     currentTimeMillis = photoNames[currentShotPart];
 
-                                    photoNames[currentShotPart] = currentTimeMillis;
-
-
-                                    // TODO 找到列表中相应的图片
-
-                                    String group = getResources().getStringArray(R.array.exterior_camera_item)[currentShotPart];
-                                    Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
-
-                                    Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
-
-                                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
-                                    ((Activity) getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_STANDARD);
+                                    Toast.makeText(context, "正在拍摄" + ((TextView)view).getText().toString() + "组", Toast.LENGTH_LONG).show();
+                                    Helper.startCamera(context, Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_FOR_EXTERIOR_STANDARD);
                                     break;
                                 case MyAlertDialog.NEGATIVE_PRESSED:
                                     break;
@@ -183,14 +142,8 @@ public class PhotoExteriorLayout extends LinearLayout {
 
                     photoNames[currentShotPart] = currentTimeMillis;
 
-                    String group = getResources().getStringArray(R.array.exterior_camera_item)[currentShotPart];
-                    Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
-
-                    Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
-
-                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
-                    ((Activity) getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_STANDARD);
+                    Toast.makeText(context, "正在拍摄" + ((TextView)view).getText() + "组", Toast.LENGTH_LONG).show();
+                    Helper.startCamera(context, Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_FOR_EXTERIOR_STANDARD);
                 }
             }
         });
@@ -201,6 +154,20 @@ public class PhotoExteriorLayout extends LinearLayout {
         dialog.show();
     }
 
+    private String[] getItemArray() {
+        String[] itemArray = getResources().getStringArray(R.array.exterior_camera_item);
+
+        int length = itemArray.length;
+
+        for(int i = 0; i < length; i++) {
+            itemArray[i] += " (";
+            itemArray[i] += Integer.toString(photoShotCount[i]);
+            itemArray[i] += ") ";
+        }
+
+        return itemArray;
+    }
+
     /**
      * 保存外观标准照，并进行缩小化处理、生成缩略图
      */
@@ -208,12 +175,13 @@ public class PhotoExteriorLayout extends LinearLayout {
         Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
         Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
 
-        PhotoEntity photoEntity = generatePhotoEntity();
+        if(photoShotCount[currentShotPart] == 0) {
+            PhotoEntity photoEntity = generatePhotoEntity();
+            PhotoExteriorLayout.photoListAdapter.addItem(photoEntity);
+            photoShotCount[currentShotPart] = 1;
+        }
 
-        PhotoExteriorLayout.photoListAdapter.addItem(photoEntity);
         PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
-
-        photoShotCount[currentShotPart]++;
 
         startCamera();
     }
@@ -222,7 +190,6 @@ public class PhotoExteriorLayout extends LinearLayout {
      * 生成图片实体
      */
     private PhotoEntity generatePhotoEntity() {
-
         PhotoEntity photoEntity = new PhotoEntity();
         photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
         if(!photoEntity.getFileName().equals(""))
@@ -247,31 +214,8 @@ public class PhotoExteriorLayout extends LinearLayout {
 
         try {
             JSONObject photoJsonObject = new JSONObject();
-            String currentPart = "";
 
-            switch (currentShotPart) {
-                case 0:
-                    currentPart = "leftFront45";
-                    break;
-                case 1:
-                    currentPart = "rightFront45";
-                    break;
-                case 2:
-                    currentPart = "right";
-                    break;
-                case 3:
-                    currentPart = "rightRear45";
-                    break;
-                case 4:
-                    currentPart = "leftRear45";
-                    break;
-                case 5:
-                    currentPart = "left";
-                    break;
-                case 6:
-                    currentPart = "other";
-                    break;
-            }
+            String currentPart = Common.exteriorPartArray[currentShotPart];
 
             photoJsonObject.put("part", currentPart);
 

@@ -6,15 +6,14 @@ import android.os.AsyncTask;
 
 import com.df.app.carCheck.AccidentCheckLayout;
 import com.df.app.carCheck.IntegratedCheckLayout;
+import com.df.app.carCheck.PhotoAgreement;
 import com.df.app.carCheck.PhotoEngineLayout;
 import com.df.app.carCheck.PhotoExteriorLayout;
 import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.carCheck.PhotoInteriorLayout;
-import com.df.app.carCheck.PhotoOtherLayout;
 import com.df.app.carCheck.PhotoProcedureLayout;
 import com.df.app.entries.PhotoEntity;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -90,7 +89,7 @@ public class GeneratePhotoEntitiesTask extends AsyncTask<JSONObject, Void, Boole
         photoEntities.addAll(PhotoEngineLayout.photoListAdapter.getItems());
 
         // 其他组
-        photoEntities.addAll(PhotoOtherLayout.photoListAdapter.getItems());
+        photoEntities.addAll(PhotoAgreement.photoListAdapter.getItems());
 
         // 所有草图
         if(generateSketch)

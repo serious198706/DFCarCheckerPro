@@ -13,6 +13,7 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.PhotoListAdapter;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
+import com.df.app.util.PhotoParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -137,7 +138,7 @@ public class PhotoLayout extends LinearLayout {
         });
 
         try {
-            Helper.parsePhotoData(context, photo, exteriorPhotos, interiorPhotos, faultPhotos, proceduresPhotos,
+            PhotoParser.parsePhotoData(context, photo, exteriorPhotos, interiorPhotos, faultPhotos, proceduresPhotos,
                     enginePhotos, agreementPhotos);
             load(exteriorPhotos);
         } catch (JSONException e) {

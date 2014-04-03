@@ -46,9 +46,10 @@ public class Common {
     }
 
     public static final int EXTERNAL_VERSION = 50;
-    public static final int INTERNAL_VERSION = 51;
-    public static final int INTERNAL_S_VERSION = 52;
-    public static final int FORMAL_VERSION = 53;
+    public static final int INTERNAL_100_3_VERSION = 51;
+    public static final int INTERNAL_100_6_VERSION = 52;
+    public static final int INTERNAL_100_110_VERSION = 53;
+    public static final int PRODUCT_VERSION = 54;
 
 
     public static void setEnvironment(int environment) {
@@ -61,23 +62,29 @@ public class Common {
                 THUMB_ADDRESS = "http://i.268v.com:8092/small/c/";
                 PROCEDURES_ADDRESS = "http://truetest.cheyipai.com:20002/";
                 break;
-            case INTERNAL_VERSION:
+            case INTERNAL_100_3_VERSION:
                 SERVER_ADDRESS = "http://192.168.100.3:40005/services/";
                 PICTURE_ADDRESS = "http://192.168.100.6:8006/c/";
                 THUMB_ADDRESS = "http://192.168.100.6:8006/small/c/";
                 PROCEDURES_ADDRESS = "http://192.168.100.3:40001/";
                 break;
-            case INTERNAL_S_VERSION:
+            case INTERNAL_100_6_VERSION:
                 SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
                 PICTURE_ADDRESS = "http://192.168.100.6:8006/c/";
                 THUMB_ADDRESS = "http://192.168.100.6:8006/small/c/";
                 PROCEDURES_ADDRESS = "http://192.168.18.200:9901/";
                 break;
-            case FORMAL_VERSION:
-//            SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
-//            PICTURE_ADDRESS = "http://192.168.100.6:8006/";
-//            THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
-//            PROCEDURES_ADDRESS = "http://192.168.18.200:9901/";
+            case INTERNAL_100_110_VERSION:
+                SERVER_ADDRESS = "http://192.168.100.110:40005/services/";
+                PICTURE_ADDRESS = "http://192.168.100.6:8006/c";
+                THUMB_ADDRESS = "http://192.168.100.6:8006/small/c";
+                PROCEDURES_ADDRESS = "http://192.168.100.110:40001/";
+                break;
+            case PRODUCT_VERSION:
+//                SERVER_ADDRESS = "http://wcf.268v.com:8052/services/";
+//                PICTURE_ADDRESS = "http://i.268v.com/c";
+//                THUMB_ADDRESS = "http://i.268v.com/small/c";
+//                PROCEDURES_ADDRESS = "http://wcf.cheyipai.com:6080/";
                 break;
         }
     }
@@ -166,7 +173,7 @@ public class Common {
     public static final int PHOTO_FOR_TIRES = 13;
     public static final int PHOTO_FOR_PROCEDURES_STANDARD = 14;
     public static final int PHOTO_FOR_ENGINE_STANDARD = 15;
-    public static final int PHOTO_FOR_OTHER_STANDARD = 16;
+    public static final int PHOTO_FOR_AGREEMENT_STANDARD = 16;
     public static final int PHOTO_RETAKE = 17;
     public static final int MODIFY_COMMENT = 18;
     public static final int MODIFY_PAINT_COMMENT = 19;
@@ -194,10 +201,10 @@ public class Common {
     public static final int DF5000 = 201;
 
     // 拍摄标准照的位置
-    public static final String[] exteriorPartArray = {"leftFront45", "rightFront45", "right", "rightRear45", "leftRear45", "left", "other"};
-    public static final String[] interiorPartArray = {"workbench", "steeringWheel", "dashboard", "leftDoor+steeringWheel", "rearSeats", "coDriverSeat", "other"};
-    public static final String[] proceduresPartArray = {"plate", "procedures", "keys", "other"};
-    public static final String[] enginePartArray = {"overview", "left", "right", "other"};
+    public static final String[] exteriorPartArray = {"左前45°", "右前45°", "右侧底大边", "右后45°", "左后45°", "左侧底大边", "钥匙", "其他"};
+    public static final String[] interiorPartArray = {"仪表盘", "左前门+方向盘", "天窗", "后排座椅", "工作台(中控台)", "其他"};
+    public static final String[] proceduresPartArray = {"车牌", "铭牌 - 行驶证 - 登记证", "其他"};
+    public static final String[] enginePartArray = {"全景", "左侧", "右侧", "其他"};
     public static final String[] tirePartArray = {"leftFront", "rightFront", "leftRear", "rightRear", "spare"};
 
     public static final String EXTERIOR = "exterior";

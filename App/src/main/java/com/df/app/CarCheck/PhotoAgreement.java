@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.PhotoListAdapter;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
+import com.df.app.util.MyAlertDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,8 +35,7 @@ import java.util.List;
  *
  * 协议组照片列表
  */
-public class PhotoOtherLayout extends LinearLayout {
-    private View rootView;
+public class PhotoAgreement extends LinearLayout {
     private Context context;
 
     // adapter
@@ -41,6 +43,7 @@ public class PhotoOtherLayout extends LinearLayout {
 
     // 已拍摄的照片数量
     public static int photoShotCount = 0;
+    private long photoName;
 
     // 正在拍摄的部位
     private int currentShotPart;
@@ -48,25 +51,25 @@ public class PhotoOtherLayout extends LinearLayout {
     // 目前的文件名
     private long currentTimeMillis;
 
-    public PhotoOtherLayout(Context context) {
+    public PhotoAgreement(Context context) {
         super(context);
 
         this.context = context;
         init(context);
     }
 
-    public PhotoOtherLayout(Context context, AttributeSet attrs) {
+    public PhotoAgreement(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public PhotoOtherLayout(Context context, AttributeSet attrs, int defStyle) {
+    public PhotoAgreement(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
     }
 
     private void init(Context context) {
-        rootView = LayoutInflater.from(context).inflate(R.layout.photo_other_list, this);
+        LayoutInflater.from(context).inflate(R.layout.photo_other_list, this);
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
@@ -88,32 +91,50 @@ public class PhotoOtherLayout extends LinearLayout {
      * 拍摄协议组照片
      */
     private void starCamera() {
-        Toast.makeText(context, "正在拍摄协议组", Toast.LENGTH_LONG).show();
+        if(photoShotCount == 1) {
+            MyAlertDialog.showAlert(context, R.string.rePhoto, R.string.alert,
+                    MyAlertDialog.BUTTON_STYLE_OK_CANCEL, new Handler(new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message message) {
+                    switch (message.what) {
+                        case MyAlertDialog.POSITIVE_PRESSED:
+                            currentTimeMillis = photoName;
 
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            Toast.makeText(context, "正在拍摄协议组", Toast.LENGTH_LONG).show();
+                            Helper.startCamera(context, Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_FOR_AGREEMENT_STANDARD);
+                            break;
+                        case MyAlertDialog.NEGATIVE_PRESSED:
+                            break;
+                    }
 
-        currentTimeMillis = System.currentTimeMillis();
-        Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg"); //
-        // create a
-        // file to save the image
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+                    return true;
+                }
+            }));
+        } else {
+            // 使用当前毫秒数当作照片名
+            currentTimeMillis = System.currentTimeMillis();
 
-        ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_OTHER_STANDARD);
+            photoName = currentTimeMillis;
+
+            Toast.makeText(context, "正在拍摄协议组", Toast.LENGTH_LONG).show();
+            Helper.startCamera(context, Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_FOR_AGREEMENT_STANDARD);
+        }
     }
 
     /**
      * 保存协议组照片
      */
-    public void saveOtherStandardPhoto() {
+    public void saveAgreementPhoto() {
         Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
         Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
 
-        PhotoEntity photoEntity = generatePhotoEntity();
+        if(photoShotCount == 0) {
+            PhotoEntity photoEntity = generatePhotoEntity();
+            PhotoAgreement.photoListAdapter.addItem(photoEntity);
+            photoShotCount = 1;
+        }
 
-        PhotoOtherLayout.photoListAdapter.addItem(photoEntity);
-        PhotoOtherLayout.photoListAdapter.notifyDataSetChanged();
-
-        photoShotCount++;
+        PhotoAgreement.photoListAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -145,7 +166,7 @@ public class PhotoOtherLayout extends LinearLayout {
 
         try {
             JSONObject photoJsonObject = new JSONObject();
-            String currentPart = "";
+            String currentPart = "协议";
 
             photoJsonObject.put("part", currentPart);
 
@@ -166,28 +187,6 @@ public class PhotoOtherLayout extends LinearLayout {
         return photoEntity;
     }
 
-    /**
-     * 生成测试数据
-     * @return
-     */
-    private ArrayList<PhotoEntity> generateDummyPhoto() {
-        ArrayList<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
-
-        PhotoEntity photoEntity1 = new PhotoEntity();
-        photoEntity1.setComment("还行");
-        photoEntity1.setFileName("ot1");
-        photoEntity1.setName("其他");
-
-        PhotoEntity photoEntity2 = new PhotoEntity();
-        photoEntity2.setComment("一般");
-        photoEntity2.setFileName("ot2");
-        photoEntity2.setName("其他");
-
-        photoEntities.add(photoEntity1);
-        photoEntities.add(photoEntity2);
-
-        return photoEntities;
-    }
 
     /**
      * 提交前的检查

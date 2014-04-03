@@ -13,6 +13,8 @@ public class Measurement {
 
 	private int blockId;
 
+    private String material;
+
 	private List<Integer> values = new ArrayList<Integer>();
 
 	public Measurement(int blockId) {
@@ -43,7 +45,13 @@ public class Measurement {
 	public List<Integer> getValues() {
 		return values;
 	}
-	
+
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+
+    public String getMaterial() { return this.material; }
+
 	public String toValueString() {
 		StringBuffer sb = new StringBuffer();
 

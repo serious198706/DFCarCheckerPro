@@ -42,11 +42,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
-
 import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
-import static com.df.app.util.Helper.parsePhotoData;
 import static com.df.app.util.Helper.setTextView;
 
 /**

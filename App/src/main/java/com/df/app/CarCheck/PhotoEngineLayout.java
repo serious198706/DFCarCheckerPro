@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.MainActivity;
@@ -24,6 +27,7 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.PhotoListAdapter;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
+import com.df.app.util.MyAlertDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,12 +50,14 @@ public class PhotoEngineLayout extends LinearLayout {
 
     // 已拍摄的照片数量
     public static int[] photoShotCount = {0, 0, 0, 0};
+    private long[] photoNames = {0, 0, 0, 0};
 
     // 正在拍摄的部位
     private int currentShotPart;
 
     // 目前的文件名
     private long currentTimeMillis;
+
 
     public PhotoEngineLayout(Context context) {
         super(context);
@@ -114,19 +120,42 @@ public class PhotoEngineLayout extends LinearLayout {
         listView.setAdapter(new ArrayAdapter<String>(view1.getContext(), android.R.layout.simple_list_item_1, itemArray));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, final View view, int i, long l) {
                 dialog.dismiss();
                 currentShotPart = i;
-                String group = getResources().getStringArray(R.array.photoForEngineItems)[currentShotPart];
-                Toast.makeText(context, "正在拍摄" + group + "组", Toast.LENGTH_LONG).show();
 
-                // 使用当前毫秒数当作照片名
-                currentTimeMillis = System.currentTimeMillis();
-                Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
+                if(photoShotCount[currentShotPart] == 1) {
+                    MyAlertDialog.showAlert(context, R.string.rePhoto, R.string.alert,
+                            MyAlertDialog.BUTTON_STYLE_OK_CANCEL, new Handler(new Handler.Callback() {
+                        @Override
+                        public boolean handleMessage(Message message) {
+                            switch (message.what) {
+                                case MyAlertDialog.POSITIVE_PRESSED:
+                                    currentTimeMillis = photoNames[currentShotPart];
 
-                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
-                ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_ENGINE_STANDARD);
+                                    Toast.makeText(context, "正在拍摄" + ((TextView)view).getText() + "组", Toast.LENGTH_LONG).show();
+                                    Uri fileUri = Helper.getOutputMediaFileUri(Long.toString(currentTimeMillis) + ".jpg");
+
+                                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
+                                    ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_ENGINE_STANDARD);
+                                    break;
+                                case MyAlertDialog.NEGATIVE_PRESSED:
+                                    break;
+                            }
+
+                            return true;
+                        }
+                    }));
+                } else {
+                    // 使用当前毫秒数当作照片名
+                    currentTimeMillis = System.currentTimeMillis();
+
+                    photoNames[currentShotPart] = currentTimeMillis;
+
+                    Toast.makeText(context, "正在拍摄" + ((TextView)view).getText() + "组", Toast.LENGTH_LONG).show();
+                    Helper.startCamera(context, Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_FOR_ENGINE_STANDARD);
+                }
             }
         });
         contentArea.addView(listView);
@@ -143,12 +172,13 @@ public class PhotoEngineLayout extends LinearLayout {
         Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
         Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
 
-        PhotoEntity photoEntity = generatePhotoEntity();
+        if(photoShotCount[currentShotPart] == 0) {
+            PhotoEntity photoEntity = generatePhotoEntity();
+            PhotoEngineLayout.photoListAdapter.addItem(photoEntity);
+            photoShotCount[currentShotPart] = 1;
+        }
 
-        PhotoEngineLayout.photoListAdapter.addItem(photoEntity);
         PhotoEngineLayout.photoListAdapter.notifyDataSetChanged();
-
-        photoShotCount[currentShotPart]++;
 
         startCamera();
     }
@@ -182,22 +212,8 @@ public class PhotoEngineLayout extends LinearLayout {
 
         try {
             JSONObject photoJsonObject = new JSONObject();
-            String currentPart = "";
 
-            switch (currentShotPart) {
-                case 0:
-                    currentPart = "overview";
-                    break;
-                case 1:
-                    currentPart = "left";
-                    break;
-                case 2:
-                    currentPart = "right";
-                    break;
-                case 3:
-                    currentPart = "other";
-                    break;
-            }
+            String currentPart = Common.enginePartArray[currentShotPart];
 
             photoJsonObject.put("part", currentPart);
 
@@ -216,29 +232,6 @@ public class PhotoEngineLayout extends LinearLayout {
         photoEntity.setJsonString(jsonObject.toString());
 
         return photoEntity;
-    }
-
-    /**
-     * 填充测试数据
-     * @return
-     */
-    private ArrayList<PhotoEntity> generateDummyPhoto() {
-        ArrayList<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
-
-        PhotoEntity photoEntity1 = new PhotoEntity();
-        photoEntity1.setComment("还行");
-        photoEntity1.setFileName("en1");
-        photoEntity1.setName("机舱 - 左部");
-
-        PhotoEntity photoEntity2 = new PhotoEntity();
-        photoEntity2.setComment("一般");
-        photoEntity2.setFileName("en2");
-        photoEntity2.setName("机舱 - 右部");
-
-        photoEntities.add(photoEntity1);
-        photoEntities.add(photoEntity2);
-
-        return photoEntities;
     }
 
     /**

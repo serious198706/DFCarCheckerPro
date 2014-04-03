@@ -385,12 +385,12 @@ public class DF5000Service {
 
     public static String[] parsePackage(String str) {
         final String P_START = "AA0A";
-        final String P_PARA = "0111";
+        final String P_PARA = "011D";
 
         int count = 0;
 
-        // data[0]为部位名称、data[1] 为数值 、data[2] 为长度
-        String data[] = new String[3];
+        // data[0]为部位名称、data[1] 为数值 、data[2] 为长度、data[4]为部位材质：Fe铁  nFe非铁
+        String data[] = new String[4];
         int len = str.length();
 
         if (!CollectDataLayout.hasRequestCmd && len >= 14) {
@@ -435,15 +435,15 @@ public class DF5000Service {
                         int a = Integer.parseInt(array[i], 16);
                         if (a > 32768) {
                             a = (a - 32768) / 10;
+                            data[3] = "nFe";
                         } else {
                             a = a / 10;
+                            data[3] = "Fe";
                         }
                         count++;
 
                         str2 += String.valueOf(a);
                         str2 += ",";
-
-                        //str2.append(String.valueOf(a)).append(",");
                     }
 
                     if(str2.length() >= 2) {

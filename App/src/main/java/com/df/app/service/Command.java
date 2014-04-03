@@ -96,8 +96,8 @@ public abstract class Command {
 		}
 	}
 
-	public static class QNC_TRANSMITVALUES extends Command {
-		public QNC_TRANSMITVALUES(byte[] sn, byte[] parameter) {
+	public static class QNC_TRANSMIT_VALUES extends Command {
+		public QNC_TRANSMIT_VALUES(byte[] sn, byte[] parameter) {
 			super(BYTE_TRANSMITVALUES, sn, parameter);
 		}
 	}

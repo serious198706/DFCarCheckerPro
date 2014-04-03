@@ -17,11 +17,13 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class TransmitValueFilter {
+    private String material = "";
+
 	private ByteBuffer buffer = new ByteBuffer();
 
-	private Command.QNC_TRANSMITVALUES cmd;
+	private Command.QNC_TRANSMIT_VALUES cmd;
 
-	public TransmitValueFilter(Command.QNC_TRANSMITVALUES cmd) {
+	public TransmitValueFilter(Command.QNC_TRANSMIT_VALUES cmd) {
 		this.cmd = cmd;
 	}
 
@@ -68,6 +70,9 @@ public class TransmitValueFilter {
 				// Log.d("doFilter", Decoder.dumpHexString(temp));
 				byte[] v1 = new byte[3];
 				byte[] v2 = new byte[3];
+
+                setMaterial(temp[8]);
+
 				v1[0] = temp[9];
 				v1[1] = temp[10];
 				v1[2] = temp[11];
@@ -89,6 +94,22 @@ public class TransmitValueFilter {
 
 		return iRet;
 	}
+
+    private void setMaterial(byte met) {
+        String binaryString = hexToBinary(toHexString(met));
+
+        if(binaryString.substring(1, 2).equals("01")) {
+            material = "Fe";
+        } else {
+            material = "nFe";
+        }
+    }
+
+    public String getMaterial() { return this.material; }
+
+    private String hexToBinary(String Hex) {
+        return Integer.toBinaryString(Integer.parseInt(Hex, 16));
+    }
 
 	private void addValue(List<Integer> list, byte one, byte two, byte three) {
 		String hex = toHexString(one) + toHexString(two) + toHexString(three);

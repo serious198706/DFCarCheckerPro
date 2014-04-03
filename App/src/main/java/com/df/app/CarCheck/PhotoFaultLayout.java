@@ -49,27 +49,4 @@ public class PhotoFaultLayout extends LinearLayout {
         faultList.setAdapter(photoListAdapter);
         faultList.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
     }
-
-    /**
-     * 生成测试数据
-     * @return
-     */
-    private ArrayList<PhotoEntity> generateDummyPhoto() {
-        ArrayList<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
-
-        PhotoEntity photoEntity1 = new PhotoEntity();
-        photoEntity1.setComment("右前铰链处有修复痕迹");
-        photoEntity1.setFileName("fa1");
-        photoEntity1.setName("缺陷 - 右前铰链处");
-
-        PhotoEntity photoEntity2 = new PhotoEntity();
-        photoEntity2.setComment("水箱上支架有修复痕迹");
-        photoEntity2.setFileName("fa2");
-        photoEntity2.setName("缺陷 - 水箱上支架");
-
-        photoEntities.add(photoEntity1);
-        photoEntities.add(photoEntity2);
-
-        return photoEntities;
-    }
 }

@@ -78,6 +78,17 @@ public class CollectDataLayout extends LinearLayout {
     // 是否已经采集数据
     private boolean dataCollected = false;
 
+    // 是否已连接的标志符
+    private boolean isConnected;
+
+    // 线程句柄
+    private Thread t = null;
+
+    // 是否已经获取到序列号
+    private boolean hasSerial;
+
+    private String[] materialArray = new String[29];
+
     // 覆盖件map
     // 1. EditText的id
     // 2. CheckBox的id
@@ -123,7 +134,19 @@ public class CollectDataLayout extends LinearLayout {
             R.id.RB_edit,
             R.id.K_edit,
             R.id.RA_edit,
-            R.id.N_edit
+            R.id.N_edit,
+            R.id.M1_edit,
+            R.id.D1_edit,
+            R.id.D2_edit,
+            R.id.M3_edit,
+            R.id.M5_edit,
+            R.id.F1_edit,
+            R.id.M2_edit,
+            R.id.L1_edit,
+            R.id.L2_edit,
+            R.id.M4_edit,
+            R.id.H1_edit,
+            R.id.J1_edit
     };
 
     // 加强件控件map
@@ -200,6 +223,10 @@ public class CollectDataLayout extends LinearLayout {
     private void init(final Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.collect_data_layout, this);
 
+        for(int i = 0; i < materialArray.length; i++) {
+            materialArray[i] = "";
+        }
+
         // 查找设备按钮
         Button searchDeviceButton = (Button) rootView.findViewById(R.id.searchDevices_button);
         searchDeviceButton.setOnClickListener(new OnClickListener() {
@@ -236,7 +263,7 @@ public class CollectDataLayout extends LinearLayout {
                             // 根据设备地址连接设备
                             device = mBluetoothAdapter.getRemoteDevice(address);
                             if(DF5000Service == null) {
-                                DF5000Service = new DF5000Service(getContext(), mHandler);
+                                DF5000Service = new DF5000Service(getContext(), df5000Handler);
                             }
 
                             DF5000Service.connect(device);
@@ -409,8 +436,6 @@ public class CollectDataLayout extends LinearLayout {
 //                relativeLayout.startAnimation(anim);
     }
 
-
-
     /**
      * 填入测试数据
      */
@@ -446,6 +471,8 @@ public class CollectDataLayout extends LinearLayout {
             });
 
             editText.setText(data);
+
+            materialArray[n[2]] = "";
         }
 
         View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
@@ -476,6 +503,10 @@ public class CollectDataLayout extends LinearLayout {
         for(int[] n : overIdMap.keySet()) {
             EditText editText = (EditText) rootView.findViewById(n[0]);
             editText.setText("");
+
+            CheckBox checkBox = (CheckBox) rootView.findViewById(n[1]);
+            checkBox.setChecked(false);
+            checkBox.setText("(0)");
         }
     }
 
@@ -532,9 +563,9 @@ public class CollectDataLayout extends LinearLayout {
     }
 
     /**
-     * 采集线程
+     * DF3000采集线程
      */
-    Runnable runnable = new Runnable() {
+    Runnable df3000Runnable = new Runnable() {
         @Override
         public void run() {
             isOpen = DF3000Service.connection();
@@ -555,6 +586,8 @@ public class CollectDataLayout extends LinearLayout {
                                 setEditViewText(rootView,
                                         enhanceIdMap.keyAt(measurement.getBlockId() - 18), values);
                             }
+
+                            materialArray[measurement.getBlockId() - 1] = "";
 
                             // 当数据全部采集完毕后，弹出完成提示
                             if(measurement.getBlockId() == 29) {
@@ -612,38 +645,8 @@ public class CollectDataLayout extends LinearLayout {
         else {
             DF3000Service = com.df.app.service.DF3000Service.instance(sDriver);
 
-            Thread collectThread = new Thread(runnable);
+            Thread collectThread = new Thread(df3000Runnable);
             collectThread.start();
-        }
-    }
-
-    /**
-     * 获取问题查勘的内容
-     */
-    private void getIssueItems() {
-        // 启动获取issue数据线程
-        try {
-            GetIssueItemsTask getIssueItemsTask = new GetIssueItemsTask(rootView.getContext(),
-                    generateJSONObject(), new GetIssueItemsTask.OnGetIssueItemsFinished() {
-                @Override
-                public void onFinish(String result, ProgressDialog progressDialog) {
-                    mCallback.showContent();
-                    mCallback.updateUi(result, progressDialog);
-
-                    startButton.setText(R.string.start);
-                    startButton.setEnabled(true);
-                }
-
-                @Override
-                public void onFailed(String error, ProgressDialog progressDialog) {
-                    progressDialog.dismiss();
-                    Toast.makeText(rootView.getContext(), "获取问题失败: " + error, Toast.LENGTH_SHORT).show();
-                    Log.d("DFCarChecker", "获取问题失败: " + error);
-                }
-            });
-            getIssueItemsTask.execute();
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
@@ -651,7 +654,7 @@ public class CollectDataLayout extends LinearLayout {
      * 初始化BluetoothService
      */
     public void setupBluetoothService() {
-        DF5000Service = new DF5000Service(rootView.getContext(), mHandler);
+        DF5000Service = new DF5000Service(rootView.getContext(), df5000Handler);
         df5000Dialog.doDiscovery();
         df5000Dialog.showPairedDevices();
     }
@@ -663,18 +666,10 @@ public class CollectDataLayout extends LinearLayout {
         df5000Dialog.dismiss();
     }
 
-
-    // 是否已连接的标志符
-    private boolean isConnected;
-
-    // 线程句柄
-    private Thread t = null;
-
-    // 是否已经获取到序列号
-    private boolean hasSerial;
-
-    // 处理消息
-    private final Handler mHandler = new Handler() {
+    /**
+     * 采集数据响应（DF5000）
+     */
+    private final Handler df5000Handler = new Handler() {
 
         @Override
         public void handleMessage(Message msg) {
@@ -703,7 +698,9 @@ public class CollectDataLayout extends LinearLayout {
                         // 失去连接
                         case com.df.app.service.DF5000Service.STATE_CONNECTION_LOST:
                             Toast.makeText(rootView.getContext(), R.string.lost_connection, Toast.LENGTH_LONG).show();
-                            showView(rootView, R.id.start_button, false);
+                            startButton.setVisibility(GONE);
+                            startButton.setEnabled(true);
+                            startButton.setText("开始获取数据");
                             isConnected = false;
                             // 关闭蓝牙
                             DF5000Service.stop();
@@ -719,8 +716,9 @@ public class CollectDataLayout extends LinearLayout {
 
                     // 将接收的数据填入EditText
                     if (!TextUtils.isEmpty(array[1]) && !TextUtils.isEmpty(array[0])) {
-                        int name = Integer.parseInt(array[0], 16);
-                        setEditViewText(rootView, overIds[name - 1], array[1]);
+                        int index = Integer.parseInt(array[0], 16);
+                        setEditViewText(rootView, overIds[index - 1], array[1]);
+                        materialArray[index - 1] = array[3];
                     }
 
                     break;
@@ -837,7 +835,15 @@ public class CollectDataLayout extends LinearLayout {
         JSONObject overlap = new JSONObject();
 
         for(int[] n : overIdMap.keySet()) {
-            overlap.put(overIdMap.get(n), getEditViewText(rootView, n[0]));
+            String value;
+
+            if(materialArray[n[2]].equals("Fe")) {
+                value = handleFeValues(getEditViewText(rootView, n[0]));
+            } else {
+                value = getEditViewText(rootView, n[0]);
+            }
+
+            overlap.put(overIdMap.get(n), value);
         }
 
         // 当B柱无法测量时
@@ -900,6 +906,63 @@ public class CollectDataLayout extends LinearLayout {
         data.put("device", device);
 
         return data;
+    }
+
+    /**
+     * 对df5000产生的数据进行铁的数据补偿
+     *
+     * 原因：df5000对铁的测量数据比df3000的测量数据大出约20%
+     * @param value 原数据
+     * @return 新数据
+     */
+    private String handleFeValues(String value) {
+        String[] array = value.split(",");
+        String result = "";
+
+        for(String str : array) {
+            double sValue = Double.parseDouble(str);
+
+            sValue = (sValue - sValue / 1.2) > 50.0 ? sValue - 50.0 : sValue / 1.2;
+
+            result += Integer.toString(((int) sValue));
+            result += ",";
+        }
+
+        if(result.length() >= 2) {
+            result = result.substring(0, result.length() - 1);
+        }
+
+        return result;
+    }
+
+    /**
+     * 获取问题查勘的内容
+     */
+    private void getIssueItems() {
+        // 启动获取issue数据线程
+        try {
+            GetIssueItemsTask getIssueItemsTask = new GetIssueItemsTask(rootView.getContext(),
+                    generateJSONObject(), new GetIssueItemsTask.OnGetIssueItemsFinished() {
+                @Override
+                public void onFinish(String result, ProgressDialog progressDialog) {
+                    mCallback.showContent();
+                    mCallback.updateUi(result, progressDialog);
+
+                    startButton.setText(R.string.start);
+                    startButton.setEnabled(true);
+                }
+
+                @Override
+                public void onFailed(String error, ProgressDialog progressDialog) {
+                    progressDialog.dismiss();
+                    Toast.makeText(rootView.getContext(), "获取问题失败: " + error, Toast.LENGTH_SHORT).show();
+                    Log.d("DFCarChecker", "获取问题失败: " + error);
+                }
+            });
+            getIssueItemsTask.execute();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

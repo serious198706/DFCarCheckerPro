@@ -2,17 +2,38 @@
 <resources>
     <string name="takePhotoForProcedures">拍摄手续组照片</string>
     <string-array name="photoForProceduresItems">
-        <item>铭牌</item>
-        <item>手续</item>
-        <item>钥匙</item>
+        <item>车牌</item>
+        <item>铭牌 - 行驶证 - 登记证</item>
         <item>其他</item>
     </string-array>
 
     <string name="takePhotoForEngine">拍摄机舱组照片</string>
     <string-array name="photoForEngineItems">
-        <item>机舱全景</item>
-        <item>左部</item>
-        <item>右部</item>
+        <item>全景</item>
+        <item>左侧</item>
+        <item>右侧</item>
+        <item>其他</item>
+    </string-array>
+
+    <string name="exterior_camera">拍摄外观组标准组照片</string>
+    <string-array name="exterior_camera_item">
+        <item>左前45°</item>
+        <item>右前45°</item>
+        <item>右侧底大边</item>
+        <item>右后45°</item>
+        <item>左后45°</item>
+        <item>左侧底大边</item>
+        <item>钥匙</item>
+        <item>其他</item>
+    </string-array>
+
+    <string name="interior_camera">拍摄内饰组照片</string>
+    <string-array name="interior_camera_item">
+        <item>仪表盘</item>
+        <item>左门+方向盘</item>
+        <item>天窗</item>
+        <item>后排座椅</item>
+        <item>工作台(中控台)</item>
         <item>其他</item>
     </string-array>
 
@@ -23,7 +44,7 @@
     <string name="procedures_photo">手续组</string>
     <string name="engine_photo">机舱组</string>
     <string name="agreement_photo">协议组</string>
-    <string name="rePhoto">此部位已有照片，是否替换？</string>
+    <string name="rePhoto">此节点已有照片，是否替换？</string>
     <string-array name="photoForOtherItems">
         <item>协议</item>
     </string-array>

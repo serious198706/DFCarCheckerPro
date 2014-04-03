@@ -17,7 +17,7 @@ import android.view.View;
  *
  * @see SystemUiHider
  */
-public class Welcome_i_Activity extends Activity {
+public class Welcome_100_110_Activity extends Activity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -125,8 +125,8 @@ public class Welcome_i_Activity extends Activity {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
-                Intent intent = new Intent(Welcome_i_Activity.this, StartupActivity.class);
-                intent.putExtra("environment", Common.INTERNAL_VERSION);
+                Intent intent = new Intent(Welcome_100_110_Activity.this, StartupActivity.class);
+                intent.putExtra("environment", Common.INTERNAL_100_110_VERSION);
                 startActivity(intent);
 
                 // close this activity

@@ -7,19 +7,22 @@ import java.util.List;
  * Created by 岩 on 14-3-27.
  */
 public class DeleteFiles {
-    private String filePath;
-    private List<String> fileNames;
-
-    public DeleteFiles(String filePath, List<String> fileNames) {
-        this.filePath = filePath;
-        this.fileNames = fileNames;
-    }
-
-    public void deleteFiles() {
+    public static void deleteFiles(String filePath, List<String> fileNames) {
         for(String fileName : fileNames) {
             File file = new File(filePath + fileName);
             if(file.exists()) {
                 file.delete();
+            }
+        }
+    }
+
+    public static void deleteFiles(String path) {
+        File dir = new File(path);
+
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(dir, children[i]).delete();
             }
         }
     }

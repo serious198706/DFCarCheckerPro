@@ -263,19 +263,36 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         return loaded ? "" : "accidentCheck";
     }
 
+    /**
+     * 获取所有的问题
+     * @return
+     */
     public List<Issue> getIssues() {
         return issueLayout.getIssues();
     }
 
+    /**
+     * 修改备注
+     * @param comment
+     */
     public void modifyComment(String comment) {
         issueLayout.modifyComment(comment);
     }
 
+    /**
+     * 清空缓存
+     */
     public void clearCache() {
         issueLayout.clearCache();
         accidentResultLayout.clearCache();
     }
 
+    /**
+     * 修改或半路检测时填入内容
+     * @param accident 事故节点
+     * @param photo 照片节点
+     * @param handler 回调
+     */
     public void fillInData(JSONObject accident, JSONObject photo, Handler handler) {
         try {
             // 测量数据
@@ -299,6 +316,9 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         }
     }
 
+    /**
+     * 销毁drawables
+     */
     public void unbindDrawables() {
         issueLayout.unbindDrawables();
     }

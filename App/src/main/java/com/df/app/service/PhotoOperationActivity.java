@@ -37,7 +37,6 @@ import java.io.File;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-import static com.df.app.util.Helper.parsePhotoData;
 import static com.df.app.util.Helper.setTextView;
 
 public class PhotoOperationActivity extends Activity {
@@ -105,6 +104,21 @@ public class PhotoOperationActivity extends Activity {
                 if(fileName.equals("")) {
                     Toast.makeText(PhotoOperationActivity.this, "没有图片", Toast.LENGTH_SHORT).show();
                     return;
+                }
+
+                tempPhotoEntity = new PhotoEntity();
+                tempPhotoEntity.setFileName(fileName);
+                tempPhotoEntity.setThumbFileName(fileName);
+                tempPhotoEntity.setIndex(PhotoLayout.reTakePhotoEntity.getIndex());
+                tempPhotoEntity.setModifyAction(Action.MODIFY);
+
+                try {
+                    JSONObject jsonObject = new JSONObject(PhotoLayout.reTakePhotoEntity.getJsonString());
+                    jsonObject.put("Action", tempPhotoEntity.getModifyAction());
+
+                    tempPhotoEntity.setJsonString(jsonObject.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
                 Intent intent = new Intent(PhotoOperationActivity.this, MaskPhotoActivity.class);
@@ -200,6 +214,15 @@ public class PhotoOperationActivity extends Activity {
                         JSONObject jsonObject = new JSONObject(PhotoLayout.reTakePhotoEntity.getJsonString());
                         jsonObject.put("Action", Action.MODIFY);
                         PhotoLayout.reTakePhotoEntity.setJsonString(jsonObject.toString());
+
+                        JSONObject photoData = jsonObject.getJSONObject("PhotoData");
+
+                        photoData.put("width", bitmap.getWidth());
+                        photoData.put("height", bitmap.getHeight());
+
+                        jsonObject.put("PhotoData", photoData);
+
+                        tempPhotoEntity.setJsonString(jsonObject.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -271,11 +294,6 @@ public class PhotoOperationActivity extends Activity {
 
     private void save() {
         if(tempPhotoEntity != null) {
-            File file = new File(Common.photoDirectory + PhotoLayout.reTakePhotoEntity.getFileName());
-            file.delete();
-            file = new File(Common.photoDirectory + PhotoLayout.reTakePhotoEntity.getThumbFileName());
-            file.delete();
-
             int index = PhotoFaultLayout.photoListAdapter.getItems().indexOf(PhotoLayout.reTakePhotoEntity);
 
             if(index < 0) {

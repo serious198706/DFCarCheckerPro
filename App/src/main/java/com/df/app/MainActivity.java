@@ -30,8 +30,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
 import static com.df.app.util.Helper.setTextView;
@@ -91,17 +89,16 @@ public class MainActivity extends Activity {
             case Common.EXTERNAL_VERSION:
                 setTextView(getWindow().getDecorView(), R.id.environmentText, "外网测试");
                 break;
-            case Common.INTERNAL_VERSION:
+            case Common.INTERNAL_100_3_VERSION:
                 setTextView(getWindow().getDecorView(), R.id.environmentText, "内网测试(100.3)");
                 break;
-            case Common.INTERNAL_S_VERSION:
+            case Common.INTERNAL_100_6_VERSION:
                 setTextView(getWindow().getDecorView(), R.id.environmentText, "内网测试(100.6)");
                 break;
-            case Common.FORMAL_VERSION:
-//            SERVER_ADDRESS = "http://192.168.100.6:8052/services/";
-//            PICTURE_ADDRESS = "http://192.168.100.6:8006/";
-//            THUMB_ADDRESS = "http://192.168.100.6:8006/small/";
-//            PROCEDURES_ADDRESS = "http://192.168.18.200:9901/";
+            case Common.INTERNAL_100_110_VERSION:
+                setTextView(getWindow().getDecorView(), R.id.environmentText, "内网测试(100.110)");
+                break;
+            case Common.PRODUCT_VERSION:
                 break;
         }
     }

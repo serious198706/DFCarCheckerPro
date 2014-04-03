@@ -9,7 +9,6 @@ import com.df.app.entries.SerialNumber;
 import com.df.app.filter.GaugeInfoFilter;
 import com.df.app.filter.ProbeSerialNumberFilter;
 import com.df.app.filter.TransmitValueFilter;
-import com.df.app.service.Command.QNC_TRANSMITVALUES;
 import com.xinque.android.serial.driver.UsbSerialDriver;
 
 /**
@@ -203,10 +202,10 @@ public class DF3000Service {
 			byte[] buf = new byte[MAX_DATABUF_LEN];
 			int len;
 
-			List<QNC_TRANSMITVALUES> cmds = getAllMeasurementCommand();
+			List<Command.QNC_TRANSMIT_VALUES> cmds = getAllMeasurementCommand();
 
 			for(int i = 0; i < cmds.size(); i++){
-				QNC_TRANSMITVALUES cmd = cmds.get(i);
+				Command.QNC_TRANSMIT_VALUES cmd = cmds.get(i);
 				TransmitValueFilter transmitValueFilter = new TransmitValueFilter(cmd);
 				byte[] cmddata = cmd.getData();
 
@@ -225,7 +224,12 @@ public class DF3000Service {
 				}
 				
 				int[] bRet = transmitValueFilter.doFilter();
-                measurements.add(new Measurement(i+1).setValue(bRet));
+
+                Measurement measurement = new Measurement(i + 1);
+                measurement.setMaterial("");
+                measurement.setValue(bRet);
+
+                measurements.add(measurement);
 
                 // 收到数据，向界面发送
                 onReceiveData.onReceiveData(new Measurement(i+1).setValue(bRet));
@@ -241,12 +245,12 @@ public class DF3000Service {
      * 获取所有测量数据
      * @return
      */
-	private List<QNC_TRANSMITVALUES> getAllMeasurementCommand(){
-		List<QNC_TRANSMITVALUES> ALL_QNC_TRANSMIT_VALUES = new ArrayList<QNC_TRANSMITVALUES>();
+	private List<Command.QNC_TRANSMIT_VALUES> getAllMeasurementCommand(){
+		List<Command.QNC_TRANSMIT_VALUES> ALL_QNC_TRANSMIT_VALUES = new ArrayList<Command.QNC_TRANSMIT_VALUES>();
 
         // 添加所有的传输指令，29个区
         for(int i = 1; i <= 29; i++) {
-            ALL_QNC_TRANSMIT_VALUES.add(new QNC_TRANSMITVALUES(m_SerialNum.getNumber(),
+            ALL_QNC_TRANSMIT_VALUES.add(new Command.QNC_TRANSMIT_VALUES(m_SerialNum.getNumber(),
                     new byte[]{0x00, (byte) i, 0, 0}));
         }
 		return ALL_QNC_TRANSMIT_VALUES;

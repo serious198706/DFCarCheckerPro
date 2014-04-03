@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.df.app"
     android:versionCode="1"
-    android:versionName="1.3.2" >
+    android:versionName="1.3.8" >
 
     <uses-sdk
         android:minSdkVersion="17"
@@ -69,9 +69,9 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name="com.df.app.Welcome_i_Activity"
+            android:name=".Welcome_100_3_Activity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name_i"
+            android:label="@string/app_name_100_3"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" >
             <intent-filter>
@@ -87,9 +87,27 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name="com.df.app.Welcome_i_i_Activity"
+            android:name=".Welcome_100_6_Activity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name_i_i"
+            android:label="@string/app_name_100_6"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+        <activity
+            android:name=".Welcome_100_110_Activity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name_100_110"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" >
             <intent-filter>
