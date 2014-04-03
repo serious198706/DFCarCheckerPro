@@ -57,7 +57,8 @@ public class Device3000ListDialog extends Dialog {
     private ProgressBar mProgressBar;
 
     private static final int MESSAGE_REFRESH = 101;
-    private final static int SEARCH = 102;
+    private static final int SEARCH = 102;
+    private static final int ADAPTER_FOUND = 103;
     private static final long REFRESH_TIMEOUT_MILLIS = 3000;
     private DF3000Service DF3000Service;
 
@@ -83,8 +84,10 @@ public class Device3000ListDialog extends Dialog {
                     mSerialNumbers.clear();
                     mSerialNumbers.addAll(DF3000Service.getSerialNumbers());
                     mSerialNumberAdapter.notifyDataSetChanged();
-                    mProgressBarTitle.setText(String.format("找到  %d 台检测设备", mSerialNumbers.size()));
+                    mProgressBarTitle.setText(String.format("找到 %d 台检测设备", mSerialNumbers.size()));
                     mProgressBar.setVisibility(View.INVISIBLE);
+                    break;
+                case ADAPTER_FOUND:
                     break;
                 default:
                     super.handleMessage(msg);
@@ -183,14 +186,15 @@ public class Device3000ListDialog extends Dialog {
         new AsyncTask<Void, Void, List<DeviceEntry>>() {
             @Override
             protected List<DeviceEntry> doInBackground(Void... params) {
-                Log.d(Common.TAG, "查找设备列表...");
+                Log.d(Common.TAG, "正在连接适配器...");
                 SystemClock.sleep(1000);
 
-                // 根据usbManager返回的结果，更新设备列表
+                // 根据usbManager返回的结果，更新适配器列表
                 final List<DeviceEntry> result = new ArrayList<DeviceEntry>();
+
                 for (final UsbDevice device : mUsbManager.getDeviceList().values()) {
                     final List<UsbSerialDriver> drivers = UsbSerialProber.probeSingleDevice(mUsbManager, device);
-                    Log.d(Common.TAG, "找到设备: " + device);
+                    Log.d(Common.TAG, "找到适配器: " + device);
 
                     if (drivers.isEmpty()) {
                         Log.d(Common.TAG, "  - No UsbSerialDriver available.");
@@ -210,18 +214,23 @@ public class Device3000ListDialog extends Dialog {
                 mEntries.clear();
                 mEntries.addAll(result);
                 mAdapter.notifyDataSetChanged();
-                mProgressBarTitle.setText(String.format("找到(%s)个适配器", mEntries.size()));
-                hideProgressBar();
 
                 Log.d(Common.TAG, "查找完毕, 找到" + mEntries.size() + "个适配器");
-            }
 
+                // 未查找到适配器
+                if(result.size() != 0) {
+                    mProgressBarTitle.setText(String.format("找到(%s)个适配器", mEntries.size()));
+                    hideProgressBar();
+                    mHandler.removeMessages(MESSAGE_REFRESH);
+                    mHandler.sendEmptyMessage(ADAPTER_FOUND);
+                }
+            }
         }.execute();
     }
 
     private void showProgressBar() {
         mProgressBar.setVisibility(View.VISIBLE);
-        mProgressBarTitle.setText(R.string.refreshing);
+        mProgressBarTitle.setText("正在连接适配器...");
     }
 
     private void hideProgressBar() {

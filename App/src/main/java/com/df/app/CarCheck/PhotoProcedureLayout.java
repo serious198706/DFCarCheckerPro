@@ -157,8 +157,8 @@ public class PhotoProcedureLayout extends LinearLayout {
      * 保存手续组照片
      */
     public void saveProceduresStandardPhoto() {
-        Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
-        Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
+        Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_WIDTH);
+        Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", Common.THUMBNAIL_WIDTH);
 
         if(photoShotCount[currentShotPart] == 0) {
             PhotoEntity photoEntity = generatePhotoEntity();

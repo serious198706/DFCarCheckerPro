@@ -36,6 +36,7 @@ import com.df.app.service.DF5000Service;
 import com.df.app.service.Device3000ListDialog;
 import com.df.app.entries.Measurement;
 import com.df.app.service.Device5000ListDialog;
+import com.df.app.util.MyAlertDialog;
 import com.df.app.util.MyScrollView;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
@@ -70,6 +71,8 @@ public class CollectDataLayout extends LinearLayout {
     private int currentDeviceType = Common.DF3000;
 
     private Button startButton;
+    private Button searchDeviceButton;
+    private Button getIssueButton;
 
     private ImageView carImg;
 
@@ -185,9 +188,9 @@ public class CollectDataLayout extends LinearLayout {
 
     // 连接上的设备，包含设备的所有信息
     private static BluetoothDevice device;
-    private Button getIssueButton;
     private ImageView collapseBar;
     private String deviceSerial = "";
+
 
 //    private int[] enhanceIdMap = {
 //            R.id.M1_edit,
@@ -228,7 +231,7 @@ public class CollectDataLayout extends LinearLayout {
         }
 
         // 查找设备按钮
-        Button searchDeviceButton = (Button) rootView.findViewById(R.id.searchDevices_button);
+        searchDeviceButton = (Button) rootView.findViewById(R.id.searchDevices_button);
         searchDeviceButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -271,8 +274,6 @@ public class CollectDataLayout extends LinearLayout {
                     });
                     df5000Dialog.show();
                 }
-
-
             }
         });
 
@@ -296,39 +297,13 @@ public class CollectDataLayout extends LinearLayout {
                             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    switch (currentDeviceType) {
-                                        case Common.DF3000:
-                                            collectData();
-                                            break;
-                                        case Common.DF5000:
-                                            collectData(requestCmd);
-                                            break;
-                                    }
-
-                                    startButton.setText(R.string.collecting);
-                                    startButton.setEnabled(false);
-
-                                    // 清空已填写的数据
-                                    clearData();
+                                    startCollect();
                                 }
                             }).create();
 
                     dialog.show();
                 } else {
-                    switch (currentDeviceType) {
-                        case Common.DF3000:
-                            collectData();
-                            break;
-                        case Common.DF5000:
-                            collectData(requestCmd);
-                            break;
-                    }
-
-                    startButton.setText(R.string.collecting);
-                    startButton.setEnabled(false);
-
-                    // 清空已填写的数据
-                    clearData();
+                    startCollect();
                 }
             }
         });
@@ -413,6 +388,27 @@ public class CollectDataLayout extends LinearLayout {
     }
 
     /**
+     * 开始采集数据
+     */
+    private void startCollect() {
+            switch (currentDeviceType) {
+                case Common.DF3000:
+                    collectData();
+                    break;
+                case Common.DF5000:
+                    collectData(requestCmd);
+                    break;
+            }
+
+            startButton.setText(R.string.collecting);
+            updateButton(false);
+
+            // 清空已填写的数据
+            clearData();
+
+    }
+
+    /**
      * 显示阴影
      */
     private void showShadow(boolean show) {
@@ -425,15 +421,28 @@ public class CollectDataLayout extends LinearLayout {
     private void showImage() {
         Bitmap bitmap = BitmapFactory.decodeResource(rootView.getContext().getResources(), carImg.getVisibility() == VISIBLE ?
                 R.drawable.expand : R.drawable.collapse);
-
         collapseBar.setImageBitmap(bitmap);
         carImg.setVisibility(carImg.getVisibility() == VISIBLE ? GONE : VISIBLE);
-//                RelativeLayout relativeLayout = (RelativeLayout)findViewById(R.id.aniArea);
-//
-//                TranslateAnimation anim=new TranslateAnimation(0,0,0,-220);
-//                anim.setFillAfter(true);
-//                anim.setDuration(500);
-//                relativeLayout.startAnimation(anim);
+    }
+
+    /**
+     * 显示或隐藏图片（连接设备后）
+     * @param b
+     */
+    private void showImage(boolean b) {
+        Bitmap bitmap = BitmapFactory.decodeResource(rootView.getContext().getResources(), R.drawable.expand);
+        collapseBar.setImageBitmap(bitmap);
+        carImg.setVisibility(GONE);
+    }
+
+    /**
+     * 更新按钮状态
+     * @param status
+     */
+    private void updateButton(boolean status) {
+        startButton.setEnabled(status);
+        searchDeviceButton.setEnabled(status);
+        getIssueButton.setEnabled(status);
     }
 
     /**
@@ -591,34 +600,21 @@ public class CollectDataLayout extends LinearLayout {
 
                             // 当数据全部采集完毕后，弹出完成提示
                             if(measurement.getBlockId() == 29) {
-                                View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
-                                TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-                                TextView content = new TextView(view1.getContext());
-                                content.setText(R.string.collect_finished);
-                                content.setTextSize(20f);
-                                contentArea.addView(content);
-
-                                setTextView(view1, R.id.title, getResources().getString(R.string.alert));
-
-                                AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
-                                        .setView(view1)
-
-                                        // 当点击弹出的确定按钮后，获取问题查勘的内容
-                                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                MyAlertDialog.showAlert(getContext(), R.string.collect_finished,
+                                        R.string.alert, MyAlertDialog.BUTTON_STYLE_OK,
+                                        new Handler(new Handler.Callback() {
                                             @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                            public boolean handleMessage(Message message) {
                                                 getIssueButton.setVisibility(VISIBLE);
 
                                                 startButton.setText("重新获取数据");
-                                                startButton.setEnabled(true);
+                                                updateButton(true);
 
                                                 dataCollected = true;
-                                            }
-                                        })
-                                        .setCancelable(false)
-                                        .create();
 
-                                dialog.show();
+                                                return true;
+                                            }
+                                        }));
                             }
                         }
                     });
@@ -638,7 +634,6 @@ public class CollectDataLayout extends LinearLayout {
      * 采集数据（DF3000）
      */
     private void collectData() {
-
         if (sDriver == null) {
             Log.d(Common.TAG, "连接设备失败！！");
         }
@@ -683,7 +678,7 @@ public class CollectDataLayout extends LinearLayout {
                         // 已连接
                         case com.df.app.service.DF5000Service.STATE_CONNECTED:
                             showView(rootView, R.id.start_button, true);
-                            showImage();
+                            showImage(true);
                             isConnected = true;
                             break;
                         // 正在连接
@@ -699,7 +694,7 @@ public class CollectDataLayout extends LinearLayout {
                         case com.df.app.service.DF5000Service.STATE_CONNECTION_LOST:
                             Toast.makeText(rootView.getContext(), R.string.lost_connection, Toast.LENGTH_LONG).show();
                             startButton.setVisibility(GONE);
-                            startButton.setEnabled(true);
+                            updateButton(true);
                             startButton.setText("开始获取数据");
                             isConnected = false;
                             // 关闭蓝牙
@@ -742,7 +737,7 @@ public class CollectDataLayout extends LinearLayout {
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     getIssueButton.setVisibility(VISIBLE);
                                     startButton.setText("重新获取数据");
-                                    startButton.setEnabled(true);
+                                    updateButton(true);
 
                                     dataCollected = true;
                                 }
@@ -805,6 +800,7 @@ public class CollectDataLayout extends LinearLayout {
             }
         }
     };
+
 
     /**
      * 采集数据（DF5000）
@@ -949,7 +945,7 @@ public class CollectDataLayout extends LinearLayout {
                     mCallback.updateUi(result, progressDialog);
 
                     startButton.setText(R.string.start);
-                    startButton.setEnabled(true);
+                    updateButton(true);
                 }
 
                 @Override

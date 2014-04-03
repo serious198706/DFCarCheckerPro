@@ -125,8 +125,8 @@ public class PhotoAgreement extends LinearLayout {
      * 保存协议组照片
      */
     public void saveAgreementPhoto() {
-        Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
-        Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
+        Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_WIDTH);
+        Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", Common.THUMBNAIL_WIDTH);
 
         if(photoShotCount == 0) {
             PhotoEntity photoEntity = generatePhotoEntity();

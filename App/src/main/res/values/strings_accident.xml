@@ -74,16 +74,16 @@
     <string name="heavy">严重</string>
     <string name="chooseLightHeavy">请选择损伤等级：</string>
 
-    <string name="refreshing">正在查找设备&#8230;&#8230;&#8230;</string>
-    <string name="scanning">扫描未知设备&#8230;&#8230;&#8230;</string>
+    <string name="refreshing">正在查找设备&#8230;</string>
+    <string name="scanning">扫描未知设备&#8230;</string>
     <string name="select_device">选择一个设备连接</string>
-    <string name="none_paired">没有已配对设备</string>
-    <string name="none_found">没有建立连接</string>
+    <string name="none_paired">没有已配对的设备</string>
+    <string name="none_found">未查找到设备</string>
     <string name="paired_devices">已配对的设备：</string>
     <string name="scanned_devices">已查找的设备：</string>
     <string name="not_connected">没有连接到设备</string>
     <string name="lost_connection">失去与设备的连接！</string>
-    <string name="need_bluetooth">未打开蓝牙，无法连接设备！</string>
+    <string name="need_bluetooth">请打开蓝牙以查找设备！</string>
 
     <string name="confirmDelete">确认删除此条目？</string>
     <string name="deleteRecord">&lt;删除损伤记录</string>

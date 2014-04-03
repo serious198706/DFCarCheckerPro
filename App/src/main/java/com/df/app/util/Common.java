@@ -81,10 +81,10 @@ public class Common {
                 PROCEDURES_ADDRESS = "http://192.168.100.110:40001/";
                 break;
             case PRODUCT_VERSION:
-//                SERVER_ADDRESS = "http://wcf.268v.com:8052/services/";
-//                PICTURE_ADDRESS = "http://i.268v.com/c";
-//                THUMB_ADDRESS = "http://i.268v.com/small/c";
-//                PROCEDURES_ADDRESS = "http://wcf.cheyipai.com:6080/";
+                SERVER_ADDRESS = "http://wcf.268v.com:8052/services/";
+                PICTURE_ADDRESS = "http://i.268v.com/c";
+                THUMB_ADDRESS = "http://i.268v.com/small/c";
+                PROCEDURES_ADDRESS = "http://wcf.cheyipai.com:6080/";
                 break;
         }
     }
@@ -154,6 +154,9 @@ public class Common {
     public static final int ENTER_INTERIOR_PAINT = 1;
 
     public static final int MASK_PHOTO = 10;
+
+    public static final int PHOTO_WIDTH = 800;
+    public static final int THUMBNAIL_WIDTH = 400;
 
     // 绘制颜色
     public static int PAINTCOLOR = Color.rgb(0xEA, 0x55, 0x04);

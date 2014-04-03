@@ -31,9 +31,8 @@ import static com.df.app.util.Helper.bytesToHexString;
  * 建立和管理蓝牙连接。使用一个线程来处理连接。
  */
 public class DF5000Service {
-
     // 调试信息
-    private static final String TAG = "BluetoothChat";
+    private static final String TAG = Common.TAG;
     private static final boolean D = true;
 
     // 当创建服务器socket时为Activity记录名字
@@ -68,9 +67,9 @@ public class DF5000Service {
     public static final int STATE_CONNECTION_LOST = 4; // 连接断开
 
     public DF5000Service(Context context, Handler handler) {
-        mAdapter = BluetoothAdapter.getDefaultAdapter();
-        mState = STATE_NONE;
-        mHandler = handler;
+        this.mAdapter = BluetoothAdapter.getDefaultAdapter();
+        this.mState = STATE_NONE;
+        this.mHandler = handler;
     }
 
     // 设置当前的连接状态
@@ -141,8 +140,7 @@ public class DF5000Service {
     }
 
     // 连接成功
-    public synchronized void connected(BluetoothSocket socket,
-                                       BluetoothDevice device) {
+    public synchronized void connected(BluetoothSocket socket, BluetoothDevice device) {
         if (D)
             Log.d(TAG, "connected");
 
@@ -239,12 +237,11 @@ public class DF5000Service {
         setState(STATE_CONNECTION_LOST);
     }
 
+    // 请求连接线程
     private class AcceptThread extends Thread {
-
         private final BluetoothServerSocket mmServerSocket;
 
         public AcceptThread() {
-
             BluetoothServerSocket tmp = null;
 
             try {
@@ -252,6 +249,7 @@ public class DF5000Service {
             } catch (IOException e) {
                 Log.e(TAG, "listen() failed", e);
             }
+
             mmServerSocket = tmp;
         }
 
@@ -277,7 +275,6 @@ public class DF5000Service {
                         switch (mState) {
                             case STATE_LISTEN:
                             case STATE_CONNECTING:
-
                                 connected(socket, socket.getRemoteDevice());
                                 break;
                             case STATE_NONE:
@@ -308,6 +305,7 @@ public class DF5000Service {
         }
     }
 
+    // 连接线程
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
@@ -329,12 +327,9 @@ public class DF5000Service {
             Log.i(TAG, "BEGIN mConnectThread");
             setName("ConnectThread");
 
-
             mAdapter.cancelDiscovery();
 
-
             try {
-
                 mmSocket.connect();
             } catch (IOException e) {
                 connectionFailed();
@@ -369,10 +364,12 @@ public class DF5000Service {
         }
     }
 
+    // 从设备获取序列号
     private static String GetSerialNumber(String str) {
         return str.substring(4, 12); // 00830009
     }
 
+    // 获取校验码
     private static String GetCheckSum(String str) {
         int serial = 0;
 
@@ -383,6 +380,7 @@ public class DF5000Service {
         return  Integer.toHexString(serial);
     }
 
+    // 解析包数据
     public static String[] parsePackage(String str) {
         final String P_START = "AA0A";
         final String P_PARA = "011D";
@@ -421,8 +419,8 @@ public class DF5000Service {
                 // data[0]指的是什么部位数据
                 data[0] = str.substring(12, 14);
 
-                String str1 = new String(str.substring(14, len - 4));
-                String str2 = new String();
+                String str1 = str.substring(14, len - 4);
+                String str2 = "";
 
                 // 如果部位数据长度大于4,表示为真正的数据
                 if (str1.length() >= 4) {
@@ -466,6 +464,7 @@ public class DF5000Service {
         return null;
     }
 
+    // 连接成功后的线程
     private class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;

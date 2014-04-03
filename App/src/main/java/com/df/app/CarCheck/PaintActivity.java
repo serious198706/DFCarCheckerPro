@@ -530,8 +530,8 @@ public class PaintActivity extends Activity {
             case Common.PHOTO_FOR_INTERIOR_FAULT:
                 if(resultCode == Activity.RESULT_OK) {
                     // 如果确定拍摄了照片，则缩小照片尺寸
-                    Helper.setPhotoSize(posEntity.getImageFileName(), 800);
-                    Helper.generatePhotoThumbnail(posEntity.getImageFileName(), 400);
+                    Helper.setPhotoSize(posEntity.getImageFileName(), Common.PHOTO_WIDTH);
+                    Helper.generatePhotoThumbnail(posEntity.getImageFileName(), Common.THUMBNAIL_WIDTH);
 
                     // 进入备注界面
                     Intent intent = new Intent(PaintActivity.this, AddPhotoCommentActivity.class);

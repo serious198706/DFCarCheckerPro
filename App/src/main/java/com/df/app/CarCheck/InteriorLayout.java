@@ -321,11 +321,11 @@ public class InteriorLayout extends LinearLayout {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-        return BitmapFactory.decodeFile(getBitmapNameFromFigure(figure), options);
+        return BitmapFactory.decodeFile(Common.utilDirectory + getBitmapNameFromFigure(figure), options);
     }
 
     private String getBitmapNameFromFigure(int figure) {
-        return Common.utilDirectory + getNameFromFigure(figure);
+        return getNameFromFigure(figure);
     }
 
     public static void copy(File src, File dst) throws IOException {

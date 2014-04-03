@@ -232,8 +232,8 @@ public class PhotoOperationActivity extends Activity {
                 if(resultCode == Activity.RESULT_OK) {
                     fileName = tempPhotoEntity.getFileName();
 
-                    Helper.setPhotoSize(tempPhotoEntity.getFileName(), 800);
-                    Helper.generatePhotoThumbnail(tempPhotoEntity.getFileName(), 400);
+                    Helper.setPhotoSize(tempPhotoEntity.getFileName(), Common.PHOTO_WIDTH);
+                    Helper.generatePhotoThumbnail(tempPhotoEntity.getFileName(), Common.THUMBNAIL_WIDTH);
 
                     Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + tempPhotoEntity.getFileName());
                     imageView.setImageBitmap(bitmap);
@@ -275,13 +275,13 @@ public class PhotoOperationActivity extends Activity {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if(tempPhotoEntity != null) {
-                            // 删除新产生的文件
-                            File file = new File(Common.photoDirectory + tempPhotoEntity.getFileName());
-                            file.delete();
-                            file = new File(Common.photoDirectory + tempPhotoEntity.getThumbFileName());
-                            file.delete();
-                        }
+//                        if(tempPhotoEntity != null) {
+//                            // 删除新产生的文件
+//                            File file = new File(Common.photoDirectory + tempPhotoEntity.getFileName());
+//                            file.delete();
+//                            file = new File(Common.photoDirectory + tempPhotoEntity.getThumbFileName());
+//                            file.delete();
+//                        }
 
                         finish();
                     }

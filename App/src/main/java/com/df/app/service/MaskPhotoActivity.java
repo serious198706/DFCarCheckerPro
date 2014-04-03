@@ -91,7 +91,7 @@ public class MaskPhotoActivity extends Activity {
             e.printStackTrace();
         }
 
-        Helper.generatePhotoThumbnail(fileName, 400);
+        Helper.generatePhotoThumbnail(fileName, Common.THUMBNAIL_WIDTH);
 
         Intent intent = new Intent();
         intent.putExtra("fileName", fileName);

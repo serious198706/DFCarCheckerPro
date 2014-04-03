@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -29,18 +27,15 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintView.ExteriorPaintPreviewView;
 import com.df.app.service.AsyncTask.DownloadImageTask;
-import com.df.app.util.MyScrollView;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
+import com.df.app.util.MyScrollView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -319,121 +314,23 @@ public class ExteriorLayout extends LinearLayout {
         return result;
     }
 
-    /**
-     * 根据车型信息调用不同的预览图
-     * @param figure 车辆类型代码
-     * @return 图片
-     */
-    private Bitmap getBitmapFromFigure(int figure) {
-        Bitmap bitmap = null;
-        try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-            bitmap = BitmapFactory.decodeFile(getBitmapNameFromFigure(figure), options);
-        } catch (OutOfMemoryError e) {
-            Toast.makeText(rootView.getContext(), "内存不足，请稍候重试！", Toast.LENGTH_SHORT).show();
-            ((Activity)rootView.getContext()).finish();
-        }
-
-        return bitmap;
-    }
-
-    private String getBitmapNameFromFigure(int figure) {
-        return Common.utilDirectory + getNameFromFigure(figure);
-    }
-
-    private static String getNameFromFigure(int figure) {
-        // 默认为三厢四门图
-        String name = "r3d4";
-
-        switch (figure) {
-            case 2:
-                name = "r3d2";
-                break;
-            case 3:
-                name = "r2d2";
-                break;
-            case 4:
-                name = "r2d4";
-                break;
-            case 5:
-                name = "van_o";
-                break;
-        }
-
-        return name;
-    }
-
-    /**
-     * 生成草图
-     */
-    public PhotoEntity generateSketch() {
-        Bitmap bitmap = null;
-        Canvas c;
-
-        try {
-            bitmap = Bitmap.createBitmap(exteriorPaintPreviewView.getMaxWidth(),exteriorPaintPreviewView.getMaxHeight(),
-                    Bitmap.Config.ARGB_8888);
-            c = new Canvas(bitmap);
-            exteriorPaintPreviewView.draw(c);
-
-            FileOutputStream out = new FileOutputStream(Common.photoDirectory + "exterior");
-            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName("exterior");
-
-        // 如果是修改模式，则Action就是modify
-        if(CarCheckActivity.isModify()) {
-            photoEntity.setIndex(sketchIndex);
-            photoEntity.setModifyAction(Action.MODIFY);
-        } else {
-            photoEntity.setIndex(PhotoLayout.photoIndex++);
-            photoEntity.setModifyAction(Action.NORMAL);
-        }
-
-        // 组织jsonString
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            jsonObject.put("Group", "exterior");
-            jsonObject.put("Part", "sketch");
-
-            JSONObject photoData = new JSONObject();
-
-            photoData.put("height", bitmap.getHeight());
-            photoData.put("width", bitmap.getWidth());
-
-            jsonObject.put("PhotoData", photoData);
-            jsonObject.put("CarId", BasicInfoLayout.carId);
-            jsonObject.put("UserId", MainActivity.userInfo.getId());
-            jsonObject.put("Key", MainActivity.userInfo.getKey());
-            jsonObject.put("Action", photoEntity.getModifyAction());
-            jsonObject.put("Index", photoEntity.getIndex());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        photoEntity.setJsonString(jsonObject.toString());
-
-        return photoEntity;
-    }
-
 //    /**
-//     * 生成草图(干净的)
+//     * 生成草图
 //     */
 //    public PhotoEntity generateSketch() {
-//        Bitmap bitmap = getBitmapFromFigure(figure);
+//        Bitmap bitmap = null;
+//        Canvas c;
 //
 //        try {
-//            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure)),
-//                    new File(Common.photoDirectory + "exterior"));
-//        } catch (IOException e) {
+//            bitmap = Bitmap.createBitmap(exteriorPaintPreviewView.getMaxWidth(),exteriorPaintPreviewView.getMaxHeight(),
+//                    Bitmap.Config.ARGB_8888);
+//            c = new Canvas(bitmap);
+//            exteriorPaintPreviewView.draw(c);
+//
+//            FileOutputStream out = new FileOutputStream(Common.photoDirectory + "exterior");
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
+//            out.close();
+//        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
 //
@@ -477,6 +374,58 @@ public class ExteriorLayout extends LinearLayout {
 //    }
 
     /**
+     * 生成草图(干净的)
+     */
+    public PhotoEntity generateSketch() {
+        Bitmap bitmap = getBitmapFromFigure(figure);
+
+        try {
+            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure)),
+                    new File(Common.photoDirectory + "exterior"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("exterior");
+
+        // 如果是修改模式，则Action就是modify
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setIndex(sketchIndex);
+            photoEntity.setModifyAction(Action.MODIFY);
+        } else {
+            photoEntity.setIndex(PhotoLayout.photoIndex++);
+            photoEntity.setModifyAction(Action.NORMAL);
+        }
+
+        // 组织jsonString
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("Group", "exterior");
+            jsonObject.put("Part", "sketch");
+
+            JSONObject photoData = new JSONObject();
+
+            photoData.put("height", bitmap.getHeight());
+            photoData.put("width", bitmap.getWidth());
+
+            jsonObject.put("PhotoData", photoData);
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        photoEntity.setJsonString(jsonObject.toString());
+
+        return photoEntity;
+    }
+
+    /**
      * 生成外观检查JSON串
      */
     public JSONObject generateJSONObject() throws JSONException{
@@ -515,7 +464,7 @@ public class ExteriorLayout extends LinearLayout {
     }
 
     private void updateImage(JSONObject photo) throws JSONException{
-        showView(rootView, R.id.exProgressBar, true);
+        showView(rootView, R.id.exProgressBar, false);
         rootView.findViewById(R.id.tipOnPreview).setVisibility(View.GONE);
 
         JSONObject exterior = photo.getJSONObject("exterior");
@@ -547,6 +496,52 @@ public class ExteriorLayout extends LinearLayout {
 //            });
 //            downloadImageTask.execute();
         }
+    }
+
+    /**
+     * 根据车型信息调用不同的预览图
+     * @param figure 车辆类型代码
+     * @return 图片
+     */
+    private Bitmap getBitmapFromFigure(int figure) {
+        Bitmap bitmap = null;
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+            bitmap = BitmapFactory.decodeFile(Common.utilDirectory + getBitmapNameFromFigure(figure), options);
+        } catch (OutOfMemoryError e) {
+            Toast.makeText(rootView.getContext(), "内存不足，请稍候重试！", Toast.LENGTH_SHORT).show();
+            ((Activity)rootView.getContext()).finish();
+        }
+
+        return bitmap;
+    }
+
+    private String getBitmapNameFromFigure(int figure) {
+        return getNameFromFigure(figure);
+    }
+
+    private static String getNameFromFigure(int figure) {
+        // 默认为三厢四门图
+        String name = "r3d4";
+
+        switch (figure) {
+            case 2:
+                name = "r3d2";
+                break;
+            case 3:
+                name = "r2d2";
+                break;
+            case 4:
+                name = "r2d4";
+                break;
+            case 5:
+                name = "van_o";
+                break;
+        }
+
+        return name;
     }
 
     public void clearCache() {

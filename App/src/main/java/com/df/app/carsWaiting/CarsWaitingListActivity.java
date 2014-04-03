@@ -225,6 +225,9 @@ public class CarsWaitingListActivity extends Activity {
             footerView.setVisibility(View.VISIBLE);
         }
 
+//        for(int i = 0; i < data.size(); i++)
+//            swipeListView.closeAnimate(i);
+
 //        // 如果待检车辆为0, 表示没有保存的数据，删掉相关目录下的文件(正式环境下）
 //        if(data.size() == 0) {
 //            DeleteFiles.deleteFiles(Common.photoDirectory);

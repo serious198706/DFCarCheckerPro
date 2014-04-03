@@ -14,6 +14,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.df.app.R;
@@ -164,7 +165,7 @@ public class Device5000ListDialog extends Dialog {
         Log.d(Common.TAG, "doDiscovery()");
 
         // 设置标题 - 正在查找...
-        setTextView(getWindow().getDecorView(), R.id.progressBarTitle, context.getResources().getString(R.string.scanning));
+        setTextView(getWindow().getDecorView(), R.id.progressBarTitle, context.getResources().getString(R.string.refreshing));
 
         // 如果正在查找设备，则停止
         if (mBtAdapter.isDiscovering()) {
@@ -172,6 +173,8 @@ public class Device5000ListDialog extends Dialog {
         }
 
         // 查找设备
+        ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
         mBtAdapter.startDiscovery();
     }
 
@@ -181,6 +184,9 @@ public class Device5000ListDialog extends Dialog {
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
+            progressBar.setVisibility(View.GONE);
+
             String action = intent.getAction();
 
             // 发现设备

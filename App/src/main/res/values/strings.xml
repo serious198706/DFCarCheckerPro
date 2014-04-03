@@ -34,5 +34,6 @@
     <string name="title_activity_car_report">CarReportActivity</string>
     <string name="title_activity_mask_photo">MaskPhotoActivity</string>
     <string name="title_activity_welcome_100_110_activity">Welcome_100_110_activity</string>
+    <string name="title_activity_invisible">InvisibleActivity</string>
 
 </resources>

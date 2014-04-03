@@ -32,8 +32,8 @@
         style="?android:attr/buttonBarStyle">
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="135dp"
+            android:layout_height="65dp"
             android:id="@+id/example_row_b_action_1"
             android:text="@string/modify"
             android:layout_margin="5dp"
@@ -43,8 +43,8 @@
             style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="135dp"
+            android:layout_height="65dp"
             android:id="@+id/example_row_b_action_2"
             android:text="@string/importPlatform"
             android:layout_margin="5dp"

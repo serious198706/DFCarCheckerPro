@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/button_pressed"
-        android:state_pressed="true" />
-    <item android:drawable="@drawable/button_normal" />
-    <item android:drawable="@drawable/button_disabled"
-          android:state_enabled="false" />
+    <item android:state_pressed="false"
+          android:state_enabled="true">
+        <shape>
+            <solid android:color="#AA030A" />
+        </shape>
+    </item>
+    <item android:state_pressed="true"
+          android:state_enabled="true">
+        <shape>
+            <solid android:color="#77030A" />
+        </shape>
+    </item>
+    <item android:state_enabled="false">
+        <shape>
+            <solid android:color="#777" />
+        </shape>
+    </item>
+
 </selector>

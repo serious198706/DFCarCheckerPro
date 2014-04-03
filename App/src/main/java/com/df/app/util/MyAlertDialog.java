@@ -70,7 +70,7 @@ public class MyAlertDialog {
                 break;
         }
 
-        AlertDialog dialog = builder.create();
+        AlertDialog dialog = builder.setCancelable(false).create();
         dialog.show();
     }
 }

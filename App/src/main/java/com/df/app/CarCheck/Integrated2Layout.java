@@ -298,8 +298,8 @@ public class Integrated2Layout extends LinearLayout {
         if(photoShotCount[tireMap.get(currentTire)] >= 1) {
             // 如果是含有http的文件名（表示为修改模式）
             if(photoEntityMap.get(currentTire).getFileName().contains("http:")) {
-                Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
-                Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
+                Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_WIDTH);
+                Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", Common.THUMBNAIL_WIDTH);
 
                 PhotoEntity photoEntity = PhotoExteriorLayout.photoListAdapter.getItem(photoEntityMap.get(currentTire));
                 PhotoEntity temp = generatePhotoEntity();
@@ -317,8 +317,8 @@ public class Integrated2Layout extends LinearLayout {
             } else {
                 PhotoEntity temp = photoEntityMap.get(currentTire);
 
-                Helper.setPhotoSize(temp.getFileName(), 800);
-                Helper.generatePhotoThumbnail(temp.getFileName(), 400);
+                Helper.setPhotoSize(temp.getFileName(), Common.PHOTO_WIDTH);
+                Helper.generatePhotoThumbnail(temp.getFileName(), Common.THUMBNAIL_WIDTH);
 
                 PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
             }
@@ -326,8 +326,8 @@ public class Integrated2Layout extends LinearLayout {
         }
         // 如果此轮胎没有照片，则生成新的照片
         else {
-            Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", 800);
-            Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", 400);
+            Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_WIDTH);
+            Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", Common.THUMBNAIL_WIDTH);
 
             PhotoEntity photoEntity = generatePhotoEntity();
 

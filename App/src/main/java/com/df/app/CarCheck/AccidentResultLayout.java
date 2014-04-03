@@ -229,7 +229,7 @@ public class AccidentResultLayout extends LinearLayout {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-            bitmap = BitmapFactory.decodeFile(getBitmapNameFromFigure(figure, view), options);
+            bitmap = BitmapFactory.decodeFile(Common.utilDirectory + getBitmapNameFromFigure(figure, view), options);
         } catch (OutOfMemoryError e) {
             Toast.makeText(rootView.getContext(), "内存不足，请稍候重试！", Toast.LENGTH_SHORT).show();
             ((Activity)rootView.getContext()).finish();
@@ -239,7 +239,7 @@ public class AccidentResultLayout extends LinearLayout {
     }
 
     private String getBitmapNameFromFigure(int figure, String view) {
-        return Common.utilDirectory + getNameFromFigure(figure, view);
+        return getNameFromFigure(figure, view);
     }
 
     private static String getNameFromFigure(int figure, String view) {
@@ -274,69 +274,69 @@ public class AccidentResultLayout extends LinearLayout {
     public List<PhotoEntity> generateSketches() {
         List<PhotoEntity> temp = new ArrayList<PhotoEntity>();
 
-        temp.add(generateSketch(framePaintPreviewViewFront, "fSketch"));
-        temp.add(generateSketch(framePaintPreviewViewRear, "rSketch"));
+        temp.add(generateSketch("fSketch"));
+        temp.add(generateSketch("rSketch"));
 
         return temp;
     }
 
-    /**
-     * 根据视角生成不同草图
-     *
-     * 参数:1.视角 2.草图名称
-     */
-    private PhotoEntity generateSketch(PaintPreviewView view, String sketchName) {
-        Bitmap bitmap = null;
-        Canvas c;
-
-        try {
-            bitmap = Bitmap.createBitmap(view.getMaxWidth(),view.getMaxHeight(),
-                    Bitmap.Config.ARGB_8888);
-            c = new Canvas(bitmap);
-            view.draw(c);
-
-            FileOutputStream out = new FileOutputStream(Common.photoDirectory + sketchName);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName(sketchName);
-
-        // 修改时，添加Action，并且将原来的index填写进去
-        if(CarCheckActivity.isModify()) {
-            photoEntity.setModifyAction(Action.MODIFY);
-            photoEntity.setIndex(sketchName.equals("fSketch") ? fSketchIndex : rSketchIndex);
-        } else {
-            photoEntity.setModifyAction(Action.NORMAL);
-            photoEntity.setIndex(PhotoLayout.photoIndex++);
-        }
-
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            JSONObject photoJsonObject = new JSONObject();
-
-            photoJsonObject.put("height", bitmap.getHeight());
-            photoJsonObject.put("width", bitmap.getWidth());
-
-            jsonObject.put("Group", "frame");
-            jsonObject.put("Part", sketchName);
-            jsonObject.put("PhotoData", photoJsonObject);
-            jsonObject.put("UserId", MainActivity.userInfo.getId());
-            jsonObject.put("Key", MainActivity.userInfo.getKey());
-            jsonObject.put("CarId", BasicInfoLayout.carId);
-            jsonObject.put("Action", photoEntity.getModifyAction());
-            jsonObject.put("Index", photoEntity.getIndex());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        photoEntity.setJsonString(jsonObject.toString());
-        return photoEntity;
-    }
+//    /**
+//     * 根据视角生成不同草图
+//     *
+//     * 参数:1.视角 2.草图名称
+//     */
+//    private PhotoEntity generateSketch(PaintPreviewView view, String sketchName) {
+//        Bitmap bitmap = null;
+//        Canvas c;
+//
+//        try {
+//            bitmap = Bitmap.createBitmap(view.getMaxWidth(),view.getMaxHeight(),
+//                    Bitmap.Config.ARGB_8888);
+//            c = new Canvas(bitmap);
+//            view.draw(c);
+//
+//            FileOutputStream out = new FileOutputStream(Common.photoDirectory + sketchName);
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
+//            out.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        PhotoEntity photoEntity = new PhotoEntity();
+//        photoEntity.setFileName(sketchName);
+//
+//        // 修改时，添加Action，并且将原来的index填写进去
+//        if(CarCheckActivity.isModify()) {
+//            photoEntity.setModifyAction(Action.MODIFY);
+//            photoEntity.setIndex(sketchName.equals("fSketch") ? fSketchIndex : rSketchIndex);
+//        } else {
+//            photoEntity.setModifyAction(Action.NORMAL);
+//            photoEntity.setIndex(PhotoLayout.photoIndex++);
+//        }
+//
+//        JSONObject jsonObject = new JSONObject();
+//
+//        try {
+//            JSONObject photoJsonObject = new JSONObject();
+//
+//            photoJsonObject.put("height", bitmap.getHeight());
+//            photoJsonObject.put("width", bitmap.getWidth());
+//
+//            jsonObject.put("Group", "frame");
+//            jsonObject.put("Part", sketchName);
+//            jsonObject.put("PhotoData", photoJsonObject);
+//            jsonObject.put("UserId", MainActivity.userInfo.getId());
+//            jsonObject.put("Key", MainActivity.userInfo.getKey());
+//            jsonObject.put("CarId", BasicInfoLayout.carId);
+//            jsonObject.put("Action", photoEntity.getModifyAction());
+//            jsonObject.put("Index", photoEntity.getIndex());
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        photoEntity.setJsonString(jsonObject.toString());
+//        return photoEntity;
+//    }
 
     /**
      * 根据视角生成不同草图(干净的)
@@ -347,7 +347,7 @@ public class AccidentResultLayout extends LinearLayout {
         Bitmap bitmap = getBitmapFromFigure(figure, sketchName);
 
         try {
-            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure, "sketchName")),
+            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure, "sketchName") ),
                     new File(Common.photoDirectory + sketchName));
         } catch (IOException e) {
             e.printStackTrace();
