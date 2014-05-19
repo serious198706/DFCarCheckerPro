@@ -70,7 +70,7 @@ public class CarsWaitingListActivity extends Activity {
             public void onModifyProcedure(int positon) {
                 CarsWaitingItem item = data.get(positon);
                 Intent intent = new Intent(CarsWaitingListActivity.this, InputProceduresActivity.class);
-                intent.putExtra("jsonString", item.getJsonObject().toString());
+                intent.putExtra("carId", item.getCarId());
                 startActivity(intent);
             }
 
@@ -185,6 +185,7 @@ public class CarsWaitingListActivity extends Activity {
                     public void onFailed(String error) {
                         Toast.makeText(CarsWaitingListActivity.this, "获取待检车辆列表失败：" + error, Toast.LENGTH_SHORT).show();
                         Log.d("DFCarChecker", "获取待检车辆列表失败：" + error);
+                        lastPos = -1;
                     }
                 });
         getCarsWaitingListTask.execute();
@@ -297,8 +298,6 @@ public class CarsWaitingListActivity extends Activity {
             @Override
             public void onFailed(String result) {
                 Toast.makeText(CarsWaitingListActivity.this, result, Toast.LENGTH_SHORT).show();
-                finish();
-
                 Log.d(Common.TAG, result);
             }
         });

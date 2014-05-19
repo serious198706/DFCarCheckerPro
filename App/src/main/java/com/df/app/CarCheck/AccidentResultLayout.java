@@ -108,7 +108,7 @@ public class AccidentResultLayout extends LinearLayout {
     }
 
     /**
-     * 获取该视角下的最后一个点的位置信息
+     * 获取该视角下的最后一个点的位置数据
      *
      * 参数：视角
      */
@@ -209,7 +209,7 @@ public class AccidentResultLayout extends LinearLayout {
     }
 
     /**
-     * 根据车型信息调用不同的预览图
+     * 根据车型数据调用不同的预览图
      *
      * 参数：车辆类型代码
      */
@@ -232,7 +232,6 @@ public class AccidentResultLayout extends LinearLayout {
             bitmap = BitmapFactory.decodeFile(Common.utilDirectory + getBitmapNameFromFigure(figure, view), options);
         } catch (OutOfMemoryError e) {
             Toast.makeText(rootView.getContext(), "内存不足，请稍候重试！", Toast.LENGTH_SHORT).show();
-            ((Activity)rootView.getContext()).finish();
         }
 
         return bitmap;
@@ -255,7 +254,7 @@ public class AccidentResultLayout extends LinearLayout {
                     break;
             }
         } else {
-            name = "d2_r";
+            name = "d4_r";
 
             switch (figure) {
                 case 2:
@@ -280,64 +279,6 @@ public class AccidentResultLayout extends LinearLayout {
         return temp;
     }
 
-//    /**
-//     * 根据视角生成不同草图
-//     *
-//     * 参数:1.视角 2.草图名称
-//     */
-//    private PhotoEntity generateSketch(PaintPreviewView view, String sketchName) {
-//        Bitmap bitmap = null;
-//        Canvas c;
-//
-//        try {
-//            bitmap = Bitmap.createBitmap(view.getMaxWidth(),view.getMaxHeight(),
-//                    Bitmap.Config.ARGB_8888);
-//            c = new Canvas(bitmap);
-//            view.draw(c);
-//
-//            FileOutputStream out = new FileOutputStream(Common.photoDirectory + sketchName);
-//            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
-//            out.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        PhotoEntity photoEntity = new PhotoEntity();
-//        photoEntity.setFileName(sketchName);
-//
-//        // 修改时，添加Action，并且将原来的index填写进去
-//        if(CarCheckActivity.isModify()) {
-//            photoEntity.setModifyAction(Action.MODIFY);
-//            photoEntity.setIndex(sketchName.equals("fSketch") ? fSketchIndex : rSketchIndex);
-//        } else {
-//            photoEntity.setModifyAction(Action.NORMAL);
-//            photoEntity.setIndex(PhotoLayout.photoIndex++);
-//        }
-//
-//        JSONObject jsonObject = new JSONObject();
-//
-//        try {
-//            JSONObject photoJsonObject = new JSONObject();
-//
-//            photoJsonObject.put("height", bitmap.getHeight());
-//            photoJsonObject.put("width", bitmap.getWidth());
-//
-//            jsonObject.put("Group", "frame");
-//            jsonObject.put("Part", sketchName);
-//            jsonObject.put("PhotoData", photoJsonObject);
-//            jsonObject.put("UserId", MainActivity.userInfo.getId());
-//            jsonObject.put("Key", MainActivity.userInfo.getKey());
-//            jsonObject.put("CarId", BasicInfoLayout.carId);
-//            jsonObject.put("Action", photoEntity.getModifyAction());
-//            jsonObject.put("Index", photoEntity.getIndex());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        photoEntity.setJsonString(jsonObject.toString());
-//        return photoEntity;
-//    }
-
     /**
      * 根据视角生成不同草图(干净的)
      *
@@ -347,7 +288,7 @@ public class AccidentResultLayout extends LinearLayout {
         Bitmap bitmap = getBitmapFromFigure(figure, sketchName);
 
         try {
-            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure, "sketchName") ),
+            Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure, sketchName)),
                     new File(Common.photoDirectory + sketchName));
         } catch (IOException e) {
             e.printStackTrace();
@@ -389,6 +330,9 @@ public class AccidentResultLayout extends LinearLayout {
         return photoEntity;
     }
 
+    /**
+     * 清空缓存
+     */
     public void clearCache() {
         issue = null;
         adapter = null;
@@ -405,9 +349,10 @@ public class AccidentResultLayout extends LinearLayout {
         destroyTask();
     }
 
+    /**
+     * 修改或者半路检测时，下载前后视角草图并应用
+     */
     public void fillInData(JSONObject photo) throws JSONException {
-//        showView(rootView, R.id.frontProgressBar, true);
-//        showView(rootView, R.id.rearProgressBar, true);
         JSONObject frame = photo.getJSONObject("frame");
 
         // 结构草图 - 前视角
@@ -419,26 +364,9 @@ public class AccidentResultLayout extends LinearLayout {
             if(fSketchIndex >= PhotoLayout.photoIndex) {
                 PhotoLayout.photoIndex = fSketchIndex + 1;
             }
-
-//            String fSketchUrl = fSketch.getString("photo");
-//            downloadImageTaskF = new DownloadImageTask(Common.getPICTURE_ADDRESS() + fSketchUrl, new DownloadImageTask.OnDownloadFinished() {
-//                @Override
-//                public void onFinish(Bitmap bitmap) {
-//                    showView(rootView, R.id.frontProgressBar, false);
-//                    framePaintPreviewViewFront.init(bitmap, posEntitiesFront);
-//                    framePaintPreviewViewFront.invalidate();
-//                }
-//
-//                @Override
-//                public void onFailed() {
-//
-//                }
-//            });
-//            downloadImageTaskF.execute();
         }
 
         // 结构草图 - 后视角
-
         JSONObject rSketch = frame.getJSONObject("rSketch");
 
         if(rSketch != JSONObject.NULL) {
@@ -447,25 +375,12 @@ public class AccidentResultLayout extends LinearLayout {
             if(rSketchIndex >= PhotoLayout.photoIndex) {
                 PhotoLayout.photoIndex = rSketchIndex + 1;
             }
-
-//            String rSketchUrl = rSketch.getString("photo");
-//            downloadImageTaskR = new DownloadImageTask(Common.getPICTURE_ADDRESS() + rSketchUrl, new DownloadImageTask.OnDownloadFinished() {
-//                @Override
-//                public void onFinish(Bitmap bitmap) {
-//                    showView(rootView, R.id.rearProgressBar, false);
-//                    framePaintPreviewViewRear.init(bitmap, posEntitiesRear);
-//                    framePaintPreviewViewRear.invalidate();
-//                }
-//
-//                @Override
-//                public void onFailed() {
-//                    Log.d(Common.TAG, "下载后视角草图失败！");
-//                }
-//            });
-//            downloadImageTaskR.execute();
         }
     }
 
+    /**
+     * 退出时销毁正在执行的任务
+     */
     public void destroyTask() {
         if(downloadImageTaskF != null) {
             downloadImageTaskF.cancel(true);

@@ -29,6 +29,10 @@ import com.df.app.carCheck.InteriorLayout;
 import com.df.app.MainActivity;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
+import com.df.app.service.AddPhotoCommentActivity;
+import com.df.app.service.customCamera.IPhotoProcessListener;
+import com.df.app.service.customCamera.PhotoProcessManager;
+import com.df.app.service.customCamera.PhotoTask;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
@@ -40,7 +44,7 @@ import java.util.List;
 import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
 
-public class InteriorPaintView extends PaintView {
+public class InteriorPaintView extends PaintView  implements IPhotoProcessListener {
     public interface OnAddEmptyPhoto {
         public void onAddEmptyPhoto(PosEntity posEntity);
     }
@@ -240,18 +244,41 @@ public class InteriorPaintView extends PaintView {
     }
 
     private void showCamera(){
+        PhotoProcessManager.getInstance().registPhotoProcessListener(this);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("拍照");
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                String temp =  getPosEntity().getImageFileName();
 
-                Uri fileUri = Helper.getOutputMediaFileUri(data.get(data.size() - 1).getImageFileName());
-                // create a file to save the image
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+                String name;
+                int type = getPosEntity().getType();
 
-                ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_INTERIOR_FAULT);
+                switch (type) {
+                    case Common.DIRTY:
+                        name = "脏污";
+                        break;
+                    case Common.BROKEN:
+                        name = "破损";
+                        break;
+                    default:
+                        name = "";
+                        break;
+                }
+
+                long fileName = Long.parseLong(temp.substring(0, temp.length() - 4));
+
+                Helper.startCamera(getContext(), name, fileName);
+
+//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//
+//                Uri fileUri = Helper.getOutputMediaFileUri(data.get(data.size() - 1).getImageFileName());
+//                // create a file to save the image
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+//
+//                ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_INTERIOR_FAULT);
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -266,6 +293,35 @@ public class InteriorPaintView extends PaintView {
         }).setCancelable(false);
 
         builder.show();
+    }
+
+    @Override
+    public void onPhotoProcessFinish(List<PhotoTask> list) {
+        if(list == null) {
+            return;
+        }
+
+        for(PhotoTask photoTask : list) {
+            // 如果为完成状态
+            if(photoTask.getState() == PhotoTask.STATE_COMPLETE) {
+                String fileName = data.get(data.size() - 1).getImageFileName();
+
+                // 如果确定拍摄了照片，则缩小照片尺寸
+                Helper.handlePhoto(fileName);
+
+                // 进入备注界面
+                Intent intent = new Intent(getContext(), AddPhotoCommentActivity.class);
+                intent.putExtra("fileName", fileName);
+                ((Activity)getContext()).startActivityForResult(intent, Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO);
+            } else {
+                // 如果取消了拍摄，将照片名称置空
+                getPosEntity().setImageFileName("");
+                getPosEntity().setComment("");
+
+                mCallback.onAddEmptyPhoto(getPosEntity());
+                thisTimeNewPhoto.add(getPhotoEntities().get(getPhotoEntities().size() - 1));
+            }
+        }
     }
 
     // 获取该paintView的一些内容

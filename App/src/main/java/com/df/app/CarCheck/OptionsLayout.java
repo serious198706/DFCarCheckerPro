@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,44 +97,48 @@ public class OptionsLayout extends LinearLayout {
             }
         });
 
+
         fillInDefaultData();
     }
 
     private void fillInDefaultData() {
+        System.out.println("------ fillInDefaultData ------");
+
         // 改动配置信息中的Spinner
         String carConfigs = mCarSettings.getCarConfigs();
         final String configArray[] = carConfigs.split(",");
 
         for(int i = 0; i < configArray.length; i++) {
             setSpinnerSelection(Common.carSettingsSpinnerMap[i][0], "无");
-            //setSpinnerSelectionWithString(rootView, Common.carSettingsSpinnerMap[i][0], "无");
         }
     }
 
-    public void fillInSettings() {
-        // 改动配置信息中的Spinner
-        String carConfigs = mCarSettings.getCarConfigs();
-        final String configArray[] = carConfigs.split(",");
-
-        for(int i = 0; i < configArray.length; i++) {
-            int selection = Integer.parseInt(configArray[i]);
-            setSpinnerSelection(Common.carSettingsSpinnerMap[i][0], selection);
-        }
-    }
+//    public void fillInSettings() {
+//        System.out.println("------ fillInSettings ------");
+//
+//        // 改动配置信息中的Spinner
+//        String carConfigs = mCarSettings.getCarConfigs();
+//        final String configArray[] = carConfigs.split(",");
+//
+//        for(int i = 0; i < configArray.length; i++) {
+//            int selection = Integer.parseInt(configArray[i]);
+//            setSpinnerSelection(Common.carSettingsSpinnerMap[i][0], selection);
+//        }
+//    }
 
     public void updateUi() {
         // 设置排量EditText
-        setEditViewText(rootView, R.id.displacement_edit, mCarSettings.getDisplacement());
+        setEditViewText(rootView, R.id.displacement_edit, BasicInfoLayout.mCarSettings.getDisplacement());
 
         // 设置驱动方式EditText
-        setEditViewText(rootView, R.id.transmission_edit, mCarSettings.getTransmissionText());
+        setEditViewText(rootView, R.id.transmission_edit, BasicInfoLayout.mCarSettings.getTransmissionText());
 
         // 设置车辆型号textView
         setTextView(rootView, R.id.brandText, "车辆型号：" +
                 BasicInfoLayout.mCarSettings.getBrandString());
 
-        // 改动“综合检查”里的档位类型选项
-        Integrated1Layout.setGearType(mCarSettings.getTransmissionText());
+        // 改动“综合检查”里的变速器形式
+        Integrated1Layout.setGearType(BasicInfoLayout.mCarSettings.getTransmissionText());
     }
 
     /**
@@ -142,13 +147,15 @@ public class OptionsLayout extends LinearLayout {
      * @param selection
      */
     private void setSpinnerSelection(final int spinnerId, int selection) {
+        System.out.println("------ setSpinnerSelection   int ------");
+
         final Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
         spinner.setSelection(selection);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    Integrated1Layout.updateAssociatedSpinners(spinnerId, adapterView.getSelectedItem().toString());
+                Integrated1Layout.updateAssociatedSpinners(spinnerId, adapterView.getSelectedItem().toString());
             }
 
             @Override
@@ -163,6 +170,8 @@ public class OptionsLayout extends LinearLayout {
      * @param selection
      */
     private void setSpinnerSelection(final int spinnerId, String selection) {
+        System.out.println("------ setSpinnerSelection   string ------");
+
         final Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
         setSpinnerSelectionWithString(rootView, spinnerId, selection);
 
@@ -197,6 +206,7 @@ public class OptionsLayout extends LinearLayout {
             options.put("seriesId", Integer.parseInt(mCarSettings.getSeries().id));
             options.put("model", mCarSettings.getModel().name);
             options.put("modelId", Integer.parseInt(mCarSettings.getModel().id));
+            options.put("figure", Integer.parseInt(mCarSettings.getFigure()));
             options.put("displacement", getEditViewText(rootView, R.id.displacement_edit));
             options.put("category", mCarSettings.getCategory());
             options.put("driveType", getSpinnerSelectedText(rootView, R.id.driveType_spinner));
@@ -280,8 +290,10 @@ public class OptionsLayout extends LinearLayout {
     /**
      * 修改或者半路检测时，填上已经保存的内容
      * @param options
+     * @param handler
      */
-    public void fillInData(JSONObject options) {
+    public void fillInData(JSONObject options, Handler handler) {
+        System.out.println("------ OptionsLayout fillInData ------");
         try {
             if(options.has("displacement"))
                 setEditViewText(rootView, R.id.displacement_edit, Double.toString(options.getDouble("displacement")));
@@ -328,6 +340,7 @@ public class OptionsLayout extends LinearLayout {
             if(options.has("spareTire"))
                 Integrated2Layout.setSpareTireSelection(options.getString("spareTire"));
 
+            handler.sendEmptyMessage(0);
         } catch (JSONException e) {
             e.printStackTrace();
         }

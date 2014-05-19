@@ -50,12 +50,12 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
 
     @Override
     protected void onPreExecute() {
-        progressDialog = new ProgressDialog(this.context);
-        progressDialog.setMessage("正在保存信息，请稍候...");
-        progressDialog.setIndeterminate(false);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+//        progressDialog = new ProgressDialog(this.context);
+//        progressDialog.setMessage("正在保存信息，请稍候...");
+//        progressDialog.setIndeterminate(false);
+//        progressDialog.setCanceledOnTouchOutside(false);
+//        progressDialog.setCancelable(false);
+//        progressDialog.show();
     }
 
     @Override
@@ -100,7 +100,7 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
 
     @Override
     protected void onPostExecute(final Boolean success) {
-        progressDialog.dismiss();
+        //progressDialog.dismiss();
 
         if(success) {
             mCallback.onFinished();
@@ -111,6 +111,6 @@ public class SaveDataTask extends AsyncTask<JSONObject, Void, Boolean> {
 
     @Override
     protected void onCancelled() {
-        progressDialog.dismiss();
+        //progressDialog.dismiss();
     }
 }

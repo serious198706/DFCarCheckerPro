@@ -34,8 +34,7 @@ public class StartupActivity extends Activity {
     }
 
     /**
-     * -- Check to see if the sdCard is mounted and create a directory w/in it
-     * ========================================================================
+     * 检查存储、设置路径、建立文件夹
      **/
     private void SetDirectory() {
         if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
@@ -63,8 +62,7 @@ public class StartupActivity extends Activity {
     }
 
     /**
-     * -- Copy the file from the assets folder to the sdCard
-     * ===========================================================
+     * 将所有Assets拷贝到指定路径
      **/
     private void CopyAssets() {
         AssetManager assetManager = getAssets();
@@ -72,7 +70,7 @@ public class StartupActivity extends Activity {
         try {
             files = assetManager.list("");
         } catch (IOException e) {
-            Log.e(Common.TAG, e.getMessage());
+            e.printStackTrace();
         }
         for (int i = 0; i < files.length; i++) {
             InputStream in = null;
@@ -92,6 +90,9 @@ public class StartupActivity extends Activity {
         }
     }
 
+    /**
+     * 拷贝文件
+     */
     private void copyFile(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
         int read;

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="butlog">选择识别</string>
+    <string name="butcap">拍摄识别</string>
+    <string name="butcapxs">拍摄行驶证并识别</string>
+    <string name="butlog2">识别图片</string>
+    <string name="butlog3">退出程序</string>
+    <string name="butquit">退出</string>
+    <string name="butcfg">设置证件类型</string>
+    <string name="testname">识别结果</string>
+    <string name="editname"></string>
+    <string name="take_photo">拍照</string>
+    <string name="record_video">录像</string>
+
+
+    <string name="backbtn">返回 </string>
+    <string name="homebtn">首页 </string>
+    <string name="countinuebtn">继续</string>
+    <string name="c_1_20"></string>
+    <string name="space"></string>
+    <string name="takepic_btn_string">拍照</string>
+    <string name="confirm_btn_string">确认</string>
+    <string name="reset_btn_string">重拍</string>
+    <string name="backbtn_string">返回</string>
+    <string name="light1_string">开闪关灯</string>
+    <string name="light2_string">关闪关灯</string>
+    <string name="recogcameracfgbut">证件类型</string>
+    <!-- 手动激活 -->
+    <string name="cardname">机器码：</string>
+    <string name="manualautobutlog">手动激活</string>
+    <string name="xlnoname">序列号：</string>
+    <!-- XXK24XWMJRYYRR6YY26CYY8EY XX96QXWNLFYY1Y0YY7ONYY7O1 -->
+    <string name="xlno"></string>
+    <string name="cardnoname">激活码：</string>
+    <!-- pad 3.1 QKMK3QSGAKANBG05LX2AN5PAL WITH_SIM JDFG0CHOQKNEHGRAJEAIGP1EQ 4CJCL0LVPI2RIPJABYQX8DUIF -->
+    <!-- pad 3.2 SAIBPKQKA712LASSDVYDZXPU1 -->
+    <!-- xueling U3ZG1RWZYJXCOXFUXZKA95A7V -->
+    <!-- phone   6MUOAION7REDBEO1RAAVGO3DR -->
+    <string name="cardno"></string>
+    <!-- 自动激活 -->
+    <string name="autoidcard"></string>
+    <string name="autocardname">机器码：</string>
+    <string name="autocdkeybutlog">自动激活</string>
+    <string name="autoxlnoname">序列号：</string>
+    <!-- XXZ16XWMTZRYB67YY5JFYY466 XXL1IXWMULWYOBKYY2S7YY900 -->
+    <string name="autoxlno"></string>
+    <!-- 其他 -->
+    <string name="hello"></string>
+
+    <string name="message"></string>
+    <string name="idcard"></string>
+
+    <string name="autobutlog">自动激活</string>
+    <string name="manualbutlog">手动激活</string>
+    <!-- string name="butlog">设置</string -->
+
+
+    <!-- 证件识别 -->
+    <string name="returnbutlog">返回</string>
+    <string name="reconbutlog">退出程序</string>
+    <string name="butclose">退出</string>
+    <string name="textcardtype">请选择证件类型：</string>
+    <string name="radiobutcardtype1">一代身份证</string>
+    <string name="radiobutcardtype2">二代身份证正面</string>
+    <string name="radiobutcardtype3">二代身份证背面</string>
+    <string name="radiobutcardtype4">临时身份证</string>
+    <string name="radiobutcardtype5">驾照</string>
+    <string name="radiobutcardtype6">行驶证</string>
+    <string name="radiobutcardtype7">军官证</string>
+    <string name="radiobutcardtype8">士兵证（暂不支持）</string>
+    <string name="radiobutcardtype9">港澳通行证</string>
+    <string name="radiobutcardtype10">大陆通行证</string>
+    <string name="radiobutcardtype11">台湾通行证</string>
+    <string name="radiobutcardtype12">签证</string>
+    <string name="radiobutcardtype13">护照</string>
+    <string name="radiobutcardtype14">内地通行证正面</string>
+    <string name="radiobutcardtype15">内地通行证背面</string>
+    <string name="radiobutcardtype16">户口本</string>
+    <string name="radiobutcardtype17">车辆识别代号</string>
+    <string name="radiobutcardtype18">居住证</string>
+    <string name="radiobutcardtype19">边防证A</string>
+    <string name="radiobutcardtype20">边防证B</string>
+    <string name="radiobutcardtype21">广东省居住证</string>
+    <string name="imgview"></string>
+    <string name="distinguish">正在识别中......</string>
+    <string name="cut_image">正在裁剪中......</string>
+
+    <!-- Dialog显示 -->
+    <string name="dialog_select_type">选择识别类型</string>
+    <string name="dialog_auto_recog">自动识别</string>
+    <string name="dialog_drawline_recog">划线识别</string>
+    <string name="dialog_drawrang_recog">划框识别</string>
+    <string name="recog_result">--识别结果--</string>
+    <string name="idcard_type">证件类型</string>
+    <string name="failure_not_recog">未识别   代码：</string>
+    <string name="failure_activate">激活失败 代码：</string>
+    <string name="failure_init">识别初始化失败 代码：</string>
+    <string name="failure_load_reload">识别载入图像失败，请重新识别 代码：</string>
+    <string name="failure_load_init_retry">识别载入图像失败，识别初始化失败,请重试 代码：</string>
+    <string name="failure_load">识别载入图像失败 代码：</string>
+    <string name="failure_recog">识别失败 代码：</string>
+    <string name="setting_success">设置成功</string>
+    <string name="setting_failure">设置失败</string>
+    <string name="dialog_title_bl">执照识别</string>
+    <string name="dialog_title_tax_certificate">税务登记证识别</string>
+    <string name="dialog_title_organize_certificate">组织机构代码证识别</string>
+    <string name="dialog_title_activate_button">"首次使用若能联网请在此填写序列号，不区分大小写，并点击“设置”按钮，否则请点击“离线激活”按钮。"</string>
+    <string name="toast_please_retake">请重新拍摄</string>
+    <string name="toast_autofocus_failure">自动对焦失败，请重新拍摄</string>
+    <string name="toast_already_setting">已保存序列号</string>
+    <string name="dialog_message_active">首次使用若能联网请在此填写序列号，不区分大小写，并点击“在线激活”按钮，否则请点击“离线激活”按钮。</string>
+    <string name="dialog_button_setting">在线激活</string>
+    <string name="dialog_button_offline_active">离线激活</string>
+    <string name="dialog_message_send_admin">请将设备AndroidWT文件夹下的idcard.dev文件发送至文通Android产品授权管理员并取得激活文件，将激活文件拷贝到设备根目录下，再进行识别操作。</string>
+    <string name="cut_image_failure">裁剪图片失败</string>
+    <string name="read_file_exception">读取文件异常</string>
+
+</resources>

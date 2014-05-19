@@ -1,5 +1,11 @@
 package com.df.app;
 
+/**
+ * Created by 岩 on 13-12-18.
+ *
+ * 主界面
+ */
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -36,7 +42,7 @@ import static com.df.app.util.Helper.setTextView;
 
 public class MainActivity extends Activity {
     public static UserInfo userInfo;
-    public static VehicleModel vehicleModel;
+    public static VehicleModel vehicleModel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +89,7 @@ public class MainActivity extends Activity {
             userInfo.setKey(bundle.getString("Key"));
             userInfo.setName(bundle.getString("UserName"));
             userInfo.setOrid(bundle.getString("Orid"));
+            userInfo.setPlateType(bundle.getString("PlateType"));
         }
 
         switch (Common.getEnvironment()) {
@@ -103,21 +110,48 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * 进入手续录入
+     */
     private void enterInputProcedures() {
-        ParseXmlTask parseXmlTask = new ParseXmlTask(this, InputProceduresActivity.class);
-        parseXmlTask.execute();
+        if(vehicleModel != null) {
+            Intent intent = new Intent(this, InputProceduresActivity.class);
+            startActivity(intent);
+        } else {
+            ParseXmlTask parseXmlTask = new ParseXmlTask(this, InputProceduresActivity.class);
+            parseXmlTask.execute();
+        }
     }
 
+    /**
+     * 进入待检车辆
+     */
     private void enterCarsWaiting() {
-        ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarsWaitingListActivity.class);
-        parseXmlTask.execute();
+        if(vehicleModel != null) {
+            Intent intent = new Intent(this, CarsWaitingListActivity.class);
+            startActivity(intent);
+        } else {
+            ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarsWaitingListActivity.class);
+            parseXmlTask.execute();
+        }
     }
 
+    /**
+     * 进入已检车辆
+     */
     private void enterCarsChecked() {
-        ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarsCheckedListActivity.class);
-        parseXmlTask.execute();
+        if(vehicleModel != null) {
+            Intent intent = new Intent(this, CarsCheckedListActivity.class);
+            startActivity(intent);
+        } else {
+            ParseXmlTask parseXmlTask = new ParseXmlTask(this, CarsCheckedListActivity.class);
+            parseXmlTask.execute();
+        }
     }
 
+    /**
+     * 退出
+     */
     private void quit() {
         View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
         TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
@@ -142,6 +176,9 @@ public class MainActivity extends Activity {
         dialog.show();
     }
 
+    /**
+     * 注销
+     */
     private void logout() {
         LogoutTask logoutTask = new LogoutTask(this, new LogoutTask.OnLogoutFinished() {
             @Override
@@ -160,7 +197,9 @@ public class MainActivity extends Activity {
         logoutTask.execute();
     }
 
-    // 解析车型XML
+    /**
+     *  解析车型XML
+     */
     public void parseXml() {
         try {
             FileInputStream fis;
@@ -205,6 +244,9 @@ public class MainActivity extends Activity {
         quit();
     }
 
+    /**
+     *  解析车型XML
+     */
     public class ParseXmlTask extends AsyncTask<Void, Void, Boolean> {
         private Context context;
         private ProgressDialog progressDialog;

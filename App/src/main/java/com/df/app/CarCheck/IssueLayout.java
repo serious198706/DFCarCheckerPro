@@ -30,16 +30,25 @@ import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.IssueListAdapter;
 import com.df.app.service.Adapter.IssuePhotoListAdapter;
 import com.df.app.service.AsyncTask.DownloadImageTask;
+import com.df.app.service.AsyncTask.DrawIssueImageTask;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import static com.df.app.util.Helper.showView;
 
@@ -54,12 +63,14 @@ public class IssueLayout extends LinearLayout {
     private ArrayList<HashMap<String, String>> mylist;
     private ArrayList<Issue> issueList;
     private ImageView imageView;
+    private ImageView imageViewHome;
 
     public static ListedPhoto listedPhoto;
     public static PhotoEntity photoEntityModify;
     public static IssuePhotoListAdapter photoListAdapter;
 
     public static int sketchIndex;
+    public static int sketchHomeIndex;
 
     // 图片层
     private ArrayList<Drawable> drawableList;
@@ -78,6 +89,11 @@ public class IssueLayout extends LinearLayout {
     private String level1;
     private String level2;
     private DownloadImageTask downloadImageTask;
+    private DownloadImageTask downloadHomeImageTask;
+
+    private final ScheduledExecutorService scheduler =
+            Executors.newScheduledThreadPool(1);
+    private Thread thread = new Thread(r);
 
     public IssueLayout(Context context) {
         super(context);
@@ -104,10 +120,11 @@ public class IssueLayout extends LinearLayout {
 
         adapter = new IssueListAdapter(context, issueList);
 
-        issueListView.setAdapter(adapter);
         issueListView.addHeaderView(header);
+        issueListView.setAdapter(adapter);
 
         imageView = (ImageView)header.findViewById(R.id.issue_image);
+        imageViewHome = (ImageView)header.findViewById(R.id.issue_home_image);
 
         issueListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -128,6 +145,8 @@ public class IssueLayout extends LinearLayout {
                 }
             }
         });
+
+
     }
 
     private void showShadow(boolean show) {
@@ -176,7 +195,7 @@ public class IssueLayout extends LinearLayout {
      * 设置漆面预览图
      * @param level
      */
-    private void drawSketch(String level) {
+    private void drawSketch(ImageView imageView, String level) {
         try {
             if(!level.equals("")) {
                 String[] partNames = level.split(",");
@@ -204,9 +223,9 @@ public class IssueLayout extends LinearLayout {
             imageView.setImageBitmap(bitmap);
         } catch (OutOfMemoryError e) {
             Toast.makeText(rootView.getContext(), "内存不足，请稍候重试！", Toast.LENGTH_SHORT).show();
-            ((Activity)rootView.getContext()).finish();
         }
     }
+
 
     /**
      * 生成事故检查JSONObject
@@ -251,7 +270,7 @@ public class IssueLayout extends LinearLayout {
         try {
             bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
             FileOutputStream out = new FileOutputStream(Common.photoDirectory + "accident_sketch");
-            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 60, out);
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -294,16 +313,65 @@ public class IssueLayout extends LinearLayout {
         return photoEntity;
     }
 
-    private void drawImage(final ProgressDialog progressDialog) {
-        Handler handler = new Handler();
+    /**
+     * 生成事故检查的漆面草图
+     * @return
+     */
+    public PhotoEntity generateHomeSketch() {
+        Bitmap bitmap = null;
 
-        // 画图
-        r = new Runnable() {
+        try {
+            bitmap = ((BitmapDrawable)imageViewHome.getDrawable()).getBitmap();
+            FileOutputStream out = new FileOutputStream(Common.photoDirectory + "accident_sketch_home");
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 60, out);
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PhotoEntity photoEntity = new PhotoEntity();
+        photoEntity.setFileName("accident_sketch_home");
+
+        // 如果是修改模式下，就是modify
+        if(CarCheckActivity.isModify()) {
+            photoEntity.setModifyAction(Action.MODIFY);
+            photoEntity.setIndex(sketchHomeIndex);
+        } else {
+            photoEntity.setModifyAction(Action.NORMAL);
+            photoEntity.setIndex(PhotoLayout.photoIndex++);
+        }
+
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            JSONObject photoJsonObject = new JSONObject();
+
+            photoJsonObject.put("width", bitmap.getWidth());
+            photoJsonObject.put("height", bitmap.getHeight());
+
+            jsonObject.put("Group", "accidentHome");
+            jsonObject.put("Part", "sketch");
+            jsonObject.put("PhotoData", photoJsonObject);
+            jsonObject.put("UserId", MainActivity.userInfo.getId());
+            jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("CarId", BasicInfoLayout.carId);
+            jsonObject.put("Action", photoEntity.getModifyAction());
+            jsonObject.put("Index", photoEntity.getIndex());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        photoEntity.setJsonString(jsonObject.toString());
+
+        return photoEntity;
+    }
+
+    private void drawImage(final ProgressDialog progressDialog) {
+        DrawIssueImageTask drawIssueImageTask = new DrawIssueImageTask(getContext(), level1, level2, new DrawIssueImageTask.OnDrawFinished() {
             @Override
-            public void run() {
-                drawBase();
-                drawSketch(handelLevelNames(level1, 1));
-                drawSketch(handelLevelNames(level2, 2));
+            public void onFinished(Bitmap accident, Bitmap accidentHome) {
+                imageView.setImageBitmap(accident);
+                imageViewHome.setImageBitmap(accidentHome);
 
                 if(progressDialog != null) {
                     progressDialog.dismiss();
@@ -311,12 +379,36 @@ public class IssueLayout extends LinearLayout {
                     progressBar.setVisibility(GONE);
                 }
             }
-        };
+        });drawIssueImageTask.execute();
 
-//        Thread thread = new Thread(r);
-//        thread.start();
 
-        handler.postDelayed(r, 3000);
+//        Handler handler = new Handler();
+//
+//        // 画图
+//        r = new Runnable() {
+//            @Override
+//            public void run() {
+//                drawBase();
+//                drawSketch(imageView, handelLevelNames(level1, 1));
+//                drawSketch(imageView, handelLevelNames(level2, 2));
+//
+//                drawableList.clear();
+//                drawBase();
+//                drawSketch(imageViewHome, handelLevelNames(level2, 2));
+//
+//                if(progressDialog != null) {
+//                    progressDialog.dismiss();
+//                    ProgressBar progressBar = (ProgressBar)findViewById(R.id.issueImageProgressBar);
+//                    progressBar.setVisibility(GONE);
+//                }
+//            }
+//        };
+//
+//
+////        thread = new Thread(r);
+////        thread.start();
+//
+//        handler.postDelayed(r, 3000);
     }
 
     /**
@@ -401,8 +493,9 @@ public class IssueLayout extends LinearLayout {
     }
 
     public void modifyComment(String comment) {
-        photoEntityModify.setComment(comment);
-        listedPhoto.getPhotoEntity().setComment(comment);
+        Helper.updateComment(photoEntityModify, comment);
+        Helper.updateComment(listedPhoto.getPhotoEntity(), comment);
+
         photoListAdapter.notifyDataSetChanged();
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }
@@ -425,7 +518,7 @@ public class IssueLayout extends LinearLayout {
         if(accidentSketch != JSONObject.NULL) {
             sketchIndex = accidentSketch.getInt("index");
             String accidentSketchUrl = accidentSketch.getString("photo");
-            downloadImageTask = new DownloadImageTask(Common.getPICTURE_ADDRESS() + accidentSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImageTask = new DownloadImageTask(getContext(), Common.getPICTURE_ADDRESS() + accidentSketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     showView(rootView, R.id.issueImageProgressBar, false);
@@ -440,10 +533,34 @@ public class IssueLayout extends LinearLayout {
             });
             downloadImageTask.execute();
         }
+
+        if(photo.has("accidentHome")) {
+            JSONObject accidentHome = photo.getJSONObject("accidentHome");
+            JSONObject accidentHomeSketch = accidentHome.getJSONObject("sketch");
+            if(accidentHomeSketch != JSONObject.NULL) {
+                sketchHomeIndex = accidentHomeSketch.getInt("index");
+                String accidentHomeSketchUrl = accidentHomeSketch.getString("photo");
+                downloadHomeImageTask = new DownloadImageTask(getContext(), Common.getPICTURE_ADDRESS() + accidentHomeSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+                    @Override
+                    public void onFinish(Bitmap bitmap) {
+                        showView(rootView, R.id.issueImageProgressBar, false);
+                        ImageView imageView = (ImageView)findViewById(R.id.issue_home_image);
+                        imageView.setImageBitmap(bitmap);
+                    }
+
+                    @Override
+                    public void onFailed() {
+
+                    }
+                });
+                downloadHomeImageTask.execute();
+            }
+        }
     }
 
     public void unbindDrawables() {
         unbindDrawables(findViewById(R.id.issue_image));
+        unbindDrawables(findViewById(R.id.issue_home_image));
     }
 
     private void unbindDrawables(View view) {

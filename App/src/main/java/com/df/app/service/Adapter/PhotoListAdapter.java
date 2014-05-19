@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.df.app.carCheck.CarCheckActivity;
 import com.df.app.carCheck.PhotoFaultLayout;
@@ -23,14 +25,23 @@ import com.df.app.carCheck.PhotoLayout;
 import com.df.app.R;
 import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
+import com.df.app.service.AsyncTask.DownloadImageTask;
 import com.df.app.service.PhotoOperationActivity;
+import com.df.app.service.customCamera.BitmapUtil;
+import com.df.app.service.customCamera.IPhotoProcessListener;
+import com.df.app.service.customCamera.PhotoProcessManager;
+import com.df.app.service.customCamera.PhotoTask;
+import com.df.app.service.customCamera.activity.PhotoEditActivity;
+import com.df.app.service.customCamera.activity.PhotographActivity;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
 import com.df.app.util.lazyLoadHelper.ImageLoader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,10 +50,14 @@ import java.util.List;
  *
  * 照片列表adapter
  */
-public class PhotoListAdapter extends BaseAdapter {
+public class PhotoListAdapter extends BaseAdapter implements IPhotoProcessListener {
+    public interface OnAction {
+        public void onDelete(int position);
+        public void onModifyComment(int position, String comment);
+        public void onShowPhoto(int position);
+    }
 
-
-    public class ViewHolder {
+    private class ViewHolder {
         public ImageView photo;
         public TextView photoName;
         public EditText photoComment;
@@ -52,19 +67,30 @@ public class PhotoListAdapter extends BaseAdapter {
     private Context context;
     private boolean editable;
     private boolean hasComment;
+    private boolean canDelete;
     private ImageLoader imageLoader;
+    private OnAction mCallback;
 
-    public PhotoListAdapter(Context context, List<PhotoEntity> items, boolean editable, boolean hasComment) {
+    public PhotoListAdapter(Context context, List<PhotoEntity> items, boolean editable, boolean hasComment, OnAction listener) {
         this.context = context;
         this.items = items;
         this.editable = editable;
         this.hasComment = hasComment;
+        this.mCallback = listener;
+        this.canDelete = true;
 
         imageLoader=new ImageLoader(context);
     }
 
-    public void setItems(List<PhotoEntity> items) {
+    public PhotoListAdapter(Context context, List<PhotoEntity> items, boolean editable, boolean hasComment, boolean canDelete, OnAction listener) {
+        this.context = context;
         this.items = items;
+        this.editable = editable;
+        this.hasComment = hasComment;
+        this.mCallback = listener;
+        this.canDelete = canDelete;
+
+        imageLoader = new ImageLoader(context);
     }
 
     public void addItem(PhotoEntity item) {
@@ -75,6 +101,11 @@ public class PhotoListAdapter extends BaseAdapter {
         if(this.items.contains(item))
             this.items.remove(item);
     }
+
+    public void removeItem(int position) {
+        items.remove(position);
+    }
+
 
     public List<PhotoEntity> getItems() {
         return items;
@@ -107,14 +138,7 @@ public class PhotoListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-//        View view = convertView;
-//        if (view == null) {
-//            LayoutInflater vi = (LayoutInflater) context.getSystemService(Context
-//                    .LAYOUT_INFLATER_SERVICE);
-//            view = vi.inflate(R.layout.photo_list_item, null);
-//        }
-
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = new ViewHolder();
 
         if(convertView == null) {
@@ -157,19 +181,16 @@ public class PhotoListAdapter extends BaseAdapter {
                 public void onClick(View view) {
                     // 将要修改的photoEntity提取出来
                     PhotoLayout.reTakePhotoEntity = photoEntity;
+                    PhotoLayout.photoListAdapter = PhotoListAdapter.this;
 
-                    showPhoto(photoEntity.getFileName());
+                    showPhoto(photoEntity.getName(), photoEntity.getFileName());
                 }
             });
         }
 
-        if(!hasComment) {
-            viewHolder.photoComment.setEnabled(false);
-        }
-
         viewHolder.photoName.setText(photoEntity.getName());
-
         viewHolder.photoComment.setText(photoEntity.getComment());
+        viewHolder.photoComment.setEnabled(hasComment);
 
         // 备注更改时将对应的photoEntity也更改
         viewHolder.photoComment.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -211,147 +232,44 @@ public class PhotoListAdapter extends BaseAdapter {
             }
         });
 
-        Button reTakeButton = (Button)convertView.findViewById(R.id.reTake);
-        reTakeButton.setOnClickListener(new View.OnClickListener() {
+        Button deleteButton = (Button)convertView.findViewById(R.id.delete);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String filePath = Common.photoDirectory;
-                String fileName;
-
-                // 如果当前要重拍的照片没有内容，则给其命名
-                if(photoEntity.getFileName().equals("")) {
-                    fileName = Long.toString(System.currentTimeMillis()) + ".jpg";
-                    filePath += fileName;
-                    photoEntity.setFileName(fileName);
-                    photoEntity.setThumbFileName(fileName.substring(0, fileName.length() - 4) + "_t.jpg");
-                } else {
-                    filePath += photoEntity.getFileName();
-                }
-
-                // 将要修改的photoEntity提取出来
-                PhotoLayout.reTakePhotoEntity = photoEntity;
-
-                Uri fileUri = Uri.fromFile(new File(filePath));
-                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
-                ((Activity)context).startActivityForResult(intent, Common.PHOTO_RETAKE);
+                mCallback.onDelete(position);
             }
         });
+
+        try {
+            JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+
+            if(!editable) {
+                deleteButton.setVisibility(View.GONE);
+            } else {
+                if(jsonObject.getString("Group").equals("otherFault")) {
+                    deleteButton.setVisibility(View.VISIBLE);
+                } else if(canDelete) {
+                    deleteButton.setVisibility(View.VISIBLE);
+                } else {
+                    deleteButton.setVisibility(View.GONE);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         if(photoEntity.getModifyAction() != null && photoEntity.getModifyAction().equals(Action.DELETE)) {
             convertView.setAlpha(0.3f);
             viewHolder.photo.setEnabled(false);
-            viewHolder.photoComment.setEnabled(false);
-            reTakeButton.setVisibility(View.INVISIBLE);
         } else {
             convertView.setAlpha(1.0f);
             viewHolder.photo.setEnabled(true);
-            viewHolder.photoComment.setEnabled(true);
-            reTakeButton.setVisibility(View.VISIBLE);
         }
 
         if(!editable) {
             viewHolder.photoComment.setEnabled(false);
-            reTakeButton.setVisibility(View.INVISIBLE);
         }
 
-//        if (photoEntity != null) {
-//            // 照片
-//            ImageView photo = (ImageView) view.findViewById(R.id.photo);
-//
-//            // 照片名称
-//            TextView photoName = (TextView) view.findViewById(R.id.photo_name);
-//
-//            // 照片备注
-//            EditText photoComment = (EditText) view.findViewById(R.id.photo_comment);
-//
-//            if(photoEntity.getModifyAction() != null && photoEntity.getModifyAction().equals(Action.DELETE)) {
-//                view.setAlpha(0.3f);
-//            } else {
-//                view.setAlpha(1.0f);
-//            }
-//
-//            if(photoEntity.getThumbFileName() == null || photoEntity.getThumbFileName().equals("")) {
-//                final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera);
-//                photo.setImageBitmap(bitmap);
-//            } else {
-//                if(editable) {
-//                    // 如果图片名称中有http，则表示是来自网络的图片
-//                    if(photoEntity.getThumbFileName().contains("http")) {
-//                        imageLoader.DisplayImage(photoEntity.getThumbFileName(), photo);
-//                    } else {
-//                        Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoEntity
-//                                .getThumbFileName());
-//                        photo.setImageBitmap(bitmap);
-//                    }
-//                } else {
-//                    // 如果是浏览模式，就意味着图片来自网络
-//                    imageLoader.DisplayImage(photoEntity.getThumbFileName(), photo);
-//                }
-//            }
-//
-//            if(editable) {
-//                photo.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        // 将要修改的photoEntity提取出来
-//                        PhotoLayout.reTakePhotoEntity = photoEntity;
-//
-//                        showPhoto(photoEntity.getFileName());
-//                    }
-//                });
-//            }
-//
-//            photoName.setText(photoEntity.getName());
-//
-//            photoComment.setText(photoEntity.getComment());
-//
-//            // 备注更改时将对应的photoEntity也更改
-//            photoComment.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//                @Override
-//                public void onFocusChange(View view, boolean b) {
-//                    photoEntity.setComment(((EditText)view).getText().toString());
-//                }
-//            });
-//
-//            Button reTakeButton = (Button)view.findViewById(R.id.reTake);
-//            reTakeButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    String filePath = Common.photoDirectory;
-//                    String fileName;
-//
-//                    // 如果当前要重拍的照片没有内容，则给其命名
-//                    if(photoEntity.getFileName().equals("")) {
-//                        fileName = Long.toString(System.currentTimeMillis()) + ".jpg";
-//                        filePath += fileName;
-//                        photoEntity.setFileName(fileName);
-//                        photoEntity.setThumbFileName(fileName.substring(0, fileName.length() - 4) + "_t.jpg");
-//                    } else {
-//                        filePath += photoEntity.getFileName();
-//                    }
-//
-//                    // 将要修改的photoEntity提取出来
-//                    PhotoLayout.reTakePhotoEntity = photoEntity;
-//
-//                    Uri fileUri = Uri.fromFile(new File(filePath));
-//                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // 设置拍摄的文件名
-//                    ((Activity)context).startActivityForResult(intent, Common.PHOTO_RETAKE);
-//                }
-//            });
-//
-//            if(photoEntity.getModifyAction() != null && photoEntity.getModifyAction().equals(Action.DELETE)) {
-//                view.setAlpha(0.3f);
-//                photoComment.setEnabled(false);
-//                reTakeButton.setVisibility(View.INVISIBLE);
-//            }
-//
-//            if(!editable) {
-//                photoComment.setEnabled(false);
-//                reTakeButton.setVisibility(View.INVISIBLE);
-//            }
-//        }
         return convertView;
     }
 
@@ -359,9 +277,92 @@ public class PhotoListAdapter extends BaseAdapter {
      * 点击缩略图时，显示对应的图片
      * @param fileName
      */
-    private void showPhoto(String fileName) {
-        Intent intent = new Intent(context, PhotoOperationActivity.class);
-        intent.putExtra("fileName", fileName);
-        context.startActivity(intent);
+    private void showPhoto(final String name, String fileName) {
+        PhotoProcessManager.getInstance().registPhotoProcessListener(this);
+
+        if(fileName.contains("http")) {
+            DownloadImageTask downloadImageTask = new DownloadImageTask(context, fileName, new DownloadImageTask.OnDownloadFinished() {
+                @Override
+                public void onFinish(Bitmap bitmap) {
+                    // 把图片保存成一个临时文件
+                    long currentTimeMillis = System.currentTimeMillis();
+
+                    BitmapUtil.saveBitmap(bitmap, 100, Common.photoDirectory + currentTimeMillis + ".jpg");
+
+                    Intent intent = new Intent(context, PhotoEditActivity.class);
+
+                    intent.putExtra(PhotoEditActivity.EXTRA_DSTPATH, Common.photoDirectory);
+                    intent.putExtra(PhotoEditActivity.EXTRA_PHOTOTASK, new PhotoTask(0, name, currentTimeMillis, Common.photoDirectory, 0));
+                    context.startActivity(intent);
+                }
+
+                @Override
+                public void onFailed() {
+                    Toast.makeText(context, "下载图片失败！", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+
+            downloadImageTask.execute();
+        } else {
+            Intent intent = new Intent();
+            long file;
+
+            if(fileName.equals("") || fileName == null) {
+                intent.setClass(context, PhotographActivity.class);
+
+                file = System.currentTimeMillis();
+                Helper.startCamera(context, name, file);
+            } else {
+                intent.setClass(context, PhotoEditActivity.class);
+
+                file = Long.parseLong(fileName.substring(0, fileName.length() - 4));
+                intent.putExtra(PhotoEditActivity.EXTRA_DSTPATH, Common.photoDirectory);
+                intent.putExtra(PhotoEditActivity.EXTRA_PHOTOTASK, new PhotoTask(0, name, file, Common.photoDirectory, 0));
+                context.startActivity(intent);
+            }
+        }
+
+       // Intent intent = new Intent(context, PhotoOperationActivity.class);
+       // intent.putExtra("fileName", fileName);
+       // context.startActivity(intent);
+    }
+
+
+    @Override
+    public void onPhotoProcessFinish(List<PhotoTask> list) {
+        PhotoTask photoTask = list.get(0);
+
+        // 处理完成
+        if(photoTask.getState() == PhotoTask.STATE_COMPLETE) {
+            Helper.handlePhoto(photoTask.getFileName() + ".jpg");
+
+            PhotoEntity tempPhotoEntity = PhotoLayout.reTakePhotoEntity;
+
+            Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoTask.getFileName() + ".jpg");
+
+            tempPhotoEntity.setFileName(photoTask.getFileName() + ".jpg");
+            tempPhotoEntity.setThumbFileName(photoTask.getFileName() + "_t.jpg");
+            tempPhotoEntity.setModifyAction(Action.MODIFY);
+
+            try {
+                JSONObject jsonObject = new JSONObject(tempPhotoEntity.getJsonString());
+                jsonObject.put("Action", Action.MODIFY);
+                tempPhotoEntity.setJsonString(jsonObject.toString());
+
+                JSONObject photoData = jsonObject.getJSONObject("PhotoData");
+
+                photoData.put("width", bitmap.getWidth());
+                photoData.put("height", bitmap.getHeight());
+
+                jsonObject.put("PhotoData", photoData);
+
+                tempPhotoEntity.setJsonString(jsonObject.toString());
+
+                notifyDataSetChanged();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

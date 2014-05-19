@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.+'
+        classpath 'com.android.tools.build:gradle:0.9.+'
     }
 }
 apply plugin: 'android'
@@ -14,7 +14,7 @@ repositories {
 
 android {
     compileSdkVersion 17
-    buildToolsVersion "17.0.0"
+    buildToolsVersion '19.0.3'
 
     defaultConfig {
         minSdkVersion 17
@@ -41,5 +41,9 @@ dependencies {
     compile files('lib/swipelistview-1.0-20130701.103547-12-jar-with-dependencies.jar')
     compile files('lib/nineoldandroids-2.4.0.jar')
     compile files('lib/PhotoView.jar')
-    compile files('lib/maskphoto.jar')
+    compile files('lib/android_auth.jar')
+    compile files('lib/idcard_sdk.jar')
+    compile files('lib/bcprov-ext-jdk15-146.jar')
+    compile files('lib/pki.jar')
+    compile files('libs/armeabi.jar')
 }

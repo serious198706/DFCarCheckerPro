@@ -18,6 +18,7 @@ import com.df.app.R;
 import com.df.app.entries.PosEntity;
 import com.df.app.util.Common;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExteriorPaintPreviewView extends PaintPreviewView {
@@ -40,7 +41,11 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
 
     public ExteriorPaintPreviewView(Context context) {
         super(context);
-        //init();
+        if(isInEditMode()) {
+            Bitmap temp = BitmapFactory.decodeFile(Common.utilDirectory + "r3d4");
+            this.bitmap = temp;
+            init(temp, new ArrayList<PosEntity>());
+        }
     }
 
     @Override
@@ -64,7 +69,6 @@ public class ExteriorPaintPreviewView extends PaintPreviewView {
         otherBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.out_other);
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);

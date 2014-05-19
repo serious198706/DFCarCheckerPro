@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scale xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_interpolator"
+    android:duration="600"
+    android:fromXScale="0.67"
+    android:fromYScale="0.67"
+    android:pivotX="50%"
+    android:pivotY="50%"
+    android:repeatCount="infinite"
+    android:repeatMode="reverse"
+    android:toXScale="1"
+    android:toYScale="1"
+     >
+     
+    <!-- 我们在上面代码标注“下方介绍”的这些值，我们有三种写法，
+    如：50,50%，50%p。这三种写法就分别代表了ABSOLUTE，RELATIVE_TO_SELF
+    和RELATIVE_TO_PARENT。 -->
+
+</scale>

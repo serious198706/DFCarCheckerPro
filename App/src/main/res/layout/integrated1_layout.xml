@@ -41,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginTop="5dp"
-                android:background="#AA030A"/>
+                android:background="#C74810"/>
 
             <TableRow  android:layout_marginTop="5dp">
                 <TextView android:layout_width="0dp"
@@ -172,7 +172,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginTop="5dp"
-                android:background="#AA030A"/>
+                android:background="#C74810"/>
 
             <TextView android:id="@+id/gear_manually_row"
                       android:layout_width="wrap_content"
@@ -327,7 +327,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginTop="5dp"
-                android:background="#AA030A"/>
+                android:background="#C74810"/>
 
             <!-- 7个必选项 -->
             <TableRow android:layout_marginTop="5dp">

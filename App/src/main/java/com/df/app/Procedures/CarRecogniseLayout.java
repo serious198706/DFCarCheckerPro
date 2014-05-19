@@ -2,10 +2,16 @@ package com.df.app.procedures;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -17,9 +23,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +41,9 @@ import com.df.app.entries.Series;
 import com.df.app.entries.VehicleModel;
 import com.df.app.service.AsyncTask.GetCarSettingsByVinTask;
 import com.df.app.service.AsyncTask.GetCarSettingsTask;
+import com.df.app.service.AsyncTask.UpdateAuthorizeCodeStatusTask;
+import com.df.app.service.IdcardRunner;
+import com.df.app.util.Common;
 import com.df.app.util.Helper;
 import com.df.app.util.MyAlertDialog;
 
@@ -42,8 +51,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import wintone.idcard.android.AuthParameterMessage;
+import wintone.idcard.android.AuthService;
+import wintone.idcard.android.IDCardCfg;
 
 import static com.df.app.util.Helper.enableView;
 import static com.df.app.util.Helper.getEditViewText;
@@ -61,7 +78,7 @@ public class CarRecogniseLayout extends LinearLayout {
     OnShowContent mShowContentCallback;
     OnHideContent mHideContentCallback;
 
-    View rootView;
+    static View rootView;
 
     // 此页面的6个信息控件
     public static EditText vehicleTypeEdit;
@@ -69,13 +86,6 @@ public class CarRecogniseLayout extends LinearLayout {
 
     // 车辆信息
     private VehicleModel vehicleModel;
-
-    // 选择车型的五个spinner
-    private Spinner countrySpinner;
-    private Spinner brandSpinner;
-    private Spinner manufacturerSpinner;
-    private Spinner seriesSpinner;
-    private Spinner modelSpinner;
 
     // 记录五个spinner最后选择的位置
     private int lastCountryIndex = 0;
@@ -96,6 +106,86 @@ public class CarRecogniseLayout extends LinearLayout {
     private EditText seriesEdit;
     private EditText modelEdit;
 
+    private Button recogniseButton;
+    private ImageView licenseImageView;
+
+    private boolean cut = true;
+
+    private LicenseRecognise licenseRecognise;
+    public static int nMainID;
+
+    private AuthService.authBinder authBinder;
+    public static int ReturnAuthority = -1;
+    private String authCode = "";
+
+    public ServiceConnection authConn = new ServiceConnection() {
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            authBinder = null;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            authBinder = (AuthService.authBinder) service;
+            try {
+                AuthParameterMessage apm = new AuthParameterMessage();
+
+                apm.sn = authCode;
+                apm.authfile = "";
+
+                ReturnAuthority = authBinder.getIDCardAuth(apm);
+
+                Log.d(Common.TAG, ReturnAuthority == 0 ? "授权成功！" : "授权失败");
+
+                if(ReturnAuthority != 0) {
+
+                } else {
+                    UpdateAuthorizeCodeStatusTask updateAuthorizeCodeStatusTask = new
+                            UpdateAuthorizeCodeStatusTask(getContext(), new UpdateAuthorizeCodeStatusTask.OnUpdateFinished() {
+                        @Override
+                        public void onFinished(String result) {
+                            // TODO nothing
+                        }
+
+                        @Override
+                        public void onFailed(String result) {
+                            // TODO nothing
+
+                        }
+                    });updateAuthorizeCodeStatusTask.execute();
+
+                    createSnFile(authCode);
+
+                    //已有配置文件时读
+                    nMainID = 0;
+                    String cfg = "";
+
+                    IDCardCfg cardCfg = new IDCardCfg();
+                    try{
+                        cfg = cardCfg.readtxt();
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
+
+                    String cfgs[] = cfg.split("==##");
+
+                    if (cfgs != null && cfgs.length >= 2) {
+                        nMainID = Integer.valueOf(cfgs[0]);
+                    }
+
+                    Log.d(Common.TAG, "cfg=" + cfg);
+                }
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "授权验证失败", Toast.LENGTH_LONG).show();
+            } finally{
+                if (authBinder != null) {
+                    getContext().unbindService(authConn);
+                }
+            }
+        }
+    };
+
+
     /**
      * 传入回调函数指针
      * @param context
@@ -108,13 +198,26 @@ public class CarRecogniseLayout extends LinearLayout {
         init(context);
     }
 
-    private void init(Context context) {
+    private void init(final Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.car_recognise_layout, this);
+
+        deleteLastLicensePhoto();
 
         mCarSettings = InputProceduresLayout.mCarSettings;
 
+        licenseRecognise = new LicenseRecognise(context);
+        nMainID = Helper.readMainID();
+
+        licenseImageView = (ImageView)findViewById(R.id.licenseImage);
+        licenseImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                licenseRecognise.takePhoto();
+            }
+        });
+
         // 点击识别按钮
-        Button recogniseButton = (Button) rootView.findViewById(R.id.recognise_button);
+        recogniseButton = (Button) rootView.findViewById(R.id.recognise_button);
         recogniseButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,7 +227,11 @@ public class CarRecogniseLayout extends LinearLayout {
                 } else if(!getEditViewText(rootView, R.id.plateNumber_edit).equals("")) {
                     reRecognise(R.string.reRecognise);
                 } else {
-                    fillInDummyData();
+                    //fillInDummyData();
+                    if(licensePhotoExist())
+                        recogniseLicense();
+                    else
+                        Toast.makeText(context, "未拍摄行驶证照片！", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -205,6 +312,55 @@ public class CarRecogniseLayout extends LinearLayout {
         engineSerialEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(17)});
 
         vehicleModel = MainActivity.vehicleModel;
+
+
+    }
+
+    private void deleteLastLicensePhoto() {
+        File file = new File(Common.licensePhotoPath);
+        file.delete();
+    }
+
+    private boolean licensePhotoExist() {
+        File file = new File(Common.licensePhotoPath);
+        return file.exists();
+    }
+
+    private void createSnFile(String editsString) {
+        if (editsString != null && !editsString.equals("")) {
+            File file = new File(Common.licenseUtilPath);
+            if (!file.exists()) {
+                file.mkdir();
+            }
+            String filePATH = Common.licenseUtilPath + "/idcard.sn";
+            File newFile = new File(filePATH);
+            try {
+                newFile.delete();
+                newFile.createNewFile();
+                FileOutputStream fos = new FileOutputStream(newFile);
+                StringBuffer sBuffer = new StringBuffer();
+                sBuffer.append(editsString);
+                fos.write(sBuffer.toString().toUpperCase().getBytes());
+                fos.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 调用行驶证识别接口
+     */
+    private void recogniseLicense() {
+        Intent intent = new Intent(getContext(), IdcardRunner.class);
+        intent.putExtra("path", Common.licensePhotoPath);
+        intent.putExtra("cut", cut);
+        //设置识别自动裁切
+        intent.putExtra("iscut", true);
+        intent.putExtra("nMainID", nMainID);
+        getContext().startActivity(intent);
     }
 
     /**
@@ -217,7 +373,8 @@ public class CarRecogniseLayout extends LinearLayout {
                     public boolean handleMessage(Message message) {
                         switch (message.what) {
                             case MyAlertDialog.POSITIVE_PRESSED:
-                                fillInDummyData();
+                                //fillInDummyData();
+                                recogniseLicense();
                                 if(text == R.string.reRecognise1)
                                     mHideContentCallback.hideContent();
                                 break;
@@ -263,7 +420,6 @@ public class CarRecogniseLayout extends LinearLayout {
 
         dialog.show();
     }
-
 
     /**
      * 检查VIN并获取车辆配置
@@ -400,7 +556,7 @@ public class CarRecogniseLayout extends LinearLayout {
                                 else
                                     model = series.models.get(0);
 
-                                // 将传输回来的信息存储到list中（因为可能会有多个型号）
+                                // 将传输回来的数据存储到list中（因为可能会有多个型号）
                                 jsonObjects.add(jsonObject);
                                 modelNames.add(manufacturer.name + " " + series.name + " " + model.name);
                             }
@@ -664,6 +820,11 @@ public class CarRecogniseLayout extends LinearLayout {
         enableView(rootView, R.id.brand_select_button, true);
     }
 
+    /**
+     * 修改时，更新配置信息
+     * @param seriesId seriesId
+     * @param modelId modelId
+     */
     private void modifyCarSettings(String seriesId, String modelId) {
         // 更新配置信息
         Country country = null;
@@ -714,6 +875,10 @@ public class CarRecogniseLayout extends LinearLayout {
         updateUi();
     }
 
+    /**
+     * 初始化车型选择的框
+     * @param view
+     */
     private void initModelSelectEdits(View view) {
         TextView title = (TextView)view.findViewById(R.id.title);
         title.setText(R.string.select_model);
@@ -725,6 +890,14 @@ public class CarRecogniseLayout extends LinearLayout {
         modelEdit = (EditText)view.findViewById(R.id.model_edit);
 
         setCountryEdit();
+
+        if(mCarSettings.getCountry() != null) {
+            countryEdit.setText(mCarSettings.getCountry().name);
+            brandEdit.setText(mCarSettings.getBrand().name);
+            manufacturerEdit.setText(mCarSettings.getManufacturer().name);
+            seriesEdit.setText(mCarSettings.getSeries().name);
+            modelEdit.setText(mCarSettings.getModel().name);
+        }
     }
 
     /**
@@ -1005,7 +1178,7 @@ public class CarRecogniseLayout extends LinearLayout {
     }
 
     /**
-     * 设置国家edit
+     * 弹出选择框
      */
     private void showListDialog(int titleId, ArrayAdapter<String> adapter, final Handler handler) {
         View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
@@ -1073,6 +1246,37 @@ public class CarRecogniseLayout extends LinearLayout {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void fillInData(int carId) {
+        mShowContentCallback.modify(Integer.toString(carId));
+    }
+
+
+    public static void fillInRecogData(String[] fields) {
+        setEditViewText(rootView, R.id.plateNumber_edit, fields[0]);
+        setEditViewText(rootView, R.id.licenseModel_edit, fields[1]);
+        setEditViewText(rootView, R.id.vehicleType_edit, fields[2]);
+        setEditViewText(rootView, R.id.useCharacter_edit, fields[3]);
+        setEditViewText(rootView, R.id.engineSerial_edit, fields[4]);
+        setEditViewText(rootView, R.id.vin_edit, fields[5]);
+    }
+
+    public void startAuthService(String authCode) {
+        this.authCode = authCode;
+        Intent authIntent = new Intent(getContext(), AuthService.class);
+        getContext().bindService(authIntent, authConn, Service.BIND_AUTO_CREATE);
+    }
+
+    public void updateLicensePhoto(boolean cut) {
+        this.cut = cut;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(Common.licensePhotoPath);
+
+        licenseImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+        licenseImageView.setImageBitmap(bitmap);
+
+        recogniseButton.setVisibility(VISIBLE);
     }
 
     /**

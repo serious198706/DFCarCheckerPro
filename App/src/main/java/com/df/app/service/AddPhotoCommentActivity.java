@@ -1,14 +1,17 @@
-package com.df.app.carCheck;
+package com.df.app.service;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -99,6 +102,12 @@ public class AddPhotoCommentActivity extends Activity {
                             setResult(Activity.RESULT_OK, intent);
                             finish();
                         }
+
+                        EditText editText = (EditText)findViewById(R.id.comment);
+
+                        InputMethodManager imm = (InputMethodManager)getSystemService(
+                                Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
@@ -111,7 +120,13 @@ public class AddPhotoCommentActivity extends Activity {
      * 保存备注信息，并返回主activity
      */
     private void saveResult() {
-        String commentString = getEditViewText(getWindow().getDecorView(), R.id.comment).trim();
+        EditText editText = (EditText)findViewById(R.id.comment);
+
+        InputMethodManager imm = (InputMethodManager)getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+
+        String commentString = editText.getText().toString().trim();
 
         Intent intent = new Intent();
         intent.putExtra("COMMENT", commentString);

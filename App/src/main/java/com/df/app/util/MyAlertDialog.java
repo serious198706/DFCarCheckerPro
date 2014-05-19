@@ -24,7 +24,7 @@ public class MyAlertDialog {
     public static final int POSITIVE_PRESSED = 4;
     public static final int NEGATIVE_PRESSED = 5;
 
-    public static void showAlert(Context context, int msg, int title, int style, final Handler handler) {
+    public static void showAlert(Context context, String msg, int title, int style, final Handler handler) {
         View view1 = ((Activity)context).getLayoutInflater().inflate(R.layout.popup_layout, null);
         TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
         TextView content = new TextView(view1.getContext());
@@ -72,5 +72,10 @@ public class MyAlertDialog {
 
         AlertDialog dialog = builder.setCancelable(false).create();
         dialog.show();
+    }
+
+    public static void showAlert(Context context, int msg, int title, int style, final Handler handler) {
+        String msgstr = context.getResources().getString(msg);
+        showAlert(context, msgstr, title, style, handler);
     }
 }

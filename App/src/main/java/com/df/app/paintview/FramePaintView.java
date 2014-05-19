@@ -34,6 +34,10 @@ import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.service.Adapter.IssuePhotoListAdapter;
+import com.df.app.service.AddPhotoCommentActivity;
+import com.df.app.service.customCamera.IPhotoProcessListener;
+import com.df.app.service.customCamera.PhotoProcessManager;
+import com.df.app.service.customCamera.PhotoTask;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 
@@ -48,7 +52,7 @@ import static com.df.app.util.Helper.drawTextToBitmap;
 import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
 
-public class FramePaintView extends PaintView {
+public class FramePaintView extends PaintView implements IPhotoProcessListener {
 
     private int currentType = Common.COLOR_DIFF;
 
@@ -182,20 +186,28 @@ public class FramePaintView extends PaintView {
     }
 
     private void showCamera(){
+        PhotoProcessManager.getInstance().registPhotoProcessListener(this);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("拍照");
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//
+//                // 根据此点文件名进行拍照
+//                Uri fileUri = Helper.getOutputMediaFileUri(data.get(data.size() - 1).getImageFileName());
+//
+//                // create a file to save the image
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+//
+//                ((Activity)getContext()).startActivityForResult(intent,
+//                        sight.equals("F") ? Common.PHOTO_FOR_ACCIDENT_FRONT : Common.PHOTO_FOR_ACCIDENT_REAR);
 
-                // 根据此点文件名进行拍照
-                Uri fileUri = Helper.getOutputMediaFileUri(data.get(data.size() - 1).getImageFileName());
+                String temp = data.get(data.size() - 1).getImageFileName();
+                long fileName = Long.parseLong(temp.substring(0, temp.length() - 4));
 
-                // create a file to save the image
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-
-                ((Activity)getContext()).startActivityForResult(intent,
+                Helper.startCamera(getContext(), "结构缺陷", fileName,
                         sight.equals("F") ? Common.PHOTO_FOR_ACCIDENT_FRONT : Common.PHOTO_FOR_ACCIDENT_REAR);
 
                 // 拍照的时候，记录当前的issue & adapter & thisTimeNewPhoto
@@ -227,6 +239,48 @@ public class FramePaintView extends PaintView {
         }).setCancelable(false);
 
         builder.show();
+    }
+
+
+    @Override
+    public void onPhotoProcessFinish(List<PhotoTask> list) {
+        if(list == null) {
+            return;
+        }
+
+        for(PhotoTask photoTask : list) {
+            // 如果为完成状态
+            if(photoTask.getState() == PhotoTask.STATE_COMPLETE) {
+                String fileName = data.get(data.size() - 1).getImageFileName();
+
+                // 如果确定拍摄了照片，则缩小照片尺寸
+                Helper.handlePhoto(fileName);
+
+                // 确定是添加前视角还是后视角的备注
+                int requestCode = (photoTask.getExtra() == Common.PHOTO_FOR_ACCIDENT_FRONT) ?
+                        Common.ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO : Common.ADD_COMMENT_FOR_ACCIDENT_REAR_PHOTO;
+
+                Intent intent = new Intent(getContext(), AddPhotoCommentActivity.class);
+                intent.putExtra("fileName", fileName);
+                ((Activity)getContext()).startActivityForResult(intent, requestCode);
+            } else {
+                getPosEntity().setImageFileName("");
+                getPosEntity().setComment("");
+
+                PhotoEntity photoEntity = generatePhotoEntity();
+                PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
+                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+
+                photo.add(photoEntity);
+                thisTimeNewPhoto.add(photoEntity);
+                issue.addPhoto(photoEntity);
+
+                int index = adapter.getCount();
+                ListedPhoto listedPhoto = new ListedPhoto(index, photoEntity);
+                adapter.addItem(listedPhoto);
+                adapter.notifyDataSetChanged();
+            }
+        }
     }
 
     private PhotoEntity generatePhotoEntity() {

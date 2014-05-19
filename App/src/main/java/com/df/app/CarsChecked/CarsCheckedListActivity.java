@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.df.app.carCheck.CarCheckActivity;
 import com.df.app.R;
 import com.df.app.entries.CarsCheckedItem;
+import com.df.app.procedures.InputProceduresActivity;
 import com.df.app.service.Adapter.CarsCheckedListAdapter;
 import com.df.app.service.AsyncTask.CheckSellerNameTask;
 import com.df.app.service.AsyncTask.GetCarDetailTask;
@@ -51,7 +52,7 @@ public class CarsCheckedListActivity extends Activity {
     private int startNumber = 1;
     private View footerView;
     private String lastSellerName;
-    private int lastPos;
+    private int lastPos = -1;
 
     public static boolean modify;
 
@@ -75,7 +76,7 @@ public class CarsCheckedListActivity extends Activity {
                 if("234".contains(data.get(position).getStatus())) {
                     showErrorDialog("该车辆当前不可修改！");
                 } else {
-                    getCarDetail(position, CarCheckActivity.class, true);
+                    choose(R.array.modify_items, position);
                 }
             }
         }, new CarsCheckedListAdapter.OnEditPressed() {
@@ -94,7 +95,9 @@ public class CarsCheckedListActivity extends Activity {
 
             @Override
             public void onStartOpen(int position, int action, boolean right) {
-                swipeListView.closeAnimate(lastPos);
+                if(lastPos != -1)
+                    swipeListView.closeAnimate(lastPos);
+
                 lastPos = position;
             }
         });
@@ -129,10 +132,6 @@ public class CarsCheckedListActivity extends Activity {
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startNumber = 1;
-                data.clear();
-                adapter.notifyDataSetChanged();
-                swipeListView.closeAnimate(lastPos);
                 refresh();
             }
         });
@@ -144,6 +143,13 @@ public class CarsCheckedListActivity extends Activity {
      * 刷新列表
      */
     private void refresh() {
+        startNumber = 1;
+        data.clear();
+        adapter.notifyDataSetChanged();
+
+        if(lastPos != -1)
+            swipeListView.closeAnimate(lastPos);
+
         GetCarsCheckedListTask getCarsCheckedListTask = new GetCarsCheckedListTask(CarsCheckedListActivity.this, startNumber,
                 new GetCarsCheckedListTask.OnGetListFinish() {
                     @Override
@@ -155,9 +161,45 @@ public class CarsCheckedListActivity extends Activity {
                     public void onFailed(String error) {
                         Toast.makeText(CarsCheckedListActivity.this, "获取已检车辆列表失败：" + error, Toast.LENGTH_SHORT).show();
                         Log.d("DFCarChecker", "获取已检车辆列表失败：" + error);
+                        lastPos = -1;
                     }
                 });
         getCarsCheckedListTask.execute();
+    }
+
+    private void choose(final int arrayId, final int position) {
+        View view1 = getLayoutInflater().inflate(R.layout.popup_layout, null);
+
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(view1)
+                .create();
+
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+
+        final ListView listView = new ListView(view1.getContext());
+
+        listView.setAdapter(new ArrayAdapter<String>(view1.getContext(), android.R.layout.simple_list_item_1,
+                view1.getResources().getStringArray(arrayId)));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                dialog.dismiss();
+                if(i == 0) {
+                    CarsCheckedItem item = data.get(position);
+                    Intent intent = new Intent(CarsCheckedListActivity.this, InputProceduresActivity.class);
+                    intent.putExtra("carId", item.getCarId());
+                    startActivity(intent);
+                } else {
+                    getCarDetail(position, CarCheckActivity.class, true);
+                }
+            }
+        });
+
+        contentArea.addView(listView);
+
+        setTextView(view1, R.id.title, getResources().getString(R.string.selectModifyItem));
+
+        dialog.show();
     }
 
     /**
@@ -194,28 +236,12 @@ public class CarsCheckedListActivity extends Activity {
             } else {
                 footerView.setVisibility(View.VISIBLE);
             }
+
+//            for(int i = 0; i < data.size(); i++)
+//                swipeListView.closeAnimate(i);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 填充测试数据
-     */
-    private void fillInDummyData() {
-        for(int i = 0; i < 5; i++) {
-            CarsCheckedItem item = new CarsCheckedItem();
-            item.setPlateNumber("车牌号：京A12345");
-            item.setExteriorColor("颜色：黑");
-            item.setCarType("型号：奥迪A100");
-            item.setLevel("等级：80B");
-            item.setStatus("状态：待提交");
-            item.setDate("提交时间：2013-12-28");
-
-            data.add(item);
-        }
-
-        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -449,6 +475,7 @@ public class CarsCheckedListActivity extends Activity {
             public void onFinished(String result) {
                 lastSellerName = "";
                 Toast.makeText(CarsCheckedListActivity.this, "导入成功！", Toast.LENGTH_LONG).show();
+                refresh();
             }
 
             @Override

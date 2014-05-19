@@ -34,6 +34,8 @@ import org.json.JSONObject;
 
 import java.io.DataOutput;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -72,7 +74,7 @@ public class PhotoOperationActivity extends Activity {
         attacher.setMinimumScale(0.4f);
 
         if(fileName.contains("http")) {
-            DownloadImageTask downloadImageTask = new DownloadImageTask(fileName, new DownloadImageTask.OnDownloadFinished() {
+            DownloadImageTask downloadImageTask = new DownloadImageTask(this, fileName, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     downloadedBitmap = bitmap;
@@ -106,6 +108,10 @@ public class PhotoOperationActivity extends Activity {
                     return;
                 }
 
+                if(progressBar.getVisibility() != View.INVISIBLE) {
+                    return;
+                }
+
                 tempPhotoEntity = new PhotoEntity();
                 tempPhotoEntity.setFileName(fileName);
                 tempPhotoEntity.setThumbFileName(fileName);
@@ -124,7 +130,16 @@ public class PhotoOperationActivity extends Activity {
                 Intent intent = new Intent(PhotoOperationActivity.this, MaskPhotoActivity.class);
 
                 if(downloadedBitmap != null) {
-                    intent.putExtra("bitmap", downloadedBitmap);
+                    try {
+                        fileName = Long.toString(System.currentTimeMillis()) + ".jpg";
+                        FileOutputStream fileOutputStream = new FileOutputStream(Common.photoDirectory + fileName);
+                        downloadedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                        fileOutputStream.close();
+
+                        intent.putExtra("fileName", fileName);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     intent.putExtra("fileName", fileName);
                 }
@@ -206,14 +221,14 @@ public class PhotoOperationActivity extends Activity {
                     imageView.setImageBitmap(bitmap);
                     attacher.update();
 
-                    PhotoLayout.reTakePhotoEntity.setFileName(fileName);
-                    PhotoLayout.reTakePhotoEntity.setThumbFileName(fileName.substring(0, fileName.length() - 4) + "_t.jpg");
-                    PhotoLayout.reTakePhotoEntity.setModifyAction(Action.MODIFY);
+                    tempPhotoEntity.setFileName(fileName);
+                    tempPhotoEntity.setThumbFileName(fileName.substring(0, fileName.length() - 4) + "_t.jpg");
+                    tempPhotoEntity.setModifyAction(Action.MODIFY);
 
                     try {
-                        JSONObject jsonObject = new JSONObject(PhotoLayout.reTakePhotoEntity.getJsonString());
+                        JSONObject jsonObject = new JSONObject(tempPhotoEntity.getJsonString());
                         jsonObject.put("Action", Action.MODIFY);
-                        PhotoLayout.reTakePhotoEntity.setJsonString(jsonObject.toString());
+                        tempPhotoEntity.setJsonString(jsonObject.toString());
 
                         JSONObject photoData = jsonObject.getJSONObject("PhotoData");
 
@@ -241,7 +256,7 @@ public class PhotoOperationActivity extends Activity {
 
                     // 新照片的宽高也要更新一下
                     try {
-                        JSONObject jsonObject = new JSONObject(PhotoLayout.reTakePhotoEntity.getJsonString());
+                        JSONObject jsonObject = new JSONObject(tempPhotoEntity.getJsonString());
                         JSONObject photoData = jsonObject.getJSONObject("PhotoData");
 
                         photoData.put("width", bitmap.getWidth());
@@ -275,14 +290,6 @@ public class PhotoOperationActivity extends Activity {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-//                        if(tempPhotoEntity != null) {
-//                            // 删除新产生的文件
-//                            File file = new File(Common.photoDirectory + tempPhotoEntity.getFileName());
-//                            file.delete();
-//                            file = new File(Common.photoDirectory + tempPhotoEntity.getThumbFileName());
-//                            file.delete();
-//                        }
-
                         finish();
                     }
                 })
@@ -296,19 +303,30 @@ public class PhotoOperationActivity extends Activity {
         if(tempPhotoEntity != null) {
             int index = PhotoFaultLayout.photoListAdapter.getItems().indexOf(PhotoLayout.reTakePhotoEntity);
 
+            PhotoEntity photoEntity;
+
             if(index < 0) {
-                PhotoLayout.reTakePhotoEntity.setFileName(tempPhotoEntity.getFileName());
-                PhotoLayout.reTakePhotoEntity.setThumbFileName(tempPhotoEntity.getThumbFileName());
-                PhotoLayout.reTakePhotoEntity.setJsonString(tempPhotoEntity.getJsonString());
-                PhotoLayout.reTakePhotoEntity.setModifyAction(tempPhotoEntity.getModifyAction());
+                if(PhotoLayout.listedPhoto != null) {
+                    photoEntity = PhotoLayout.listedPhoto.getPhotoEntity();
+                } else if(PhotoLayout.photoListAdapter != null) {
+                    photoEntity = PhotoLayout.photoListAdapter.getItem(PhotoLayout.reTakePhotoEntity);
+                } else {
+                    photoEntity = null;
+                }
             } else {
-                PhotoEntity photoEntity = PhotoFaultLayout.photoListAdapter.getItem(index);
-                photoEntity.setFileName(tempPhotoEntity.getFileName());
-                photoEntity.setThumbFileName(tempPhotoEntity.getThumbFileName());
-                photoEntity.setJsonString(tempPhotoEntity.getJsonString());
-                photoEntity.setModifyAction(tempPhotoEntity.getModifyAction());
+                photoEntity = PhotoFaultLayout.photoListAdapter.getItem(index);
             }
+
+            photoEntity.setFileName(tempPhotoEntity.getFileName());
+            photoEntity.setThumbFileName(tempPhotoEntity.getThumbFileName());
+            photoEntity.setJsonString(tempPhotoEntity.getJsonString());
+            photoEntity.setModifyAction(tempPhotoEntity.getModifyAction());
         }
+
+        PhotoLayout.notifyDataSetChanged();
+
+        PhotoLayout.listedPhoto = null;
+        PhotoLayout.photoListAdapter = null;
 
         finish();
     }

@@ -18,16 +18,18 @@ public class Common {
     public static final String savedDirectory = utilDirectory +
             "saved/";
 
+    public static final String licenseUtilPath = Environment.getExternalStorageDirectory().toString() + "/AndroidWT";
+    public static final String licensePhotoPath = photoDirectory + "license.jpg";
+
     public static final String TAG = "DFCarCheckerPro";
 
     public static final String NAMESPACE = "http://cheyipai";
 
-    private static int ENVIRONMENT;
-
-    private static String SERVER_ADDRESS;
-    private static String PICTURE_ADDRESS;
-    private static String THUMB_ADDRESS;
-    private static String PROCEDURES_ADDRESS;
+    // 默认为外网测试
+    private static String SERVER_ADDRESS = "http://114.112.88.216:9133/Services/";
+    private static String PICTURE_ADDRESS = "http://i.268v.com:8092/c/";
+    private static String THUMB_ADDRESS = "http://i.268v.com:8092/small/c/";
+    private static String PROCEDURES_ADDRESS = "http://truetest.cheyipai.com:20002/";
 
     public static String getSERVER_ADDRESS() {
         return SERVER_ADDRESS;
@@ -51,6 +53,7 @@ public class Common {
     public static final int INTERNAL_100_110_VERSION = 53;
     public static final int PRODUCT_VERSION = 54;
 
+    private static int ENVIRONMENT = EXTERNAL_VERSION;
 
     public static void setEnvironment(int environment) {
         ENVIRONMENT = environment;
@@ -76,14 +79,14 @@ public class Common {
                 break;
             case INTERNAL_100_110_VERSION:
                 SERVER_ADDRESS = "http://192.168.100.110:40005/services/";
-                PICTURE_ADDRESS = "http://192.168.100.6:8006/c";
-                THUMB_ADDRESS = "http://192.168.100.6:8006/small/c";
+                PICTURE_ADDRESS = "http://192.168.100.6:8006/c/";
+                THUMB_ADDRESS = "http://192.168.100.6:8006/small/c/";
                 PROCEDURES_ADDRESS = "http://192.168.100.110:40001/";
                 break;
             case PRODUCT_VERSION:
                 SERVER_ADDRESS = "http://wcf.268v.com:8052/services/";
-                PICTURE_ADDRESS = "http://i.268v.com/c";
-                THUMB_ADDRESS = "http://i.268v.com/small/c";
+                PICTURE_ADDRESS = "http://i.268v.com/c/";
+                THUMB_ADDRESS = "http://i.268v.com/small/c/";
                 PROCEDURES_ADDRESS = "http://wcf.cheyipai.com:6080/";
                 break;
         }
@@ -116,6 +119,8 @@ public class Common {
     public static final String IMPORT_PLATFORM = "ImportPlatform";
     public static final String CHECK_SELLER_NAME = "CheckSellerName";
     public static final String DELETE_CAR = "DeletePendingCarInfoByCarId";
+    public static final String GET_AUTHORIZE_CODE = "GetAuthorizeCode";
+    public static final String UPDATE_AUTHORIZE_CODE_STATUS = "UpdateAuthorizeCodeStatus";
 
     // 配置信息页与综合检查页spinner的联动关系
     public static final int[][] carSettingsSpinnerMap = {
@@ -158,6 +163,9 @@ public class Common {
     public static final int PHOTO_WIDTH = 800;
     public static final int THUMBNAIL_WIDTH = 400;
 
+    public static final int NO_PHOTO = 1;
+    public static final int WEB_PHOTO = 2;
+
     // 绘制颜色
     public static int PAINTCOLOR = Color.rgb(0xEA, 0x55, 0x04);
 
@@ -181,6 +189,9 @@ public class Common {
     public static final int MODIFY_COMMENT = 18;
     public static final int MODIFY_PAINT_COMMENT = 19;
     public static final int PHOTO_FOR_TIRES_MODIFY = 20;
+    public static final int PHOTO_FOR_OTHER_FAULT_STANDARD = 21;
+    public static final int ADD_COMMENT_FOR_OTHER_FAULT_PHOTO = 22;
+    public static final int TAKE_LICENSE_PHOTO = 23;
 
     // DF5000消息代码
     // 为BluetoothService处理程序定义的消息类型
@@ -205,11 +216,21 @@ public class Common {
 
     // 拍摄标准照的位置
     public static final String[] exteriorPartArray = {"左前45°", "右前45°", "右侧底大边", "右后45°", "左后45°", "左侧底大边", "钥匙", "其他"};
-    public static final String[] interiorPartArray = {"仪表盘", "左前门+方向盘", "天窗", "后排座椅", "工作台(中控台)", "其他"};
-    public static final String[] proceduresPartArray = {"车牌", "铭牌 - 行驶证 - 登记证", "其他"};
+    public static final String[] interiorPartArray = {"仪表盘", "左门+方向盘", "天窗", "后排座椅", "工作台(中控台)", "其他"};
+    public static final String[] proceduresPartArray = {"车牌", "铭牌 - 行驶证 - 登记证", "车架号", "其他"};
     public static final String[] enginePartArray = {"全景", "左侧", "右侧", "其他"};
     public static final String[] tirePartArray = {"leftFront", "rightFront", "leftRear", "rightRear", "spare"};
 
     public static final String EXTERIOR = "exterior";
     public static final String INTERIOR = "interior";
+
+    public static final int PHOTO_MIN_EXTERIOR = 1;
+    public static final int PHOTO_MIN_INTERIOR = 1;
+    public static final int PHOTO_MIN_PROCEDURES = 0;
+    public static final int PHOTO_MIN_ENGINE = 3;
+    public static final int PHOTO_MIN_AGREEMENT = 0;
+
+    // 标签选中和未选中的颜色
+    public static int selectedColor = Color.rgb(0xC7, 0x48, 0x10);
+    public static int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
 }

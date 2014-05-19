@@ -9,6 +9,7 @@
         android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
+        android:orientation="horizontal"
         android:background="#edeceb" >
 
         <TextView

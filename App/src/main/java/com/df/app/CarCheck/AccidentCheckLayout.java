@@ -15,6 +15,7 @@ import com.df.app.R;
 import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
+import com.df.app.util.Common;
 import com.df.app.util.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
 
@@ -40,9 +41,6 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
     private IssueLayout issueLayout;
     private AccidentResultLayout accidentResultLayout;
     private boolean loaded;
-
-    private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
-    private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
 
     public AccidentCheckLayout(Context context) {
         super(context);
@@ -132,6 +130,7 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
         List<PhotoEntity> temp = new ArrayList<PhotoEntity>();
 
         temp.add(issueLayout.generateSketch());
+        temp.add(issueLayout.generateHomeSketch());
         temp.addAll(accidentResultLayout.generateSketches());
 
         return temp;
@@ -165,9 +164,9 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
     }
 
     private void selectTab(int currIndex) {
-        collectTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
-        issueTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
-        resultTab.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
+        collectTab.setTextColor(currIndex == 0 ? Common.selectedColor : Common.unselectedColor);
+        issueTab.setTextColor(currIndex == 1 ? Common.selectedColor : Common.unselectedColor);
+        resultTab.setTextColor(currIndex == 2 ? Common.selectedColor : Common.unselectedColor);
     }
 
     /**
@@ -188,13 +187,14 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
 
     /**
      * 生成事故排查的JSON串
+     * @param b 是否是保存动作
      */
-    public JSONObject generateJSONObject() {
+    public JSONObject generateJSONObject(boolean b) {
         JSONObject accident = new JSONObject();
 
         try {
             // 测量数据
-            JSONObject data = collectDataLayout.generateJSONObject();
+            JSONObject data = collectDataLayout.generateJSONObject(b);
 
             // 问题查勘
             JSONObject issue = issueLayout.generateJSONObject();
@@ -222,7 +222,7 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
             JSONObject issue = accident.getJSONObject("issue");
 
             // 如果有sketch节点，表示已经获取过问题查勘了，直接赋值
-            if(issue.get("sketch") != null) {
+            if(issue.has("sketch") && issue.get("sketch") != null) {
                 handler.sendEmptyMessage(1);
                 issueLayout.fillInData(issue);
             }
@@ -283,6 +283,7 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
      * 清空缓存
      */
     public void clearCache() {
+        collectDataLayout.unRegisterBroadReceiver();
         issueLayout.clearCache();
         accidentResultLayout.clearCache();
     }

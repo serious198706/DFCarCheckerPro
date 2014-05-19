@@ -5,10 +5,14 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
@@ -100,26 +104,26 @@ public class CollectDataLayout extends LinearLayout {
     private static Map<int[], String> overIdMap ;
     static {
         overIdMap = new HashMap<int[], String>();
-        overIdMap.put(new int[]{R.id.L_edit,    R.id.L_N,   1},     "L");
-        overIdMap.put(new int[]{R.id.M_edit,    R.id.M_N,   2},     "M");
-        overIdMap.put(new int[]{R.id.D_edit,    R.id.D_N,   3},     "D");
-        overIdMap.put(new int[]{R.id.LA_edit,   R.id.LA_N,  4},     "LA");
-        overIdMap.put(new int[]{R.id.E_edit,    R.id.E_N,   5},     "E");
-        overIdMap.put(new int[]{R.id.LB_edit,   R.id.LB_N,  6},     "LB");
-        overIdMap.put(new int[]{R.id.F_edit,    R.id.F_N,   7},     "F");
-        overIdMap.put(new int[]{R.id.LC_edit,   R.id.LC_N,  8},     "LC");
-        overIdMap.put(new int[]{R.id.G_edit,    R.id.G_N,   9},     "G");
-        overIdMap.put(new int[]{R.id.H_edit,    R.id.H_N,   10},    "H");
-        overIdMap.put(new int[]{R.id.I_edit,    R.id.I_N,   11},    "I");
-        overIdMap.put(new int[]{R.id.RC_edit,   R.id.RC_N,  12},    "RC");
-        overIdMap.put(new int[]{R.id.J_edit,    R.id.J_N,   13},    "J");
-        overIdMap.put(new int[]{R.id.RB_edit,   R.id.RB_N,  14},    "RB");
-        overIdMap.put(new int[]{R.id.K_edit,    R.id.K_N,   15},    "K");
-        overIdMap.put(new int[]{R.id.RA_edit,   R.id.RA_N,  16},    "RA");
-        overIdMap.put(new int[]{R.id.N_edit,    R.id.N_N,   17},    "N");
+        overIdMap.put(new int[]{R.id.L_edit,    R.id.L_N,   1,  9},     "L");
+        overIdMap.put(new int[]{R.id.M_edit,    R.id.M_N,   2,  9},     "M");
+        overIdMap.put(new int[]{R.id.D_edit,    R.id.D_N,   3,  9},     "D");
+        overIdMap.put(new int[]{R.id.LA_edit,   R.id.LA_N,  4,  3},     "LA");
+        overIdMap.put(new int[]{R.id.E_edit,    R.id.E_N,   5,  9},     "E");
+        overIdMap.put(new int[]{R.id.LB_edit,   R.id.LB_N,  6,  6},     "LB");
+        overIdMap.put(new int[]{R.id.F_edit,    R.id.F_N,   7,  9},     "F");
+        overIdMap.put(new int[]{R.id.LC_edit,   R.id.LC_N,  8,  3},     "LC");
+        overIdMap.put(new int[]{R.id.G_edit,    R.id.G_N,   9,  9},     "G");
+        overIdMap.put(new int[]{R.id.H_edit,    R.id.H_N,   10, 9},    "H");
+        overIdMap.put(new int[]{R.id.I_edit,    R.id.I_N,   11, 9},    "I");
+        overIdMap.put(new int[]{R.id.RC_edit,   R.id.RC_N,  12, 3},    "RC");
+        overIdMap.put(new int[]{R.id.J_edit,    R.id.J_N,   13, 9},    "J");
+        overIdMap.put(new int[]{R.id.RB_edit,   R.id.RB_N,  14, 6},    "RB");
+        overIdMap.put(new int[]{R.id.K_edit,    R.id.K_N,   15, 9},    "K");
+        overIdMap.put(new int[]{R.id.RA_edit,   R.id.RA_N,  16, 3},    "RA");
+        overIdMap.put(new int[]{R.id.N_edit,    R.id.N_N,   17, 9},    "N");
     }
 
-    // 覆盖件edit id
+    // 所有edit id
     private static int[] overIds = {
             R.id.L_edit,
             R.id.M_edit,
@@ -245,6 +249,7 @@ public class CollectDataLayout extends LinearLayout {
                             CollectDataLayout.sDriver = sDriver;
                             showView(rootView, R.id.start_button, true);
                             deviceSerial = Long.toString(serialNumber);
+                            Toast.makeText(context, "已连接" + deviceSerial, Toast.LENGTH_SHORT).show();
                         }
                     });
                     df3000Dialog.show();
@@ -375,7 +380,10 @@ public class CollectDataLayout extends LinearLayout {
                 fillInDummyData();
             }
         });
-        //dummyRecordButton.setVisibility(GONE);
+
+        // 生产环境下，将录入测试数据的按钮干掉
+        if(Common.getEnvironment() == Common.PRODUCT_VERSION)
+            dummyRecordButton.setVisibility(GONE);
 
         getIssueButton = (Button)findViewById(R.id.getIssueButton);
         getIssueButton.setVisibility(GONE);
@@ -385,7 +393,18 @@ public class CollectDataLayout extends LinearLayout {
                 getIssueItems();
             }
         });
+
+        context.registerReceiver(broadcastReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
     }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "失去与设备的连接！", Toast.LENGTH_SHORT).show();
+            startButton.setVisibility(GONE);
+            getIssueButton.setVisibility(GONE);
+        }
+    };
 
     /**
      * 开始采集数据
@@ -516,6 +535,11 @@ public class CollectDataLayout extends LinearLayout {
             CheckBox checkBox = (CheckBox) rootView.findViewById(n[1]);
             checkBox.setChecked(false);
             checkBox.setText("(0)");
+        }
+
+        for(int i = 0; i < enhanceIdMap.size(); i++) {
+            EditText editText = (EditText) rootView.findViewById(enhanceIdMap.keyAt(i));
+            editText.setText("");
         }
     }
 
@@ -824,7 +848,7 @@ public class CollectDataLayout extends LinearLayout {
     /**
      * 生成数据采集JSON串
      */
-    public JSONObject generateJSONObject() throws JSONException {
+    public JSONObject generateJSONObject(boolean b) throws JSONException {
         JSONObject data = new JSONObject();
 
         // 覆盖件数据
@@ -840,6 +864,19 @@ public class CollectDataLayout extends LinearLayout {
             }
 
             overlap.put(overIdMap.get(n), value);
+        }
+
+        if(!b) {
+            String materialString = "";
+
+            for(String material : materialArray) {
+                materialString += material;
+                materialString += ",";
+            }
+
+            materialString = materialString.substring(0, materialString.length() - 1);
+
+            data.put("materials", materialString);
         }
 
         // 当B柱无法测量时
@@ -907,7 +944,8 @@ public class CollectDataLayout extends LinearLayout {
     /**
      * 对df5000产生的数据进行铁的数据补偿
      *
-     * 原因：df5000对铁的测量数据比df3000的测量数据大出约20%
+     * 原因：df5000对铁的测量数据比df3000的测量数据大出约14%
+     *      但如果高出太多，则需要有一个限定值，目前为46。
      * @param value 原数据
      * @return 新数据
      */
@@ -918,7 +956,7 @@ public class CollectDataLayout extends LinearLayout {
         for(String str : array) {
             double sValue = Double.parseDouble(str);
 
-            sValue = (sValue - sValue / 1.2) > 50.0 ? sValue - 50.0 : sValue / 1.2;
+            sValue = (sValue - sValue / 1.14) > 46.0 ? sValue - 46.0 : sValue / 1.14;
 
             result += Integer.toString(((int) sValue));
             result += ",";
@@ -932,32 +970,67 @@ public class CollectDataLayout extends LinearLayout {
     }
 
     /**
+     * 检查每一个域的数量是否足够
+     */
+    private String checkFields() {
+        for(int[] n : overIdMap.keySet()) {
+            CheckBox checkBox = (CheckBox)findViewById(n[1]);
+            String numString = checkBox.getText().toString();
+
+            int num = Integer.parseInt(numString.substring(1, numString.length() - 1));
+
+            if(num < n[3]) {
+                String result = overIdMap.get(n);
+                return result;
+            }
+        }
+
+        return "";
+    }
+
+    /**
      * 获取问题查勘的内容
      */
     private void getIssueItems() {
-        // 启动获取issue数据线程
-        try {
-            GetIssueItemsTask getIssueItemsTask = new GetIssueItemsTask(rootView.getContext(),
-                    generateJSONObject(), new GetIssueItemsTask.OnGetIssueItemsFinished() {
-                @Override
-                public void onFinish(String result, ProgressDialog progressDialog) {
-                    mCallback.showContent();
-                    mCallback.updateUi(result, progressDialog);
+        String check;
 
-                    startButton.setText(R.string.start);
-                    updateButton(true);
-                }
+        // 如果为正式环境，则要进行项的检查
+        if(Common.getEnvironment() == Common.PRODUCT_VERSION) {
+            check = checkFields();
+        } else {
+            check = "";
+        }
 
-                @Override
-                public void onFailed(String error, ProgressDialog progressDialog) {
-                    progressDialog.dismiss();
-                    Toast.makeText(rootView.getContext(), "获取问题失败: " + error, Toast.LENGTH_SHORT).show();
-                    Log.d("DFCarChecker", "获取问题失败: " + error);
-                }
-            });
-            getIssueItemsTask.execute();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if(!check.equals("")) {
+            int resId = getResources().getIdentifier(check, "string", rootView.getContext().getPackageName());
+            String name = getResources().getString(resId);
+
+            Toast.makeText(rootView.getContext(), name + "采集数量不足！", Toast.LENGTH_SHORT).show();
+        } else {
+            // 启动获取issue数据线程
+            try {
+                GetIssueItemsTask getIssueItemsTask = new GetIssueItemsTask(rootView.getContext(),
+                        generateJSONObject(true), new GetIssueItemsTask.OnGetIssueItemsFinished() {
+                    @Override
+                    public void onFinish(String result, ProgressDialog progressDialog) {
+                        mCallback.showContent();
+                        mCallback.updateUi(result, progressDialog);
+
+                        startButton.setText(R.string.start);
+                        updateButton(true);
+                    }
+
+                    @Override
+                    public void onFailed(String error, ProgressDialog progressDialog) {
+                        progressDialog.dismiss();
+                        Toast.makeText(rootView.getContext(), "获取问题失败: " + error, Toast.LENGTH_SHORT).show();
+                        Log.d("DFCarChecker", "获取问题失败: " + error);
+                    }
+                });
+                getIssueItemsTask.execute();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -989,6 +1062,12 @@ public class CollectDataLayout extends LinearLayout {
             for(int i = 0; i < enhanceIdMap.size(); i++) {
                 String s = enhance.get(enhanceIdMap.valueAt(i)) == JSONObject.NULL ? "" : enhance.getString(enhanceIdMap.valueAt(i));
                 setEditViewText(rootView, enhanceIdMap.keyAt(i), s);
+            }
+
+            // 各部位的材料
+            if(data.has("materials")) {
+                String[] temp = data.getString("materials").split(",");
+                System.arraycopy(temp, 0, materialArray, 0, temp.length);
             }
 
             // 隐藏部位
@@ -1024,6 +1103,13 @@ public class CollectDataLayout extends LinearLayout {
         } catch(JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 注销broadReceiver
+     */
+    public void unRegisterBroadReceiver() {
+        getContext().unregisterReceiver(broadcastReceiver);
     }
 
     /**

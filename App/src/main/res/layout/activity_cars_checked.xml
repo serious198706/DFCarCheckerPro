@@ -11,7 +11,7 @@
         <ImageView android:id="@+id/banner"
                    android:layout_width="match_parent"
                    android:layout_height="52dp"
-                   android:background="#AA030A"/>
+                   android:background="#C74810"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -22,15 +22,15 @@
             android:textSize="28sp"/>
 
         <Button android:id="@+id/buttonRefresh"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/refresh"
                 android:layout_alignParentRight="true"/>
 
         <Button android:id="@+id/buttonHome"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/home"/>
     </RelativeLayout>

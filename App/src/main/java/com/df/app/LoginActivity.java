@@ -21,8 +21,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Activity which displays a login screen to the user, offering registration as
- * well.
+ * Created by 岩 on 13-12-18.
+ *
+ * 登录界面
  */
 public class LoginActivity extends Activity {
 
@@ -146,6 +147,8 @@ public class LoginActivity extends Activity {
                         intent.putExtra("Key", userJsonObject.getString("Key"));
                         intent.putExtra("UserName", userJsonObject.getString("UserName"));
                         intent.putExtra("Orid", userJsonObject.getString("Orid"));
+                        if(userJsonObject.has("PlateType"))
+                            intent.putExtra("PlateType", userJsonObject.getString("PlateType"));
                         mLoginTask = null;
                         startActivity(intent);
                         finish();

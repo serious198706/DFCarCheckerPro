@@ -51,7 +51,7 @@ public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
     protected Boolean doInBackground(Void... params) {
         boolean success = false;
 
-        // 如果本地存在这辆车的信息
+        // 如果本地存在这辆车的数据
         File file = new File(Common.savedDirectory + Integer.toString(carId));
 
         if(file.exists()) {

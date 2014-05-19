@@ -26,8 +26,8 @@ public class PhotoParser {
                                       List<PhotoEntity> proceduresPhotos,
                                       List<PhotoEntity> enginePhotos,
                                       List<PhotoEntity> agreementPhotos) throws JSONException {
-        parseStandard(context, photo.getJSONObject("exterior").getJSONArray("standard"), exteriorPhotos, R.array.exterior_camera_item, Common.exteriorPartArray);
-        parseStandard(context, photo.getJSONObject("interior").getJSONArray("standard"), interiorPhotos, R.array.interior_camera_item, Common.interiorPartArray);
+        parseStandard(context, photo.getJSONObject("exterior").getJSONArray("standard"), exteriorPhotos, R.array.photoForExteriorItems, Common.exteriorPartArray);
+        parseStandard(context, photo.getJSONObject("interior").getJSONArray("standard"), interiorPhotos, R.array.photoForInteriorItems, Common.interiorPartArray);
 
         if(photo.get("procedures") != JSONObject.NULL)
             parseStandard(context, photo.getJSONArray("procedures"), proceduresPhotos, R.array.photoForProceduresItems, Common.proceduresPartArray);
@@ -37,7 +37,8 @@ public class PhotoParser {
         parseFault(photo, faultPhotos);
         parseTire(context, photo.getJSONObject("tire"), exteriorPhotos);
 
-        parseAgreement(photo.getJSONArray("agreement"), agreementPhotos);
+        if(photo.get("agreement") != JSONObject.NULL)
+            parseAgreement(photo.getJSONArray("agreement"), agreementPhotos);
     }
 
     private static void parseAgreement(JSONArray agreement, List<PhotoEntity> agreementPhotos) throws JSONException {
@@ -75,6 +76,9 @@ public class PhotoParser {
                 JSONObject jsonObject = tire.getJSONObject(Common.tirePartArray[i]);
                 addTire(tireArray[i], Common.tirePartArray[i], jsonObject, exteriorPhotos);
                 Integrated2Layout.photoShotCount[i] = 1;
+
+                if(Integrated2Layout.buttons[i] != null)
+                    Integrated2Layout.buttons[i].setBackgroundResource(R.drawable.tire_pressed);
             }
         }
     }
@@ -154,9 +158,9 @@ public class PhotoParser {
 
             String group;
 
-            if(stringArrayId == R.array.exterior_camera_item) {
+            if(stringArrayId == R.array.photoForExteriorItems) {
                 group = "exterior";
-            } else if(stringArrayId == R.array.interior_camera_item) {
+            } else if(stringArrayId == R.array.photoForInteriorItems) {
                 group = "interior";
             } else if(stringArrayId == R.array.photoForProceduresItems) {
                 group = "procedures";
@@ -193,6 +197,10 @@ public class PhotoParser {
 
         if(photo.getJSONObject("frame").get("rear") != JSONObject.NULL)
             addFault(photo.getJSONObject("frame").getJSONArray("rear"), faultPhotos, "rear");
+
+        if(photo.get("otherFault") != JSONObject.NULL) {
+            addFault(photo.getJSONArray("otherFault"), faultPhotos, "");
+        }
     }
 
     /**
@@ -247,9 +255,12 @@ public class PhotoParser {
                         group = "";
                         break;
                 }
-            } else {
+            } else if(temp.has("issueId")) {
                 name = "结构缺陷";
                 group = "frame";
+            } else {
+                name = "其他缺陷";
+                group = "otherFault";
             }
 
             photoEntity.setName(name);
@@ -272,8 +283,6 @@ public class PhotoParser {
             makeJsonString(photoEntity, temp, group, part);
 
             faultPhotos.add(photoEntity);
-
-
         }
     }
 

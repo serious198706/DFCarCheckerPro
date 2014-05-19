@@ -10,7 +10,7 @@
         <ImageView android:id="@+id/banner"
                    android:layout_width="match_parent"
                    android:layout_height="52dp"
-                   android:background="#AA030A"/>
+                   android:background="#C74810"/>
 
         <Button android:id="@+id/back"
                 android:layout_width="35dp"

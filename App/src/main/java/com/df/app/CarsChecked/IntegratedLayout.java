@@ -22,6 +22,7 @@ import com.df.app.service.AsyncTask.DownloadImageTask;
 import com.df.app.util.Common;
 import com.df.app.util.MyScrollView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -243,12 +244,53 @@ public class IntegratedLayout extends LinearLayout {
     private void updateImage(JSONObject photo) throws JSONException {
         JSONObject exterior = photo.getJSONObject("exterior");
 
+        // 如果有缺陷点
+        if(!exterior.isNull("fault")) {
+            JSONArray fault = exterior.getJSONArray("fault");
+
+            for(int i = 0; i < fault.length(); i++) {
+                JSONObject jsonObject = fault.getJSONObject(i);
+
+                int type = jsonObject.getInt("type");
+
+                PosEntity posEntity = new PosEntity(type);
+
+                // 要设置max，否则在使用endx endy时会返回零
+                posEntity.setMaxX(1000);
+                posEntity.setMaxY(2000);
+
+                int startX, startY, endX, endY, radius;
+
+                if(type == Common.TRANS) {
+                    radius = jsonObject.getInt("radius");
+                    startX = jsonObject.getInt("startX") - radius;
+                    startY = jsonObject.getInt("startY") - radius;
+                    endX = jsonObject.getInt("startX") + radius;
+                    endY = jsonObject.getInt("startY") + radius;
+                } else {
+                    startX = jsonObject.getInt("startX");
+                    startY = jsonObject.getInt("startY");
+                    endX = jsonObject.getInt("endX");
+                    endY = jsonObject.getInt("endY");
+                }
+
+                posEntity.setStart(startX, startY);
+                posEntity.setEnd(endX, endY);
+                posEntity.setImageFileName(jsonObject.getString("photo"));
+
+                exPosEntities.add(posEntity);
+            }
+        } else {
+            exteriorPaintPreviewView.setAlpha(1.0f);
+            exteriorPaintPreviewView.invalidate();
+        }
+
         // 结构草图 - 前视角
         JSONObject exSketch = exterior.getJSONObject("sketch");
 
         if(exSketch != JSONObject.NULL) {
             String sketchUrl = exSketch.getString("photo");
-            downloadImageTask = new DownloadImageTask(Common.getPICTURE_ADDRESS() + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImageTask = new DownloadImageTask(getContext(), Common.getPICTURE_ADDRESS() + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     ProgressBar progressBar = (ProgressBar)findViewById(R.id.exProgressBar);
@@ -267,12 +309,52 @@ public class IntegratedLayout extends LinearLayout {
 
         JSONObject interior = photo.getJSONObject("interior");
 
+        if(!interior.isNull("fault")) {
+            JSONArray fault = interior.getJSONArray("fault");
+
+            for(int i = 0; i < fault.length(); i++) {
+                JSONObject jsonObject = fault.getJSONObject(i);
+
+                int type = jsonObject.getInt("type");
+
+                PosEntity posEntity = new PosEntity(type);
+
+                // 要设置max，否则在使用endx endy时会返回零
+                posEntity.setMaxX(1000);
+                posEntity.setMaxY(2000);
+
+                int startX, startY, endX, endY, radius;
+
+                if(type == Common.BROKEN) {
+                    radius = jsonObject.getInt("radius");
+                    startX = jsonObject.getInt("startX") - radius;
+                    startY = jsonObject.getInt("startY") - radius;
+                    endX = jsonObject.getInt("startX") + radius;
+                    endY = jsonObject.getInt("startY") + radius;
+                } else {
+                    startX = jsonObject.getInt("startX");
+                    startY = jsonObject.getInt("startY");
+                    endX = jsonObject.getInt("endX");
+                    endY = jsonObject.getInt("endY");
+                }
+
+                posEntity.setStart(startX, startY);
+                posEntity.setEnd(endX, endY);
+                posEntity.setImageFileName(jsonObject.getString("photo"));
+
+                inPosEntities.add(posEntity);
+            }
+        } else {
+            interiorPaintPreviewView.setAlpha(1.0f);
+            interiorPaintPreviewView.invalidate();
+        }
+
         // 结构草图 - 后视角
         JSONObject inSketch = interior.getJSONObject("sketch");
 
         if(inSketch != JSONObject.NULL) {
             String sketchUrl = inSketch.getString("photo");
-            downloadImage1Task = new DownloadImageTask(Common.getPICTURE_ADDRESS() + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImage1Task = new DownloadImageTask(getContext(), Common.getPICTURE_ADDRESS() + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     ProgressBar progressBar = (ProgressBar)findViewById(R.id.inProgressBar);

@@ -2,16 +2,19 @@ package com.df.app.carCheck;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.Cooperator;
 import com.df.app.service.AsyncTask.GetCooperatorTask;
+import com.df.app.service.SelectCooperatorDialog;
+import com.df.app.util.Common;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,9 +23,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.df.app.util.Helper.getSpinnerSelectedIndex;
-import static com.df.app.util.Helper.getSpinnerSelectedText;
-import static com.df.app.util.Helper.setSpinnerSelectionWithString;
+import static com.df.app.util.Helper.getEditViewText;
+import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -35,6 +37,8 @@ public class Integrated3Layout extends LinearLayout {
     private List<Cooperator> cooperators;
     private List<String> cooperatorNames;
     private String storedCooperatorName;
+
+    private Cooperator selectedCooperator;
 
     public Integrated3Layout(Context context) {
         super(context);
@@ -63,6 +67,22 @@ public class Integrated3Layout extends LinearLayout {
         setTextView(rootView, R.id.userName, MainActivity.userInfo.getName());
 
         getCooperatorNames();
+
+        final EditText cooperatorEdit = (EditText)findViewById(R.id.cooperatorName_edit);
+        cooperatorEdit.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SelectCooperatorDialog dialog = new SelectCooperatorDialog(rootView.getContext(), cooperators,
+                        new SelectCooperatorDialog.OnSelected() {
+                            @Override
+                            public void onSelected(Cooperator cooperator) {
+                                selectedCooperator = cooperator;
+                                cooperatorEdit.setText(cooperator.getName());
+                            }
+                        });
+                dialog.show();
+            }
+        });
     }
 
     /**
@@ -90,19 +110,12 @@ public class Integrated3Layout extends LinearLayout {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                Spinner cooperatorSpinner = (Spinner)findViewById(R.id.cooperatorName_spinner);
-                cooperatorSpinner.setAdapter(new ArrayAdapter<String>(rootView.getContext(),
-                        android.R.layout.simple_spinner_dropdown_item, cooperatorNames));
-
-                if(!storedCooperatorName.equals("")) {
-                    setSpinnerSelectionWithString(rootView, R.id.cooperatorName_spinner, storedCooperatorName);
-                }
             }
 
             @Override
-            public void onFailed() {
-
+            public void onFailed(String result) {
+                Toast.makeText(rootView.getContext(), "获取从检人列表失败！" + result, Toast.LENGTH_LONG).show();
+                Log.d(Common.TAG, "获取从检人列表失败！" + result);
             }
         });
 
@@ -122,16 +135,10 @@ public class Integrated3Layout extends LinearLayout {
      * @return
      */
     public int getCooperatorId() {
-        int index = getSpinnerSelectedIndex(rootView, R.id.cooperatorName_spinner);
-
-        if(index == 0) {
+        if(selectedCooperator != null)
+            return selectedCooperator.getId();
+        else
             return -1;
-        } else if(index >= 1) {
-            Cooperator cooperator = cooperators.get(index - 1);
-            return cooperator.getId();
-        } else {
-            return -1;
-        }
     }
 
     /**
@@ -142,7 +149,7 @@ public class Integrated3Layout extends LinearLayout {
         if(cooperatorNames.size() == 1)
             return "";
         else
-            return getSpinnerSelectedText(rootView, R.id.cooperatorName_spinner);
+            return getEditViewText(rootView, R.id.cooperatorName_edit);
     }
 
     /**
@@ -156,6 +163,6 @@ public class Integrated3Layout extends LinearLayout {
     public void fillInData(String checkCooperatorName) {
         this.storedCooperatorName = checkCooperatorName;
 
-        setSpinnerSelectionWithString(rootView, R.id.cooperatorName_spinner, this.storedCooperatorName);
+        setEditViewText(rootView, R.id.cooperatorName_edit, this.storedCooperatorName);
     }
 }

@@ -1,25 +1,23 @@
 package com.df.app.carCheck;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.PhotoListAdapter;
+import com.df.app.service.customCamera.IPhotoProcessListener;
+import com.df.app.service.customCamera.PhotoProcessManager;
+import com.df.app.service.customCamera.PhotoTask;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 import com.df.app.util.MyAlertDialog;
@@ -35,7 +33,7 @@ import java.util.List;
  *
  * 协议组照片列表
  */
-public class PhotoAgreement extends LinearLayout {
+public class PhotoAgreement extends LinearLayout implements IPhotoProcessListener {
     private Context context;
 
     // adapter
@@ -43,7 +41,7 @@ public class PhotoAgreement extends LinearLayout {
 
     // 已拍摄的照片数量
     public static int photoShotCount = 0;
-    private long photoName;
+    public static long photoName;
 
     // 正在拍摄的部位
     private int currentShotPart;
@@ -55,25 +53,71 @@ public class PhotoAgreement extends LinearLayout {
         super(context);
 
         this.context = context;
-        init(context);
+        init();
     }
 
     public PhotoAgreement(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init();
     }
 
     public PhotoAgreement(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(context);
+        init();
     }
 
-    private void init(Context context) {
+    private void init() {
         LayoutInflater.from(context).inflate(R.layout.photo_other_list, this);
 
         List<PhotoEntity> photoEntities = new ArrayList<PhotoEntity>();
 
-        photoListAdapter = new PhotoListAdapter(context, photoEntities, true, false);
+        photoListAdapter = new PhotoListAdapter(context, photoEntities, true, false, new PhotoListAdapter.OnAction() {
+            @Override
+            public void onDelete(int position) {
+                String msg = "确定删除协议组 - 协议照片？";
+
+                MyAlertDialog.showAlert(context, msg, R.string.alert, MyAlertDialog.BUTTON_STYLE_OK_CANCEL,
+                        new Handler(new Handler.Callback() {
+                            @Override
+                            public boolean handleMessage(Message message) {
+                                switch (message.what) {
+                                    case MyAlertDialog.POSITIVE_PRESSED:
+                                        if(CarCheckActivity.isModify()) {
+                                            photoListAdapter.getItem(0).setModifyAction(Action.DELETE);
+                                            JSONObject jsonObject = null;
+                                            try {
+                                                jsonObject = new JSONObject(photoListAdapter.getItem(0).getJsonString());
+                                                jsonObject.put("Action", Action.DELETE);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                            photoListAdapter.getItem(0).setJsonString(jsonObject.toString());
+                                        } else {
+                                            photoListAdapter.clear();
+                                        }
+
+                                        photoListAdapter.notifyDataSetChanged();
+                                        photoShotCount = 0;
+                                        photoName = 0;
+                                        break;
+                                }
+
+                                return true;
+                            }
+                        }));
+            }
+
+            @Override
+            public void onModifyComment(int position, String comment) {
+
+            }
+
+            @Override
+            public void onShowPhoto(int position) {
+
+            }
+        });
 
         ListView otherList = (ListView) findViewById(R.id.photo_other_list);
         otherList.setAdapter(photoListAdapter);
@@ -82,7 +126,7 @@ public class PhotoAgreement extends LinearLayout {
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                starCamera();
+                startCamera();
             }
         });
     }
@@ -90,7 +134,9 @@ public class PhotoAgreement extends LinearLayout {
     /**
      * 拍摄协议组照片
      */
-    private void starCamera() {
+    private void startCamera() {
+        PhotoProcessManager.getInstance().registPhotoProcessListener(this);
+
         if(photoShotCount == 1) {
             MyAlertDialog.showAlert(context, R.string.rePhoto, R.string.alert,
                     MyAlertDialog.BUTTON_STYLE_OK_CANCEL, new Handler(new Handler.Callback() {
@@ -100,8 +146,12 @@ public class PhotoAgreement extends LinearLayout {
                         case MyAlertDialog.POSITIVE_PRESSED:
                             currentTimeMillis = photoName;
 
-                            Toast.makeText(context, "正在拍摄协议组", Toast.LENGTH_LONG).show();
-                            Helper.startCamera(context, Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_FOR_AGREEMENT_STANDARD);
+                            // 如果是网络图片或者没有图片
+                            if(currentTimeMillis == Common.NO_PHOTO || currentTimeMillis == Common.WEB_PHOTO) {
+                                currentTimeMillis = System.currentTimeMillis();
+                            }
+
+                            Helper.startCamera(context, "协议组", currentTimeMillis);
                             break;
                         case MyAlertDialog.NEGATIVE_PRESSED:
                             break;
@@ -116,8 +166,21 @@ public class PhotoAgreement extends LinearLayout {
 
             photoName = currentTimeMillis;
 
-            Toast.makeText(context, "正在拍摄协议组", Toast.LENGTH_LONG).show();
-            Helper.startCamera(context, Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_FOR_AGREEMENT_STANDARD);
+            Helper.startCamera(context, "协议组", currentTimeMillis);
+        }
+    }
+
+    @Override
+    public void onPhotoProcessFinish(List<PhotoTask> list) {
+        if(list == null) {
+            return;
+        }
+
+        PhotoTask photoTask = list.get(0);
+
+        // 如果为完成状态
+        if(photoTask.getState() == PhotoTask.STATE_COMPLETE) {
+            saveAgreementPhoto();
         }
     }
 
@@ -125,13 +188,30 @@ public class PhotoAgreement extends LinearLayout {
      * 保存协议组照片
      */
     public void saveAgreementPhoto() {
-        Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_WIDTH);
-        Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", Common.THUMBNAIL_WIDTH);
+        Helper.handlePhoto(Long.toString(currentTimeMillis) + ".jpg");
 
         if(photoShotCount == 0) {
             PhotoEntity photoEntity = generatePhotoEntity();
             PhotoAgreement.photoListAdapter.addItem(photoEntity);
             photoShotCount = 1;
+        }
+        // 如果该部位已经有照片（无论是网络的还是本地的），更新照片位置，更改action
+        else {
+            for(PhotoEntity photoEntity : PhotoAgreement.photoListAdapter.getItems()) {
+                if(photoEntity.getName().equals("协议")) {
+                    photoEntity.setFileName(Long.toString(currentTimeMillis) + ".jpg");
+                    photoEntity.setThumbFileName(Long.toString(currentTimeMillis) + "_t.jpg");
+                    photoEntity.setModifyAction(Action.MODIFY);
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+                        jsonObject.put("Action", photoEntity.getModifyAction());
+                        photoEntity.setJsonString(jsonObject.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
 
         PhotoAgreement.photoListAdapter.notifyDataSetChanged();
@@ -193,7 +273,7 @@ public class PhotoAgreement extends LinearLayout {
      * @return
      */
     public String check() {
-        if(photoShotCount == 0)
+        if(photoShotCount < Common.PHOTO_MIN_AGREEMENT)
             return "agreement";
         else
             return "";

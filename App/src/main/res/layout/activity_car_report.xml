@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="#FFF">
     <RelativeLayout android:id="@+id/naviBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -8,15 +9,15 @@
         <ImageView android:id="@+id/banner"
                    android:layout_width="match_parent"
                    android:layout_height="52dp"
-                   android:background="#AA030A"/>
+                   android:background="#C74810"/>
     </RelativeLayout>
 
     <RelativeLayout android:id="@+id/tabButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
         <Button android:id="@+id/buttonBack"
-                android:layout_width="40dp"
-                android:layout_height="36dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/back"/>
 

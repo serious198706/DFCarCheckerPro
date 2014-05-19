@@ -145,7 +145,7 @@ public class AccidentLayout extends LinearLayout {
         JSONObject accidentSketch = accident.getJSONObject("sketch");
         if(accidentSketch != JSONObject.NULL) {
             String accidentSketchUrl = accidentSketch.getString("photo");
-            downloadImageTask = new DownloadImageTask(Common.getPICTURE_ADDRESS() + accidentSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImageTask = new DownloadImageTask(getContext(), Common.getPICTURE_ADDRESS() + accidentSketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     ProgressBar progressBar = (ProgressBar)findViewById(R.id.issueImageProgressBar);
@@ -164,12 +164,48 @@ public class AccidentLayout extends LinearLayout {
 
         JSONObject frame = photo.getJSONObject("frame");
 
+        // 结构缺陷位置 - 前视角
+        if(!frame.isNull("front")) {
+            JSONArray frontPosArray = frame.getJSONArray("front");
+
+            for(int i = 0; i < frontPosArray.length(); i++) {
+                JSONObject temp = frontPosArray.getJSONObject(i);
+
+                PosEntity posEntity = new PosEntity(Common.COLOR_DIFF);
+                posEntity.setStart(temp.getInt("x"), temp.getInt("y"));
+                posEntity.setEnd(0, 0);
+                posEntity.setImageFileName(temp.getString("photo"));
+                posEntitiesFront.add(posEntity);
+            }
+        } else {
+            framePaintPreviewViewFront.setAlpha(1.0f);
+            framePaintPreviewViewFront.invalidate();
+        }
+
+        // 结构缺陷位置 - 后视角
+        if(!frame.isNull("rear")) {
+            JSONArray rearPosArray = frame.getJSONArray("rear");
+
+            for(int i = 0; i < rearPosArray.length(); i++) {
+                JSONObject temp = rearPosArray.getJSONObject(i);
+
+                PosEntity posEntity = new PosEntity(Common.COLOR_DIFF);
+                posEntity.setStart(temp.getInt("x"), temp.getInt("y"));
+                posEntity.setEnd(0, 0);
+                posEntity.setImageFileName(temp.getString("photo"));
+                posEntitiesRear.add(posEntity);
+            }
+        } else {
+            framePaintPreviewViewRear.setAlpha(1.0f);
+            framePaintPreviewViewRear.invalidate();
+        }
+
         // 结构草图 - 前视角
         JSONObject fSketch = frame.getJSONObject("fSketch");
 
         if(fSketch != JSONObject.NULL) {
             String fSketchUrl = fSketch.getString("photo");
-            downloadImageTaskF = new DownloadImageTask(Common.getPICTURE_ADDRESS() + fSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImageTaskF = new DownloadImageTask(getContext(), Common.getPICTURE_ADDRESS() + fSketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     ProgressBar progressBar = (ProgressBar)findViewById(R.id.frontProgressBar);
@@ -191,7 +227,7 @@ public class AccidentLayout extends LinearLayout {
 
         if(fSketch != JSONObject.NULL) {
             String rSketchUrl = rSketch.getString("photo");
-            downloadImageTaskR = new DownloadImageTask(Common.getPICTURE_ADDRESS() + rSketchUrl, new DownloadImageTask.OnDownloadFinished() {
+            downloadImageTaskR = new DownloadImageTask(getContext(), Common.getPICTURE_ADDRESS() + rSketchUrl, new DownloadImageTask.OnDownloadFinished() {
                 @Override
                 public void onFinish(Bitmap bitmap) {
                     ProgressBar progressBar = (ProgressBar)findViewById(R.id.rearProgressBar);

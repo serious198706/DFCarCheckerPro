@@ -175,25 +175,7 @@ public class SoapService implements ISoapService {
         // 将图片转换成流
         // 有可能有的缺陷没有照片
         if(bitmap != null) {
-            try {
-                // 如果是草图，则要以PNG的方式压缩并上传
-                JSONObject jsonObject = new JSONObject(jsonString);
-
-                if(jsonObject.has("Part")) {
-                    String part = jsonObject.getString("Part");
-
-                    if(part.contains("ketch")) {
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 70, stream);
-                    } else {
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream);
-                    }
-                } else {
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream);
             byteArray = stream.toByteArray();
         }
         else {

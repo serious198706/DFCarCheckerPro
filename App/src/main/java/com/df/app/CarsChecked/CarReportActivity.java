@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.df.app.R;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
+import com.df.app.util.Common;
 import com.df.app.util.MyOnClick;
 
 import org.json.JSONException;
@@ -29,11 +30,6 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
     private TextView integratedTab;
     private TextView photoTab;
     private TextView otherTab;
-
-    // 标签选中和未选中的颜色
-    private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
-    private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
-
 
     private BasicInfoLayout basicInfoLayout;
     private OptionsLayout optionsLayout;
@@ -147,12 +143,12 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
     }
 
     private void selectTab(int currIndex) {
-        basicTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
-        optionsTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
-        accidentTab.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
-        integratedTab.setTextColor(currIndex == 3 ? selectedColor : unselectedColor);
-        photoTab.setTextColor(currIndex == 4 ? selectedColor : unselectedColor);
-        otherTab.setTextColor(currIndex == 5 ? selectedColor : unselectedColor);
+        basicTab.setTextColor(currIndex == 0 ? Common.selectedColor : Common.unselectedColor);
+        optionsTab.setTextColor(currIndex == 1 ? Common.selectedColor : Common.unselectedColor);
+        accidentTab.setTextColor(currIndex == 2 ? Common.selectedColor : Common.unselectedColor);
+        integratedTab.setTextColor(currIndex == 3 ? Common.selectedColor : Common.unselectedColor);
+        photoTab.setTextColor(currIndex == 4 ? Common.selectedColor : Common.unselectedColor);
+        otherTab.setTextColor(currIndex == 5 ? Common.selectedColor : Common.unselectedColor);
     }
 
     @Override

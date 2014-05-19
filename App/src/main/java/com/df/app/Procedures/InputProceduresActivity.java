@@ -3,14 +3,22 @@ package com.df.app.procedures;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.df.app.R;
+import com.df.app.service.AsyncTask.GetAuthorizeCode;
+import com.df.app.util.Common;
 
+import static com.df.app.util.Helper.readMainID;
 import static com.df.app.util.Helper.setTextView;
 
 /**
@@ -34,12 +42,16 @@ public class InputProceduresActivity extends Activity {
             }
         });
 
-        inputProceduresLayout = (InputProceduresLayout)findViewById(R.id.inputProcedures);
+        LinearLayout container = (LinearLayout)findViewById(R.id.container);
+        inputProceduresLayout = new InputProceduresLayout(this);
+        container.addView(inputProceduresLayout);
+
+        //inputProceduresLayout = (InputProceduresLayout)findViewById(R.id.inputProcedures);
 
         Bundle bundle = getIntent().getExtras();
 
-        if(bundle != null) {
-            inputProceduresLayout.fillInData(bundle.getString("jsonString"));
+        if(bundle != null && bundle.containsKey("carId")) {
+            inputProceduresLayout.fillInData(bundle.getInt("carId"));
         }
     }
 
@@ -49,6 +61,47 @@ public class InputProceduresActivity extends Activity {
             inputProceduresLayout.goBack();
         } else {
             quitConfirm();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startAuthService();
+    }
+
+    private void startAuthService(){
+        GetAuthorizeCode getAuthorizeCode = new GetAuthorizeCode(this, new GetAuthorizeCode.OnGetCodeFinished() {
+            @Override
+            public void onFinished(String result) {
+                inputProceduresLayout.startAuthService(result);
+            }
+
+            @Override
+            public void onFailed(String result) {
+//                Toast.makeText(InputProceduresActivity.this, "获取授权码失败！", Toast.LENGTH_SHORT).show();
+//                Log.d(Common.TAG, "获取授权码失败！" + result);
+
+                // TODO 删除
+                //fillInDummyAuthCode();
+            }
+        });
+
+        getAuthorizeCode.execute();
+    }
+
+    private void fillInDummyAuthCode() {
+        inputProceduresLayout.startAuthService("WS4NWVPTLDUY712YYZXGYYI7G");
+        //inputProceduresLayout.startAuthService("WSM27VPMJDVYMBHYY37KYYA6B");
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // land
+        } else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // port
         }
     }
 
@@ -77,5 +130,30 @@ public class InputProceduresActivity extends Activity {
                 .create();
 
         dialog.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Common.TAKE_LICENSE_PHOTO && resultCode == Activity.RESULT_OK) {
+            inputProceduresLayout.updateLicensePhoto(data.getBooleanExtra("cut", true));
+        }
+    }
+
+    @SuppressWarnings("unused")
+    protected String getLatestImage() {
+        String latestImage = null;
+        String[] items = { MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, items, null,
+                null, MediaStore.Images.Media._ID + " desc");
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                latestImage = cursor.getString(1);
+                break;
+            }
+        }
+        return latestImage;
     }
 }

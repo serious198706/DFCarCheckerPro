@@ -15,16 +15,29 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.df.app.R;
-import com.df.app.carCheck.AddPhotoCommentActivity;
+import com.df.app.carCheck.PhotoFaultLayout;
+import com.df.app.service.AddPhotoCommentActivity;
 import com.df.app.carCheck.PhotoLayout;
 import com.df.app.entries.Action;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
+import com.df.app.service.AsyncTask.DownloadImageTask;
 import com.df.app.service.PhotoOperationActivity;
+import com.df.app.service.customCamera.BitmapUtil;
+import com.df.app.service.customCamera.IPhotoProcessListener;
+import com.df.app.service.customCamera.PhotoProcessManager;
+import com.df.app.service.customCamera.PhotoTask;
+import com.df.app.service.customCamera.activity.PhotoEditActivity;
+import com.df.app.service.customCamera.activity.PhotographActivity;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
 import com.df.app.util.lazyLoadHelper.ImageLoader;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -33,7 +46,7 @@ import static com.df.app.util.Helper.setTextView;
 /**
  * Created by 岩 on 14-3-13.
  */
-public class PaintPhotoListAdapter extends BaseAdapter {
+public class PaintPhotoListAdapter extends BaseAdapter implements IPhotoProcessListener {
     private ImageLoader imageLoader;
 
     public interface OnDeleteItem {
@@ -157,7 +170,7 @@ public class PaintPhotoListAdapter extends BaseAdapter {
                     PhotoLayout.reTakePhotoEntity = photoEntity;
                     PhotoLayout.paintPhotoListAdapter = PaintPhotoListAdapter.this;
                     PhotoLayout.listedPhoto = listedPhoto;
-                    showPhoto(photoEntity.getFileName());
+                    showPhoto(photoEntity.getName(), photoEntity.getFileName());
                 }
             });
 
@@ -208,8 +221,14 @@ public class PaintPhotoListAdapter extends BaseAdapter {
 
             if(listedPhoto.isDelete()) {
                 view.setAlpha(0.3f);
+                comment.setEnabled(false);
+                photo.setEnabled(false);
+                deleteButton.setEnabled(false);
             } else {
                 view.setAlpha(1.0f);
+                comment.setEnabled(true);
+                photo.setEnabled(true);
+                deleteButton.setEnabled(true);
             }
         }
 
@@ -221,9 +240,89 @@ public class PaintPhotoListAdapter extends BaseAdapter {
      * 点击缩略图时，显示对应的图片
      * @param fileName
      */
-    private void showPhoto(String fileName) {
-        Intent intent = new Intent(context, PhotoOperationActivity.class);
-        intent.putExtra("fileName", fileName);
-        context.startActivity(intent);
+    private void showPhoto(final String name, String fileName) {
+        PhotoProcessManager.getInstance().registPhotoProcessListener(this);
+
+        if(fileName.contains("http")) {
+            DownloadImageTask downloadImageTask = new DownloadImageTask(context, fileName, new DownloadImageTask.OnDownloadFinished() {
+                @Override
+                public void onFinish(Bitmap bitmap) {
+                    // 把图片保存成一个临时文件
+                    long currentTimeMillis = System.currentTimeMillis();
+
+                    BitmapUtil.saveBitmap(bitmap, 100, Common.photoDirectory + currentTimeMillis + ".jpg");
+
+                    Intent intent = new Intent(context, PhotoEditActivity.class);
+
+                    intent.putExtra(PhotoEditActivity.EXTRA_DSTPATH, Common.photoDirectory);
+                    intent.putExtra(PhotoEditActivity.EXTRA_PHOTOTASK, new PhotoTask(0, name, currentTimeMillis, Common.photoDirectory, 0));
+                    context.startActivity(intent);
+                }
+
+                @Override
+                public void onFailed() {
+                    Toast.makeText(context, "下载图片失败！", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            downloadImageTask.execute();
+        } else {
+            Intent intent = new Intent();
+            long file;
+
+            if(fileName.equals("") || fileName == null) {
+                intent.setClass(context, PhotographActivity.class);
+
+                file = System.currentTimeMillis();
+                Helper.startCamera(context, name, file);
+            } else {
+                intent.setClass(context, PhotoEditActivity.class);
+
+                file = Long.parseLong(fileName.substring(0, fileName.length() - 4));
+                intent.putExtra(PhotoEditActivity.EXTRA_DSTPATH, Common.photoDirectory);
+                intent.putExtra(PhotoEditActivity.EXTRA_PHOTOTASK, new PhotoTask(0, name, file, Common.photoDirectory, 0));
+                context.startActivity(intent);
+            }
+        }
+    }
+
+    @Override
+    public void onPhotoProcessFinish(List<PhotoTask> list) {
+        PhotoTask photoTask = list.get(0);
+
+        // 处理完成
+        if(photoTask.getState() == PhotoTask.STATE_COMPLETE) {
+            Helper.handlePhoto(photoTask.getFileName() + ".jpg");
+
+            PhotoEntity tempPhotoEntity = PhotoLayout.listedPhoto.getPhotoEntity();
+
+            //PhotoEntity tempPhotoEntity = PhotoFaultLayout.photoListAdapter.getItem(PhotoLayout.reTakePhotoEntity);
+
+            Bitmap bitmap = BitmapFactory.decodeFile(Common.photoDirectory + photoTask.getFileName() + ".jpg");
+
+            tempPhotoEntity.setFileName(photoTask.getFileName() + ".jpg");
+            tempPhotoEntity.setThumbFileName(photoTask.getFileName() + "_t.jpg");
+            tempPhotoEntity.setModifyAction(Action.MODIFY);
+
+            try {
+                JSONObject jsonObject = new JSONObject(tempPhotoEntity.getJsonString());
+                jsonObject.put("Action", Action.MODIFY);
+                tempPhotoEntity.setJsonString(jsonObject.toString());
+
+                JSONObject photoData = jsonObject.getJSONObject("PhotoData");
+
+                photoData.put("width", bitmap.getWidth());
+                photoData.put("height", bitmap.getHeight());
+
+                jsonObject.put("PhotoData", photoData);
+
+                tempPhotoEntity.setJsonString(jsonObject.toString());
+
+                notifyDataSetChanged();
+                PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -62,7 +62,22 @@ public class PhotoLayout extends LinearLayout {
         agreementPhotos = new ArrayList<PhotoEntity>();
 
         listView = (ListView)findViewById(R.id.photoList);
-        adapter = new PhotoListAdapter(context, exteriorPhotos, false, false);
+        adapter = new PhotoListAdapter(context, exteriorPhotos, false, false, false, new PhotoListAdapter.OnAction() {
+            @Override
+            public void onDelete(int position) {
+
+            }
+
+            @Override
+            public void onModifyComment(int position, String comment) {
+
+            }
+
+            @Override
+            public void onShowPhoto(int position) {
+
+            }
+        });
         listView.setAdapter(adapter);
 
         Button exteriorButton = (Button)findViewById(R.id.exteriorPhotoButton);
@@ -147,7 +162,22 @@ public class PhotoLayout extends LinearLayout {
     }
 
     private void load(List<PhotoEntity> photoEntities) throws JSONException {
-        adapter = new PhotoListAdapter(context, photoEntities, false, false);
+        adapter = new PhotoListAdapter(context, photoEntities, false, false, false, new PhotoListAdapter.OnAction() {
+            @Override
+            public void onDelete(int position) {
+
+            }
+
+            @Override
+            public void onModifyComment(int position, String comment) {
+
+            }
+
+            @Override
+            public void onShowPhoto(int position) {
+
+            }
+        });
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
     }

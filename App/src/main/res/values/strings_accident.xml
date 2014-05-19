@@ -24,6 +24,8 @@
 
     <string name="parts">部件: </string>
 
+    "L"   R.string.L
+
     <string name="overlap">覆盖件</string>
     <string name="L">右前翼子板(L)</string>
     <string name="M">引擎盖(M)</string>

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.df.app.R;
 import com.df.app.entries.CarSettings;
+import com.df.app.util.Common;
 import com.df.app.util.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
 
@@ -42,9 +43,6 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
 
     public static String uniqueId;
 
-    private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
-    private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
-
     public InputProceduresLayout(Context context) {
         super(context);
         init(context);
@@ -70,7 +68,7 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
         mCarSettings = new CarSettings();
 
         carRecogniseLayout = new CarRecogniseLayout(context, new CarRecogniseLayout.OnShowContent() {
-            @Override
+                @Override
             public void showContent(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial, String seriesId, String modelId) {
                 // 更新手续页面
                 proceduresWebLayout.updateUi(vin, plateNumber, licenseModel, vehicleType, useCharacter, engineSerial, seriesId, modelId);
@@ -173,20 +171,27 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
 
 
     private void selectTab(int currIndex) {
-        carRecogniseTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
-        proceduresTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
+        carRecogniseTab.setTextColor(currIndex == 0 ? Common.selectedColor : Common.unselectedColor);
+        proceduresTab.setTextColor(currIndex == 1 ? Common.selectedColor : Common.unselectedColor);
     }
 
     /**
      * 修改或者半路检测时，填上已经保存的内容
      */
-    public void fillInData(String jsonString) {
-        carRecogniseLayout.fillInData(jsonString);
+    public void fillInData(int carId) {
+        carRecogniseLayout.fillInData(carId);
         carRecogniseTab.setVisibility(GONE);
         views.remove(0);
         adapter.notifyDataSetChanged();
     }
 
+    public void startAuthService(String authCode) {
+        carRecogniseLayout.startAuthService(authCode);
+    }
+
+    public void updateLicensePhoto(boolean cut) {
+        carRecogniseLayout.updateLicensePhoto(cut);
+    }
 
     /**
      * CarCheckActivity必须实现此接口

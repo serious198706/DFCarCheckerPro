@@ -117,7 +117,7 @@ public class IssueListAdapter extends BaseAdapter {
                                 (issue.getView().equals("F") || issue.getView().equals("R"))) {
                             // 弹出绘制界面
                             drawIssuePoint(issue, false);
-                        } else if(issue.getView().equals("")) {
+                        } else if(issue.getView().equals("") || issue.getView().equals("null")) {
                             issue.setSelect(b ? "否" : "是");
                             issue.setLastSelect(b);
                         }
@@ -352,8 +352,7 @@ public class IssueListAdapter extends BaseAdapter {
                 // 删除照片列表里的照片
                 PhotoEntity temp = issue.getPhotoEntities().get(position);
 
-                PhotoFaultLayout.photoListAdapter.getItem(position).setModifyAction(Action.DELETE);
-                PhotoEntity temp1 = PhotoFaultLayout.photoListAdapter.getItem(position);
+                PhotoEntity temp1 = PhotoFaultLayout.photoListAdapter.getItem(temp);
                 temp1.setModifyAction(Action.DELETE);
 
                 try {
@@ -427,13 +426,14 @@ public class IssueListAdapter extends BaseAdapter {
         for(PhotoEntity photoEntity : InteriorLayout.photoEntities)
             PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
 
-        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesFront) {
+        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesFront)
             PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
-        }
 
-        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesRear) {
+        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesRear)
             PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
-        }
+
+        for(PhotoEntity photoEntity : PhotoFaultLayout.photoEntities)
+            PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
 
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }

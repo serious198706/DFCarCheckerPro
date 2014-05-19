@@ -52,6 +52,7 @@ public class GetCarsWaitingListTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("StartNumber", startNumber);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
+            jsonObject.put("PlateType", MainActivity.userInfo.getPlateType());
 
             soapService = new SoapService();
             soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.GET_WAITING_CARS);

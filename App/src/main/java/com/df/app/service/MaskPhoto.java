@@ -22,6 +22,8 @@ import java.util.ArrayList;
  */
 @SuppressLint("DrawAllocation")
 class MaskPhoto extends View {
+
+    private Paint new_paint;
     Bitmap bgr;
     Bitmap overlayDefault;
     Bitmap overlay;
@@ -31,7 +33,7 @@ class MaskPhoto extends View {
 
     ArrayList<Point> points = new ArrayList<Point>();
 
-    Path drawPath = new Path();
+    //Path drawPath = new Path();
 
     int X = -100;
     int Y = -100;
@@ -48,6 +50,8 @@ class MaskPhoto extends View {
         overlayDefault = BitmapFactory.decodeFile(fileName);
         overlay = overlayDefault.copy(Bitmap.Config.ARGB_8888, true);
 
+
+
         init();
     }
 
@@ -61,6 +65,9 @@ class MaskPhoto extends View {
 
         overlayDefault = bitmap;
         overlay = overlayDefault.copy(Bitmap.Config.ARGB_8888, true);
+
+        new_paint = new Paint();
+        new_paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
 
         init();
     }
@@ -83,7 +90,7 @@ class MaskPhoto extends View {
                 X = (int) ev.getX();
                 Y = (int) ev.getY();
 
-                drawPath.moveTo(ev.getX(), ev.getY());
+                //drawPath.moveTo(ev.getX(), ev.getY());
 
                 points.add(new Point(X, Y));
                 break;
@@ -93,20 +100,11 @@ class MaskPhoto extends View {
                 X = (int) ev.getX();
                 Y = (int) ev.getY();
 
-                drawPath.lineTo(ev.getX(), ev.getY());
+                //drawPath.lineTo(ev.getX(), ev.getY());
 
                 points.add(new Point(X, Y));
                 break;
-
             }
-
-            case MotionEvent.ACTION_UP:
-
-                //drawPath.lineTo(ev.getX(), ev.getY());
-                //c2.drawPath(drawPath, pTouch);
-                //drawPath.reset();
-                break;
-
         }
 
         invalidate();
@@ -128,8 +126,6 @@ class MaskPhoto extends View {
             c2.drawCircle(points.get(i).x, points.get(i).y, 30, pTouch);
         }
 
-        Paint new_paint = new Paint();
-        new_paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
         canvas.drawBitmap(overlay, 0, 0, new_paint);
     }
 

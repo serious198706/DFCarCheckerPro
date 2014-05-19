@@ -43,9 +43,6 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
     private static Integrated2Layout integrated2Layout;
     private static Integrated3Layout integrated3Layout;
 
-    private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
-    private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
-
     public IntegratedCheckLayout(Context context) {
         super(context);
         init(context);
@@ -246,11 +243,11 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
     }
 
     private void selectTab(int currIndex) {
-        exteriorTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
-        interiorTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
-        itTab1.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
-        itTab2.setTextColor(currIndex == 3 ? selectedColor : unselectedColor);
-        itTab3.setTextColor(currIndex == 4 ? selectedColor : unselectedColor);
+        exteriorTab.setTextColor(currIndex == 0 ? Common.selectedColor : Common.unselectedColor);
+        interiorTab.setTextColor(currIndex == 1 ? Common.selectedColor : Common.unselectedColor);
+        itTab1.setTextColor(currIndex == 2 ? Common.selectedColor : Common.unselectedColor);
+        itTab2.setTextColor(currIndex == 3 ? Common.selectedColor : Common.unselectedColor);
+        itTab3.setTextColor(currIndex == 4 ? Common.selectedColor : Common.unselectedColor);
     }
 
     /**
@@ -368,6 +365,7 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
     public void clearCache() {
         exteriorLayout.clearCache();
         interiorLayout.clearCache();
+        Integrated1Layout.clearCache();
         Integrated2Layout.photoEntityMap.clear();
     }
 

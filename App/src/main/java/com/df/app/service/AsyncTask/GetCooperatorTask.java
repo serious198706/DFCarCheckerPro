@@ -21,7 +21,7 @@ import org.json.JSONObject;
 public class GetCooperatorTask extends AsyncTask<JSONObject, Void, Boolean> {
     public interface OnGetListFinish {
         public void onFinish(String result);
-        public void onFailed();
+        public void onFailed(String result);
     }
 
     Context context;
@@ -72,7 +72,7 @@ public class GetCooperatorTask extends AsyncTask<JSONObject, Void, Boolean> {
         if(success) {
             mCallback.onFinish(soapService.getResultMessage());
         } else {
-            mCallback.onFailed();
+            mCallback.onFailed(soapService.getResultMessage());
         }
 
     }

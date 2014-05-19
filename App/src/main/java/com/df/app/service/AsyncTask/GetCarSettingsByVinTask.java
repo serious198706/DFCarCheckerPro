@@ -39,7 +39,7 @@ public class GetCarSettingsByVinTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPreExecute()
     {
-        mProgressDialog = ProgressDialog.show(context, null, "正在获取车辆信息，请稍候...", false, false);
+        mProgressDialog = ProgressDialog.show(context, null, "正在获取车辆数据，请稍候...", false, false);
     }
 
     @Override

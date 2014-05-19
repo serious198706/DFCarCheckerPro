@@ -31,6 +31,7 @@ import com.df.app.paintView.ExteriorPaintView;
 import com.df.app.paintView.InteriorPaintView;
 import com.df.app.paintView.PaintView;
 import com.df.app.service.Adapter.PaintPhotoListAdapter;
+import com.df.app.service.AddPhotoCommentActivity;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
 import com.df.app.util.SlidingUpPanelLayout;
@@ -40,6 +41,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.df.app.util.Helper.getBitmapHeight;
@@ -219,8 +221,6 @@ public class PaintActivity extends Activity {
                 paintView.setEnabled(false);
             }
         });
-
-        //PhotoViewAttacher attacher = new PhotoViewAttacher(paintView);
     }
 
     /**
@@ -240,15 +240,46 @@ public class PaintActivity extends Activity {
 
         listedPhotos = new ArrayList<ListedPhoto>();
 
-        int length = paintView.getPosEntities().size();
+        // 找出未删除的照片，放入一个list
+        List<PhotoEntity> noneDeletePhotoEntities = new ArrayList<PhotoEntity>();
+
+        for(PhotoEntity photoEntity : paintView.getPhotoEntities()) {
+            if(!photoEntity.getModifyAction().equals(Action.DELETE))
+                noneDeletePhotoEntities.add(photoEntity);
+        }
+
+        int length = noneDeletePhotoEntities.size();
 
         for(int i = 0; i < length; i++) {
-            PosEntity posEntity = paintView.getPosEntities().get(i);
-            PhotoEntity photoEntity = paintView.getPhotoEntities().get(i);
+            PhotoEntity photoEntity = noneDeletePhotoEntities.get(i);
+            try {
+                JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+                int type = jsonObject.getJSONObject("PhotoData").getInt("type");
 
-            ListedPhoto listedPhoto = new ListedPhoto(i, photoEntity, posEntity.getType());
-            listedPhotos.add(listedPhoto);
+                ListedPhoto listedPhoto = new ListedPhoto(i, photoEntity, type);
+                listedPhotos.add(listedPhoto);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
+
+//        int length = paintView.getPosEntities().size();
+//
+//        for(int i = 0; i < length; i++) {
+//            PosEntity posEntity = paintView.getPosEntities().get(i);
+//
+//            PhotoEntity photoEntity = null;
+//
+//            int j = i;
+//
+//            do {
+//                photoEntity = paintView.getPhotoEntities().get(j);
+//                j++;
+//            } while (photoEntity.getModifyAction().equals(Action.DELETE));
+//
+//            ListedPhoto listedPhoto = new ListedPhoto(i, photoEntity, posEntity.getType());
+//            listedPhotos.add(listedPhoto);
+//        }
 
          adapter = new PaintPhotoListAdapter(this, listedPhotos, new PaintPhotoListAdapter.OnDeleteItem() {
             @Override
@@ -263,6 +294,9 @@ public class PaintActivity extends Activity {
         photoListView.setAdapter(adapter);
     }
 
+    /**
+     * 真正删除需要删除的图片
+     */
     private void reallyDeleteItems() {
         for(int i = adapter.getCount() - 1; i >= 0; i--) {
             ListedPhoto listedPhoto = adapter.getItem(i);
@@ -274,18 +308,20 @@ public class PaintActivity extends Activity {
             int position = listedPhoto.getIndex();
 
             if(CarCheckActivity.isModify()) {
-                PhotoEntity photoEntity = paintView.getPhotoEntities().get(position);
+                int index = paintView.getPhotoEntities().indexOf(listedPhoto.getPhotoEntity());
+                PhotoEntity photoEntity = paintView.getPhotoEntities().get(index);
 
-                PhotoEntity temp = PhotoFaultLayout.photoListAdapter.getItem(photoEntity);
-                temp.setModifyAction(Action.DELETE);
+                if(photoEntity != null) {
+                    photoEntity.setModifyAction(Action.DELETE);
 
-                try {
-                    JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
-                    jsonObject.put("Action", Action.DELETE);
-                    temp.setJsonString(jsonObject.toString());
+                    try {
+                        JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+                        jsonObject.put("Action", Action.DELETE);
+                        photoEntity.setJsonString(jsonObject.toString());
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 if(position < paintView.getPhotoEntities().size()) {
@@ -303,6 +339,9 @@ public class PaintActivity extends Activity {
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * 取消刚刚的所有操作
+     */
     private void cancelOperations() {
         for(ListedPhoto listedPhoto : adapter.getItems()) {
             int position = listedPhoto.getIndex();
@@ -480,7 +519,6 @@ public class PaintActivity extends Activity {
         paintMenu.addView(radioGroup);
     }
 
-
     /**
      * 选择取消时提醒用户
      * @param msgId
@@ -526,27 +564,6 @@ public class PaintActivity extends Activity {
         PosEntity posEntity = paintView.getPosEntity();
 
         switch (requestCode) {
-            case Common.PHOTO_FOR_EXTERIOR_FAULT:
-            case Common.PHOTO_FOR_INTERIOR_FAULT:
-                if(resultCode == Activity.RESULT_OK) {
-                    // 如果确定拍摄了照片，则缩小照片尺寸
-                    Helper.setPhotoSize(posEntity.getImageFileName(), Common.PHOTO_WIDTH);
-                    Helper.generatePhotoThumbnail(posEntity.getImageFileName(), Common.THUMBNAIL_WIDTH);
-
-                    // 进入备注界面
-                    Intent intent = new Intent(PaintActivity.this, AddPhotoCommentActivity.class);
-                    intent.putExtra("fileName", posEntity.getImageFileName());
-                    startActivityForResult(intent, Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO);
-                } else {
-                    // 如果取消了拍摄，将照片名称置空
-                    paintView.getPosEntity().setImageFileName("");
-                    paintView.getPosEntity().setComment("");
-
-                    // 生成PhotoEntity
-                    addPhotoToList();
-                }
-
-                break;
             case Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO: {
                     // 从备注界面返回时，先添加备注
                     Bundle bundle = data.getExtras();
@@ -561,30 +578,11 @@ public class PaintActivity extends Activity {
                     String comment = bundle.getString("COMMENT");
 
                     PhotoEntity photoEntity = PhotoLayout.commentModEntity;
-                    try {
-                        JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
-                        JSONObject photoData = jsonObject.getJSONObject("PhotoData");
-                        photoData.put("comment", comment);
-                        jsonObject.put("PhotoData", photoData);
-                        photoEntity.setJsonString(jsonObject.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    photoEntity.setComment(comment);
+                    Helper.updateComment(photoEntity, comment);
 
                     photoEntity = PhotoLayout.listedPhoto.getPhotoEntity();
-                    try {
-                        JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
-                        JSONObject photoData = jsonObject.getJSONObject("PhotoData");
-                        photoData.put("comment", comment);
-                        jsonObject.put("PhotoData", photoData);
-                        photoEntity.setJsonString(jsonObject.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    Helper.updateComment(photoEntity, comment);
 
-                    photoEntity.setComment(comment);
                     PhotoLayout.paintPhotoListAdapter.notifyDataSetChanged();
                     PhotoLayout.notifyDataSetChanged();
                 }
@@ -623,13 +621,14 @@ public class PaintActivity extends Activity {
         for(PhotoEntity photoEntity : InteriorLayout.photoEntities)
             PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
 
-        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesFront) {
+        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesFront)
             PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
-        }
 
-        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesRear) {
+        for(PhotoEntity photoEntity : AccidentResultLayout.photoEntitiesRear)
             PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
-        }
+
+        for(PhotoEntity photoEntity : PhotoFaultLayout.photoEntities)
+            PhotoFaultLayout.photoListAdapter.addItem(photoEntity);
 
         PhotoFaultLayout.photoListAdapter.notifyDataSetChanged();
     }

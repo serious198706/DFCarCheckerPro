@@ -11,6 +11,16 @@ public class UserInfo
     private String key;
     private String name;
 
+    public String getPlateType() {
+        return plateType;
+    }
+
+    public void setPlateType(String plateType) {
+        this.plateType = plateType;
+    }
+
+    private String plateType;
+
     public String getOrid() {
         return orid;
     }

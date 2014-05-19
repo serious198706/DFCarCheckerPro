@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +26,8 @@ import com.df.app.carCheck.ExteriorLayout;
 import com.df.app.carCheck.Integrated2Layout;
 import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
+import com.df.app.service.customCamera.PhotoTask;
+import com.df.app.service.customCamera.activity.PhotographActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,7 +36,9 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -286,7 +291,7 @@ public class Helper {
 
         try {
             FileOutputStream ostream = new FileOutputStream(file);
-            newBitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
+            newBitmap.compress(Bitmap.CompressFormat.JPEG, 60, ostream);
 
             ostream.close();
         } catch (IOException e) {
@@ -340,12 +345,17 @@ public class Helper {
         try {
             String thumbFile = path + fileName.substring(0, fileName.length() - 4) + "_t.jpg";
             FileOutputStream ostream = new FileOutputStream(thumbFile);
-            newBitmap.compress(Bitmap.CompressFormat.JPEG, 80, ostream);
+            newBitmap.compress(Bitmap.CompressFormat.JPEG, 60, ostream);
 
             ostream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void handlePhoto(String fileName) {
+        setPhotoSize(fileName, Common.PHOTO_WIDTH);
+        generatePhotoThumbnail(fileName, Common.THUMBNAIL_WIDTH);
     }
 
     private static String hexString = "0123456789ABCDEF";
@@ -430,6 +440,32 @@ public class Helper {
         ((Activity)context).startActivityForResult(intent, requestCode);
     }
 
+    public static void startCamera(Context context, String name, long fileName) {
+        Intent intent=new Intent(context, PhotographActivity.class);
+
+        ArrayList<PhotoTask> list=new ArrayList<PhotoTask>();
+
+        list.add(new PhotoTask(0, name, fileName, 0));
+
+        intent.putExtra(PhotographActivity.EXTRA_DSTPATH, Common.photoDirectory);
+        intent.putExtra(PhotographActivity.EXTRA_PHOTOTASKLIST, list);
+
+        context.startActivity(intent);
+    }
+
+    public static void startCamera(Context context, String name, long fileName, int extras) {
+        Intent intent=new Intent(context, PhotographActivity.class);
+
+        ArrayList<PhotoTask> list=new ArrayList<PhotoTask>();
+
+        list.add(new PhotoTask(0, name, fileName, extras));
+
+        intent.putExtra(PhotographActivity.EXTRA_DSTPATH, Common.photoDirectory);
+        intent.putExtra(PhotographActivity.EXTRA_PHOTOTASKLIST, list);
+
+        context.startActivity(intent);
+    }
+
     /**
      * 拷贝草图
      */
@@ -447,6 +483,57 @@ public class Helper {
         out.close();
     }
 
+    /**
+     * 更新照片备注
+     * @param photoEntity
+     * @param comment
+     */
+    public static void updateComment(PhotoEntity photoEntity, String comment) {
+        try {
+            JSONObject jsonObject = new JSONObject(photoEntity.getJsonString());
+            JSONObject photoData = jsonObject.getJSONObject("PhotoData");
+            photoData.put("comment", comment);
+            jsonObject.put("PhotoData", photoData);
 
+            // 如果图片没有修改过，只修改了备注
+            if(photoEntity.getModifyAction().equals("")) {
+                jsonObject.put("Action", Action.COMMENT);
+                photoEntity.setModifyAction(Action.COMMENT);
+            }
+
+            photoEntity.setJsonString(jsonObject.toString());
+            photoEntity.setComment(comment);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 文通：读取主id
+     * @return
+     */
+    public static int readMainID() {
+        int mainID = 6;
+        String cfgPath = Environment.getExternalStorageDirectory().toString() + "/AndroidWT/idcard.cfg";
+        File cfgFile = new File(cfgPath);
+        char[] buf = new char[14];
+        if(!cfgFile.exists()) {
+            return 0;
+        } else {
+            try {
+                FileReader fr = new FileReader(cfgFile);
+                fr.read(buf);
+                String str = String.valueOf(buf);
+                String[] splits = str.split("==##");
+                mainID = Integer.valueOf(splits[0]);
+                Log.i(Common.TAG, "readMainID mainID=" + mainID);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return mainID;
+    }
 
 }

@@ -17,8 +17,9 @@
         <EditText
             android:id="@+id/licenseModel_edit"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:minHeight="40dp"
             android:enabled="false"
             android:background="@drawable/edittext_border"
             android:paddingLeft="10dp"/>
@@ -36,8 +37,9 @@
         <EditText
             android:id="@+id/vehicleType_edit"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:minHeight="40dp"
             android:enabled="false"
             android:background="@drawable/edittext_border"
             android:paddingLeft="10dp"/>
@@ -55,8 +57,9 @@
         <EditText
             android:id="@+id/regDate_edit"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:minHeight="40dp"
             android:enabled="false"
             android:background="@drawable/edittext_border"
             android:paddingLeft="10dp"/>
@@ -74,8 +77,9 @@
         <EditText
             android:id="@+id/builtDate_edit"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:minHeight="40dp"
             android:enabled="false"
             android:background="@drawable/edittext_border"
             android:paddingLeft="10dp"/>
@@ -93,8 +97,9 @@
         <EditText
             android:id="@+id/plateNumber_edit"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:minHeight="40dp"
             android:enabled="false"
             android:background="@drawable/edittext_border"
             android:paddingLeft="10dp"/>
@@ -112,8 +117,9 @@
         <EditText
             android:id="@+id/exteriorColor_edit"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:minHeight="40dp"
             android:enabled="false"
             android:background="@drawable/edittext_border"
             android:paddingLeft="10dp"/>
@@ -131,8 +137,9 @@
         <EditText
             android:id="@+id/mileage_edit"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:minHeight="40dp"
             android:enabled="false"
             android:background="@drawable/edittext_border"
             android:paddingLeft="10dp"/>
@@ -150,8 +157,9 @@
         <EditText
             android:id="@+id/vin_edit"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:minHeight="40dp"
             android:enabled="false"
             android:background="@drawable/edittext_border"
             android:paddingLeft="10dp"/>
@@ -169,8 +177,9 @@
         <EditText
             android:id="@+id/engineSerial_edit"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:minHeight="40dp"
             android:enabled="false"
             android:background="@drawable/edittext_border"
             android:paddingLeft="10dp"/>

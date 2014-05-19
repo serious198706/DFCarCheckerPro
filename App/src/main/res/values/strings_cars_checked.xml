@@ -5,6 +5,12 @@
     <string name="importPlatform">导入平台</string>
     <string name="loadMore">加载更多&#8230;</string>
 
+    <string name="selectModifyItem">请选择要修改的内容</string>
+    <string-array name="modify_items">
+        <item>手续信息</item>
+        <item>检测信息</item>
+    </string-array>
+
     <string name="selectPlatform">请选择要导入的平台</string>
     <string-array name="platform_items">
         <item>专业版平台</item>

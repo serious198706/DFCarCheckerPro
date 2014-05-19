@@ -58,6 +58,7 @@ public class ImportPlatformTask extends AsyncTask<Void, Void, Boolean> {
             jsonObject.put("SellerId", this.sellerId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
+           // jsonObject.put("PlateType", MainActivity.userInfo.getPlateType());
 
             soapService = new SoapService();
             soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.IMPORT_PLATFORM);

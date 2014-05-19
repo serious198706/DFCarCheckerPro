@@ -4,14 +4,19 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +37,7 @@ import org.json.JSONObject;
 
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.setEditViewText;
+import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 14-1-8.
@@ -48,11 +54,12 @@ public class VehicleInfoLayout extends LinearLayout {
     private VehicleModel vehicleModel;
 
     // 选择车型的五个spinner
-    private Spinner countrySpinner;
-    private Spinner brandSpinner;
-    private Spinner manufacturerSpinner;
-    private Spinner seriesSpinner;
-    private Spinner modelSpinner;
+    private EditText countryEdit;
+    private EditText brandEdit;
+    private EditText manufacturerEdit;
+    private EditText seriesEdit;
+    private EditText modelEdit;
+
 
     // 记录五个spinner最后选择的位置
     private int lastCountryIndex = 0;
@@ -114,7 +121,6 @@ public class VehicleInfoLayout extends LinearLayout {
                 // 传输失败，获取错误信息并显示
                 Log.d("DFCarChecker", "获取车辆配置信息失败：" + result);
                 Toast.makeText(rootView.getContext(), result, Toast.LENGTH_LONG).show();
-                ((Activity) getContext()).finish();
             }
         });
         mGetCarSettingsTask.execute();
@@ -125,28 +131,17 @@ public class VehicleInfoLayout extends LinearLayout {
      */
     private void selectCarManually() {
         View view = LayoutInflater.from(rootView.getContext()).inflate(R.layout
-                .dialog_vehiclemodel_select, null);
+                .vehicle_model_select, null);
 
         TextView title = (TextView)view.findViewById(R.id.title);
         title.setText(R.string.select_model);
 
-        countrySpinner = (Spinner) view.findViewById(R.id.country_spinner);
-        brandSpinner = (Spinner) view.findViewById(R.id.brand_spinner);
-        manufacturerSpinner = (Spinner) view.findViewById(R.id.manufacturer_spinner);
-        seriesSpinner = (Spinner) view.findViewById(R.id.series_spinner);
-        modelSpinner = (Spinner) view.findViewById(R.id.model_spinner);
+        initModelSelectEdits(view);
 
         AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
                 .setView(view)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // 记录用户选择的位置
-                        lastCountryIndex = countrySpinner.getSelectedItemPosition();
-                        lastBrandIndex = brandSpinner.getSelectedItemPosition();
-                        lastManufacturerIndex = manufacturerSpinner.getSelectedItemPosition();
-                        lastSeriesIndex = seriesSpinner.getSelectedItemPosition();
-                        lastModelIndex = modelSpinner.getSelectedItemPosition();
-
                         // 如果用户点击确定，则必须要求所有的Spinner为选中状态
                         if (lastCountryIndex == 0 ||
                                 lastBrandIndex == 0 ||
@@ -174,30 +169,8 @@ public class VehicleInfoLayout extends LinearLayout {
                         getCarSettingsFromServer(series.id + "," + model.id);
                     }
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // 取消
-                        lastCountryIndex = countrySpinner.getSelectedItemPosition();
-                        lastBrandIndex = brandSpinner.getSelectedItemPosition();
-                        lastManufacturerIndex = manufacturerSpinner.getSelectedItemPosition();
-                        lastSeriesIndex = seriesSpinner.getSelectedItemPosition();
-                        lastModelIndex = modelSpinner.getSelectedItemPosition();
-                    }
-                })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialogInterface) {
-                        // 记录用户选择的位置
-                        lastCountryIndex = countrySpinner.getSelectedItemPosition();
-                        lastBrandIndex = brandSpinner.getSelectedItemPosition();
-                        lastManufacturerIndex = manufacturerSpinner.getSelectedItemPosition();
-                        lastSeriesIndex = seriesSpinner.getSelectedItemPosition();
-                        lastModelIndex = modelSpinner.getSelectedItemPosition();
-                    }
-                })
+                .setNegativeButton(R.string.cancel, null)
                 .create();
-
-        setCountrySpinner(vehicleModel);
 
         dialog.show();
     }
@@ -255,13 +228,31 @@ public class VehicleInfoLayout extends LinearLayout {
             mCarSettings.setDriveType("两驱");
         }
 
+//        // 设置变速器形式Spinner
+//        if(modelString.contains("AMT")) {
+//            mCarSettings.setTransmission("AMT");
+//        } else if(modelString.contains("A/MT")) {
+//            mCarSettings.setTransmission("A/MT");
+//        } else if(modelString.contains("MT")) {
+//            mCarSettings.setTransmission("MT");
+//        } else if(modelString.contains("CVT") || modelString.contains("DSG")) {
+//            mCarSettings.setTransmission("CVT");
+//        } else {
+//            mCarSettings.setTransmission("AT");
+//        }
+
+        // TODO!!!!
         // 设置变速器形式Spinner
-        if(modelString.contains("A/MT")) {
+        if(modelString.contains("AMT")) {
+            mCarSettings.setTransmission("AMT");
+        } else if(modelString.contains("A/MT")) {
             mCarSettings.setTransmission("A/MT");
         } else if(modelString.contains("MT")) {
             mCarSettings.setTransmission("MT");
-        } else if(modelString.contains("CVT") || modelString.contains("DSG")) {
+        } else if(modelString.contains("CVT")) {
             mCarSettings.setTransmission("CVT");
+        } else if(modelString.contains("DSG")) {
+            mCarSettings.setTransmission("DSG");
         } else {
             mCarSettings.setTransmission("AT");
         }
@@ -281,200 +272,330 @@ public class VehicleInfoLayout extends LinearLayout {
         mCarSettings.setFigure(figure);
     }
 
-    // <editor-fold defaultstate="collapsed" desc="设置各种Spinner">
+    private void initModelSelectEdits(View view) {
+        TextView title = (TextView)view.findViewById(R.id.title);
+        title.setText(R.string.select_model);
+
+        countryEdit = (EditText)view.findViewById(R.id.country_edit);
+        brandEdit = (EditText)view.findViewById(R.id.brand_edit);
+        manufacturerEdit = (EditText)view.findViewById(R.id.manufacturer_edit);
+        seriesEdit = (EditText)view.findViewById(R.id.series_edit);
+        modelEdit = (EditText)view.findViewById(R.id.model_edit);
+
+        setCountryEdit();
+
+        if(mCarSettings.getCountry() != null) {
+            countryEdit.setText(mCarSettings.getCountry().name);
+            brandEdit.setText(mCarSettings.getBrand().name);
+            manufacturerEdit.setText(mCarSettings.getManufacturer().name);
+            seriesEdit.setText(mCarSettings.getSeries().name);
+            modelEdit.setText(mCarSettings.getModel().name);
+        }
+    }
 
     /**
-     * 设置国家Spinner
-     * @param vehicleModel
+     * 设置国家edit
      */
-    private void setCountrySpinner(final VehicleModel vehicleModel) {
-        ArrayAdapter<String> adapter;
+    private void setCountryEdit() {
+        final ArrayAdapter<String> adapter;
 
         if(vehicleModel == null) {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, Helper.getEmptyStringList());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, Helper.getEmptyStringList());
         } else {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, vehicleModel.getCountryNames());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, vehicleModel.getCountryNames());
         }
 
-        countrySpinner.setAdapter(adapter);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // 选择国别时，更改品牌的Spinner Adapter
-        countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        countryEdit.setOnClickListener(new OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(i == 0) {
-                    setBrandSpinner(null);
-                } else if(i >= 1) {
-                    setBrandSpinner(vehicleModel.countries.get(i - 1));
-                }
-            }
+            public void onClick(View view) {
+                showListDialog(R.string.chooseCountry, adapter, new Handler(new Handler.Callback() {
+                    @Override
+                    public boolean handleMessage(Message message) {
+                        if(message.what == 0) {
+                            countryEdit.setText("");
+                            brandEdit.setText("");
+                            manufacturerEdit.setText("");
+                            seriesEdit.setText("");
+                            modelEdit.setText("");
+                        } else {
+                            Country country = vehicleModel.getCountries().get(message.what - 1);
+                            countryEdit.setText(country.name);
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                            // 如果此次选择与上次不同，则清空下方edit
+                            if(lastCountryIndex != message.what) {
+                                brandEdit.setText("");
+                                manufacturerEdit.setText("");
+                                seriesEdit.setText("");
+                                modelEdit.setText("");
+                            }
 
+                            setBrandEdit(country);
+                        }
+
+                        lastCountryIndex = message.what;
+
+                        return true;
+                    }
+                }));
             }
         });
-
-        countrySpinner.setSelection(lastCountryIndex);
-        lastCountryIndex = 0;
     }
 
     /**
-     * 设置品牌Spinner
-     * @param country
+     * 设置品牌edit
      */
-    private void setBrandSpinner(final Country country) {
-        ArrayAdapter<String> adapter;
+    private void setBrandEdit(final Country country) {
+        // 设置adapter，内容为country的brand名称列表
+        final ArrayAdapter<String> adapter;
+
         if(country == null) {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, Helper.getEmptyStringList());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, Helper.getEmptyStringList());
         } else {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, country.getBrandNames());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, country.getBrandNames());
         }
 
-        brandSpinner.setAdapter(adapter);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // 选择品牌时，更改厂商的Spinner Adapter
-        brandSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        final Handler handler = new Handler(new Handler.Callback() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(country == null || i == 0) {
-                    setManufacturerSpinner(null);
-                } else if(i >= 1) {
-                    setManufacturerSpinner(country.brands.get(i - 1));
+            public boolean handleMessage(Message message) {
+                if(message.what == 0) {
+                    brandEdit.setText("");
+                    manufacturerEdit.setText("");
+                    seriesEdit.setText("");
+                    modelEdit.setText("");
+                } else {
+                    Brand brand = country.brands.get(message.what - 1);
+                    brandEdit.setText(brand.name);
+
+                    // 如果此次选择与上次不同，则清空下方edit
+                    if(lastBrandIndex != message.what) {
+                        manufacturerEdit.setText("");
+                        seriesEdit.setText("");
+                        modelEdit.setText("");
+                    }
+
+                    setManufacturerEdit(brand);
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                lastBrandIndex = message.what;
 
+                return true;
             }
         });
 
-        // 如果该项只有一个条目，则默认选中，否则选中上次记录的值
-        if(country != null && country.getBrandNames().size() == 2) {
-            brandSpinner.setSelection(1);
-        } else {
-            brandSpinner.setSelection(lastBrandIndex);
+        // 如果有且只有两条内容（一条为空），则直接填充内容，并且尝试弹出manufacturer的选择框
+        if(country.getBrandNames().size() == 2) {
+            lastBrandIndex = 1;
+            brandEdit.setText(country.getBrandNames().get(1));
+            setManufacturerEdit(country.brands.get(0));
+            return;
+        }
+        // 如果有且多于两条内容，则弹出brand的选择框
+        else {
+            showListDialog(R.string.chooseBrand, adapter, handler);
         }
 
-        lastBrandIndex = 0;
+        // 点击brandEdit的事件
+        brandEdit.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showListDialog(R.string.chooseBrand, adapter, handler);
+            }
+        });
     }
 
     /**
-     * 设置厂商Spinner
-     * @param brand
+     * 设置厂商edit
      */
-    private void setManufacturerSpinner(final Brand brand) {
-        ArrayAdapter<String> adapter;
+    private void setManufacturerEdit(final Brand brand) {
+        // 设置adapter，内容为brand的manufacturer名称列表
+        final ArrayAdapter<String> adapter;
 
         if(brand == null) {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, Helper.getEmptyStringList());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, Helper.getEmptyStringList());
         } else {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, brand.getManufacturerNames());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, brand.getManufacturerNames());
         }
 
-        manufacturerSpinner.setAdapter(adapter);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // 选择厂商时，更改车系的Spinner Adapter
-        manufacturerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        final Handler handler = new Handler(new Handler.Callback() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (brand == null || i == 0) {
-                    setSeriesSpinner(null);
-                } else if (i >= 1) {
-                    setSeriesSpinner(brand.manufacturers.get(i - 1));
+            public boolean handleMessage(Message message) {
+                if(message.what == 0) {
+                    manufacturerEdit.setText("");
+                    seriesEdit.setText("");
+                    modelEdit.setText("");
+                } else {
+                    Manufacturer manufacturer = brand.manufacturers.get(message.what - 1);
+                    manufacturerEdit.setText(manufacturer.name);
+
+                    // 如果此次选择与上次不同，则清空下方edit
+                    if(lastManufacturerIndex != message.what) {
+                        seriesEdit.setText("");
+                        modelEdit.setText("");
+                    }
+
+                    setSeriesEdit(manufacturer);
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                lastManufacturerIndex = message.what;
 
+                return true;
             }
         });
 
-        // 如果该项只有一个条目，则默认选中，否则选中上次记录的值
-        if(brand != null && brand.getManufacturerNames().size() == 2) {
-            manufacturerSpinner.setSelection(1);
-        } else {
-            manufacturerSpinner.setSelection(lastManufacturerIndex);
+        // 如果有且只有两条内容（一条为空），则直接填充内容，并且尝试弹出series的选择框
+        if(brand.getManufacturerNames().size() == 2) {
+            lastManufacturerIndex = 1;
+            manufacturerEdit.setText(brand.getManufacturerNames().get(1));
+            setSeriesEdit(brand.manufacturers.get(0));
+            return;
+        }
+        // 如果有且多于两条内容，则弹出manufactuer的选择框
+        else {
+            showListDialog(R.string.chooseManufacturer, adapter, handler);
         }
 
-        lastManufacturerIndex = 0;
+        // 点击manufacturerEdit的事件
+        manufacturerEdit.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showListDialog(R.string.chooseManufacturer, adapter, handler);
+            }
+        });
     }
 
     /**
-     * 设置车系Spinner
-     * @param manufacturer
+     * 设置车系edit
      */
-    private void setSeriesSpinner(final Manufacturer manufacturer) {
-        ArrayAdapter<String> adapter;
+    private void setSeriesEdit(final Manufacturer manufacturer) {
+        // 设置adapter，内容为manufacturer的series名称列表
+        final ArrayAdapter<String> adapter;
 
         if(manufacturer == null) {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, Helper.getEmptyStringList());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, Helper.getEmptyStringList());
         } else {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, manufacturer.getSeriesNames());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, manufacturer.getSeriesNames());
         }
 
-        seriesSpinner.setAdapter(adapter);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // 选择车系时，更改型号的Spinner Adapter
-        seriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        final Handler handler = new Handler(new Handler.Callback() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (manufacturer == null || i == 0) {
-                    setModelSpinner(null);
-                } else if (i >= 1) {
-                    setModelSpinner(manufacturer.serieses.get(i - 1));
+            public boolean handleMessage(Message message) {
+                if(message.what == 0) {
+                    seriesEdit.setText("");
+                    modelEdit.setText("");
+                } else {
+                    Series series = manufacturer.serieses.get(message.what - 1);
+                    seriesEdit.setText(series.name);
+
+                    // 如果此次选择与上次不同，则清空下方edit
+                    if(lastSeriesIndex != message.what) {
+                        modelEdit.setText("");
+                    }
+
+                    setModelEdit(series);
                 }
 
-            }
+                lastSeriesIndex = message.what;
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+                return true;
             }
         });
 
-        // 如果该项只有一个条目，则默认选中，否则选中上次记录的值
-        if(manufacturer != null && manufacturer.getSeriesNames().size() == 2) {
-            seriesSpinner.setSelection(1);
-        } else {
-            seriesSpinner.setSelection(lastSeriesIndex);
+        // 如果有且只有两条内容（一条为空），则直接填充内容，并且尝试弹出series的选择框
+        if(manufacturer.getSeriesNames().size() == 2) {
+            lastSeriesIndex = 1;
+            seriesEdit.setText(manufacturer.getSeriesNames().get(1));
+            setModelEdit(manufacturer.serieses.get(0));
+            return;
+        }
+        // 如果有且多于两条内容，则弹出series的选择框
+        else {
+            showListDialog(R.string.chooseSeries, adapter, handler);
         }
 
-        lastSeriesIndex = 0;
+        // 点击manufacturerEdit的事件
+        seriesEdit.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showListDialog(R.string.chooseSeries, adapter, handler);
+            }
+        });
     }
 
     /**
-     * 设置车型Spinner
-     * @param series
+     * 设置车型edit
      */
-    private void setModelSpinner(final Series series) {
-        ArrayAdapter<String> adapter;
+    private void setModelEdit(final Series series) {
+        // 设置adapter，内容为series的model名称列表
+        final ArrayAdapter<String> adapter;
 
         if(series == null) {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, Helper.getEmptyStringList());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, Helper.getEmptyStringList());
         } else {
-            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_spinner_item, series.getModelNames());
+            adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, series.getModelNames());
         }
 
-        modelSpinner.setAdapter(adapter);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        final Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message message) {
+                lastModelIndex = message.what;
 
-        // 如果该项只有一个条目，则默认选中，否则选中上次记录的值
-        if(series != null && series.getModelNames().size() == 2) {
-            modelSpinner.setSelection(1);
-        } else {
-            modelSpinner.setSelection(lastModelIndex);
+                if(message.what == 0) {
+                    modelEdit.setText("");
+                } else {
+                    Model model = series.models.get(message.what - 1);
+                    modelEdit.setText(model.name);
+                }
+
+                return true;
+            }
+        });
+
+        // 如果有且只有两条内容（一条为空），则直接填充内容
+        if(series.getModelNames().size() == 2) {
+            lastModelIndex = 1;
+            modelEdit.setText(series.getModelNames().get(1));
+            return;
+        }
+        // 如果有且多于两条内容，则弹出model的选择框
+        else {
+            showListDialog(R.string.chooseModel, adapter, handler);
         }
 
-        lastModelIndex = 0;
+        // 点击manufacturerEdit的事件
+        modelEdit.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showListDialog(R.string.chooseModel, adapter, handler);
+            }
+        });
     }
-    // </editor-fold>
+
+    /**
+     * 设置国家edit
+     */
+    private void showListDialog(int titleId, ArrayAdapter<String> adapter, final Handler handler) {
+        View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
+
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(view1)
+                .create();
+
+        TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
+        final ListView listView = new ListView(view1.getContext());
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                handler.sendEmptyMessage(i);
+                dialog.dismiss();
+            }
+        });
+        contentArea.addView(listView);
+
+        setTextView(view1, R.id.title, getResources().getString(titleId));
+
+        dialog.show();
+    }
 
     /**
      * 生成基本信息JSONObject

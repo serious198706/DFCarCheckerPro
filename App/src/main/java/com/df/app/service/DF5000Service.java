@@ -508,7 +508,7 @@ public class DF5000Service {
 
                     if (array != null) {
                         // 处理结尾包
-                        if(array[0].equalsIgnoreCase("FF")) {
+                        if(array[0] != null && array[0].equalsIgnoreCase("FF")) {
                             mHandler.obtainMessage(Common.MESSAGE_READ_OVER).sendToTarget();
                         } else {
                             mHandler.obtainMessage(Common.MESSAGE_READ, 0,

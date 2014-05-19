@@ -3,11 +3,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_height="160dp">
+              android:layout_height="170dp">
     <ImageView android:id="@+id/photo"
         android:layout_margin="10dp"
-        android:layout_width="120dp"
-        android:layout_height="160dp"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
         android:background="#EEE"
         android:padding="2dp"
         android:src="@drawable/camera"/>
@@ -48,6 +48,12 @@
             android:layout_width="40dp"
             android:layout_height="30dp"
             android:layout_alignParentEnd="true"
-            android:background="@drawable/camera1"/>
+            android:background="@drawable/camera1"
+            android:visibility="invisible"/>
+        <Button android:id="@+id/delete"
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/delete"/>
     </RelativeLayout>
 </LinearLayout>

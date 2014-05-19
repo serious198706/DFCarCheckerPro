@@ -12,6 +12,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -19,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,6 +35,9 @@ import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
+import com.df.app.service.customCamera.IPhotoProcessListener;
+import com.df.app.service.customCamera.PhotoProcessManager;
+import com.df.app.service.customCamera.PhotoTask;
 import com.df.app.util.MyScrollView;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
@@ -40,6 +47,7 @@ import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.df.app.util.Helper.generatePhotoThumbnail;
@@ -57,7 +65,7 @@ import static com.df.app.util.Helper.setTextView;
  *
  * 综合检查二，主要包括泡水检查和轮胎检查
  */
-public class Integrated2Layout extends LinearLayout {
+public class Integrated2Layout extends LinearLayout implements IPhotoProcessListener {
     private static View rootView;
 
     long currentTimeMillis;
@@ -95,11 +103,13 @@ public class Integrated2Layout extends LinearLayout {
 
     private String[] map = {"leftFront", "rightFront", "leftRear", "rightRear", "spare"};
 
-    private Button leftFrontButton;
-    private Button rightFrontButton;
-    private Button leftRearButton;
-    private Button rightRearButton;
-    private Button spareButton;
+    private static Button leftFrontButton;
+    private static Button rightFrontButton;
+    private static Button leftRearButton;
+    private static Button rightRearButton;
+    private static Button spareButton;
+
+    public static Button[] buttons = {leftFrontButton, rightFrontButton, leftRearButton, rightRearButton, spareButton};
 
     private MyScrollView scrollView;
 
@@ -123,7 +133,14 @@ public class Integrated2Layout extends LinearLayout {
     public static int rightRearIndex;
     public static int spareIndex;
 
+    private EditText leftFrontEdit = (EditText)findViewById(R.id.leftFront_edit);
+    private EditText rightFrontEdit = (EditText)findViewById(R.id.rightFront_edit);
+    private EditText leftRearEdit = (EditText)findViewById(R.id.leftRear_edit);
+    private EditText rightRearEdit = (EditText)findViewById(R.id.rightRear_edit);
+
     public static Map<String, PhotoEntity> photoEntityMap;
+
+    TextWatcher textWatcher;
 
     public Integrated2Layout(Context context) {
         super(context);
@@ -187,8 +204,10 @@ public class Integrated2Layout extends LinearLayout {
                 currentTire = "leftFront";
                 currentTireName = "左前轮";
                 takePhotoForTires(currentTireName);
+                //System.out.println(v.getResources().getResourceName(v.getId()));
             }
         });
+        buttons[0] = leftFrontButton;
 
         rightFrontButton = (Button)findViewById(R.id.rightFront_button);
         rightFrontButton.setOnClickListener(new OnClickListener() {
@@ -199,6 +218,7 @@ public class Integrated2Layout extends LinearLayout {
                 takePhotoForTires(currentTireName);
             }
         });
+        buttons[1] = rightFrontButton;
 
         leftRearButton = (Button)findViewById(R.id.leftRear_button);
         leftRearButton.setOnClickListener(new OnClickListener() {
@@ -209,6 +229,7 @@ public class Integrated2Layout extends LinearLayout {
                 takePhotoForTires(currentTireName);
             }
         });
+        buttons[2] = leftRearButton;
 
         rightRearButton = (Button)findViewById(R.id.rightRear_button);
         rightRearButton.setOnClickListener(new OnClickListener() {
@@ -219,6 +240,7 @@ public class Integrated2Layout extends LinearLayout {
                 takePhotoForTires(currentTireName);
             }
         });
+        buttons[3] = rightRearButton;
 
         spareButton = (Button)findViewById(R.id.spare_button);
         spareButton.setOnClickListener(new OnClickListener() {
@@ -229,6 +251,7 @@ public class Integrated2Layout extends LinearLayout {
                 takePhotoForTires(currentTireName);
             }
         });
+        buttons[4] = spareButton;
 
         // 移除输入框的焦点，避免每次输入完成后界面滚动
         scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
@@ -241,6 +264,38 @@ public class Integrated2Layout extends LinearLayout {
                 return false;
             }
         });
+
+        CheckBox checkBox = (CheckBox)findViewById(R.id.numbersSame);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                editsAssociation(b);
+            }
+        });
+
+        leftFrontEdit = (EditText)findViewById(R.id.leftFront_edit);
+        rightFrontEdit = (EditText)findViewById(R.id.rightFront_edit);
+        leftRearEdit = (EditText)findViewById(R.id.leftRear_edit);
+        rightRearEdit = (EditText)findViewById(R.id.rightRear_edit);
+
+        textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                rightFrontEdit.setText(charSequence);
+                leftRearEdit.setText(charSequence);
+                rightRearEdit.setText(charSequence);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        };
     }
 
     private void showShadow(boolean show) {
@@ -252,11 +307,13 @@ public class Integrated2Layout extends LinearLayout {
      * @param tire
      */
     private void takePhotoForTires(final String tire) {
+        PhotoProcessManager.getInstance().registPhotoProcessListener(this);
+
         // 如果此轮胎已经有照片，则询问用户是否要替换
         if(photoShotCount[tireMap.get(currentTire)] >= 1) {
             View view1 = ((Activity)getContext()).getLayoutInflater().inflate(R.layout.popup_layout, null);
             TableLayout contentArea = (TableLayout)view1.findViewById(R.id.contentArea);
-            TextView content = new TextView(view1.getContext());
+            final TextView content = new TextView(view1.getContext());
             content.setText(R.string.tireReplace);
             content.setTextSize(20f);
             contentArea.addView(content);
@@ -265,28 +322,48 @@ public class Integrated2Layout extends LinearLayout {
 
             AlertDialog dialog = new AlertDialog.Builder(rootView.getContext())
                     .setView(view1)
-                    // 要替换，就启动相机
+                            // 要替换，就启动相机
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if(photoEntityMap.get(currentTire) != null) {
                                 if(photoEntityMap.get(currentTire).getFileName().contains("http:")) {
                                     currentTimeMillis = System.currentTimeMillis();
-                                    startCamera(tire, Long.toString(currentTimeMillis) + ".jpg");
+
+                                    Helper.startCamera(getContext(), currentTireName, currentTimeMillis);
+
+                                    //startCamera(tire, Long.toString(currentTimeMillis) + ".jpg");
                                 } else {
-                                    startCamera(tire, photoEntityMap.get(currentTire).getFileName());
+                                    //startCamera(tire, photoEntityMap.get(currentTire).getFileName());
+                                    String fileName = photoEntityMap.get(currentTire).getFileName();
+                                    fileName = fileName.substring(0, fileName.length() - 4);
+
+                                    Helper.startCamera(getContext(), currentTireName, Long.parseLong(fileName));
                                 }
                             }
                         }
                     })
-                    // 不替换
+                            // 不替换
                     .setNegativeButton(R.string.cancel, null)
                     .create();
 
             dialog.show();
         } else {
             currentTimeMillis = System.currentTimeMillis();
-            startCamera(tire, Long.toString(currentTimeMillis) + ".jpg");
+            Helper.startCamera(getContext(), currentTireName, currentTimeMillis);
+        }
+    }
+
+    @Override
+    public void onPhotoProcessFinish(List<PhotoTask> list) {
+        if(list == null) {
+            return;
+        }
+
+        for(PhotoTask photoTask : list) {
+            if(photoTask.getState() == PhotoTask.STATE_COMPLETE) {
+                saveTirePhoto();
+            }
         }
     }
 
@@ -298,8 +375,7 @@ public class Integrated2Layout extends LinearLayout {
         if(photoShotCount[tireMap.get(currentTire)] >= 1) {
             // 如果是含有http的文件名（表示为修改模式）
             if(photoEntityMap.get(currentTire).getFileName().contains("http:")) {
-                Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_WIDTH);
-                Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", Common.THUMBNAIL_WIDTH);
+                Helper.handlePhoto(Long.toString(currentTimeMillis));
 
                 PhotoEntity photoEntity = PhotoExteriorLayout.photoListAdapter.getItem(photoEntityMap.get(currentTire));
                 PhotoEntity temp = generatePhotoEntity();
@@ -322,12 +398,10 @@ public class Integrated2Layout extends LinearLayout {
 
                 PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
             }
-
         }
         // 如果此轮胎没有照片，则生成新的照片
         else {
-            Helper.setPhotoSize(Long.toString(currentTimeMillis) + ".jpg", Common.PHOTO_WIDTH);
-            Helper.generatePhotoThumbnail(Long.toString(currentTimeMillis) + ".jpg", Common.THUMBNAIL_WIDTH);
+            Helper.handlePhoto(currentTimeMillis + ".jpg");
 
             PhotoEntity photoEntity = generatePhotoEntity();
 
@@ -339,29 +413,22 @@ public class Integrated2Layout extends LinearLayout {
             PhotoExteriorLayout.photoListAdapter.addItem(photoEntity);
             PhotoExteriorLayout.photoListAdapter.notifyDataSetChanged();
             photoShotCount[tireMap.get(currentTire)] = 1;
+
+            // 将拍完照片的轮胎按钮换个图标
+            buttons[tireMap.get(currentTire)].setBackgroundResource(R.drawable.tire_pressed);
         }
     }
 
     /**
      * 打开相机拍照
-     * @param tire
-     * @param fileName
      */
     private void startCamera(String tire, String fileName) {
         Toast.makeText(rootView.getContext(), "正在拍摄" + tire, Toast.LENGTH_LONG).show();
-
-        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
-        Uri fileUri = Helper.getOutputMediaFileUri(fileName); //
-        // create a file to save the image
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-
-        ((Activity)getContext()).startActivityForResult(intent, Common.PHOTO_FOR_TIRES);
+        Helper.startCamera(rootView.getContext(), fileName, Common.PHOTO_FOR_TIRES);
     }
 
     /**
      * 生成photoEntity
-     * @return
      */
     private PhotoEntity generatePhotoEntity() {
         PhotoEntity photoEntity = new PhotoEntity();
@@ -422,8 +489,8 @@ public class Integrated2Layout extends LinearLayout {
                     break;
             }
 
-            photoJsonObject.put("x", button.getX());
-            photoJsonObject.put("y", button.getY());
+            photoJsonObject.put("x", (button.getX() - 280) / 0.6 + button.getWidth() / 2);
+            photoJsonObject.put("y", button.getY() / 0.6 + button.getHeight() / 2);
             photoJsonObject.put("width", getBitmapWidth(Long.toString(currentTimeMillis) + ".jpg"));
             photoJsonObject.put("height", getBitmapHeight(Long.toString(currentTimeMillis) + ".jpg"));
 
@@ -446,7 +513,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 获取备胎的选择项
-     * @return
      */
     public static String getSpareTireSelection() {
         return getSpinnerSelectedText(rootView, R.id.spareTire_spinner);
@@ -454,7 +520,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 设置备胎的选择项
-     * @param selection
      */
     public static void setSpareTireSelection(String selection) {
         setSpinnerSelectionWithString(rootView, R.id.spareTire_spinner, selection);
@@ -462,7 +527,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 设置spinner选择“无”之后的颜色
-     * @param spinnerId
      */
     private static void setSpinnerColor(int spinnerId) {
         Spinner spinner = (Spinner) rootView.findViewById(spinnerId);
@@ -489,9 +553,18 @@ public class Integrated2Layout extends LinearLayout {
     }
 
     /**
+     * 关联四个输入框，在其中1个输入时，更改另外3个的内容
+     */
+    private void editsAssociation(boolean association) {
+        if(!association) {
+            leftFrontEdit.removeTextChangedListener(textWatcher);
+        } else {
+            leftFrontEdit.addTextChangedListener(textWatcher);
+        }
+    }
+
+    /**
      * 生成泡水检查的JSONObject
-     * @return
-     * @throws JSONException
      */
     public JSONObject generateFloodedJSONObject() throws JSONException {
         JSONObject flooded = new JSONObject();
@@ -513,8 +586,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 修改或者半路检测时，填上已经保存的内容
-     * @param flooded
-     * @throws JSONException
      */
     private void fillFloodWithJSONObject(JSONObject flooded) throws JSONException {
         setSpinnerSelectionWithString(rootView, R.id.cigarLighter_spinner, flooded.getString("cigarLighter"));
@@ -532,8 +603,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 生成轮胎的JSONObject
-     * @return
-     * @throws JSONException
      */
     public JSONObject generateTiresJSONObject() throws JSONException{
         JSONObject tires = new JSONObject();
@@ -557,8 +626,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 修改或者半路检测时，填上已经保存的内容
-     * @param tires
-     * @throws JSONException
      */
     private void fillTiresWithJSONObject(JSONObject tires) throws JSONException{
         setEditViewText(rootView, R.id.leftFront_edit, tires.get("leftFront") == JSONObject.NULL ? "" : tires.getString("leftFront"));
@@ -572,7 +639,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 生成综合二备注的JSONObject
-     * @return
      */
     public String generateCommentString() {
         return getEditViewText(rootView, R.id.it2_comment_edit);
@@ -580,7 +646,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 修改或者半路检测时，填上已经保存的内容
-     * @param comment
      */
     private void fillCommentWithString(String comment) {
         setEditViewText(rootView, R.id.it2_comment_edit, comment);
@@ -588,7 +653,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 生成轮胎的草图
-     * @return
      */
     public PhotoEntity generateSketch() {
         ImageView imageView = (ImageView)findViewById(R.id.tire_image);
@@ -598,7 +662,7 @@ public class Integrated2Layout extends LinearLayout {
         try {
             bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
             FileOutputStream out = new FileOutputStream(Common.photoDirectory + "tire_sketch");
-            bitmap.compress(Bitmap.CompressFormat.PNG, 70, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 60, out);
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -638,10 +702,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 修改或者半路检测时，填上已经保存的内容
-     * @param flooded
-     * @param tires
-     * @param comment2
-     * @throws JSONException
      */
     public void fillInData(JSONObject flooded, JSONObject tires, String comment2) throws JSONException {
         fillFloodWithJSONObject(flooded);
@@ -649,7 +709,9 @@ public class Integrated2Layout extends LinearLayout {
         fillCommentWithString(comment2);
     }
 
-
+    /**
+     * 修改或者半路检测时，填上已经保存的内容
+     */
     public void fillInData(JSONObject flooded, JSONObject tires, JSONObject photos, String comment2) throws JSONException {
         fillInData(flooded, tires, comment2);
 
@@ -664,7 +726,6 @@ public class Integrated2Layout extends LinearLayout {
 
     /**
      * 检查所有域
-     * @return
      */
     public String checkAllFields() {
         int count;

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="pki">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/App/lib/pki.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

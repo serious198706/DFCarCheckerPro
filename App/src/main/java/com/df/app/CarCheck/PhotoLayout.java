@@ -14,6 +14,8 @@ import com.df.app.R;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.Adapter.PaintPhotoListAdapter;
+import com.df.app.service.Adapter.PhotoListAdapter;
+import com.df.app.util.Common;
 import com.df.app.util.MyOnClick;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
 
@@ -30,6 +32,7 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
 
     public static PaintPhotoListAdapter paintPhotoListAdapter;
     public static ListedPhoto listedPhoto;
+    public static PhotoListAdapter photoListAdapter;
 
     private View rootView;
 
@@ -42,9 +45,6 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
     public static PhotoProcedureLayout photoProcedureLayout;
     public static PhotoEngineLayout photoEngineLayout;
     public static PhotoAgreement photoAgreement;
-
-    private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
-    private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
 
     public static PhotoEntity reTakePhotoEntity;
     public static PhotoEntity commentModEntity;
@@ -116,38 +116,10 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
     }
 
     /**
-     * 保存外观组照片
+     * 保存缺陷组照片
      */
-    public void saveExteriorStandardPhoto() {
-        photoExteriorLayout.saveExteriorStandardPhoto();
-    }
-
-    /**
-     * 保存内饰组照片
-     */
-    public void saveInteriorStandardPhoto() {
-        photoInteriorLayout.saveInteriorStandardPhoto();
-    }
-
-    /**
-     * 保存手续组照片
-     */
-    public void saveProceduresStandardPhoto() {
-        photoProcedureLayout.saveProceduresStandardPhoto();
-    }
-
-    /**
-     * 保存机舱组照片
-     */
-    public void saveEngineStandardPhoto() {
-        photoEngineLayout.saveEngineStandardPhoto();
-    }
-
-    /**
-     * 保存协议组照片
-     */
-    public void saveOtherStandardPhoto() {
-        photoAgreement.saveAgreementPhoto();
+    public void saveOtherFaultPhoto(String comment) {
+        photoFaultLayout.saveOtherFaultPhoto(comment);
     }
 
     /**
@@ -160,7 +132,12 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
         currentField = photoExteriorLayout.check();
 
         if(!currentField.equals("")) {
-            Toast.makeText(rootView.getContext(), "外观组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            if(currentField.equals("exterior_1")) {
+                Toast.makeText(rootView.getContext(), "外观组未拍摄左前45°或右前45°照片！", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(rootView.getContext(), "外观组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            }
+
             viewPager.setCurrentItem(0);
 
             return currentField;
@@ -179,7 +156,14 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
         currentField = photoEngineLayout.check();
 
         if(!currentField.equals("")) {
-            Toast.makeText(rootView.getContext(), "机舱组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            if(currentField.contains("engine_")) {
+                int index = Integer.parseInt(currentField.substring(currentField.length() - 1, currentField.length()));
+
+                Toast.makeText(rootView.getContext(), "机舱组未拍摄" + Common.enginePartArray[index] + "照片！", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(rootView.getContext(), "机舱组照片拍摄数量不足！", Toast.LENGTH_SHORT).show();
+            }
+
             viewPager.setCurrentItem(4);
 
             return currentField;
@@ -215,33 +199,37 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
     }
 
     private void selectTab(int currIndex) {
-        exteriorTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
-        interiorTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
-        faultTab.setTextColor(currIndex == 2 ? selectedColor : unselectedColor);
-        procedureTab.setTextColor(currIndex == 3 ? selectedColor : unselectedColor);
-        engineTab.setTextColor(currIndex == 4 ? selectedColor : unselectedColor);
-        otherTab.setTextColor(currIndex == 5 ? selectedColor : unselectedColor);
+        exteriorTab.setTextColor(currIndex == 0 ? Common.selectedColor : Common.unselectedColor);
+        interiorTab.setTextColor(currIndex == 1 ? Common.selectedColor : Common.unselectedColor);
+        faultTab.setTextColor(currIndex == 2 ? Common.selectedColor : Common.unselectedColor);
+        procedureTab.setTextColor(currIndex == 3 ? Common.selectedColor : Common.unselectedColor);
+        engineTab.setTextColor(currIndex == 4 ? Common.selectedColor : Common.unselectedColor);
+        otherTab.setTextColor(currIndex == 5 ? Common.selectedColor : Common.unselectedColor);
     }
 
     public void clearCache() {
         PhotoExteriorLayout.photoListAdapter = null;
         for(int i = 0; i < PhotoExteriorLayout.photoShotCount.length; i++) {
             PhotoExteriorLayout.photoShotCount[i] = 0;
+            PhotoExteriorLayout.photoNames[i] = 0;
         }
 
         PhotoInteriorLayout.photoListAdapter = null;
         for(int i = 0; i < PhotoInteriorLayout.photoShotCount.length; i++) {
             PhotoInteriorLayout.photoShotCount[i] = 0;
+            PhotoInteriorLayout.photoNames[i] = 0;
         }
 
         PhotoEngineLayout.photoListAdapter = null;
         for(int i = 0; i < PhotoEngineLayout.photoShotCount.length; i++) {
             PhotoEngineLayout.photoShotCount[i] = 0;
+            PhotoEngineLayout.photoNames[i] = 0;
         }
 
         PhotoProcedureLayout.photoListAdapter = null;
         for(int i = 0; i < PhotoProcedureLayout.photoShotCount.length; i++) {
             PhotoProcedureLayout.photoShotCount[i] = 0;
+            PhotoProcedureLayout.photoNames[i] = 0;
         }
 
         for(int i = 0; i < Integrated2Layout.photoShotCount.length; i++) {
@@ -250,6 +238,8 @@ public class PhotoLayout extends LinearLayout implements ViewPager.OnPageChangeL
 
         PhotoAgreement.photoListAdapter = null;
         PhotoAgreement.photoShotCount = 0;
+        PhotoAgreement.photoName = 0;
+
         PhotoLayout.photoIndex = 1;
     }
 

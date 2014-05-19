@@ -39,7 +39,7 @@ public class CommitDataTask extends AsyncTask<JSONObject, Void, Boolean> {
     @Override
     protected void onPreExecute() {
         progressDialog = new ProgressDialog(this.context);
-        progressDialog.setMessage("正在提交信息，请稍候...");
+        progressDialog.setMessage("正在提交数据，请稍候...");
         progressDialog.setIndeterminate(false);
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);

@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginTop="5dp"
-                android:background="#AA030A"/>
+                android:background="#C74810"/>
 
             <TableRow  android:layout_marginTop="5dp">
                 <TextView
@@ -351,7 +351,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginTop="5dp"
-                android:background="#AA030A"/>
+                android:background="#C74810"/>
 
             <TableRow android:layout_marginTop="15dp">
                 <TextView
@@ -410,6 +410,12 @@
                          android:background="@drawable/spinner_selector"/>
             </TableRow>
 
+            <CheckBox android:id="@+id/numbersSame"
+                android:textSize="22sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:text="四轮标号相同"/>
+
             <RelativeLayout android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="15dp">
@@ -436,6 +442,7 @@
                     android:layout_alignTop="@id/leftFront_edit"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="7dp"
+                    android:tag="左前轮"
                     android:background="@drawable/button_tire"/>
 
                 <EditText android:id="@+id/leftRear_edit"
@@ -454,6 +461,7 @@
                         android:layout_height="53dp"
                         android:layout_toRightOf="@id/leftRear_edit"
                         android:layout_alignTop="@id/leftRear_edit"
+                        android:tag="左后轮"
                         android:background="@drawable/button_tire"/>
 
                 <EditText android:id="@+id/rightFront_edit"
@@ -473,6 +481,7 @@
                         android:layout_alignTop="@id/rightFront_edit"
                         android:layout_marginRight="5dp"
                         android:layout_marginTop="7dp"
+                        android:tag="右前轮"
                         android:background="@drawable/button_tire"/>
 
 
@@ -492,6 +501,7 @@
                         android:layout_height="53dp"
                         android:layout_toLeftOf="@id/rightRear_edit"
                         android:layout_alignTop="@id/rightRear_edit"
+                        android:tag="右后轮"
                         android:background="@drawable/button_tire"/>
 
                 <EditText android:id="@+id/spare_edit"
@@ -509,6 +519,7 @@
                         android:layout_height="53dp"
                         android:layout_above="@id/spare_edit"
                         android:layout_centerHorizontal="true"
+                        android:tag="备胎轮"
                         android:background="@drawable/button_tire"/>
             </RelativeLayout>
 

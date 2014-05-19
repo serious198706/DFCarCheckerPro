@@ -29,7 +29,6 @@ public class Decoder {
                 wSum += (int) data[i];
             }
         }
-        System.out.print("wSum:" + wSum);
 
         String hexs = ToHexString(wSum);
         char[] array = hexs.toCharArray();

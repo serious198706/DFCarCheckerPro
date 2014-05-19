@@ -9,11 +9,11 @@
         <ImageView android:id="@+id/banner"
                    android:layout_width="match_parent"
                    android:layout_height="52dp"
-                   android:background="#AA030A"/>
+                   android:background="#C74810"/>
 
         <Button android:id="@+id/back"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:background="@drawable/back"
             android:layout_marginLeft="10dp"
             android:layout_centerVertical="true"/>
@@ -30,8 +30,8 @@
             android:layout_centerInParent="true"/>
 
         <Button android:id="@+id/save"
-                android:layout_width="40dp"
-                android:layout_height="35dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/save"
                 android:layout_alignParentRight="true"/>

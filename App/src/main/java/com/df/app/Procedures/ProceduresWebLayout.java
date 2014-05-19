@@ -92,7 +92,7 @@ public class ProceduresWebLayout extends LinearLayout {
     }
 
     /**
-     * 确定车辆基本信息后，将以下信息作为参数提交到网页
+     * 确定车辆基本信息后，将以下数据作为参数提交到网页
      * @param vin vin
      * @param plateNumber 车牌号码
      * @param licenseModel 行驶证车辆类型
@@ -110,6 +110,8 @@ public class ProceduresWebLayout extends LinearLayout {
         url += "userName=" + MainActivity.userInfo.getName();
         url += "&";
         url += "orid=" + MainActivity.userInfo.getOrid();
+        url += "&";
+        url += "plateType=" + MainActivity.userInfo.getPlateType();
         url += "&";
         url += "plateNumber=" + plateNumber;
         url += "&";
@@ -149,12 +151,15 @@ public class ProceduresWebLayout extends LinearLayout {
         url += "userName=" + MainActivity.userInfo.getName();
         url += "&";
         url += "carId=" + carId;
+        url += "&";
+        url += "plateType=" + MainActivity.userInfo.getPlateType();
+        url += "&";
+        url += "orid=" + MainActivity.userInfo.getOrid();
 
         proceduresWeb = (WebView)findViewById(R.id.proceduresWeb);
         proceduresWeb.loadUrl(url);
         proceduresWeb.setWebViewClient(new WebViewClient() {
-            public void onPageFinished(WebView view, String url) {
-                showContent(true);
+            public void onPageFinished(WebView view, String url) {showContent(true);
             }
         });
         proceduresWeb.setWebChromeClient(new WebChromeClient());

@@ -105,7 +105,7 @@ public class TransactionNotesLayout extends LinearLayout {
     }
 
     /**
-     * 确定车辆基本信息后，将以下信息作为参数提交到网页
+     * 确定车辆基本信息后，将以下数据作为参数提交到网页
      * @param carId carId
      * @param modify
      */

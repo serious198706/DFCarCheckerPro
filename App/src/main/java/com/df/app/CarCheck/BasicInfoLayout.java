@@ -2,6 +2,7 @@ package com.df.app.carCheck;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.df.app.R;
 import com.df.app.entries.CarSettings;
 import com.df.app.service.Adapter.MyViewPagerAdapter;
+import com.df.app.util.Common;
 import com.df.app.util.MyOnClick;
 
 import org.json.JSONException;
@@ -46,10 +48,6 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
     // 获取车辆配置后的回调
     private OnGetCarSettings mOnGetCarSettingsCallback;
 
-    // 标签选中和未选中的颜色
-    private int selectedColor = Color.rgb(0xAA, 0x03, 0x0A);
-    private int unselectedColor = Color.rgb(0x70, 0x70, 0x70);
-
     public BasicInfoLayout(Context context) {
         super(context);
         if(!isInEditMode())
@@ -78,7 +76,7 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
                 mOnGetCarSettingsCallback.onGetCarSettings();
 
                 // 更新配置信息页面
-                optionsLayout.fillInSettings();
+                //optionsLayout.fillInSettings();
             }
         });
 
@@ -101,7 +99,7 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
 
                 if(CarCheckActivity.saved) {
                     // 更新配置信息页面
-                    optionsLayout.fillInSettings();
+                    //optionsLayout.fillInSettings();
                 }
             }
         });
@@ -153,8 +151,8 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
     }
 
     private void selectTab(int currIndex) {
-        vehicleInfoTab.setTextColor(currIndex == 0 ? selectedColor : unselectedColor);
-        optionsTab.setTextColor(currIndex == 1 ? selectedColor : unselectedColor);
+        vehicleInfoTab.setTextColor(currIndex == 0 ? Common.selectedColor : Common.unselectedColor);
+        optionsTab.setTextColor(currIndex == 1 ? Common.selectedColor : Common.unselectedColor);
     }
 
     /**
@@ -177,22 +175,25 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
     /**
      * 修改或者半路检测时，填上已经保存的内容
      */
-    public void fillInData(int carId, JSONObject features) {
+    public void fillInData(int carId, JSONObject features, final Handler handler) {
         try {
             BasicInfoLayout.carId = carId;
 
             JSONObject procedures = features.getJSONObject("procedures");
 
+            // 如果有options节点，则更新options
             if(features.has("options")) {
                 final JSONObject options = features.getJSONObject("options");
                 vehicleInfoLayout.fillInData(procedures, options.getString("seriesId"), options.getString("modelId"),
                         new VehicleInfoLayout.OnUiUpdated() {
                             @Override
                             public void onUiUpdated() {
-                                optionsLayout.fillInData(options);
+                                // 基本信息页更新完成（已获取到车辆配置信息）后，更新配置信息页
+                                optionsLayout.fillInData(options, handler);
                             }
                         });
             } else {
+                // 如果没有options节点（新检测），则更新基本信息页
                 vehicleInfoLayout.fillInData(procedures);
             }
         } catch (JSONException e) {
@@ -200,6 +201,9 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
         }
     }
 
+    /**
+     * 清空缓存
+     */
     public void clearCache() {
         mCarSettings = null;
     }

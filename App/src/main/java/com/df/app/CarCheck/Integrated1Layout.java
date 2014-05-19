@@ -72,7 +72,8 @@ public class Integrated1Layout extends LinearLayout{
             R.id.parkAssist_spinner};
 
     public static boolean finished = false;
-    private JSONObject function;
+    private static JSONObject function;
+    private static int count = 0;
 
     public Integrated1Layout(Context context) {
         super(context);
@@ -208,6 +209,8 @@ public class Integrated1Layout extends LinearLayout{
      * @param selectedItemText 选择的文字
      */
     public static void updateAssociatedSpinners(int spinnerId, String selectedItemText) {
+        System.out.println("------ updateAssociatedSpinners ------");
+
         int interSpinnerId;
 
         // 在map里查找对应的spinnerID
@@ -221,9 +224,24 @@ public class Integrated1Layout extends LinearLayout{
                 // 如果基本信息里的spinner选择的是“无”，则综合检查里的也应为“无”
                 if(selectedItemText.equals("无")) {
                     enableSpinner(interSpinnerId, false);
-                } else {
-                    enableSpinner(interSpinnerId, true);
                 }
+                // 如果基本信息里的spinner选择的不是“无”，则综合检查里要设置为“正常”
+                else {
+                    enableSpinner(interSpinnerId, true);
+                    setSpinnerSelectionWithString(rootView, interSpinnerId, "正常");
+                }
+
+                if(count >= 0)
+                    count++;
+            }
+        }
+
+        if(count >= 13 && function != null) {
+            try {
+                fillFunctionWithJSONObject(function);
+                count = -1;
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -439,7 +457,9 @@ public class Integrated1Layout extends LinearLayout{
      * @param function
      * @throws JSONException
      */
-    private void fillFunctionWithJSONObject(JSONObject function) throws JSONException{
+    private static void fillFunctionWithJSONObject(JSONObject function) throws JSONException{
+        System.out.println("------ fillFunctionWithJSONObject ------");
+
         setSpinnerSelectionWithString(rootView, R.id.engineFault_spinner, function.getString("engineFault"));
         setSpinnerSelectionWithString(rootView, R.id.oilPressure_spinner, function.getString("oilPressure"));
         setSpinnerSelectionWithString(rootView, R.id.parkingBrake_spinner, function.getString("parkingBrake"));
@@ -473,7 +493,7 @@ public class Integrated1Layout extends LinearLayout{
         setSpinner(function, "parkAssist", R.id.parkAssist_spinner);
     }
 
-    private void setSpinner(JSONObject jsonObject, String temp, int id) throws JSONException{
+    private static void setSpinner(JSONObject jsonObject, String temp, int id) throws JSONException{
         if(jsonObject.has(temp)) {
             if(jsonObject.isNull(temp))
                 enableSpinner(id, false);
@@ -508,6 +528,8 @@ public class Integrated1Layout extends LinearLayout{
      * @throws JSONException
      */
     public void fillInData(JSONObject engine, JSONObject gearbox, JSONObject function, String comment1) throws JSONException {
+        this.function = function;
+
         fillEngineWithJSONObject(engine);
         fillGearboxWithJSONObject(gearbox);
         fillFunctionWithJSONObject(function);
@@ -522,5 +544,9 @@ public class Integrated1Layout extends LinearLayout{
      */
     public String checkAllFields() {
         return "";
+    }
+
+    public static void clearCache() {
+        Integrated1Layout.count = 0;
     }
 }

@@ -499,7 +499,7 @@ public class ExteriorLayout extends LinearLayout {
     }
 
     /**
-     * 根据车型信息调用不同的预览图
+     * 根据车型数据调用不同的预览图
      * @param figure 车辆类型代码
      * @return 图片
      */
@@ -512,7 +512,6 @@ public class ExteriorLayout extends LinearLayout {
             bitmap = BitmapFactory.decodeFile(Common.utilDirectory + getBitmapNameFromFigure(figure), options);
         } catch (OutOfMemoryError e) {
             Toast.makeText(rootView.getContext(), "内存不足，请稍候重试！", Toast.LENGTH_SHORT).show();
-            ((Activity)rootView.getContext()).finish();
         }
 
         return bitmap;

@@ -42,22 +42,36 @@
         </RadioGroup>
     </LinearLayout>
 
-    <ImageView android:layout_gravity="center"
-               android:layout_width="400dp"
-               android:layout_height="300dp"
-               android:src="@drawable/drive_license"/>
+    <RelativeLayout
+        android:layout_width="410dp"
+        android:layout_height="310dp"
+        android:layout_marginTop="10dp"
+        android:background="#CCC"
+        android:layout_gravity="center">
+        <ImageView android:id="@+id/licenseImage"
+            android:layout_gravity="center"
+            android:layout_width="400dp"
+            android:layout_height="300dp"
+            android:scaleType="center"
+            android:src="@drawable/license_camera"
+            android:background="#FFF"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
 
     <Button android:id="@+id/recognise_button"
             android:layout_width="match_parent"
             android:layout_height="35dp"
+            android:layout_marginTop="10dp"
             android:text="@string/recognise"
             android:textColor="#FFF"
             android:background="@drawable/button_custom"
-            android:padding="-5dp"/>
+            android:padding="-5dp"
+            android:visibility="gone"/>
 
     <TableLayout android:layout_width="match_parent"
                  android:layout_height="0dp"
-                 android:layout_weight="1">
+                 android:layout_weight="1"
+                 android:layout_marginTop="10dp">
         <TableRow android:layout_weight="1">
             <TextView
                 android:layout_height="wrap_content"
