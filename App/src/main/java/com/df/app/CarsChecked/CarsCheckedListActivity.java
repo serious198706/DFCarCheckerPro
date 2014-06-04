@@ -95,8 +95,7 @@ public class CarsCheckedListActivity extends Activity {
 
             @Override
             public void onStartOpen(int position, int action, boolean right) {
-                if(lastPos != -1)
-                    swipeListView.closeAnimate(lastPos);
+                swipeListView.closeOpenedItems();
 
                 lastPos = position;
             }
@@ -105,6 +104,8 @@ public class CarsCheckedListActivity extends Activity {
         swipeListView.setSwipeMode(SwipeListView.SWIPE_MODE_LEFT);
         swipeListView.setSwipeActionLeft(SwipeListView.SWIPE_ACTION_REVEAL);
         swipeListView.setOffsetLeft(620);
+        swipeListView.setLongClickable(false);
+        swipeListView.setSwipeOpenOnLongPress(false);
         swipeListView.setAnimationTime(300);
         swipeListView.setAdapter(adapter);
         footerView =  ((LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
@@ -124,7 +125,7 @@ public class CarsCheckedListActivity extends Activity {
         loadMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                refresh();
+                refresh(false);
             }
         });
 
@@ -132,23 +133,25 @@ public class CarsCheckedListActivity extends Activity {
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                refresh();
+                refresh(true);
             }
         });
 
-        refresh();
+        refresh(true);
     }
 
     /**
      * 刷新列表
      */
-    private void refresh() {
-        startNumber = 1;
-        data.clear();
+    private void refresh(boolean clear) {
+        if(clear) {
+            startNumber = 1;
+            data.clear();
+        }
+
         adapter.notifyDataSetChanged();
 
-        if(lastPos != -1)
-            swipeListView.closeAnimate(lastPos);
+        swipeListView.closeOpenedItems();
 
         GetCarsCheckedListTask getCarsCheckedListTask = new GetCarsCheckedListTask(CarsCheckedListActivity.this, startNumber,
                 new GetCarsCheckedListTask.OnGetListFinish() {
@@ -237,8 +240,7 @@ public class CarsCheckedListActivity extends Activity {
                 footerView.setVisibility(View.VISIBLE);
             }
 
-//            for(int i = 0; i < data.size(); i++)
-//                swipeListView.closeAnimate(i);
+            swipeListView.closeOpenedItems();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -475,7 +477,7 @@ public class CarsCheckedListActivity extends Activity {
             public void onFinished(String result) {
                 lastSellerName = "";
                 Toast.makeText(CarsCheckedListActivity.this, "导入成功！", Toast.LENGTH_LONG).show();
-                refresh();
+                refresh(true);
             }
 
             @Override

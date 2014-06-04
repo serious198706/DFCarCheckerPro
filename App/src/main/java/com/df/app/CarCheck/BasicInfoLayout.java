@@ -69,6 +69,7 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
 
         mCarSettings = new CarSettings();
 
+        // 废弃
         optionsLayout = new OptionsLayout(context, new OptionsLayout.OnLoadSettingsButtonClicked() {
             @Override
             public void onLoadSettings() {

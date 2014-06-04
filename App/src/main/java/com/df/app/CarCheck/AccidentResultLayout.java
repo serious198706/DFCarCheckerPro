@@ -1,17 +1,12 @@
 package com.df.app.carCheck;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.df.app.MainActivity;
@@ -22,24 +17,21 @@ import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
 import com.df.app.paintView.FramePaintPreviewView;
-import com.df.app.paintView.PaintPreviewView;
 import com.df.app.service.Adapter.IssuePhotoListAdapter;
-import com.df.app.service.AsyncTask.DownloadImageTask;
 import com.df.app.util.Common;
 import com.df.app.util.Helper;
+import com.df.app.util.PhotoUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
-import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 13-12-20.
@@ -69,10 +61,6 @@ public class AccidentResultLayout extends LinearLayout {
     private View rootView;
     private int figure;
 
-    private DownloadImageTask downloadImageTask;
-    private DownloadImageTask downloadImageTaskF;
-    private DownloadImageTask downloadImageTaskR;
-
     public AccidentResultLayout(Context context) {
         super(context);
         init(context);
@@ -91,7 +79,6 @@ public class AccidentResultLayout extends LinearLayout {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
         previewBitmapFront = BitmapFactory.decodeFile(Common.utilDirectory + "d4_f", options);
-
         framePaintPreviewViewFront = (FramePaintPreviewView) rootView.findViewById(R.id.front_preview);
         framePaintPreviewViewFront.init(previewBitmapFront, posEntitiesFront);
 
@@ -162,45 +149,28 @@ public class AccidentResultLayout extends LinearLayout {
         try {
             JSONObject photoJsonObject = new JSONObject();
 
-            jsonObject.put("Group", "frame");
-            jsonObject.put("Part", getPart(flag));
-
             PosEntity posEntity = getPosEntity(flag);
-
-            photoEntity.setName("结构缺陷");
-            photoEntity.setFileName(posEntity.getImageFileName());
-            photoEntity.setIndex(PhotoLayout.photoIndex++);
-
-            // 如果是走了这段代码，则一定是添加照片
-            // 如果是修改模式，则Action就是modify
-            if(CarCheckActivity.isModify()) {
-                photoEntity.setModifyAction(Action.MODIFY);
-            } else {
-                photoEntity.setModifyAction(Action.MODIFY);
-            }
-
-            if(photoEntity.getFileName().equals("")) {
-                photoEntity.setThumbFileName("");
-            } else {
-                photoEntity.setThumbFileName(posEntity.getImageFileName().substring(0, posEntity.getImageFileName().length() - 4) + "_t.jpg");
-            }
-            photoEntity.setComment(posEntity.getComment());
+            String fileName = posEntity.getImageFileName();
+            int index = PhotoLayout.photoIndex++;
 
             photoJsonObject.put("x", posEntity.getStartX());
             photoJsonObject.put("y", posEntity.getStartY());
-            photoJsonObject.put("width", getBitmapWidth(posEntity.getImageFileName()));
-            photoJsonObject.put("height", getBitmapHeight(posEntity.getImageFileName()));
+            photoJsonObject.put("width", getBitmapWidth(fileName));
+            photoJsonObject.put("height", getBitmapHeight(fileName));
             photoJsonObject.put("issueId", posEntity.getIssueId());
             photoJsonObject.put("comment", posEntity.getComment());
 
+            jsonObject.put("Group", "frame");
+            jsonObject.put("Part", getPart(flag));
             jsonObject.put("PhotoData", photoJsonObject);
             jsonObject.put("CarId", BasicInfoLayout.carId);
             jsonObject.put("UserId", MainActivity.userInfo.getId());
             jsonObject.put("Key", MainActivity.userInfo.getKey());
-            jsonObject.put("Action", photoEntity.getModifyAction());
-            jsonObject.put("Index", photoEntity.getIndex());
+            jsonObject.put("Action", Action.MODIFY);
+            jsonObject.put("Index", index);
 
-            photoEntity.setJsonString(jsonObject.toString());
+            photoEntity = PhotoUtils.generatePhotoEntity(jsonObject, "结构缺陷", fileName,
+                    Action.MODIFY, index, posEntity.getComment());
         } catch (JSONException e) {
             Log.d(Common.TAG, e.getMessage());
         }
@@ -242,29 +212,7 @@ public class AccidentResultLayout extends LinearLayout {
     }
 
     private static String getNameFromFigure(int figure, String view) {
-        String name;
-
-        if(view.equals("fSketch")) {
-            name = "d4_f";
-
-            switch (figure) {
-                case 2:
-                case 3:
-                    name = "d2_f";
-                    break;
-            }
-        } else {
-            name = "d4_r";
-
-            switch (figure) {
-                case 2:
-                case 3:
-                    name = "d2_r";
-                    break;
-            }
-        }
-
-        return name;
+        return "d" + (figure == 2 || figure == 3 ? 2 : 4) + (view.equals("fSketch") ? "_f" : "_r");
     }
 
     /**
@@ -287,6 +235,7 @@ public class AccidentResultLayout extends LinearLayout {
     private PhotoEntity generateSketch(String sketchName) {
         Bitmap bitmap = getBitmapFromFigure(figure, sketchName);
 
+        // 将草图文件拷贝到指定目录
         try {
             Helper.copy(new File(Common.utilDirectory + getBitmapNameFromFigure(figure, sketchName)),
                     new File(Common.photoDirectory + sketchName));
@@ -295,16 +244,9 @@ public class AccidentResultLayout extends LinearLayout {
         }
 
         PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setFileName(sketchName);
 
-        // 修改时，添加Action，并且将原来的index填写进去
-        if(CarCheckActivity.isModify()) {
-            photoEntity.setModifyAction(Action.MODIFY);
-            photoEntity.setIndex(sketchName.equals("fSketch") ? fSketchIndex : rSketchIndex);
-        } else {
-            photoEntity.setModifyAction(Action.NORMAL);
-            photoEntity.setIndex(PhotoLayout.photoIndex++);
-        }
+        // 修改时，将原来的index填写进去
+        int index = CarCheckActivity.isModify() ? (sketchName.equals("fSketch") ? fSketchIndex : rSketchIndex) : PhotoLayout.photoIndex++;
 
         JSONObject jsonObject = new JSONObject();
 
@@ -322,11 +264,13 @@ public class AccidentResultLayout extends LinearLayout {
             jsonObject.put("CarId", BasicInfoLayout.carId);
             jsonObject.put("Action", photoEntity.getModifyAction());
             jsonObject.put("Index", photoEntity.getIndex());
+
+            photoEntity = PhotoUtils.generatePhotoEntity(jsonObject, sketchName, sketchName,
+                    CarCheckActivity.isModify() ? Action.MODIFY : Action.NORMAL, index, "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        photoEntity.setJsonString(jsonObject.toString());
         return photoEntity;
     }
 
@@ -382,11 +326,11 @@ public class AccidentResultLayout extends LinearLayout {
      * 退出时销毁正在执行的任务
      */
     public void destroyTask() {
-        if(downloadImageTaskF != null) {
-            downloadImageTaskF.cancel(true);
-        }
-        if(downloadImageTaskR != null) {
-            downloadImageTaskR.cancel(true);
-        }
+//        if(downloadImageTaskF != null) {
+//            downloadImageTaskF.cancel(true);
+//        }
+//        if(downloadImageTaskR != null) {
+//            downloadImageTaskR.cancel(true);
+//        }
     }
 }

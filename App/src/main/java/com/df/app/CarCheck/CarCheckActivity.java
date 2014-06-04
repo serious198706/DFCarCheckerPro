@@ -9,6 +9,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.df.app.carsChecked.CarsCheckedListActivity;
@@ -18,13 +19,11 @@ import com.df.app.entries.Action;
 import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
-import com.df.app.service.AddPhotoCommentActivity;
 import com.df.app.service.AsyncTask.CommitDataTask;
 import com.df.app.service.AsyncTask.GeneratePhotoEntitiesTask;
 import com.df.app.service.AsyncTask.SaveDataTask;
 import com.df.app.service.AsyncTask.UploadPictureTask;
 import com.df.app.util.Common;
-import com.df.app.util.Helper;
 import com.df.app.util.MyAlertDialog;
 import com.df.app.util.PhotoParser;
 
@@ -36,9 +35,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.df.app.util.Helper.getBitmapHeight;
-import static com.df.app.util.Helper.getBitmapWidth;
-import static com.df.app.util.Helper.setTextView;
 import static com.df.app.util.Helper.showView;
 
 /**
@@ -46,7 +42,7 @@ import static com.df.app.util.Helper.showView;
  *
  * 主activity，承载基本信息、事故排查、综合检查、拍摄照片四个模块
  */
-public class CarCheckActivity extends Activity /*implements View.OnTouchListener */{
+public class CarCheckActivity extends Activity {
     // 回头再说（考虑给每张照片添加上传成功的标志）
     private boolean pictureUploaded = true;
 
@@ -77,14 +73,11 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
     // 按钮内容与按钮id的map
     SparseArray<String> tabMap = new SparseArray<String>();
 
-    private int c = 0;
-
     private Class activity;
 
     // 最终json串
     private JSONObject jsonObject;
-    private boolean transactionNotesCommited = false;
-
+    private boolean transactionNotesCommitted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +86,6 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
 
         // 填充各部分的内容
         Bundle bundle = getIntent().getExtras();
-
-
 
         // 获取车辆详细信息
         final String jsonString = bundle.getString("jsonString");
@@ -205,58 +196,18 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
 
         // 提交按钮
         Button commitButton = (Button)findViewById(R.id.buttonCommit);
-        commitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String pass = checkAllFields();
-
-                // 如果所有项目都已经填写完毕
-                if(pass.equals("")) {
-                    MyAlertDialog.showAlert(CarCheckActivity.this, R.string.commitMsg, R.string.alert, MyAlertDialog.BUTTON_STYLE_OK_CANCEL,
-                            new Handler(new Handler.Callback() {
-                                @Override
-                                public boolean handleMessage(Message message) {
-                                    switch (message.what) {
-                                        case MyAlertDialog.POSITIVE_PRESSED:
-                                            if (modify)
-                                                findModifiedPicture();
-                                            else
-                                                generatePhotoEntities();
-                                            break;
-                                        case MyAlertDialog.NEGATIVE_PRESSED:
-                                            break;
-                                    }
-
-                                    return true;
-                                }
-                            }));
-                } else {
-                    if(pass.equals("accidentCheck")) {
-                        Toast.makeText(CarCheckActivity.this, "未完成事故检测！", Toast.LENGTH_SHORT).show();
-                        selectTab(R.id.accidentCheck);
-                    } else if(pass.equals("leftFront") || pass.equals("rightFront") ||
-                            pass.equals("leftRear") || pass.equals("rightRear") ||
-                            pass.equals("spare") || pass.equals("edits")) {
-                        selectTab(R.id.integratedCheck);
-                    } else if(pass.equals("exterior") || pass.contains("interior") ||
-                            pass.contains("engine") || pass.equals("procedures") || pass.equals("agreements") ||
-                            pass.contains("exterior")) {
-                        selectTab(R.id.photo);
-                    } else if(pass.equals("coop")) {
-                        selectTab(R.id.integratedCheck);
-                    }
-                }
-            }
-        });
+        commitButton.setOnClickListener(mCommitListener);
 
         // 保存按钮
         Button saveButton = (Button)findViewById(R.id.buttonSave);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                generateJsonString(false);
-                // 保存检测数据
-                saveData();
+                if(generateJsonString(false))
+                    // 保存检测数据
+                    saveData();
+                else
+                    Toast.makeText(CarCheckActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -277,10 +228,55 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
         fillInData(carId, jsonString);
     }
 
+    // 提交按钮监听事件
+    View.OnClickListener mCommitListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            String pass = checkAllFields();
+
+            // 如果所有项目都已经填写完毕
+            if(pass.equals("")) {
+                MyAlertDialog.showAlert(CarCheckActivity.this, R.string.commitMsg, R.string.alert, MyAlertDialog.BUTTON_STYLE_OK_CANCEL,
+                        new Handler(new Handler.Callback() {
+                            @Override
+                            public boolean handleMessage(Message message) {
+                                switch (message.what) {
+                                    case MyAlertDialog.POSITIVE_PRESSED:
+                                        if (modify)
+                                            findModifiedPicture();
+                                        else
+                                            generatePhotoEntities();
+                                        break;
+                                    case MyAlertDialog.NEGATIVE_PRESSED:
+                                        break;
+                                }
+
+                                return true;
+                            }
+                        }));
+            } else {
+                if(pass.equals("accidentCheck")) {
+                    Toast.makeText(CarCheckActivity.this, "未完成事故检测！", Toast.LENGTH_SHORT).show();
+                    selectTab(R.id.accidentCheck);
+                } else if(pass.equals("leftFront") || pass.equals("rightFront") ||
+                        pass.equals("leftRear") || pass.equals("rightRear") ||
+                        pass.equals("spare") || pass.equals("edits")) {
+                    selectTab(R.id.integratedCheck);
+                } else if(pass.equals("exterior") || pass.contains("interior") ||
+                        pass.contains("engine") || pass.equals("procedures") || pass.equals("agreements") ||
+                        pass.contains("exterior")) {
+                    selectTab(R.id.photo);
+                } else if(pass.equals("coop")) {
+                    selectTab(R.id.integratedCheck);
+                }
+            }
+        }
+    };
+
     /**
      * 检查所有必填字段
      *
-     * 使用字符串来定位目前的
+     * 使用字符串来定位缺失的位置
      */
     private String checkAllFields() {
         String currentField;
@@ -309,8 +305,8 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
                 accidentCheckLayout, integratedCheckLayout, true, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
             @Override
             public void onFinished(List<PhotoEntity> photoEntities) {
-                // 找出所有需要删除的文件
-                filesDelete = new ArrayList<String>();
+//                // 找出所有需要删除的文件
+//                filesDelete = new ArrayList<String>();
 
 //                for(PhotoEntity photoEntity : photoEntities) {
 //                    // 不需要判断文件名
@@ -416,7 +412,7 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
             @Override
             public void onFailed(String result) {
                 Toast.makeText(CarCheckActivity.this, result, Toast.LENGTH_SHORT).show();
-                transactionNotesCommited = false;
+                transactionNotesCommitted = false;
             }
         });
 
@@ -426,9 +422,9 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
                 switch (message.what) {
                     // 交易备注提交成功
                     case 0:
-                        if(!transactionNotesCommited) {
+                        if(!transactionNotesCommitted) {
                             commitDataTask.execute(jsonObject);
-                            transactionNotesCommited = true;
+                            transactionNotesCommitted = true;
                         }
 
                         break;
@@ -531,8 +527,6 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
         String title = tabMap.get(layoutId);
         navigateButton.setText(title);
 
-        //setTextView(getWindow().getDecorView(), R.id.currentItem, title);
-
         int length = tabMap.size();
 
         for(int i = 0; i < length; i++) {
@@ -560,7 +554,7 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
         showNaviMenu(false);
 
         if(!modify) {
-            // 每切换一次大标签，自动保存
+            // 每切换一次大标签，自动保存，修改时不保存
             generateJsonString(false);
             autoSaveData();
         }
@@ -630,7 +624,7 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
      * 生成最终的JSON串
      * @param b
      */
-    private void generateJsonString(boolean b) {
+    private boolean generateJsonString(boolean b) {
         try {
             jsonObject = new JSONObject();
             JSONObject features = basicInfoLayout.generateJSONObject();
@@ -644,8 +638,11 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
             jsonObject.put("checkUserName", MainActivity.userInfo.getName());
             jsonObject.put("checkCooperatorId", integratedCheckLayout.getCooperatorId());
             jsonObject.put("checkCooperatorName", integratedCheckLayout.getCooperatorName());
+
+            return true;
         } catch (JSONException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -697,8 +694,6 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
                     }));
                 }
             }
-
-
 
             // 如果有照片节点，则更新照片list
             if(jsonObject.has("photos")) {
@@ -760,7 +755,6 @@ public class CarCheckActivity extends Activity /*implements View.OnTouchListener
         photoEntities.addAll(enginePhotos);
         photoEntities.addAll(agreementPhotos);
     }
-
 
     /**
      * 对PhotoEntity中，根据不同的group，做不同的处理

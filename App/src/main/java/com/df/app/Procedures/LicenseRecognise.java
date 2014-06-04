@@ -31,7 +31,7 @@ import java.util.StringTokenizer;
  * Created by 岩 on 14-4-21.
  */
 public class LicenseRecognise {
-    public static int nMainID;
+    public static int nMainID = 6;
     private Context context;
     private boolean isCatchPreview;
     private int WIDTH;

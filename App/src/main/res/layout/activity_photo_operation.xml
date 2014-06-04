@@ -78,6 +78,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/camera"/>
+            android:src="@drawable/camera_list"/>
     </LinearLayout>
 </RelativeLayout>

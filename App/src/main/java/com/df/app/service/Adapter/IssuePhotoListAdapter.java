@@ -27,7 +27,6 @@ import com.df.app.entries.Issue;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.AsyncTask.DownloadImageTask;
-import com.df.app.service.PhotoOperationActivity;
 import com.df.app.service.customCamera.BitmapUtil;
 import com.df.app.service.customCamera.IPhotoProcessListener;
 import com.df.app.service.customCamera.PhotoProcessManager;
@@ -126,7 +125,7 @@ public class IssuePhotoListAdapter extends BaseAdapter implements IPhotoProcessL
             ImageView photo = (ImageView)view.findViewById(R.id.issuePhoto);
 
             if(photoEntity.getFileName() == null || photoEntity.getFileName().equals("")) {
-                final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera);
+                final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera_list);
                 photo.setImageBitmap(bitmap);
             } else {
                 // 如果图片名称中有http，则表示是来自网络的图片
@@ -226,13 +225,6 @@ public class IssuePhotoListAdapter extends BaseAdapter implements IPhotoProcessL
      * 点击缩略图时，显示对应的图片
      * @param fileName
      */
-    // TODO 要改！！！！！！！！！！！！！！！
-    private void showPhoto(String fileName) {
-        Intent intent = new Intent(context, PhotoOperationActivity.class);
-        intent.putExtra("fileName", fileName);
-        context.startActivity(intent);
-    }
-
     private void showPhoto(final String name, String fileName) {
         PhotoProcessManager.getInstance().registPhotoProcessListener(this);
 

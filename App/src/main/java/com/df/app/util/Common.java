@@ -142,7 +142,7 @@ public class Common {
             {R.id.rearPowerSeats_spinner,   R.id.rearPowerSeats_spinner,    R.array.existornot},
             {R.id.ahc_spinner,              R.id.ahc_spinner,               R.array.existornot},
             {R.id.parkAssist_spinner,       R.id.parkAssist_spinner,        R.array.existornot},
-            {R.id.clapboard_spinner,        0,                              R.array.existornot}
+            {R.id.clapboard_spinner,        R.id.clapboard_spinner,         R.array.existornot}
     };
 
     // 绘图类型代码

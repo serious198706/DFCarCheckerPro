@@ -10,7 +10,7 @@
         android:layout_height="150dp"
         android:background="#EEE"
         android:padding="2dp"
-        android:src="@drawable/camera"/>
+        android:src="@drawable/camera_list"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -48,7 +48,7 @@
             android:layout_width="40dp"
             android:layout_height="30dp"
             android:layout_alignParentEnd="true"
-            android:background="@drawable/camera1"
+            android:background="@drawable/camera_list"
             android:visibility="invisible"/>
         <Button android:id="@+id/delete"
                 android:layout_width="40dp"

@@ -38,6 +38,14 @@
             android:imeActionId="@+id/login"
             android:imeOptions="actionGo"/>
 
+        <CheckBox android:id="@+id/rememberUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="390dp"
+            android:layout_marginTop="25dp"
+            android:text="    记住用户名"
+            android:button="@drawable/checkbox_button"/>
+
         <Button android:id="@+id/sign_in_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

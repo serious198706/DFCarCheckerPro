@@ -1,7 +1,9 @@
 package com.df.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -41,6 +44,14 @@ public class LoginActivity extends Activity {
 
         // 配置输入框
         mUserNameView = (EditText) findViewById(R.id.username);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("userName", Context.MODE_PRIVATE);
+        if(sharedPreferences != null) {
+            if(sharedPreferences.contains("username")) {
+                mUserNameView.setText(sharedPreferences.getString("username", ""));
+                ((CheckBox)findViewById(R.id.rememberUserName)).setChecked(true);
+            }
+        }
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -150,6 +161,9 @@ public class LoginActivity extends Activity {
                         if(userJsonObject.has("PlateType"))
                             intent.putExtra("PlateType", userJsonObject.getString("PlateType"));
                         mLoginTask = null;
+
+                        rememberUserName(((CheckBox)findViewById(R.id.rememberUserName)).isChecked());
+
                         startActivity(intent);
                         finish();
                     } catch (JSONException e) {
@@ -171,4 +185,23 @@ public class LoginActivity extends Activity {
         }
     }
 
+    private void rememberUserName(boolean remember) {
+        if(remember) {
+            SharedPreferences sharedPreferences = getSharedPreferences("userName", Context.MODE_PRIVATE);
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.putString("username", mUserNameView.getText().toString());
+
+            editor.commit();
+        } else {
+            SharedPreferences sharedPreferences = getSharedPreferences("userName", Context.MODE_PRIVATE);
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            editor.remove("username");
+
+            editor.commit();
+        }
+    }
 }

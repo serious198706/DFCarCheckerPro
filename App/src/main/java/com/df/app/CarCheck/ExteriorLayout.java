@@ -129,11 +129,7 @@ public class ExteriorLayout extends LinearLayout {
         scrollView.setListener(new MyScrollView.ScrollViewListener() {
             @Override
             public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldx, int oldy) {
-                if (scrollView.getScrollY() > 5) {
-                    showShadow(true);
-                } else {
-                    showShadow(false);
-                }
+                showShadow(scrollView.getScrollY() > 5);
             }
         });
 
@@ -254,10 +250,14 @@ public class ExteriorLayout extends LinearLayout {
 
         int count = array.length;
 
-        for(int i = 0; i < count / 2; i++) {
+        for(int i = 0; i < (count % 2 == 0 ? count / 2 : count / 2 + 1); i++) {
             TableRow row = new TableRow(view.getContext());
 
             for(int j = 0; j < 2; j++) {
+                if(i * 2 + j >= count) {
+                    break;
+                }
+
                 CheckBox checkBox = new CheckBox(view.getContext());
                 checkBox.setText(array[i * 2 + j]);
                 checkBox.setTextSize(20f);
@@ -435,10 +435,7 @@ public class ExteriorLayout extends LinearLayout {
         exterior.put("comment", getEditViewText(rootView, R.id.exterior_comment_edit));
         exterior.put("glass", getEditViewText(rootView, R.id.glass_edit));
         exterior.put("screw", getEditViewText(rootView, R.id.screw_edit));
-        //exterior.put("broken", getEditViewText(rootView, R.id.broken_edit));
-
-        CheckBox checkBox = (CheckBox)findViewById(R.id.needRepair);
-        exterior.put("needRepair", checkBox.isChecked() ? "是" : "否");
+        exterior.put("needRepair", ((CheckBox)findViewById(R.id.needRepair)).isChecked() ? "是" : "否");
 
         return exterior;
     }
@@ -454,8 +451,7 @@ public class ExteriorLayout extends LinearLayout {
         setEditViewText(rootView, R.id.screw_edit, exterior.get("screw") == JSONObject.NULL ? "" : exterior.getString("screw"));
         screwResult = exterior.getString("screw");
 
-        CheckBox checkBox = (CheckBox)findViewById(R.id.needRepair);
-        checkBox.setChecked(exterior.getString("needRepair").equals("是"));
+        ((CheckBox)findViewById(R.id.needRepair)).setChecked(exterior.getString("needRepair").equals("是"));
     }
 
     public void fillInData(JSONObject exterior, JSONObject photo) throws JSONException {
@@ -478,23 +474,6 @@ public class ExteriorLayout extends LinearLayout {
             if(sketchIndex >= PhotoLayout.photoIndex) {
                 PhotoLayout.photoIndex = sketchIndex + 1;
             }
-
-//            String sketchUrl = exSketch.getString("photo");
-//            downloadImageTask = new DownloadImageTask(Common.getPICTURE_ADDRESS() + sketchUrl, new DownloadImageTask.OnDownloadFinished() {
-//                @Override
-//                public void onFinish(Bitmap bitmap) {
-//                    showView(rootView, R.id.exProgressBar, false);
-//                    exteriorPaintPreviewView.init(bitmap, posEntities);
-//                    exteriorPaintPreviewView.setAlpha(1.0f);
-//                    exteriorPaintPreviewView.invalidate();
-//                }
-//
-//                @Override
-//                public void onFailed() {
-//
-//                }
-//            });
-//            downloadImageTask.execute();
         }
     }
 
@@ -521,7 +500,7 @@ public class ExteriorLayout extends LinearLayout {
         return getNameFromFigure(figure);
     }
 
-    private static String getNameFromFigure(int figure) {
+    private String getNameFromFigure(int figure) {
         // 默认为三厢四门图
         String name = "r3d4";
 

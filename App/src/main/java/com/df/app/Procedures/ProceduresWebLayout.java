@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.util.Common;
+import com.df.app.util.Helper;
 
 /**
  * Created by 岩 on 14-1-13.
@@ -29,6 +31,7 @@ public class ProceduresWebLayout extends LinearLayout {
     private View rootView;
     private WebView proceduresWeb;
     private ProgressBar pb;
+    private String url;
 
     public ProceduresWebLayout(Context context) {
         super(context);
@@ -73,7 +76,6 @@ public class ProceduresWebLayout extends LinearLayout {
         return val.intValue();
     }
 
-
     public void onBackPressed() {
 
     }
@@ -103,7 +105,7 @@ public class ProceduresWebLayout extends LinearLayout {
      * @param modelId 车型id
      */
     public void updateUi(String vin, String plateNumber, String licenseModel, String vehicleType, String useCharacter, String engineSerial, String seriesId, String modelId) {
-        String url =  Common.getPROCEDURES_ADDRESS() + "Function/CarDetection2/Default.aspx?";
+        url =  Common.getPROCEDURES_ADDRESS() + "Function/CarDetection2/Default.aspx?";
 
         url += "userId=" + MainActivity.userInfo.getId();
         url += "&";
@@ -132,8 +134,20 @@ public class ProceduresWebLayout extends LinearLayout {
         proceduresWeb = (WebView)findViewById(R.id.proceduresWeb);
         proceduresWeb.loadUrl(url);
         proceduresWeb.setWebViewClient(new WebViewClient() {
+            @Override
             public void onPageFinished(WebView view, String url) {
                 showContent(true);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (!Helper.checkInternetConnection(rootView.getContext())) {
+                    Toast.makeText(rootView.getContext(), "No Internet!", Toast.LENGTH_SHORT).show();
+                    return false;
+                } else {
+                    view.loadUrl(url);
+                    return true;
+                }
             }
         });
         proceduresWeb.setWebChromeClient(new WebChromeClient());

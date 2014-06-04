@@ -2,7 +2,6 @@ package com.df.app.carCheck;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -15,9 +14,9 @@ import com.df.app.R;
 import com.df.app.entries.Issue;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.entries.PosEntity;
+import com.df.app.service.Adapter.MyViewPagerAdapter;
 import com.df.app.util.Common;
 import com.df.app.util.MyOnClick;
-import com.df.app.service.Adapter.MyViewPagerAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;

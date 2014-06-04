@@ -35,6 +35,7 @@ public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
     private ProgressDialog progressDialog;
     private OnGetDetailFinished mCallback;
     private int carId;
+    private JSONObject resultObject;
 
     public GetCarDetailTask(Context context, int carId, OnGetDetailFinished listener) {
         this.context = context;
@@ -67,14 +68,36 @@ public class GetCarDetailTask extends AsyncTask<Void, Void, Boolean> {
 
                 read.close();
 
-                // 直接设置成功信息
-                soapService = new SoapService();
-                soapService.setResultMessage(result);
+                // 获取一次详细信息，以更新手续信息（防止手续信息修改后本地未更新）
+                JSONObject jsonObject = new JSONObject();
 
-                success = true;
+                jsonObject.put("CarId", carId);
+                jsonObject.put("UserId", MainActivity.userInfo.getId());
+                jsonObject.put("Key", MainActivity.userInfo.getKey());
+
+                soapService = new SoapService();
+                soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.GET_CAR_DETAIL);
+
+                success = soapService.communicateWithServer(jsonObject.toString());
+
+                // 如果成功，更新手续信息
+                if(success) {
+                    JSONObject temp = new JSONObject(soapService.getResultMessage());
+                    JSONObject features = temp.getJSONObject("features");
+                    JSONObject procedures = features.getJSONObject("procedures");
+
+                    resultObject = new JSONObject(result);
+                    JSONObject newFeatures = resultObject.getJSONObject("features");
+                    newFeatures.put("procedures", procedures);
+
+                    resultObject.put("features", newFeatures);
+                    soapService.setResultMessage(resultObject.toString());
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }

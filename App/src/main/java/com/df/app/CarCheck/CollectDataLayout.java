@@ -52,6 +52,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.df.app.util.Helper.findAllViews;
 import static com.df.app.util.Helper.getEditViewText;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
@@ -65,13 +66,12 @@ import static com.df.app.util.Helper.showView;
  * 数据采集模块
  */
 public class CollectDataLayout extends LinearLayout {
-    public static boolean hasRequestCmd;
-    public static String requestCmd;
     private View rootView;
     private OnGetIssueData mCallback;
 
     private boolean isOpen; // 是否打开设备
 
+    // 设备类型
     private int currentDeviceType = Common.DF3000;
 
     private Button startButton;
@@ -79,11 +79,14 @@ public class CollectDataLayout extends LinearLayout {
     private Button getIssueButton;
 
     private ImageView carImg;
+    private ImageView collapseBar;
 
     MyScrollView scrollView;
 
     // 是否已经采集数据
     private boolean dataCollected = false;
+    public static boolean hasRequestCmd;
+    public static String requestCmd;
 
     // 是否已连接的标志符
     private boolean isConnected;
@@ -183,8 +186,8 @@ public class CollectDataLayout extends LinearLayout {
     private static UsbSerialDriver sDriver = null;
 
     // 与设备进行交互的服务
-    private DF3000Service DF3000Service = null;
-    private DF5000Service DF5000Service = null;
+    private DF3000Service mDF3000Service = null;
+    private DF5000Service mDF5000Service = null;
 
     // 选择设备的界面
     private Device3000ListDialog df3000Dialog;
@@ -192,24 +195,7 @@ public class CollectDataLayout extends LinearLayout {
 
     // 连接上的设备，包含设备的所有信息
     private static BluetoothDevice device;
-    private ImageView collapseBar;
     private String deviceSerial = "";
-
-
-//    private int[] enhanceIdMap = {
-//            R.id.M1_edit,
-//            R.id.D1_edit,
-//            R.id.D2_edit,
-//            R.id.M3_edit,
-//            R.id.M5_edit,
-//            R.id.F1_edit,
-//            R.id.M2_edit,
-//            R.id.L1_edit,
-//            R.id.L2_edit,
-//            R.id.M4_edit,
-//            R.id.H1_edit,
-//            R.id.J1_edit
-//    };
 
     public CollectDataLayout(Context context, OnGetIssueData listener) {
         super(context);
@@ -270,11 +256,11 @@ public class CollectDataLayout extends LinearLayout {
 
                             // 根据设备地址连接设备
                             device = mBluetoothAdapter.getRemoteDevice(address);
-                            if(DF5000Service == null) {
-                                DF5000Service = new DF5000Service(getContext(), df5000Handler);
+                            if(mDF5000Service == null) {
+                                mDF5000Service = new DF5000Service(getContext(), df5000Handler);
                             }
 
-                            DF5000Service.connect(device);
+                            mDF5000Service.connect(device);
                         }
                     });
                     df5000Dialog.show();
@@ -467,14 +453,15 @@ public class CollectDataLayout extends LinearLayout {
     /**
      * 填入测试数据
      */
-    private void fillInDummyData() {
+    private void  fillInDummyData() {
         for(final int[] n : overIdMap.keySet()) {
-            int randomNum1 = 100 + (int)(Math.random() * 300);
-            int randomNum2 = 100 + (int)(Math.random() * 300);
-            int randomNum3 = 100 + (int)(Math.random() * 300);
+            String data = "";
+            for(int i = 0; i < 9; i++) {
+                int randomNum = 100 + (int)(Math.random() * 300);
+                data += randomNum + ",";
+            }
 
-            String data = Integer.toString(randomNum1) + "," + Integer.toString(randomNum2) + "," +
-                    Integer.toString(randomNum3);
+            data = data.substring(0, data.length() - 1);
 
             EditText editText = (EditText) rootView.findViewById(n[0]);
             editText.addTextChangedListener(new TextWatcher() {
@@ -601,7 +588,7 @@ public class CollectDataLayout extends LinearLayout {
     Runnable df3000Runnable = new Runnable() {
         @Override
         public void run() {
-            isOpen = DF3000Service.connection();
+            isOpen = mDF3000Service.connection();
 
             // 当接收到数据时的回调方法
             com.df.app.service.DF3000Service.OnReceiveData onReceiveData = new DF3000Service.OnReceiveData() {
@@ -649,7 +636,7 @@ public class CollectDataLayout extends LinearLayout {
             if(!isOpen) {
                 return;
             } else {
-                DF3000Service.startCollect(onReceiveData);
+                mDF3000Service.startCollect(onReceiveData);
             }
         }
     };
@@ -662,7 +649,7 @@ public class CollectDataLayout extends LinearLayout {
             Log.d(Common.TAG, "连接设备失败！！");
         }
         else {
-            DF3000Service = com.df.app.service.DF3000Service.instance(sDriver);
+            mDF3000Service = com.df.app.service.DF3000Service.instance(sDriver);
 
             Thread collectThread = new Thread(df3000Runnable);
             collectThread.start();
@@ -673,7 +660,7 @@ public class CollectDataLayout extends LinearLayout {
      * 初始化BluetoothService
      */
     public void setupBluetoothService() {
-        DF5000Service = new DF5000Service(rootView.getContext(), df5000Handler);
+        mDF5000Service = new DF5000Service(rootView.getContext(), df5000Handler);
         df5000Dialog.doDiscovery();
         df5000Dialog.showPairedDevices();
     }
@@ -722,7 +709,7 @@ public class CollectDataLayout extends LinearLayout {
                             startButton.setText("开始获取数据");
                             isConnected = false;
                             // 关闭蓝牙
-                            DF5000Service.stop();
+                            mDF5000Service.stop();
                             break;
                     }
                     break;
@@ -831,7 +818,7 @@ public class CollectDataLayout extends LinearLayout {
      */
     private void collectData(String message) {
         // 是否已经连接到设备
-        if (DF5000Service.getState() != com.df.app.service.DF5000Service.STATE_CONNECTED) {
+        if (mDF5000Service.getState() != com.df.app.service.DF5000Service.STATE_CONNECTED) {
             Toast.makeText(rootView.getContext(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -841,7 +828,7 @@ public class CollectDataLayout extends LinearLayout {
             byte[] send = Helper.hexStr2Bytes(message);
 
             // 向设备写数据
-            DF5000Service.write(send);
+            mDF5000Service.write(send);
         }
     }
 
@@ -857,7 +844,7 @@ public class CollectDataLayout extends LinearLayout {
         for(int[] n : overIdMap.keySet()) {
             String value;
 
-            if(materialArray[n[2]].equals("Fe")) {
+            if(materialArray[n[2]].equals("Fe") && currentDeviceType == Common.DF5000) {
                 value = handleFeValues(getEditViewText(rootView, n[0]));
             } else {
                 value = getEditViewText(rootView, n[0]);
@@ -866,6 +853,8 @@ public class CollectDataLayout extends LinearLayout {
             overlap.put(overIdMap.get(n), value);
         }
 
+        // 保存时，要将每个部位的材料保存
+        // 提交时，每个部位的材料不需要加入
         if(!b) {
             String materialString = "";
 
@@ -896,6 +885,7 @@ public class CollectDataLayout extends LinearLayout {
         // 选项
         JSONObject options = new JSONObject();
 
+        // 无法测量的部位（打勾的部位）
         String cannotMeasure = "";
         for(int[] n : overIdMap.keySet()) {
             CheckBox checkBox = (CheckBox)findViewById(n[1]);
@@ -911,19 +901,9 @@ public class CollectDataLayout extends LinearLayout {
 
         options.put("cannotMeasure", cannotMeasure);
 
-        String hide = "";
-        CheckBox ra = (CheckBox)findViewById(R.id.a);
-        if(ra.isChecked()) {
-            hide += "LA,RA";
-        }
-
-        CheckBox rb = (CheckBox)findViewById(R.id.b);
-        if(rb.isChecked()) {
-            if(hide.equals(""))
-                hide += "LB,RB";
-            else
-                hide += ",LB,RB";
-        }
+        // 隐藏的部位
+        String hide = ((CheckBox)findViewById(R.id.a)).isChecked() ? "LA,RA" : "";
+        hide += ((CheckBox)findViewById(R.id.b)).isChecked() ? (hide.equals("") ? "" : ",") + "LB,RB" : "" ;
 
         options.put("hide", hide);
 
@@ -1074,16 +1054,10 @@ public class CollectDataLayout extends LinearLayout {
             String hide = options.getString("hide");
 
             // 如果有LA，则置a为checked
-            if(hide.contains("LA")) {
-                CheckBox checkBox = (CheckBox)findViewById(R.id.a);
-                checkBox.setChecked(true);
-            }
+            ((CheckBox)findViewById(R.id.a)).setChecked(hide.contains("LA"));
 
             // 如果有LB，则置b为checked
-            if(hide.contains("LB")) {
-                CheckBox checkBox = (CheckBox)findViewById(R.id.b);
-                checkBox.setChecked(true);
-            }
+            ((CheckBox)findViewById(R.id.b)).setChecked(hide.contains("LB"));
 
             // 如果其他字段都有,但是LB与RB没有，则置bn为checked
             if(!getEditViewText(rootView, R.id.L_edit).equals("") &&
@@ -1093,11 +1067,9 @@ public class CollectDataLayout extends LinearLayout {
                 checkBox.setChecked(true);
             }
 
-            if(device.getString("type").equals("DF3000")) {
-                setSpinnerSelectionWithIndex(rootView, R.id.device_type_spinner, 0);
-            } else {
-                setSpinnerSelectionWithIndex(rootView, R.id.device_type_spinner, 1);
-            }
+            setSpinnerSelectionWithIndex(rootView, R.id.device_type_spinner,
+                    device.getString("type").equals("DF3000") ? 0 : 1);
+            currentDeviceType = device.getString("type").equals("DF3000") ? Common.DF3000 : Common.DF5000;
 
             deviceSerial = device.getString("serial");
         } catch(JSONException e) {

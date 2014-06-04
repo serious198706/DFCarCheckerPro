@@ -25,7 +25,6 @@ import com.df.app.entries.Action;
 import com.df.app.entries.ListedPhoto;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.AsyncTask.DownloadImageTask;
-import com.df.app.service.PhotoOperationActivity;
 import com.df.app.service.customCamera.BitmapUtil;
 import com.df.app.service.customCamera.IPhotoProcessListener;
 import com.df.app.service.customCamera.PhotoProcessManager;
@@ -45,6 +44,8 @@ import static com.df.app.util.Helper.setTextView;
 
 /**
  * Created by 岩 on 14-3-13.
+ *
+ * 外观、内饰图片列表
  */
 public class PaintPhotoListAdapter extends BaseAdapter implements IPhotoProcessListener {
     private ImageLoader imageLoader;
@@ -150,7 +151,7 @@ public class PaintPhotoListAdapter extends BaseAdapter implements IPhotoProcessL
             final PhotoEntity photoEntity = listedPhoto.getPhotoEntity();
 
             if(photoEntity.getFileName() == null || photoEntity.getFileName().equals("")) {
-                final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera);
+                final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera_list);
                 photo.setImageBitmap(bitmap);
             } else {
                 // 如果图片名称中有http，则表示是来自网络的图片

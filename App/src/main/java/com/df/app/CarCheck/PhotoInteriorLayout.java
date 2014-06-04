@@ -245,8 +245,8 @@ public class PhotoInteriorLayout extends LinearLayout implements IPhotoProcessLi
         Helper.handlePhoto(Long.toString(currentTimeMillis) + ".jpg");
 
         if(photoShotCount[currentShotPart] == 0) {
-            PhotoEntity photoEntity = PhotoUtils.generatePhotoEntity(context, currentTimeMillis,
-                    groups[currentShotPart], "interior", Common.interiorPartArray[currentShotPart]);
+            PhotoEntity photoEntity = PhotoUtils.generatePhotoEntity(currentTimeMillis,
+                    groups[currentShotPart], "interior", "standard", Common.interiorPartArray[currentShotPart]);
             
             PhotoInteriorLayout.photoListAdapter.addItem(photoEntity);
             photoShotCount[currentShotPart] = 1;

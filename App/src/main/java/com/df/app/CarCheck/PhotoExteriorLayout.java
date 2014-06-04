@@ -304,8 +304,8 @@ public class PhotoExteriorLayout extends LinearLayout implements IPhotoProcessLi
         Helper.handlePhoto(Long.toString(currentTimeMillis) + ".jpg");
 
         if(photoShotCount[currentShotPart] == 0) {
-            PhotoEntity photoEntity = PhotoUtils.generatePhotoEntity(context, currentTimeMillis,
-                    groups[currentShotPart], "exterior", Common.exteriorPartArray[currentShotPart]);
+            PhotoEntity photoEntity = PhotoUtils.generatePhotoEntity(currentTimeMillis,
+                    groups[currentShotPart], "exterior", "standard", Common.exteriorPartArray[currentShotPart]);
 
             PhotoExteriorLayout.photoListAdapter.addItem(photoEntity);
 

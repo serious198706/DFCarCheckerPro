@@ -118,15 +118,15 @@ public class CarsWaitingListActivity extends Activity {
 
             @Override
             public void onStartOpen(int position, int action, boolean right) {
-                if(lastPos != -1)
-                    swipeListView.closeAnimate(lastPos);
-
+                swipeListView.closeOpenedItems();
                 lastPos = position;
             }
         });
 
         swipeListView.setSwipeMode(SwipeListView.SWIPE_MODE_LEFT);
         swipeListView.setSwipeActionLeft(SwipeListView.SWIPE_ACTION_REVEAL);
+        swipeListView.setLongClickable(false);
+        swipeListView.setSwipeOpenOnLongPress(false);
         swipeListView.setOffsetLeft(620);
         swipeListView.setAnimationTime(300);
         swipeListView.setAdapter(adapter);
@@ -160,8 +160,7 @@ public class CarsWaitingListActivity extends Activity {
                 data.clear();
                 adapter.notifyDataSetChanged();
 
-                if(lastPos != -1)
-                    swipeListView.closeAnimate(lastPos);
+                swipeListView.closeOpenedItems();
 
                 refresh();
             }
@@ -317,7 +316,7 @@ public class CarsWaitingListActivity extends Activity {
                 startNumber = 1;
                 data.clear();
                 adapter.notifyDataSetChanged();
-                swipeListView.closeAnimate(lastPos);
+                swipeListView.closeOpenedItems();
                 refresh();
             }
 

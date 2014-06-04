@@ -241,8 +241,8 @@ public class PhotoProcedureLayout extends LinearLayout implements IPhotoProcessL
         Helper.handlePhoto(Long.toString(currentTimeMillis) + ".jpg");
 
         if(photoShotCount[currentShotPart] == 0) {
-            PhotoEntity photoEntity = PhotoUtils.generatePhotoEntity(context, currentTimeMillis,
-                    groups[currentShotPart], "procedures", Common.proceduresPartArray[currentShotPart]);
+            PhotoEntity photoEntity = PhotoUtils.generatePhotoEntity(currentTimeMillis,
+                    groups[currentShotPart], "procedures", "standard", Common.proceduresPartArray[currentShotPart]);
 
             PhotoProcedureLayout.photoListAdapter.addItem(photoEntity);
 

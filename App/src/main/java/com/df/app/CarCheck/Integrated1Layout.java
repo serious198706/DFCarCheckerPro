@@ -13,17 +13,23 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.df.app.R;
+import com.df.app.util.Helper;
 import com.df.app.util.MyScrollView;
 import com.df.app.util.Common;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.df.app.util.Helper.enableView;
 import static com.df.app.util.Helper.getEditViewText;
+import static com.df.app.util.Helper.getSpinnerSelectedIndex;
 import static com.df.app.util.Helper.getSpinnerSelectedText;
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setSpinnerSelectionWithString;
@@ -57,6 +63,7 @@ public class Integrated1Layout extends LinearLayout{
             R.id.tachometer_spinner,
             R.id.milometer_spinner,
             R.id.audio_spinner,
+            R.id.safebelts_spinner,
             R.id.airBag_spinner,
             R.id.abs_spinner,
             R.id.powerWindows_spinner,
@@ -69,7 +76,8 @@ public class Integrated1Layout extends LinearLayout{
             R.id.softCloseDoors_spinner,
             R.id.rearPowerSeats_spinner,
             R.id.ahc_spinner,
-            R.id.parkAssist_spinner};
+            R.id.parkAssist_spinner,
+            R.id.clapboard_spinner};
 
     public static boolean finished = false;
     private static JSONObject function;
@@ -177,7 +185,7 @@ public class Integrated1Layout extends LinearLayout{
 
     /**
      * 根据车辆的驱动方式，显示不同的变速箱问题
-     * @param gearType
+     * @param gearType MT/AT/...
      */
     public static void setGearType(String gearType) {
         Integrated1Layout.gearType = gearType;
@@ -209,8 +217,6 @@ public class Integrated1Layout extends LinearLayout{
      * @param selectedItemText 选择的文字
      */
     public static void updateAssociatedSpinners(int spinnerId, String selectedItemText) {
-        System.out.println("------ updateAssociatedSpinners ------");
-
         int interSpinnerId;
 
         // 在map里查找对应的spinnerID
@@ -236,10 +242,13 @@ public class Integrated1Layout extends LinearLayout{
             }
         }
 
-        if(count >= 13 && function != null) {
+        // 当全部更新完成后，再将所有的内容设置一遍
+        if(count >= 14 && function != null) {
             try {
                 fillFunctionWithJSONObject(function);
                 count = -1;
+
+                enableView(rootView, R.id.airConditioningTemp_edit, getSpinnerSelectedIndex(rootView, R.id.airConditioning_spinner) <= 1);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -306,19 +315,41 @@ public class Integrated1Layout extends LinearLayout{
     }
 
     /**
+     * 生成jsonObject
+     * @param parentView viewGroup
+     * @return JSONObject
+     * @throws JSONException
+     */
+    private JSONObject generateJSONObject(ViewGroup parentView) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+
+        List<View> views = new ArrayList<View>();
+        Helper.findAllViews(parentView, views, Spinner.class);
+
+        for(View view : views) {
+            if(view instanceof Spinner) {
+                String content = getSpinnerSelectedText(rootView, view.getId());
+
+                if(!content.equals("无")) {
+                    jsonObject.put((String)view.getTag(), content);
+                } else {
+                    jsonObject.put((String)view.getTag(), JSONObject.NULL);
+                }
+            }
+        }
+
+        return jsonObject;
+    }
+
+    /**
      * 生成发动机的JSONObject
      * @return
      * @throws JSONException
      */
     public JSONObject generateEngineJSONObject() throws JSONException {
-        JSONObject engine = new JSONObject();
+        TableLayout tableLayout = (TableLayout)findViewById(R.id.engineTable);
 
-        engine.put("started", getSpinnerSelectedText(rootView, R.id.engineStarted_spinner));
-        engine.put("steady", getSpinnerSelectedText(rootView, R.id.engineSteady_spinner));
-        engine.put("strangeNoices", getSpinnerSelectedText(rootView, R.id.engineStrangeNoices_spinner));
-        engine.put("exhaustColor", getSpinnerSelectedText(rootView, R.id.engineExhaustColor_spinner));
-        engine.put("fluid", getSpinnerSelectedText(rootView, R.id.engineFluid_spinner));
-        engine.put("pipe", getSpinnerSelectedText(rootView, R.id.pipe_spinner));
+        JSONObject engine = generateJSONObject(tableLayout);
 
         return engine;
     }
@@ -329,12 +360,14 @@ public class Integrated1Layout extends LinearLayout{
      * @throws JSONException
      */
     public void fillEngineWithJSONObject(JSONObject engine)  throws JSONException {
-        setSpinnerSelectionWithString(rootView, R.id.engineStarted_spinner, engine.getString("started"));
-        setSpinnerSelectionWithString(rootView, R.id.engineSteady_spinner, engine.getString("steady"));
-        setSpinnerSelectionWithString(rootView,R.id.engineStrangeNoices_spinner, engine.getString("strangeNoices"));
-        setSpinnerSelectionWithString(rootView,R.id.engineExhaustColor_spinner, engine.getString("exhaustColor"));
-        setSpinnerSelectionWithString(rootView, R.id.engineFluid_spinner, engine.getString("fluid"));
-        setSpinnerSelectionWithString(rootView, R.id.pipe_spinner, engine.getString("pipe"));
+        TableLayout tableLayout = (TableLayout)rootView.findViewById(R.id.engineTable);
+
+        List<View> views = new ArrayList<View>();
+        Helper.findAllViews(tableLayout, views, Spinner.class);
+
+        for(View view : views) {
+            setSpinnerSelectionWithString(rootView, view.getId(), engine.getString((String)view.getTag()));
+        }
     }
 
     /**
@@ -383,32 +416,10 @@ public class Integrated1Layout extends LinearLayout{
      * @throws JSONException
      */
     public JSONObject generateFunctionJSONObject() throws JSONException {
-        JSONObject function = new JSONObject();
+        TableLayout tableLayout = (TableLayout)findViewById(R.id.functionTable);
 
-        function.put("engineFault", getSpinnerSelectedText(rootView, R.id.engineFault_spinner));
-        function.put("oilPressure", getSpinnerSelectedText(rootView, R.id.oilPressure_spinner));
-        function.put("parkingBrake", getSpinnerSelectedText(rootView, R.id.parkingBrake_spinner));
-        function.put("waterTemp", getSpinnerSelectedText(rootView, R.id.waterTemp_spinner));
-        function.put("tachometer", getSpinnerSelectedText(rootView, R.id.tachometer_spinner));
-        function.put("milometer", getSpinnerSelectedText(rootView, R.id.milometer_spinner));
-        function.put("audio", getSpinnerSelectedText(rootView, R.id.audio_spinner));
+        JSONObject function = generateJSONObject(tableLayout);
 
-        if(!getSpinnerSelectedText(rootView, R.id.abs_spinner).equals("无"))
-            function.put("abs", getSpinnerSelectedText(rootView, R.id.abs_spinner));
-        else
-            function.put("abs", JSONObject.NULL);
-        if(!getSpinnerSelectedText(rootView, R.id.airBag_spinner).equals("无"))
-            function.put("airBag", getSpinnerSelectedText(rootView, R.id.airBag_spinner));
-        else
-            function.put("airBag", JSONObject.NULL);
-        if(!getSpinnerSelectedText(rootView, R.id.powerWindows_spinner).equals("无"))
-            function.put("powerWindows", getSpinnerSelectedText(rootView, R.id.powerWindows_spinner));
-        else
-            function.put("powerWindows", JSONObject.NULL);
-        if(!getSpinnerSelectedText(rootView, R.id.sunroof_spinner).equals("无"))
-            function.put("sunroof", getSpinnerSelectedText(rootView, R.id.sunroof_spinner));
-        else
-            function.put("sunroof", JSONObject.NULL);
         if(!getSpinnerSelectedText(rootView, R.id.airConditioning_spinner).equals("无")) {
             function.put("airConditioning", getSpinnerSelectedText(rootView, R.id.airConditioning_spinner));
             function.put("airConditioningTemp", getEditViewText(rootView, R.id.airConditioningTemp_edit));
@@ -416,38 +427,6 @@ public class Integrated1Layout extends LinearLayout{
             function.put("airConditioning", JSONObject.NULL);
             function.put("airConditioningTemp", JSONObject.NULL);
         }
-        if(!getSpinnerSelectedText(rootView, R.id.powerSeats_spinner).equals("无"))
-            function.put("powerSeats", getSpinnerSelectedText(rootView, R.id.powerSeats_spinner));
-        else
-            function.put("powerSeats", JSONObject.NULL);
-        if(!getSpinnerSelectedText(rootView, R.id.powerMirror_spinner).equals("无"))
-            function.put("powerMirror", getSpinnerSelectedText(rootView, R.id.powerMirror_spinner));
-        else
-            function.put("powerMirror", JSONObject.NULL);
-        if(!getSpinnerSelectedText(rootView, R.id.reversingRadar_spinner).equals("无"))
-            function.put("reversingRadar", getSpinnerSelectedText(rootView, R.id.reversingRadar_spinner));
-        else
-            function.put("reversingRadar", JSONObject.NULL);
-        if(!getSpinnerSelectedText(rootView, R.id.reversingCamera_spinner).equals("无"))
-            function.put("reversingCamera", getSpinnerSelectedText(rootView, R.id.reversingCamera_spinner));
-        else
-            function.put("reversingCamera", JSONObject.NULL);
-        if(!getSpinnerSelectedText(rootView, R.id.softCloseDoors_spinner).equals("无"))
-            function.put("softCloseDoors", getSpinnerSelectedText(rootView, R.id.softCloseDoors_spinner));
-        else
-            function.put("softCloseDoors", JSONObject.NULL);
-        if(!getSpinnerSelectedText(rootView, R.id.rearPowerSeats_spinner).equals("无"))
-            function.put("rearPowerSeats", getSpinnerSelectedText(rootView, R.id.rearPowerSeats_spinner));
-        else
-            function.put("rearPowerSeats", JSONObject.NULL);
-        if(!getSpinnerSelectedText(rootView, R.id.ahc_spinner).equals("无"))
-            function.put("ahc", getSpinnerSelectedText(rootView, R.id.ahc_spinner));
-        else
-            function.put("ahc", JSONObject.NULL);
-        if(!getSpinnerSelectedText(rootView, R.id.parkAssist_spinner).equals("无"))
-            function.put("parkAssist", getSpinnerSelectedText(rootView, R.id.parkAssist_spinner));
-        else
-            function.put("parkAssist", JSONObject.NULL);
 
         return function;
     }
@@ -458,20 +437,16 @@ public class Integrated1Layout extends LinearLayout{
      * @throws JSONException
      */
     private static void fillFunctionWithJSONObject(JSONObject function) throws JSONException{
-        System.out.println("------ fillFunctionWithJSONObject ------");
+        TableLayout tableLayout = (TableLayout)rootView.findViewById(R.id.functionTable);
 
-        setSpinnerSelectionWithString(rootView, R.id.engineFault_spinner, function.getString("engineFault"));
-        setSpinnerSelectionWithString(rootView, R.id.oilPressure_spinner, function.getString("oilPressure"));
-        setSpinnerSelectionWithString(rootView, R.id.parkingBrake_spinner, function.getString("parkingBrake"));
-        setSpinnerSelectionWithString(rootView, R.id.waterTemp_spinner, function.getString("waterTemp"));
-        setSpinnerSelectionWithString(rootView, R.id.tachometer_spinner, function.getString("tachometer"));
-        setSpinnerSelectionWithString(rootView, R.id.milometer_spinner, function.getString("milometer"));
-        setSpinnerSelectionWithString(rootView, R.id.audio_spinner, function.getString("audio"));
+        List<View> views = new ArrayList<View>();
+        Helper.findAllViews(tableLayout, views, Spinner.class);
 
-        setSpinner(function, "abs", R.id.abs_spinner);
-        setSpinner(function, "airBag", R.id.airBag_spinner);
-        setSpinner(function, "powerWindows", R.id.powerWindows_spinner);
-        setSpinner(function, "sunroof", R.id.sunroof_spinner);
+        for(View view : views) {
+            if(view instanceof Spinner) {
+                setSpinner(function, (String)view.getTag(), view.getId());
+            }
+        }
 
         if(function.has("airConditioning")) {
             if(function.getString("airConditioning") == null) {
@@ -483,16 +458,19 @@ public class Integrated1Layout extends LinearLayout{
             }
         }
 
-        setSpinner(function, "powerSeats", R.id.powerSeats_spinner);
-        setSpinner(function, "powerMirror", R.id.powerMirror_spinner);
-        setSpinner(function, "reversingRadar", R.id.reversingRadar_spinner);
-        setSpinner(function, "reversingCamera", R.id.reversingCamera_spinner);
-        setSpinner(function, "softCloseDoors", R.id.softCloseDoors_spinner);
-        setSpinner(function, "rearPowerSeats", R.id.rearPowerSeats_spinner);
-        setSpinner(function, "ahc", R.id.ahc_spinner);
-        setSpinner(function, "parkAssist", R.id.parkAssist_spinner);
+        // 把必显8项设置一下
+        for(int i = 0; i < 8; i++) {
+            enableSpinner(spinnerIds[i + 12], true);
+        }
     }
 
+    /**
+     * 根据具体情况，设置spinner
+     * @param jsonObject
+     * @param temp
+     * @param id
+     * @throws JSONException
+     */
     private static void setSpinner(JSONObject jsonObject, String temp, int id) throws JSONException{
         if(jsonObject.has(temp)) {
             if(jsonObject.isNull(temp))

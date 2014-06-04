@@ -216,25 +216,9 @@ public class CarSettings {
             return "2";
         else if(airbag.equals("4"))
             return "3";
-        else if(airbag.equals("5"))
-            return "4";
-        else if(airbag.equals("6"))
-            return "5";
-        else if(airbag.equals("7"))
-            return "6";
-        else if(airbag.equals("8"))
-            return "7";
-        else if(airbag.equals("9"))
-            return "8";
-        else if(airbag.equals("10"))
-            return "9";
-        else if(airbag.equals("11"))
-            return "10";
-        else if(airbag.equals("12"))
-            return "11";
         else if(airbag.equals("无"))
-            return "13";
-        else return "12";
+            return "5";
+        else return "4";
     }
 
     // ABS

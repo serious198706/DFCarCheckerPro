@@ -39,6 +39,7 @@
         <item>行李箱盖</item>
         <item>右后门</item>
         <item>右前门</item>
+        <item>水箱框架</item>
     </string-array>
 
     <string name="ex_broken">表面有破损的零部件：</string>

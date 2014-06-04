@@ -1,5 +1,6 @@
 package com.df.app.carCheck;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -26,6 +27,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -46,10 +48,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.df.app.util.Helper.findAllViews;
 import static com.df.app.util.Helper.generatePhotoThumbnail;
 import static com.df.app.util.Helper.getBitmapHeight;
 import static com.df.app.util.Helper.getBitmapWidth;
@@ -203,7 +207,7 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
             public void onClick(View view) {
                 currentTire = "leftFront";
                 currentTireName = "左前轮";
-                takePhotoForTires(currentTireName);
+                takePhotoForTires();
                 //System.out.println(v.getResources().getResourceName(v.getId()));
             }
         });
@@ -215,7 +219,7 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
             public void onClick(View view) {
                 currentTire = "rightFront";
                 currentTireName = "右前轮";
-                takePhotoForTires(currentTireName);
+                takePhotoForTires();
             }
         });
         buttons[1] = rightFrontButton;
@@ -226,7 +230,7 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
             public void onClick(View view) {
                 currentTire = "leftRear";
                 currentTireName = "左后轮";
-                takePhotoForTires(currentTireName);
+                takePhotoForTires();
             }
         });
         buttons[2] = leftRearButton;
@@ -237,7 +241,7 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
             public void onClick(View view) {
                 currentTire = "rightRear";
                 currentTireName = "右后轮";
-                takePhotoForTires(currentTireName);
+                takePhotoForTires();
             }
         });
         buttons[3] = rightRearButton;
@@ -248,7 +252,7 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
             public void onClick(View view) {
                 currentTire = "spare";
                 currentTireName = "备胎轮";
-                takePhotoForTires(currentTireName);
+                takePhotoForTires();
             }
         });
         buttons[4] = spareButton;
@@ -304,9 +308,8 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
 
     /**
      * 对某一轮胎进行拍照
-     * @param tire
      */
-    private void takePhotoForTires(final String tire) {
+    private void takePhotoForTires() {
         PhotoProcessManager.getInstance().registPhotoProcessListener(this);
 
         // 如果此轮胎已经有照片，则询问用户是否要替换
@@ -420,14 +423,6 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
     }
 
     /**
-     * 打开相机拍照
-     */
-    private void startCamera(String tire, String fileName) {
-        Toast.makeText(rootView.getContext(), "正在拍摄" + tire, Toast.LENGTH_LONG).show();
-        Helper.startCamera(rootView.getContext(), fileName, Common.PHOTO_FOR_TIRES);
-    }
-
-    /**
      * 生成photoEntity
      */
     private PhotoEntity generatePhotoEntity() {
@@ -437,28 +432,6 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
         photoEntity.setName(currentTireName);
 
         // 如果是修改模式，则Action就是modify（每个轮胎照只有一张）
-        if(CarCheckActivity.isModify()) {
-            switch (PaintType.paintType(currentTire)) {
-                case leftFront:
-                    photoEntity.setIndex(leftFrontIndex);
-                    break;
-                case rightFront:
-                    photoEntity.setIndex(rightFrontIndex);
-                    break;
-                case leftRear:
-                    photoEntity.setIndex(leftRearIndex);
-                    break;
-                case rightRear:
-                    photoEntity.setIndex(rightRearIndex);
-                    break;
-                case spare:
-                    photoEntity.setIndex(spareIndex);
-                    break;
-            }
-        } else {
-            photoEntity.setIndex(PhotoLayout.photoIndex++);
-        }
-
         photoEntity.setModifyAction(Action.MODIFY);
 
         // 组织JsonString
@@ -471,18 +444,23 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
             switch(PaintType.paintType(currentTire)) {
                 case leftFront:
                     button = leftFrontButton;
+                    photoEntity.setIndex(CarCheckActivity.isModify() ? leftFrontIndex : PhotoLayout.photoIndex++);
                     break;
                 case rightFront:
                     button = rightFrontButton;
+                    photoEntity.setIndex(CarCheckActivity.isModify() ? rightFrontIndex : PhotoLayout.photoIndex++);
                     break;
                 case leftRear:
                     button = leftRearButton;
+                    photoEntity.setIndex(CarCheckActivity.isModify() ? leftRearIndex : PhotoLayout.photoIndex++);
                     break;
                 case rightRear:
                     button = rightRearButton;
+                    photoEntity.setIndex(CarCheckActivity.isModify() ? rightRearIndex : PhotoLayout.photoIndex++);
                     break;
                 case spare:
                     button = spareButton;
+                    photoEntity.setIndex(CarCheckActivity.isModify() ? spareIndex : PhotoLayout.photoIndex++);
                     break;
                 default:
                     button = null;
@@ -569,17 +547,15 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
     public JSONObject generateFloodedJSONObject() throws JSONException {
         JSONObject flooded = new JSONObject();
 
-        flooded.put("cigarLighter", getSpinnerSelectedText(rootView, R.id.cigarLighter_spinner));
-        flooded.put("seatBelts", getSpinnerSelectedText(rootView, R.id.seatBelts_spinner));
-        flooded.put("ashtray", getSpinnerSelectedText(rootView, R.id.ashtray_spinner));
-        flooded.put("rearSeats", getSpinnerSelectedText(rootView, R.id.rearSeats_spinner));
-        flooded.put("spareTireGroove", getSpinnerSelectedText(rootView, R.id.spareTireGroove_spinner));
-        flooded.put("trunkCorner", getSpinnerSelectedText(rootView, R.id.trunkCorner_spinner));
-        flooded.put("audio", getSpinnerSelectedText(rootView, R.id.audioHorn_spinner));
-        flooded.put("seatSlide", getSpinnerSelectedText(rootView, R.id.seatSlide_spinner));
-        flooded.put("ecu", getSpinnerSelectedText(rootView, R.id.ecu_spinner));
-        flooded.put("roof", getSpinnerSelectedText(rootView, R.id.roof_spinner));
-        flooded.put("discBox", getSpinnerSelectedText(rootView, R.id.discBox_spinner));
+        TableLayout tableLayout = (TableLayout)findViewById(R.id.floodTable);
+        List<View> views = new ArrayList<View>();
+        findAllViews(tableLayout, views, Spinner.class);
+
+        for(View view : views) {
+            if(view instanceof Spinner) {
+                flooded.put((String)view.getTag(), getSpinnerSelectedText(rootView, view.getId()));
+            }
+        }
 
         return flooded;
     }
@@ -588,17 +564,16 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
      * 修改或者半路检测时，填上已经保存的内容
      */
     private void fillFloodWithJSONObject(JSONObject flooded) throws JSONException {
-        setSpinnerSelectionWithString(rootView, R.id.cigarLighter_spinner, flooded.getString("cigarLighter"));
-        setSpinnerSelectionWithString(rootView, R.id.seatBelts_spinner, flooded.getString("seatBelts"));
-        setSpinnerSelectionWithString(rootView, R.id.ashtray_spinner, flooded.getString("ashtray"));
-        setSpinnerSelectionWithString(rootView, R.id.rearSeats_spinner, flooded.getString("rearSeats"));
-        setSpinnerSelectionWithString(rootView, R.id.spareTireGroove_spinner, flooded.getString("spareTireGroove"));
-        setSpinnerSelectionWithString(rootView, R.id.trunkCorner_spinner, flooded.getString("trunkCorner"));
-        setSpinnerSelectionWithString(rootView, R.id.audioHorn_spinner, flooded.getString("audio"));
-        setSpinnerSelectionWithString(rootView, R.id.seatSlide_spinner, flooded.getString("seatSlide"));
-        setSpinnerSelectionWithString(rootView, R.id.ecu_spinner, flooded.getString("ecu"));
-        setSpinnerSelectionWithString(rootView, R.id.roof_spinner, flooded.getString("roof"));
-        setSpinnerSelectionWithString(rootView, R.id.discBox_spinner, flooded.getString("discBox"));
+        TableLayout tableLayout = (TableLayout)findViewById(R.id.floodTable);
+
+        List<View> views = new ArrayList<View>();
+        findAllViews(tableLayout, views, Spinner.class);
+
+        for(View view : views) {
+            if(view instanceof Spinner) {
+                setSpinnerSelectionWithString(rootView, view.getId(), flooded.getString((String)view.getTag()));
+            }
+        }
     }
 
     /**

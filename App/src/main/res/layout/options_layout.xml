@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#FFF">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView android:id="@+id/brandText"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:textSize="24sp"
-                  android:textStyle="bold"
-                  android:text="1123"
-                  android:layout_centerInParent="true"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:text="1123"
+            android:layout_centerInParent="true"/>
         <Button android:id="@+id/loadSettingsButton"
             android:layout_width="32dp"
             android:layout_height="32dp"
@@ -28,12 +28,12 @@
     </RelativeLayout>
 
     <ScrollView android:id="@+id/root"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
         <TableLayout android:id="@+id/bi_content_table"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <TableRow >
                 <TextView
                     android:layout_height="wrap_content"
@@ -71,6 +71,7 @@
                     android:entries="@array/driveType_item"
                     android:popupBackground="@drawable/spinner_dropdown"
                     android:background="@drawable/spinner_selector"
+                    android:tag="driveType"
                     android:dropDownVerticalOffset="2dp"/>
             </TableRow>
             <TableRow android:layout_marginTop="15dp">
@@ -101,6 +102,7 @@
                     android:entries="@array/transmission_item"
                     android:popupBackground="@drawable/spinner_bg"
                     android:background="@drawable/spinner_selector"
+                    android:tag="transmission"
                     android:visibility="gone"/>
                 <TextView
                     android:layout_height="wrap_content"
@@ -119,7 +121,8 @@
                     android:layout_weight="1"
                     android:entries="@array/airbag_number"
                     android:popupBackground="@drawable/spinner_dropdown"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="airBags"/>
             </TableRow>
 
             <TableRow android:layout_marginTop="15dp">
@@ -140,7 +143,8 @@
                     android:layout_marginRight="8dp"
                     android:entries="@array/existornot"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="abs"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
@@ -158,7 +162,8 @@
                     android:layout_weight="1"
                     android:entries="@array/existornot"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="powerSteering"/>
             </TableRow>
 
             <TableRow android:layout_marginTop="15dp">
@@ -179,7 +184,8 @@
                     android:layout_marginRight="8dp"
                     android:entries="@array/powerWindows_items"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="powerWindows"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
@@ -197,7 +203,8 @@
                     android:layout_weight="1"
                     android:entries="@array/sunroof_items"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="sunroof"/>
             </TableRow>
 
             <TableRow android:layout_marginTop="15dp">
@@ -218,7 +225,8 @@
                     android:layout_marginRight="8dp"
                     android:entries="@array/airConditioning_items"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="airConditioning"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
@@ -236,7 +244,8 @@
                     android:layout_weight="1"
                     android:entries="@array/leatherSeats_items"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="leatherSeats"/>
             </TableRow>
 
             <TableRow android:layout_marginTop="15dp">
@@ -257,7 +266,8 @@
                     android:layout_marginRight="8dp"
                     android:entries="@array/powerSeats_items"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="powerSeats"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
@@ -275,7 +285,8 @@
                     android:layout_weight="1"
                     android:entries="@array/powerMirror_items"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="powerMirror"/>
             </TableRow>
 
             <TableRow android:layout_marginTop="15dp">
@@ -296,7 +307,8 @@
                     android:layout_marginRight="8dp"
                     android:entries="@array/reversingRadar_items"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="reversingRadar"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
@@ -314,7 +326,8 @@
                     android:layout_weight="1"
                     android:entries="@array/reversingCamera_items"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="reversingCamera"/>
             </TableRow>
 
             <TableRow android:layout_marginTop="15dp">
@@ -335,7 +348,8 @@
                     android:layout_marginRight="8dp"
                     android:entries="@array/ccs_items"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="ccs"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
@@ -353,7 +367,8 @@
                     android:layout_weight="1"
                     android:entries="@array/existornot"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="softCloseDoors"/>
             </TableRow>
 
             <TableRow android:layout_marginTop="15dp">
@@ -374,7 +389,8 @@
                     android:layout_marginRight="8dp"
                     android:entries="@array/existornot"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="rearPowerSeats"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
@@ -392,7 +408,8 @@
                     android:layout_weight="1"
                     android:entries="@array/existornot"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="ahc"/>
             </TableRow>
 
             <TableRow android:layout_marginTop="15dp">
@@ -413,11 +430,12 @@
                     android:layout_marginRight="8dp"
                     android:entries="@array/existornot"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="parkAssist"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
-                    android:text="@string/clapBoard"
+                    android:text="@string/clapboard"
                     android:layout_weight="1"
                     android:layout_marginLeft="8dp"
                     android:textSize="22sp"
@@ -431,7 +449,8 @@
                     android:layout_weight="1"
                     android:entries="@array/existornot"
                     android:popupBackground="@drawable/spinner_bg"
-                    android:background="@drawable/spinner_selector"/>
+                    android:background="@drawable/spinner_selector"
+                    android:tag="clapboard"/>
             </TableRow>
         </TableLayout>
     </ScrollView>

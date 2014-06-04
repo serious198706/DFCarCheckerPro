@@ -186,7 +186,7 @@ public class PaintActivity extends Activity {
 
         slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         slidingUpPanelLayout.setShadowDrawable(getResources().getDrawable(R.drawable.above_shadow));
-        slidingUpPanelLayout.setAnchorPoint(0.3f);
+        slidingUpPanelLayout.setAnchorPoint(0.1f);
         slidingUpPanelLayout.setDragView(imageView);
         slidingUpPanelLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override

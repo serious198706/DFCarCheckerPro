@@ -77,7 +77,7 @@ public class CarReportActivity extends Activity implements ViewPager.OnPageChang
                     Integer.toString(options.getInt("modelId")));
             optionsLayout = new OptionsLayout(this, options);
             accidentResultLayout = new AccidentLayout(this, accident, photos);
-            integratedLayout = new IntegratedLayout(this, conditions, photos);
+            integratedLayout = new IntegratedLayout(this, conditions, options, photos);
             photoLayout = new PhotoLayout(this, photos);
             otherLayout = new OtherLayout(this, procedures);
 

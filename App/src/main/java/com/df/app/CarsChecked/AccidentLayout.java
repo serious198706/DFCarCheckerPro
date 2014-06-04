@@ -120,24 +120,59 @@ public class AccidentLayout extends LinearLayout {
 
         JSONArray jsonArray = issues.getJSONArray("issueItem");
 
-        TableLayout tableLayout = (TableLayout)findViewById(R.id.issueResultTable);
+        JSONArray newJsonArray = new JSONArray();
 
-        int length = jsonArray.length();
-
-        for(int i = 0; i < length; i++) {
+        // 找出所有需要显示的条目
+        for(int i = 0; i < jsonArray.length(); i++) {
             JSONObject issueObject = jsonArray.getJSONObject(i);
 
             if(issueObject.get("summary") != JSONObject.NULL) {
-                TableRow tableRow = new TableRow(rootView.getContext());
-                TextView textView = new TextView(rootView.getContext());
-                textView.setText(issueObject.getString("summary"));
-                textView.setTextSize(20);
-                textView.setTextColor(Color.rgb(0x55, 0x55, 0x55));
-                tableRow.addView(textView);
-                tableLayout.addView(tableRow);
+                newJsonArray.put(issueObject);
             }
         }
+
+        TableLayout tableLayout = (TableLayout)findViewById(R.id.issueResultTable);
+
+        int length = newJsonArray.length();
+
+        // 一行两条
+        int count = length % 2 == 0 ? length / 2 : length / 2 + 1;
+
+        for(int i = 0; i < count; i++) {
+            TableRow tableRow = new TableRow(rootView.getContext());
+
+            for(int j = 0; j < 2 && (i * 2 + j < length); j++) {
+                JSONObject issueObject = newJsonArray.getJSONObject(i * 2 + j);
+
+                if(issueObject != null && issueObject.get("summary") != JSONObject.NULL) {
+                    TextView textView = new TextView(rootView.getContext());
+                    textView.setText("●" + issueObject.getString("summary"));
+                    textView.setTextSize(20);
+                    textView.setTextColor(Color.rgb(0x55, 0x55, 0x55));
+                    textView.setPadding(8, 0, 8, 0);
+                    tableRow.addView(textView);
+                }
+            }
+
+            tableLayout.addView(tableRow);
+        }
+//
+//        for(int i = 0; i < length; i++) {
+//            JSONObject issueObject = jsonArray.getJSONObject(i);
+//
+//            if(issueObject.get("summary") != JSONObject.NULL) {
+//                TableRow tableRow = new TableRow(rootView.getContext());
+//                TextView textView = new TextView(rootView.getContext());
+//                textView.setText(issueObject.getString("summary"));
+//                textView.setTextSize(20);
+//                textView.setTextColor(Color.rgb(0x55, 0x55, 0x55));
+//                tableRow.addView(textView);
+//                tableLayout.addView(tableRow);
+//            }
+//        }
     }
+
+
 
     private void updateImages(JSONObject photo) throws JSONException {
         JSONObject accident = photo.getJSONObject("accident");

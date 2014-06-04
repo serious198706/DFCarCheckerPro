@@ -20,7 +20,8 @@
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="invisible">
             <RadioButton android:id="@+id/type1Radio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -53,7 +54,7 @@
             android:layout_width="400dp"
             android:layout_height="300dp"
             android:scaleType="center"
-            android:src="@drawable/license_camera"
+            android:src="@drawable/license_bg"
             android:background="#FFF"
             android:layout_centerInParent="true"/>
     </RelativeLayout>

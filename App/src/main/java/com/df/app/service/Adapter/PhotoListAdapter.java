@@ -1,17 +1,12 @@
 package com.df.app.service.Adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,13 +15,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.df.app.carCheck.CarCheckActivity;
-import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.carCheck.PhotoLayout;
 import com.df.app.R;
 import com.df.app.entries.Action;
 import com.df.app.entries.PhotoEntity;
 import com.df.app.service.AsyncTask.DownloadImageTask;
-import com.df.app.service.PhotoOperationActivity;
 import com.df.app.service.customCamera.BitmapUtil;
 import com.df.app.service.customCamera.IPhotoProcessListener;
 import com.df.app.service.customCamera.PhotoProcessManager;
@@ -40,9 +33,6 @@ import com.df.app.util.lazyLoadHelper.ImageLoader;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -157,7 +147,7 @@ public class PhotoListAdapter extends BaseAdapter implements IPhotoProcessListen
 
         // 设置照片
         if(photoEntity.getThumbFileName() == null || photoEntity.getThumbFileName().equals("")) {
-            final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera);
+            final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.camera_list);
             viewHolder.photo.setImageBitmap(bitmap);
         } else {
             if(editable) {
@@ -322,10 +312,6 @@ public class PhotoListAdapter extends BaseAdapter implements IPhotoProcessListen
                 context.startActivity(intent);
             }
         }
-
-       // Intent intent = new Intent(context, PhotoOperationActivity.class);
-       // intent.putExtra("fileName", fileName);
-       // context.startActivity(intent);
     }
 
 

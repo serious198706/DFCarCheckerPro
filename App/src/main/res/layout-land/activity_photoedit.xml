@@ -15,18 +15,18 @@
 
         <Button
             android:id="@+id/btn_save"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_alignParentRight="true"
-            android:layout_margin="8dp"
+            android:layout_marginRight="5dp"
             android:background="@drawable/done"/>
 
         <Button
             android:id="@+id/btn_back"
-             android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_margin="8dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_alignParentLeft="true"
+            android:layout_marginLeft="5dp"
             android:background="@drawable/back" />
 
         <TextView
@@ -35,7 +35,9 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="编辑照片"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
     </RelativeLayout>
 
     <LinearLayout
@@ -112,9 +114,6 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:id="@+id/ll_panel">
-
-            
-
         </LinearLayout>
 
         <LinearLayout android:layout_marginLeft="15dp"

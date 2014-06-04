@@ -27,10 +27,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import static com.df.app.util.Helper.setEditViewText;
 import static com.df.app.util.Helper.setSpinnerSelectionWithString;
 import static com.df.app.util.Helper.setTextView;
+import static com.df.app.util.Helper.showView;
 
 /**
  * Created by 岩 on 14-3-14.
@@ -46,9 +48,9 @@ public class IntegratedLayout extends LinearLayout {
     private DownloadImageTask downloadImageTask;
     private DownloadImageTask downloadImage1Task;
 
-    public IntegratedLayout(Context context, JSONObject conditions, JSONObject photo) {
+    public IntegratedLayout(Context context, JSONObject conditions, JSONObject options, JSONObject photo) {
         super(context);
-        init(context, conditions, photo);
+        init(context, conditions, options, photo);
     }
 
     public IntegratedLayout(Context context, AttributeSet attrs) {
@@ -60,7 +62,7 @@ public class IntegratedLayout extends LinearLayout {
     }
 
 
-    private void init(Context context, JSONObject conditions, JSONObject photo) {
+    private void init(Context context, JSONObject conditions, JSONObject options, JSONObject photo) {
         rootView = LayoutInflater.from(context).inflate(R.layout.car_report_integrated_layout, this);
 
         Bitmap bitmap = BitmapFactory.decodeFile(Common.utilDirectory + "r3d4");
@@ -99,14 +101,15 @@ public class IntegratedLayout extends LinearLayout {
         });
 
         try {
-            fillInData(conditions);
+            fillInData(conditions, options);
             updateImage(photo);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private void fillInData(JSONObject conditions) throws JSONException {
+    private void fillInData(JSONObject conditions, JSONObject options) throws JSONException {
+        // 外观检查
         JSONObject exterior = conditions.getJSONObject("exterior");
 
         setTextView(rootView, R.id.smooth_text, exterior.getString("smooth"));
@@ -115,11 +118,13 @@ public class IntegratedLayout extends LinearLayout {
         setTextView(rootView, R.id.needRepair_text, exterior.getString("needRepair"));
         setTextView(rootView, R.id.exterior_comment_text, exterior.get("comment") == JSONObject.NULL ? "无" : exterior.getString("comment"));
 
+        // 内饰检查
         JSONObject interior = conditions.getJSONObject("interior");
 
         setTextView(rootView, R.id.sealingStrip_text, interior.getString("sealingStrip"));
         setTextView(rootView, R.id.interior_comment_text, interior.get("comment") == JSONObject.NULL ? "无" : interior.getString("comment"));
 
+        // 轮胎检查
         JSONObject tires = conditions.getJSONObject("tires");
 
         setTextView(rootView, R.id.leftFront_text, tires.get("leftFront") == JSONObject.NULL ? "" : tires.getString("leftFront"));
@@ -127,118 +132,66 @@ public class IntegratedLayout extends LinearLayout {
         setTextView(rootView, R.id.leftRear_text, tires.get("leftRear") == JSONObject.NULL ? "" : tires.getString("leftRear"));
         setTextView(rootView, R.id.rightRear_text, tires.get("rightRear") == JSONObject.NULL ? "" : tires.getString("rightRear"));
         setTextView(rootView, R.id.spare_text, tires.get("spare") == JSONObject.NULL ? "" : tires.getString("spare"));
+
+        showView(rootView, R.id.spareTireRow, !options.getString("spareTire").equals("无"));
+
         setTextView(rootView, R.id.formatMatch_text, tires.get("formatMatch") == JSONObject.NULL ? "" : tires.getString("formatMatch"));
         setTextView(rootView, R.id.patternMatch_text, tires.get("patternMatch") == JSONObject.NULL ? "" : tires.getString("patternMatch"));
 
+        // 发动机检查
         JSONObject engine = conditions.getJSONObject("engine");
 
         setTextView(rootView, R.id.engine_text, engine.get("summaryPro") == JSONObject.NULL ? "正常" : engine.getString("summaryPro"));
 
+        // 变速箱检查
         JSONObject gearbox = conditions.getJSONObject("gearbox");
 
         setTextView(rootView, R.id.gear_text, gearbox.get("summaryPro") == JSONObject.NULL ? "正常" : gearbox.getString("summaryPro"));
 
+        // 功能检查
         JSONObject function = conditions.getJSONObject("function");
 
-        if(function.getString("engineFault").equals("故障")) {
+        String functionResult = "";
+        Iterator keys = function.keys();
 
-        }
-        if(function.getString("oilPressure").equals("故障")) {
+        while(keys.hasNext()) {
+            String key = (String)keys.next();
 
-        }
-        if(function.getString("parkingBrake").equals("故障")) {
-
-        }
-        if(function.getString("waterTemp").equals("故障")) {
-
-        }
-        if(function.getString("tachometer").equals("故障")) {
-
-        }
-        if(function.getString("milometer").equals("故障")) {
-
-        }
-        if(function.getString("audio").equals("故障")) {
-
-        }
-
-        if(function.get("abs") != JSONObject.NULL) {
-            if(function.getString("abs").equals("故障")) {
-
+            if(function.get(key) != JSONObject.NULL && function.getString(key).equals("故障")) {
+                String name = getResources().getString(getResources().getIdentifier(key, "string", getContext().getPackageName()));
+                functionResult += name.substring(0, name.length() - 1) + "故障" + ";";
+            }
+            // 该项在配置信息中有，但是在综合检查中没有，则可以被定性为缺失
+            else if(function.get(key) == JSONObject.NULL && options.has(key) && options.get(key) != JSONObject.NULL){
+                String name = getResources().getString(getResources().getIdentifier(key, "string", getContext().getPackageName()));
+                functionResult += name.substring(0, name.length() - 1) + "缺失" + ";";
             }
         }
 
-        if(function.get("airBag") != JSONObject.NULL) {
-            if(function.getString("airBag").equals("故障")) {
+        if(functionResult.contains("气囊数")) {
+            functionResult.replace("气囊数", "气囊");
+        }
 
+        setTextView(rootView, R.id.function_text, functionResult);
+
+        // 泡水检查
+        JSONObject flooded = conditions.getJSONObject("flooded");
+        keys = flooded.keys();
+
+        setTextView(rootView, R.id.flood_text, "非泡水车");
+
+        while(keys.hasNext()) {
+            String key = (String)keys.next();
+
+            if(flooded.getString(key).equals("否")) {
+                setTextView(rootView, R.id.flood_text, "疑似泡水车");
+                break;
             }
         }
 
-        if(function.get("powerWindows") != JSONObject.NULL) {
-            if(function.getString("powerWindows").equals("故障")) {
-
-            }
-        }
-
-        if(function.get("sunroof") != JSONObject.NULL) {
-            if(function.getString("sunroof").equals("故障")) {
-
-            }
-        }
-
-        if(function.get("airConditioning") != JSONObject.NULL) {
-            if(function.getString("airConditioning").equals("故障")) {
-
-            }
-        }
-
-        if(function.get("powerSeats") != JSONObject.NULL) {
-            if(function.getString("powerSeats").equals("故障")) {
-
-            }
-        }
-
-        if(function.get("powerMirror") != JSONObject.NULL) {
-            if(function.getString("powerMirror").equals("故障")) {
-
-            }
-        }
-
-        if(function.get("reversingRadar") != JSONObject.NULL) {
-            if(function.getString("reversingRadar").equals("故障")) {
-
-            }
-        }
-
-        if(function.get("reversingCamera") != JSONObject.NULL) {
-            if(function.getString("reversingCamera").equals("故障")) {
-
-            }
-        }
-
-        if(function.get("softCloseDoors") != JSONObject.NULL) {
-            if(function.getString("softCloseDoors").equals("故障")) {
-
-            }
-        }
-
-        if(function.get("rearPowerSeats") != JSONObject.NULL) {
-            if(function.getString("rearPowerSeats").equals("故障")) {
-
-            }
-        }
-
-        if(function.get("ahc") != JSONObject.NULL) {
-            if(function.getString("ahc").equals("故障")) {
-
-            }
-        }
-
-        if(function.get("parkAssist") != JSONObject.NULL) {
-            if(function.getString("parkAssist").equals("故障")) {
-
-            }
-        }
+        // 备注
+        setTextView(rootView, R.id.integrated_comment_text,
+                conditions.get("comment") == JSONObject.NULL ? "无" : conditions.getString("comment"));
     }
 
     private void updateImage(JSONObject photo) throws JSONException {

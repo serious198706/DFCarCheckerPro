@@ -201,6 +201,11 @@ public class IssueListAdapter extends BaseAdapter {
                     return;
                 }
 
+                if(issue.getPosEntities().size() == 0) {
+                    Toast.makeText(context, "请绘制缺陷位置！", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // 如果选择了，就保存
                 issue.setSerious(radioButton.getText().toString());
                 issue.setSelect("否");
@@ -323,6 +328,10 @@ public class IssueListAdapter extends BaseAdapter {
         mPictureDialog.show();
     }
 
+    /**
+     * 点击确定按钮后，删除需要删除的图片
+     * @param issue
+     */
     private void reallyDeleteItems(Issue issue) {
         for(int i = issuePhotoListAdapter.getCount() - 1; i >= 0; i--) {
             ListedPhoto listedPhoto = issuePhotoListAdapter.getItem(i);
@@ -371,13 +380,11 @@ public class IssueListAdapter extends BaseAdapter {
             } else {
                 // 更新查勘结果中的图片
                 if(issue.getView().equals("F")) {
-                    AccidentResultLayout.photoEntitiesFront.remove(position);
-                    AccidentResultLayout.posEntitiesFront.remove(position);
+                    removePhotoEntity(AccidentResultLayout.photoEntitiesFront, AccidentResultLayout.posEntitiesFront, position);
                     AccidentResultLayout.framePaintPreviewViewFront.invalidate();
                 }
                 else {
-                    AccidentResultLayout.photoEntitiesRear.remove(position);
-                    AccidentResultLayout.posEntitiesRear.remove(position);
+                    removePhotoEntity(AccidentResultLayout.photoEntitiesRear, AccidentResultLayout.posEntitiesRear, position);
                     AccidentResultLayout.framePaintPreviewViewRear.invalidate();
                 }
 
@@ -396,6 +403,15 @@ public class IssueListAdapter extends BaseAdapter {
         }
     }
 
+    private void removePhotoEntity(List<PhotoEntity> photoEntities, List<PosEntity> posEntities,  int position) {
+        photoEntities.remove(position);
+        posEntities.remove(position);
+    }
+
+    /**
+     * 取消之前的操作
+     * @param issue
+     */
     private void cancelOperations(Issue issue) {
         for(ListedPhoto listedPhoto : issuePhotoListAdapter.getItems()) {
             int position = listedPhoto.getIndex();

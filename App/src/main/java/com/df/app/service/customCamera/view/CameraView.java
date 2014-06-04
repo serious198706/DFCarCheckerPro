@@ -82,12 +82,12 @@ public class CameraView extends RelativeLayout implements
 	public static final int MSG_CAMERA_STOPPREVIEW = 0x0F; //stopreview
 
 	/**
-	 * The facing of the camera is opposite to that of the screen.
+	 * The facing of the camera1 is opposite to that of the screen.
 	 */
 	public static final int CAMERA_FACING_BACK = 0;
 
 	/**
-	 * The facing of the camera is the same as that of the screen.
+	 * The facing of the camera1 is the same as that of the screen.
 	 */
 	public static final int CAMERA_FACING_FRONT = 1;
 	
@@ -214,9 +214,9 @@ public class CameraView extends RelativeLayout implements
 //		mCamera.setPreviewCallback(new PreviewCallback() {
 //
 //			@Override
-//			public void onPreviewFrame(byte[] data, Camera camera) {
+//			public void onPreviewFrame(byte[] data, Camera camera1) {
 //				if(takePicture){
-//					Size size=camera.getParameters().getPreviewSize();
+//					Size size=camera1.getParameters().getPreviewSize();
 //					int rgb[]=new int[size.width*size.height];
 //					decodeYUV(rgb, data, size.width, size.height); //改编码。。。
 //					Bitmap bitmap= Bitmap.createBitmap(rgb, size.width, size.height, Bitmap.Config.ARGB_8888);
@@ -1014,7 +1014,7 @@ Bitmap bitmap = Bitmap.createBitmap(argb8888, camSize.width,
 
 				reCount(); // 清零
 				// if(xRate>.55f || yRate>.55f || zRate>0.65f){
-				if (xRate > .7f || yRate > .7f || zRate > 0.7f) {
+				if (xRate > .9f || yRate > .9f || zRate > 0.9f) {
 					return true;
 				}
 

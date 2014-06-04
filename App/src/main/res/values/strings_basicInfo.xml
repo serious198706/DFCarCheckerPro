@@ -83,14 +83,7 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>12</item>
-        <item>12个以上</item>
+        <item>4个以上</item>
         <item>无</item>
     </string-array>
     <string name="airBagIndicator">气囊灯：</string>
@@ -181,7 +174,9 @@
 
     <string name="parkAssist">自动泊车：</string>
 
-    <string name="clapBoard">隔物板（伸缩帘）：</string>
+    <string name="clapboard">隔物板（伸缩帘）：</string>
+
+    <string name="safebelts">安全带：</string>
 
     <string name="airConditioningTemp">空调出风口温度：</string>
     <string name="degree">℃</string>

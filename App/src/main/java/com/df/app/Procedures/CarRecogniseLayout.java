@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -112,7 +113,7 @@ public class CarRecogniseLayout extends LinearLayout {
     private boolean cut = true;
 
     private LicenseRecognise licenseRecognise;
-    public static int nMainID;
+    public static int nMainID = 6;
 
     private AuthService.authBinder authBinder;
     public static int ReturnAuthority = -1;
@@ -206,7 +207,6 @@ public class CarRecogniseLayout extends LinearLayout {
         mCarSettings = InputProceduresLayout.mCarSettings;
 
         licenseRecognise = new LicenseRecognise(context);
-        nMainID = Helper.readMainID();
 
         licenseImageView = (ImageView)findViewById(R.id.licenseImage);
         licenseImageView.setOnClickListener(new OnClickListener() {
@@ -299,10 +299,12 @@ public class CarRecogniseLayout extends LinearLayout {
                 return null;
             }
         };
+
+
         EditText vin_edit = (EditText)findViewById(R.id.vin_edit);
         vin_edit.setFilters(new InputFilter[]{ alphaNumericFilter, new InputFilter.AllCaps(), new InputFilter.LengthFilter(17)});
 
-        EditText plateNumberEdit = (EditText)findViewById(R.id.plateNumber_edit);
+       EditText plateNumberEdit = (EditText)findViewById(R.id.plateNumber_edit);
         plateNumberEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(10)});
 
         EditText licenseModelEdit = (EditText)findViewById(R.id.licenseModel_edit);
@@ -312,8 +314,6 @@ public class CarRecogniseLayout extends LinearLayout {
         engineSerialEdit.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(17)});
 
         vehicleModel = MainActivity.vehicleModel;
-
-
     }
 
     private void deleteLastLicensePhoto() {
@@ -425,6 +425,10 @@ public class CarRecogniseLayout extends LinearLayout {
      * 检查VIN并获取车辆配置
      */
     private void checkVinAndGetCarSettings() {
+        InputMethodManager imm = (InputMethodManager)rootView.getContext().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(findViewById(R.id.vin_edit).getWindowToken(), 0);
+
         final String vinString = getEditViewText(rootView, R.id.vin_edit);
 
         // 是否为空

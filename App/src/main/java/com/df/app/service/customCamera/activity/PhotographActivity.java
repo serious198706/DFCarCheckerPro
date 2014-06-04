@@ -50,7 +50,7 @@ public class PhotographActivity extends Activity implements OnClickListener {
 	public static final int TRANSPARENCY_50=0x80;
 	public static final int TRANSPARENCY_75=0xBF;  //Opacity Transparency
 	
-	public static final float EXPOSURE_RATES[]={1,0.5f,0,-0.5f,-1};
+	public static final float EXPOSURE_RATES[]={0.8f,0.4f,0,-0.4f,-0.8f};
 	public static final int COLORS[]={COLOR_WHITE,COLOR_RED};
 	public static final int TRANSPARENCYS[]={TRANSPARENCY_25,TRANSPARENCY_50,TRANSPARENCY_75};	
 	
@@ -76,7 +76,7 @@ public class PhotographActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		CameraView.resetCameraId(); //恢复id?
+		//CameraView.resetCameraId(); //恢复id?
 		setContentView(R.layout.activity_photograph);
 		
 		boolean isOk=initData();
@@ -329,6 +329,7 @@ public class PhotographActivity extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
 		photoProcessManager.noticeFinish(); //通知结果
+        CameraView.resetCameraId();
 	}
 	
 	@Override
@@ -387,8 +388,14 @@ public class PhotographActivity extends Activity implements OnClickListener {
 	 * 隐藏所有的子菜单
 	 */
 	private void hiddenAllSubMenu(){
-		findViewById(R.id.ll_exposure).setVisibility(View.GONE);
-		findViewById(R.id.ll_guide).setVisibility(View.GONE);
+        // 如果菜单已经隐藏，则点击屏幕开始拍照
+        if(findViewById(R.id.ll_exposure).getVisibility() == View.GONE && clickable) {
+            clickable=false;
+            cHandler.sendEmptyMessage(CameraView.MSG_TAKE_PICTURE); //快照
+        } else {
+            findViewById(R.id.ll_exposure).setVisibility(View.GONE);
+            findViewById(R.id.ll_guide).setVisibility(View.GONE);
+        }
 	}
 	
 //	/**
@@ -441,6 +448,7 @@ public class PhotographActivity extends Activity implements OnClickListener {
 		Intent intent=new Intent(this,PhotoEditActivity.class);
 		intent.putExtra(PhotoEditActivity.EXTRA_FROM, PhotoEditActivity.FROM_PHOTOGRAPH);
 		startActivity(intent);
+        CameraView.resetCameraId();
 		finish();
 		
 	}

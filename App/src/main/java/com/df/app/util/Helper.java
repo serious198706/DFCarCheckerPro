@@ -10,11 +10,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -536,4 +538,56 @@ public class Helper {
         return mainID;
     }
 
+
+    public static boolean checkInternetConnection(Context context) {
+
+        ConnectivityManager con_manager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (con_manager.getActiveNetworkInfo() != null
+                && con_manager.getActiveNetworkInfo().isAvailable()
+                && con_manager.getActiveNetworkInfo().isConnected()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 递归查找一个view下的所有子节点
+     * @param parent ViewGroup
+     * @param views list，所有的子节点全放在里边
+     * @return
+     */
+    public static void findAllViews(ViewGroup parent, List<View> views, Class type) {
+        for(int i = 0; i < parent.getChildCount(); i++)
+        {
+            View child = parent.getChildAt(i);
+            if(child instanceof ViewGroup && child.getClass() != type)
+            {
+                findAllViews((ViewGroup)child, views, type);
+            }
+            else if(child != null)
+            {
+                if(child.getClass() == type)
+                {
+                    views.add(child);
+                }
+            }
+        }
+    }
+
+    /**
+     * 根据photoEntity生成JSONObject
+     */
+    public static JSONObject generateJSONObject(PhotoEntity photoEntity) throws JSONException{
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("UserId", MainActivity.userInfo.getId());
+        jsonObject.put("Key", MainActivity.userInfo.getKey());
+        jsonObject.put("Action", photoEntity.getModifyAction());
+        jsonObject.put("Index", photoEntity.getIndex());
+
+        return jsonObject;
+    }
 }

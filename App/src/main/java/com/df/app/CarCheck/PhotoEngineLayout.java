@@ -313,8 +313,8 @@ public class PhotoEngineLayout extends LinearLayout implements IPhotoProcessList
         Helper.handlePhoto(currentTimeMillis + ".jpg");
 
         if(photoShotCount[currentShotPart] == 0) {
-            PhotoEntity photoEntity = PhotoUtils.generatePhotoEntity(context, currentTimeMillis,
-                    groups[currentShotPart], "engineRoom", Common.enginePartArray[currentShotPart]);
+            PhotoEntity photoEntity = PhotoUtils.generatePhotoEntity(currentTimeMillis,
+                    groups[currentShotPart], "engineRoom", "standard", Common.enginePartArray[currentShotPart]);
 
             PhotoEngineLayout.photoListAdapter.addItem(photoEntity);
 
