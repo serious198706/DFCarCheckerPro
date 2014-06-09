@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="seriallib">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/App/lib/seriallib.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Library/libs/seriallib.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

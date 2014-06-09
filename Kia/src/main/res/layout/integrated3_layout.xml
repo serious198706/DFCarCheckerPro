@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#FFF">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textColor="#555"
+            android:textStyle="bold"
+            android:gravity="right"
+            android:text="主检人员："/>
+
+        <TextView android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textSize="22sp"
+            android:textColor="#555"
+            android:textStyle="bold"
+            android:gravity="left"
+            android:text="aaaa"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:textColor="#555"
+            android:textStyle="bold"
+            android:gravity="right"
+            android:text="从检人员："/>
+
+        <!--<EditText android:id="@+id/cooperatorName_edit"-->
+                  <!--android:layout_width="wrap_content"-->
+                  <!--android:layout_height="40dp"-->
+                  <!--android:layout_marginLeft="10dp"-->
+                  <!--android:background="@drawable/spinner_selector"-->
+                  <!--android:editable="false"-->
+                  <!--android:focusable="true"/>-->
+
+        <EditText
+            android:id="@+id/cooperatorName_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_marginLeft="10dp"
+            android:minHeight="40dp"
+            android:editable="false"
+            android:focusableInTouchMode="false"
+            android:background="@drawable/edittext_border"
+            android:paddingLeft="10dp"/>
+
+        <Spinner android:id="@+id/cooperatorName_spinner"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="10dp"
+                  android:popupBackground="@drawable/spinner_bg"
+                  android:background="@drawable/spinner_selector"
+                  android:visibility="gone"/>
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="即将添加"
+            android:textSize="100sp"
+            android:textColor="#777"
+            android:shadowColor="#444"
+            android:shadowDx="3"
+            android:shadowDy="3"
+            android:shadowRadius="5"/>
+    </RelativeLayout>
+</LinearLayout>

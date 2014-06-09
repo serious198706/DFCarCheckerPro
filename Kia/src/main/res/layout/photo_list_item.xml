@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="170dp">
+    <ImageView android:id="@+id/photo"
+        android:layout_margin="10dp"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:background="#EEE"
+        android:padding="2dp"
+        android:src="@drawable/camera_list"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="15dp">
+
+        <TextView android:id="@+id/photo_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="外观组 - 前45度"
+            android:textSize="22sp"
+            android:textColor="#555"
+            android:textStyle="bold"
+            android:singleLine="false"/>
+        <TextView android:id="@+id/comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/photo_name"
+            android:layout_marginTop="10dp"
+            android:text="备注："
+            android:textSize="22sp"
+            android:textColor="#555"
+            android:textStyle="bold"/>
+        <EditText android:id="@+id/photo_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/comment"
+            android:layout_marginTop="10dp"
+            android:inputType="textMultiLine"
+            android:minHeight="95dp"
+            android:background="@drawable/edittext_border"
+            android:paddingLeft="10dp"
+            android:descendantFocusability="beforeDescendants"/>
+        <Button android:id="@+id/reTake"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/camera_list"
+            android:visibility="invisible"/>
+        <Button android:id="@+id/delete"
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/delete"/>
+    </RelativeLayout>
+</LinearLayout>

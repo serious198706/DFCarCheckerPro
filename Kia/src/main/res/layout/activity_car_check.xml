@@ -1,0 +1,91 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <RelativeLayout android:id="@+id/naviBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="#C74810"/>
+    </RelativeLayout>
+
+    <com.df.kia.carCheck.BasicInfoLayout
+        android:id="@+id/basicInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/naviBar"/>
+
+    <com.df.kia.carCheck.AccidentCheckLayout
+        android:id="@+id/accidentCheck"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/naviBar"
+        android:visibility="gone"/>
+
+    <com.df.kia.carCheck.IntegratedCheckLayout
+        android:id="@+id/integratedCheck"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/naviBar"
+        android:visibility="gone"/>
+
+    <com.df.kia.carCheck.PhotoLayout
+        android:id="@+id/photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/naviBar"
+        android:visibility="gone"/>
+
+    <com.df.kia.carCheck.TransactionNotesLayout
+        android:id="@+id/transactionNotes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/naviBar"
+        android:visibility="gone"/>
+
+    <RelativeLayout android:id="@+id/tabButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+        <Button android:id="@+id/buttonHome"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/back"/>
+
+        <Button android:id="@+id/buttonNavi"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_margin="8dp"
+                android:drawableRight="@drawable/more"
+                android:textColor="#FFF"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_toRightOf="@id/buttonHome"/>
+
+        <Button android:id="@+id/buttonCommit"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/upload"
+                android:layout_alignParentRight="true"/>
+
+        <Button android:id="@+id/buttonSave"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/save"
+                android:layout_toLeftOf="@id/buttonCommit"/>
+
+        <Button android:id="@+id/com"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/buttonSave"
+                android:text="提交"
+                android:textColor="#fff"/>
+    </RelativeLayout>
+</RelativeLayout>
+
+

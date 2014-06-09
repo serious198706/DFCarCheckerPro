@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#FFF"
+              android:id="@+id/root">
+
+    <com.df.library.util.SlidingUpPanelLayout
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sliding_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:collapsedHeight="50dp"
+        sothree:shadowHeight="4dp"
+        sothree:dragView="@+id/name">
+
+        <!-- paint area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <RelativeLayout android:id="@+id/naviBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                <ImageView android:id="@+id/banner"
+                           android:layout_width="match_parent"
+                           android:layout_height="52dp"
+                           android:background="#C74810"/>
+
+                <TextView android:id="@+id/currentItem"
+                          android:layout_width="wrap_content"
+                          android:layout_height="36dp"
+                          android:layout_marginLeft="10dp"
+                          android:layout_marginTop="6dp"
+                          android:textColor="#FFF"
+                          android:textSize="28sp"/>
+
+                <Button android:id="@+id/done"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_margin="8dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/done"/>
+                <Button android:id="@+id/cancel"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_margin="8dp"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/cancel"
+                        android:layout_toLeftOf="@id/done"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/paintArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <com.df.kia.paintView.ExteriorPaintView
+                android:id="@+id/exterior_paint_view"
+                android:layout_width="500dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+                <com.df.kia.paintView.InteriorPaintView
+                android:id="@+id/interior_paint_view"
+                android:layout_width="500dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+                <LinearLayout android:id="@+id/paintType"
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
+                              android:orientation="horizontal"
+                              android:layout_gravity="center"
+                              android:layout_marginTop="10dp">
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone">
+                    <include layout="@layout/paint_menu"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- drag area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="850dp"
+            android:background="#eee"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:background="#999">
+
+                <ImageView android:id="@+id/expandImage"
+                           android:layout_width="match_parent"
+                           android:layout_height="50dp"
+                           android:src="@drawable/expander_close_holo_light"/>
+
+            </LinearLayout>
+
+            <TextView android:id="@+id/listTitle"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:textSize="28sp"
+                android:textColor="#555"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <ListView android:id="@+id/paintPhotoList"
+                      android:layout_width="match_parent"
+                      android:layout_height="0dp"
+                      android:layout_weight="1"
+                      android:layout_marginTop="8dp"/>
+        </LinearLayout>
+
+    </com.df.library.util.SlidingUpPanelLayout>
+
+
+
+</RelativeLayout>

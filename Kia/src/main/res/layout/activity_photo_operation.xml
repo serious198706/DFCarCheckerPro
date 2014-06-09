@@ -1,0 +1,83 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <RelativeLayout android:id="@+id/naviBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+        <ImageView android:id="@+id/banner"
+                   android:layout_width="match_parent"
+                   android:layout_height="52dp"
+                   android:background="#C74810"/>
+
+        <Button android:id="@+id/back"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/back"
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:id="@+id/currentItem"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="6dp"
+            android:text="@string/photoOperation"
+            android:textColor="#FFF"
+            android:textSize="28sp"
+            android:layout_centerInParent="true"/>
+
+        <Button android:id="@+id/save"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/save"
+                android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+
+    <ImageView android:id="@+id/image"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:layout_centerHorizontal="true"
+               android:layout_marginBottom="80dp"
+               android:scaleType="center"
+               android:layout_below="@id/naviBar"/>
+
+    <ProgressBar android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <LinearLayout android:orientation="horizontal"
+                  android:layout_width="match_parent"
+                  android:layout_height="80dp"
+                  android:layout_alignParentBottom="true">
+        <ImageButton android:id="@+id/edit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/edit"/>
+        <ImageButton android:id="@+id/eraser"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/eraser"/>
+        <ImageButton android:id="@+id/zoom_in"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/zoom_in"/>
+        <ImageButton android:id="@+id/zoom_out"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/zoom_out"/>
+        <ImageButton android:id="@+id/reTake"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/camera_list"/>
+    </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.df.library">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher" >
+
+        <activity
+            android:name="com.df.library.service.AttachActivity"
+            android:label="@string/title_activity_invisible"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+
+        <!-- 拍照模块 -->
+        <activity
+            android:name="com.df.library.service.customCamera.activity.PickPictureActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.df.library.service.customCamera.activity.PhotoEditActivity"
+            android:screenOrientation="landscape">
+        </activity>
+        <activity
+            android:name="com.df.library.service.customCamera.activity.PhotographActivity">
+        </activity>
+
+
+        <!-- 拍照识别 -->
+        <activity
+            android:name="com.df.library.service.WintoneCameraActivity"
+            android:screenOrientation="landscape" >
+        </activity>
+
+        <activity
+            android:name="com.df.library.service.IdcardRunner"
+            android:configChanges="keyboardHidden|orientation" >
+            <intent-filter>
+                <action android:name="idcard.receiver" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name="wintone.idcard.android.IDCardBean"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="landscape" >
+            <intent-filter>
+                <action android:name="wintone.idcard" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="wintone.idcard.android.IDCardCfg"
+            android:configChanges="keyboardHidden|orientation">
+            <intent-filter>
+                <action android:name="wintone.idcardconfig" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service android:enabled="true" android:name="wintone.idcard.android.AuthService">
+            <intent-filter >
+                <action android:name="wintone.idcard.authService"/>
+            </intent-filter>
+        </service>
+        <service android:enabled="true" android:name="wintone.idcard.android.RecogService">
+            <intent-filter >
+                <action android:name="wintone.idcard.recogService"/>
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

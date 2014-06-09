@@ -1,0 +1,45 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FFF">
+    <RelativeLayout android:id="@+id/naviBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+        <ImageView android:id="@+id/banner"
+                   android:layout_width="match_parent"
+                   android:layout_height="52dp"
+                   android:background="#C74810"/>
+    </RelativeLayout>
+
+    <LinearLayout android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/naviBar"
+        android:orientation="vertical">
+    </LinearLayout>
+    <!--<com.df.kia.procedures.InputProceduresLayout-->
+                <!--android:id="@+id/inputProcedures"-->
+                 <!--android:layout_width="match_parent"-->
+                 <!--android:layout_height="match_parent"/>-->
+
+    <RelativeLayout android:id="@+id/tabButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp">
+
+        <TextView android:id="@+id/currentItem"
+                  android:layout_width="wrap_content"
+                  android:layout_height="36dp"
+                  android:text="@string/procedure_input"
+                  android:textColor="#FFF"
+                  android:textSize="28sp"
+                  android:layout_centerInParent="true"/>
+
+        <Button android:id="@+id/buttonHome"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/home"
+                android:layout_centerVertical="true"/>
+    </RelativeLayout>
+</RelativeLayout>

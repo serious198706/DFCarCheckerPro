@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">起亚正式</string>
+    <string name="app_name_100_110">起亚内网-100.110</string>
+    <string name="app_name_100_6">起亚内网-100.6</string>
+    <string name="app_name_100_3">起亚内网-100.3</string>
+    <string name="app_name_o">起亚外网</string>
+</resources>
