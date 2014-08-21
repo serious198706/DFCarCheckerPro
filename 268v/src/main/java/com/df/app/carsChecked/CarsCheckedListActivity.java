@@ -18,11 +18,12 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.df.app.MainActivity;
 import com.df.app.carCheck.CarCheckActivity;
 import com.df.app.R;
+import com.df.app.procedures.InputProceduresActivity;
 import com.df.app.service.util.AppCommon;
 import com.df.library.entries.CarsCheckedItem;
-import com.df.app.procedures.InputProceduresActivity;
 import com.df.library.service.adapter.CarsCheckedListAdapter;
 import com.df.library.asyncTask.CheckSellerNameTask;
 import com.df.library.asyncTask.GetCarDetailTask;
@@ -53,7 +54,6 @@ public class CarsCheckedListActivity extends Activity {
     private int startNumber = 1;
     private View footerView;
     private String lastSellerName;
-    private int lastPos = -1;
 
     public static boolean modify;
 
@@ -97,8 +97,6 @@ public class CarsCheckedListActivity extends Activity {
             @Override
             public void onStartOpen(int position, int action, boolean right) {
                 swipeListView.closeOpenedItems();
-
-                lastPos = position;
             }
         });
 
@@ -145,6 +143,8 @@ public class CarsCheckedListActivity extends Activity {
      * 刷新列表
      */
     private void refresh(boolean clear) {
+        swipeListView.closeOpenedItems();
+
         if(clear) {
             startNumber = 1;
             data.clear();
@@ -156,14 +156,12 @@ public class CarsCheckedListActivity extends Activity {
                 new GetCarsCheckedListTask.OnGetListFinish() {
                     @Override
                     public void onFinish(String result) {
-                        startNumber += 10;
                         fillInData(result);
                     }
                     @Override
                     public void onFailed(String error) {
                         Toast.makeText(CarsCheckedListActivity.this, "获取已检车辆列表失败：" + error, Toast.LENGTH_SHORT).show();
                         Log.d("DFCarChecker", "获取已检车辆列表失败：" + error);
-                        lastPos = -1;
                     }
                 });
         getCarsCheckedListTask.execute();
@@ -238,8 +236,6 @@ public class CarsCheckedListActivity extends Activity {
             } else {
                 footerView.setVisibility(View.VISIBLE);
             }
-
-            swipeListView.closeOpenedItems();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -251,9 +247,28 @@ public class CarsCheckedListActivity extends Activity {
      * @param activity 要进入的activity的class
      */
     private void getCarDetail(final int position, final Class activity, final boolean modify) {
+        String ex = "";
+        switch (Common.getEnvironment()) {
+            case Common.INTERNAL_100_110_VERSION:
+                ex = "100_100_";
+                break;
+            case Common.INTERNAL_100_3_VERSION:
+                ex = "100_3_";
+                break;
+            case Common.INTERNAL_100_6_VERSION:
+                ex = "100_6_";
+                break;
+            case Common.EXTERNAL_VERSION:
+                ex = "ex_";
+                break;
+            case Common.PRODUCT_VERSION:
+                ex = "pro_";
+                break;
+        }
+
         final int carId = data.get(position).getCarId();
 
-        GetCarDetailTask getCarDetailTask = new GetCarDetailTask(CarsCheckedListActivity.this, carId, true, AppCommon.savedDirectory, new GetCarDetailTask.OnGetDetailFinished() {
+        GetCarDetailTask getCarDetailTask = new GetCarDetailTask(CarsCheckedListActivity.this, carId, true, AppCommon.savedDirectory + ex, new GetCarDetailTask.OnGetDetailFinished() {
             @Override
             public void onFinish(String result) {
                 Intent intent = new Intent(CarsCheckedListActivity.this, activity);
@@ -476,6 +491,7 @@ public class CarsCheckedListActivity extends Activity {
             public void onFinished(String result) {
                 lastSellerName = "";
                 Toast.makeText(CarsCheckedListActivity.this, "导入成功！", Toast.LENGTH_LONG).show();
+
                 refresh(true);
             }
 

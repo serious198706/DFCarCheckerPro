@@ -32,7 +32,7 @@ import com.df.library.entries.ListedPhoto;
 import com.df.library.entries.PhotoEntity;
 import com.df.library.entries.PosEntity;
 import com.df.app.service.Adapter.IssuePhotoListAdapter;
-import com.df.app.service.AddPhotoCommentActivity;
+import com.df.library.carCheck.AddPhotoCommentActivity;
 import com.df.library.entries.UserInfo;
 import com.df.library.service.customCamera.IPhotoProcessListener;
 import com.df.library.service.customCamera.PhotoProcessManager;
@@ -193,17 +193,6 @@ public class FramePaintView extends PaintView implements IPhotoProcessListener {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//
-//                // 根据此点文件名进行拍照
-//                Uri fileUri = Helper.getOutputMediaFileUri(data.get(data.size() - 1).getImageFileName());
-//
-//                // create a file to save the image
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-//
-//                ((Activity)getContext()).startActivityForResult(intent,
-//                        sight.equals("F") ? Common.PHOTO_FOR_ACCIDENT_FRONT : Common.PHOTO_FOR_ACCIDENT_REAR);
-
                 String temp = data.get(data.size() - 1).getImageFileName();
                 long fileName = Long.parseLong(temp.substring(0, temp.length() - 4));
 
@@ -261,7 +250,7 @@ public class FramePaintView extends PaintView implements IPhotoProcessListener {
                         Common.ADD_COMMENT_FOR_ACCIDENT_FRONT_PHOTO : Common.ADD_COMMENT_FOR_ACCIDENT_REAR_PHOTO;
 
                 Intent intent = new Intent(getContext(), AddPhotoCommentActivity.class);
-                intent.putExtra("fileName", fileName);
+                intent.putExtra("fileName", AppCommon.photoDirectory + fileName);
                 ((Activity)getContext()).startActivityForResult(intent, requestCode);
             } else {
                 getPosEntity().setImageFileName("");

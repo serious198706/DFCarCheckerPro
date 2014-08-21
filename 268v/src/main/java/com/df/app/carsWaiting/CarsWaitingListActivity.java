@@ -15,11 +15,12 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.df.app.MainActivity;
 import com.df.app.R;
 import com.df.app.carCheck.CarCheckActivity;
+import com.df.app.procedures.InputProceduresActivity;
 import com.df.app.service.util.AppCommon;
 import com.df.library.entries.CarsWaitingItem;
-import com.df.app.procedures.InputProceduresActivity;
 import com.df.library.service.adapter.CarsWaitingListAdapter;
 import com.df.library.asyncTask.DeleteCarTask;
 import com.df.library.asyncTask.GetCarDetailTask;
@@ -48,7 +49,6 @@ public class CarsWaitingListActivity extends Activity {
 
     public int startNumber = 1;
     private View footerView;
-    private int lastPos = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +118,6 @@ public class CarsWaitingListActivity extends Activity {
             @Override
             public void onStartOpen(int position, int action, boolean right) {
                 swipeListView.closeOpenedItems();
-                lastPos = position;
             }
         });
 
@@ -147,7 +146,7 @@ public class CarsWaitingListActivity extends Activity {
         loadMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                refresh();
+                refresh(false);
             }
         });
 
@@ -155,35 +154,34 @@ public class CarsWaitingListActivity extends Activity {
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startNumber = 1;
-                data.clear();
-                adapter.notifyDataSetChanged();
-
-                swipeListView.closeOpenedItems();
-
-                refresh();
+                refresh(true);
             }
         });
 
-        refresh();
+        refresh(true);
     }
 
     /**
      * 刷新列表
      */
-    private void refresh() {
+    private void refresh(boolean clear) {
+        swipeListView.closeOpenedItems();
+
+        if(clear) {
+            startNumber = 1;
+            data.clear();
+        }
+
         GetCarsWaitingListTask getCarsWaitingListTask = new GetCarsWaitingListTask(CarsWaitingListActivity.this, startNumber,
                 new GetCarsWaitingListTask.OnGetListFinish() {
                     @Override
                     public void onFinish(String result) {
                         fillInData(result);
-                        startNumber += 10;
                     }
                     @Override
                     public void onFailed(String error) {
                         Toast.makeText(CarsWaitingListActivity.this, "获取待检车辆列表失败：" + error, Toast.LENGTH_SHORT).show();
                         Log.d("DFCarChecker", "获取待检车辆列表失败：" + error);
-                        lastPos = -1;
                     }
                 });
         getCarsWaitingListTask.execute();
@@ -235,53 +233,32 @@ public class CarsWaitingListActivity extends Activity {
     }
 
     /**
-     * 填充测试数据
-     */
-    private void fillInDummyData() {
-        for(int i = 0; i < 5; i++) {
-            CarsWaitingItem item = new CarsWaitingItem();
-            item.setPlateNumber("京A12345");
-            item.setExteriorColor("黑");
-            item.setCarType("奥迪A100");
-            item.setDate("2013-12-28 14:01:58");
-            item.setCountryId("1");
-            item.setBrandId("194");
-            item.setManufacturerId("448");
-            item.setSeriesId("6735");
-            item.setModelId("14302");
-            item.setCarId(i + 395);
-
-            String jsonString = "{\"carId\":2,\"vin\":\"15844\",\"engineSerial\":\"发动机号\",\"vehicleType\":\"行驶证车辆类型\",\"userCharacter\":\"非运营\",\"mileage\":\"表征里程\",\"plateNumber\":\"京A2548\",\"licenseModel\":\"行驶证品牌型号\",\"exteriorColor\":\"红色\",\"regDate\":\"2012-12-03\",\"buildDate\":\"2012-12-03\",\"createDate\":\"2013-01-01\"}";
-
-            try {
-                JSONObject jsonObject = new JSONObject(jsonString);
-                item.setJsonObject(jsonObject);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            data.add(item);
-        }
-
-        adapter.notifyDataSetChanged();
-
-        startNumber = data.size() + 1;
-
-        if(data.size() == 0) {
-            footerView.setVisibility(View.GONE);
-        } else {
-            footerView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    /**
      * 点击待检列表中的某一项时，根据carId获取该车的详细信息
      * 如果该carId在本地存在，则表示已经保存过，就从本地获取详细信息
      * @param carId
      * @param activity
      */
     private void getCarDetail(final int carId, final Class activity) {
-        GetCarDetailTask getCarDetailTask = new GetCarDetailTask(CarsWaitingListActivity.this, carId, false, AppCommon.savedDirectory, new GetCarDetailTask.OnGetDetailFinished() {
+        String ex = "";
+        switch (Common.getEnvironment()) {
+            case Common.INTERNAL_100_110_VERSION:
+                ex = "100_100_";
+                break;
+            case Common.INTERNAL_100_3_VERSION:
+                ex = "100_3_";
+                break;
+            case Common.INTERNAL_100_6_VERSION:
+                ex = "100_6_";
+                break;
+            case Common.EXTERNAL_VERSION:
+                ex = "ex_";
+                break;
+            case Common.PRODUCT_VERSION:
+                ex = "pro_";
+                break;
+        }
+
+        GetCarDetailTask getCarDetailTask = new GetCarDetailTask(CarsWaitingListActivity.this, carId, false, AppCommon.savedDirectory + ex, new GetCarDetailTask.OnGetDetailFinished() {
             @Override
             public void onFinish(String result) {
                 Intent intent = new Intent(CarsWaitingListActivity.this, activity);
@@ -307,16 +284,30 @@ public class CarsWaitingListActivity extends Activity {
      * 删除车辆
      */
     private void deleteCar(int carId) {
-        DeleteCarTask deleteCarTask = new DeleteCarTask(CarsWaitingListActivity.this, carId, new DeleteCarTask.OnDeleteFinished() {
+        String ex = "";
+        switch (Common.getEnvironment()) {
+            case Common.INTERNAL_100_110_VERSION:
+                ex = "100_100_";
+                break;
+            case Common.INTERNAL_100_3_VERSION:
+                ex = "100_3_";
+                break;
+            case Common.INTERNAL_100_6_VERSION:
+                ex = "100_6_";
+                break;
+            case Common.EXTERNAL_VERSION:
+                ex = "ex_";
+                break;
+            case Common.PRODUCT_VERSION:
+                ex = "pro_";
+                break;
+        }
+
+        DeleteCarTask deleteCarTask = new DeleteCarTask(CarsWaitingListActivity.this, AppCommon.savedDirectory + ex, AppCommon.photoDirectory, carId, new DeleteCarTask.OnDeleteFinished() {
             @Override
             public void onFinished(String result) {
                 Toast.makeText(CarsWaitingListActivity.this, "删除成功！", Toast.LENGTH_SHORT).show();
-
-                startNumber = 1;
-                data.clear();
-                adapter.notifyDataSetChanged();
-                swipeListView.closeOpenedItems();
-                refresh();
+                refresh(true);
             }
 
             @Override

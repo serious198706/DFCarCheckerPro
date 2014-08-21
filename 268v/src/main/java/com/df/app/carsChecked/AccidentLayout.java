@@ -39,8 +39,6 @@ public class AccidentLayout extends LinearLayout {
     private FramePaintPreviewView framePaintPreviewViewFront;
     private ArrayList<PosEntity> posEntitiesFront;
     private ArrayList<PosEntity> posEntitiesRear;
-    private ArrayList<PhotoEntity> photoEntitiesFront;
-    private ArrayList<PhotoEntity> photoEntitiesRear;
     private Bitmap previewBitmapFront;
     private Bitmap previewBitmapRear;
     private FramePaintPreviewView framePaintPreviewViewRear;
@@ -67,9 +65,6 @@ public class AccidentLayout extends LinearLayout {
 
         posEntitiesFront = new ArrayList<PosEntity>();
         posEntitiesRear = new ArrayList<PosEntity>();
-
-        photoEntitiesFront = new ArrayList<PhotoEntity>();
-        photoEntitiesRear = new ArrayList<PhotoEntity>();
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;

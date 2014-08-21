@@ -7,15 +7,21 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Message;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.df.app.R;
+import com.df.app.service.util.AppCommon;
 import com.df.library.asyncTask.GetAuthorizeCode;
+import com.df.library.service.LicenseRecognise;
 import com.df.library.util.Common;
 
 import static com.df.library.util.Helper.setTextView;
@@ -45,13 +51,13 @@ public class InputProceduresActivity extends Activity {
         inputProceduresLayout = new InputProceduresLayout(this);
         container.addView(inputProceduresLayout);
 
-        //inputProceduresLayout = (InputProceduresLayout)findViewById(R.id.inputProcedures);
-
         Bundle bundle = getIntent().getExtras();
 
         if(bundle != null && bundle.containsKey("carId")) {
             inputProceduresLayout.fillInData(bundle.getInt("carId"));
         }
+
+        startAuthService();
     }
 
     @Override
@@ -66,7 +72,6 @@ public class InputProceduresActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        startAuthService();
     }
 
     private void startAuthService(){
@@ -78,20 +83,11 @@ public class InputProceduresActivity extends Activity {
 
             @Override
             public void onFailed(String result) {
-//                Toast.makeText(InputProceduresActivity.this, "获取授权码失败！", Toast.LENGTH_SHORT).show();
-//                Log.d(AppCommon.TAG, "获取授权码失败！" + result);
-
-                // TODO 删除
-                //fillInDummyAuthCode();
+                Log.d(AppCommon.TAG, "获取授权码失败！" + result);
             }
         });
 
         getAuthorizeCode.execute();
-    }
-
-    private void fillInDummyAuthCode() {
-        inputProceduresLayout.startAuthService("WS4NWVPTLDUY712YYZXGYYI7G");
-        //inputProceduresLayout.startAuthService("WSM27VPMJDVYMBHYY37KYYA6B");
     }
 
     @Override
@@ -135,6 +131,14 @@ public class InputProceduresActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Common.TAKE_LICENSE_PHOTO && resultCode == Activity.RESULT_OK) {
             inputProceduresLayout.updateLicensePhoto(data.getBooleanExtra("cut", true));
+        } else if (requestCode == 8 && resultCode == RESULT_OK){
+            Object result = LicenseRecognise.parseFields(data);
+
+            if(result instanceof String[])
+                CarRecogniseLayout.fillInRecogData((String[])result);
+            else
+                Toast.makeText(this, (String)result, Toast.LENGTH_LONG).show();
+
         }
     }
 

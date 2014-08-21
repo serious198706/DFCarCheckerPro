@@ -40,9 +40,7 @@ public class IntegratedLayout extends LinearLayout {
     private ExteriorPaintPreviewView exteriorPaintPreviewView;
     private InteriorPaintPreviewView interiorPaintPreviewView;
     private ArrayList<PosEntity> exPosEntities;
-    private ArrayList<PhotoEntity> exPhotoEntities;
     private ArrayList<PosEntity> inPosEntities;
-    private ArrayList<PhotoEntity> inPhotoEntities;
     private View rootView;
     private DownloadImageTask downloadImageTask;
     private DownloadImageTask downloadImage1Task;
@@ -66,12 +64,10 @@ public class IntegratedLayout extends LinearLayout {
 
         Bitmap bitmap = BitmapFactory.decodeFile(AppCommon.utilDirectory + "r3d4");
         exPosEntities = new ArrayList<PosEntity>();
-        exPhotoEntities = new ArrayList<PhotoEntity>();
         exteriorPaintPreviewView = (ExteriorPaintPreviewView) findViewById(R.id.exterior_image);
         exteriorPaintPreviewView.init(bitmap, exPosEntities);
 
         inPosEntities = new ArrayList<PosEntity>();
-        inPhotoEntities = new ArrayList<PhotoEntity>();
         interiorPaintPreviewView = (InteriorPaintPreviewView) findViewById(R.id.interior_image);
         interiorPaintPreviewView.init(bitmap, inPosEntities);
 

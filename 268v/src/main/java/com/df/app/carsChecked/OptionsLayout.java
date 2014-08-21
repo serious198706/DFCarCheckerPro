@@ -46,7 +46,7 @@ public class OptionsLayout extends LinearLayout {
         setTextView(rootView, R.id.displacement_text, options.getString("displacement"));
         setTextView(rootView, R.id.transmission_text, options.getString("transmission"));
         setTextView(rootView, R.id.driveType_text, options.getString("driveType"));
-        setTextView(rootView, R.id.airBag_text, options.getString("airBags"));
+        setTextView(rootView, R.id.airBag_text, options.isNull("airBags") ? "无" : options.getString("airBags"));
         setTextView(rootView, R.id.abs_text, options.isNull("abs") ? "无" : options.getString("abs"));
         setTextView(rootView, R.id.powerSteering_text, options.isNull("powerSteering") ? "无" : options.getString("powerSteering"));
         setTextView(rootView, R.id.powerWindows_text, options.isNull("powerWindows") ? "无" : options.getString("powerWindows"));

@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -33,6 +34,7 @@ import com.df.app.service.util.AppCommon;
 import com.df.library.entries.Action;
 import com.df.library.entries.PhotoEntity;
 import com.df.library.entries.UserInfo;
+import com.df.library.service.SpeechRecognize.SpeechDialog;
 import com.df.library.service.customCamera.IPhotoProcessListener;
 import com.df.library.service.customCamera.PhotoProcessManager;
 import com.df.library.service.customCamera.PhotoTask;
@@ -102,6 +104,7 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
 
     public static Button[] buttons = new Button[5];
 
+    private EditText commentEdit;
     private MyScrollView scrollView;
 
     private enum PaintType {
@@ -148,8 +151,10 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
         init(context);
     }
 
-    private void init(Context context) {
+    private void init(final Context context) {
         rootView = LayoutInflater.from(context).inflate(R.layout.integrated2_layout, this);
+
+        commentEdit = (EditText)findViewById(R.id.it2_comment_edit);
 
         photoEntityMap = new HashMap<String, PhotoEntity>();
 
@@ -249,6 +254,44 @@ public class Integrated2Layout extends LinearLayout implements IPhotoProcessList
 
             }
         };
+
+        findViewById(R.id.speech_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(commentEdit.getWindowToken(), 0);
+
+                SpeechDialog speechDialog = new SpeechDialog(context, new SpeechDialog.OnResult() {
+                    @Override
+                    public void onResult(String result) {
+                        int start = commentEdit.getSelectionStart();
+
+                        String originText = commentEdit.getText().toString();
+
+                        commentEdit.setText(originText.substring(0, start) + result + originText.substring(start, originText.length()));
+
+                        commentEdit.setSelection(start + result.length());
+                    }
+                });
+
+                speechDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        findViewById(R.id.placeHolder).setVisibility(View.GONE);
+                    }
+                });
+
+                speechDialog.show();
+
+                findViewById(R.id.placeHolder).setVisibility(View.VISIBLE);
+
+                scrollView.post(new Runnable() {
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
     }
 
     private void showShadow(boolean show) {

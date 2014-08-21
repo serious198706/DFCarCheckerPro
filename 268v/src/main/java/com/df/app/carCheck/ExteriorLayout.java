@@ -12,8 +12,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -23,10 +25,12 @@ import android.widget.Toast;
 import com.df.app.R;
 import com.df.app.service.util.AppCommon;
 import com.df.library.entries.Action;
+import com.df.library.entries.CarSettings;
 import com.df.library.entries.PhotoEntity;
 import com.df.library.entries.PosEntity;
 import com.df.app.paintView.ExteriorPaintPreviewView;
 import com.df.library.asyncTask.DownloadImageTask;
+import com.df.library.service.SpeechRecognize.SpeechDialog;
 import com.df.library.util.Common;
 import com.df.library.entries.UserInfo;
 import com.df.library.util.Helper;
@@ -70,11 +74,16 @@ public class ExteriorLayout extends LinearLayout {
     // 记录破损
     private String brokenResult = "";
 
+    // 记录胶体检查
+    private String colloidalResult = "";
+
     // 承载所有的checkbox
     private TableLayout root;
     private int sketchIndex;
     private int figure;
-    private DownloadImageTask downloadImageTask;
+
+    private EditText commentEdit;
+    private MyScrollView scrollView;
 
     public ExteriorLayout(Context context) {
         super(context);
@@ -91,10 +100,12 @@ public class ExteriorLayout extends LinearLayout {
         init(context);
     }
 
-    private void init(Context context) {
+    private void init(final Context context) {
         ExteriorLayout.context = context;
 
         rootView = LayoutInflater.from(context).inflate(R.layout.exterior_layout, this);
+
+        commentEdit = (EditText)findViewById(R.id.exterior_comment_edit);
 
         posEntities = new ArrayList<PosEntity>();
         photoEntities = new ArrayList<PhotoEntity>();
@@ -124,9 +135,17 @@ public class ExteriorLayout extends LinearLayout {
             }
         });
 
+        Button colloidalButton = (Button)findViewById(R.id.colloidal_button);
+        colloidalButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseColloidal();
+            }
+        });
+
         setSpinnerSelectionWithIndex(rootView, R.id.smooth_spinner, 1);
 
-        MyScrollView scrollView = (MyScrollView) findViewById(R.id.root);
+        scrollView = (MyScrollView) findViewById(R.id.root);
         scrollView.setListener(new MyScrollView.ScrollViewListener() {
             @Override
             public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldx, int oldy) {
@@ -145,6 +164,44 @@ public class ExteriorLayout extends LinearLayout {
                 return false;
             }
         });
+
+        findViewById(R.id.speech_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(commentEdit.getWindowToken(), 0);
+
+                SpeechDialog speechDialog = new SpeechDialog(context, new SpeechDialog.OnResult() {
+                    @Override
+                    public void onResult(String result) {
+                        int start = commentEdit.getSelectionStart();
+
+                        String originText = commentEdit.getText().toString();
+
+                        commentEdit.setText(originText.substring(0, start) + result + originText.substring(start, originText.length()));
+
+                        commentEdit.setSelection(start + result.length());
+                    }
+                });
+
+                speechDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        findViewById(R.id.placeHolder).setVisibility(View.GONE);
+                    }
+                });
+
+                speechDialog.show();
+
+                findViewById(R.id.placeHolder).setVisibility(View.VISIBLE);
+
+                scrollView.post(new Runnable() {
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
     }
 
     private void showShadow(boolean show) {
@@ -153,7 +210,12 @@ public class ExteriorLayout extends LinearLayout {
 
     public void updateUi() {
         // 点击图片进入绘制界面
-        figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
+        if(CarSettings.getInstance().getFigure().equals("")) {
+            figure = 0;
+        } else {
+            figure = Integer.parseInt(CarSettings.getInstance().getFigure());
+        }
+
         Bitmap previewViewBitmap = getBitmapFromFigure(figure);
 
         exteriorPaintPreviewView = (ExteriorPaintPreviewView) findViewById(R.id.exterior_image);
@@ -210,6 +272,14 @@ public class ExteriorLayout extends LinearLayout {
     }
 
     /**
+     * 选择胶体检查
+     */
+    private void chooseColloidal() {
+        showPopupWindow("colloidal", getResources().getString(R.string.colloidal),
+                getResources().getStringArray(R.array.colloidal_item));
+    }
+
+    /**
      * 弹出窗口供用户选择
      */
     private void showPopupWindow(final String type, String title, String array[]) {
@@ -226,6 +296,9 @@ public class ExteriorLayout extends LinearLayout {
                         } else if (type.equals("screw")) {
                             screwResult = getPopupResult();
                             setEditViewText(rootView, R.id.screw_edit, screwResult);
+                        } else if(type.equals("colloidal")) {
+                            colloidalResult = getPopupResult();
+                            setEditViewText(rootView, R.id.colloidal_edit, colloidalResult);
                         } else {
                             brokenResult = getPopupResult();
                             setEditViewText(rootView, R.id.broken_edit, brokenResult);
@@ -251,39 +324,60 @@ public class ExteriorLayout extends LinearLayout {
 
         int count = array.length;
 
-        for(int i = 0; i < (count % 2 == 0 ? count / 2 : count / 2 + 1); i++) {
-            TableRow row = new TableRow(view.getContext());
-
-            for(int j = 0; j < 2; j++) {
-                if(i * 2 + j >= count) {
-                    break;
-                }
+        if(type.equals("colloidal")) {
+            for(int i = 0; i < count; i++) {
+                TableRow row = new TableRow(view.getContext());
 
                 CheckBox checkBox = new CheckBox(view.getContext());
-                checkBox.setText(array[i * 2 + j]);
+                checkBox.setText(array[i]);
                 checkBox.setTextSize(20f);
                 checkBox.setButtonDrawable(R.drawable.checkbox_button);
                 checkBox.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT, 1f));
 
-                if(type.equals("glass")) {
-                    if(glassResult.contains(array[i * 2 + j])) {
-                        checkBox.setChecked(true);
-                    }
-                } else if(type.equals("screw")) {
-                    if(screwResult.contains(array[i * 2 + j])) {
-                        checkBox.setChecked(true);
-                    }
-                } else {
-                    if(brokenResult.contains(array[i * 2 + j])) {
-                        checkBox.setChecked(true);
-                    }
+                if(colloidalResult.contains(array[i])) {
+                    checkBox.setChecked(true);
                 }
 
                 row.addView(checkBox);
-            }
 
-            root.addView(row);
+                root.addView(row);
+            }
+        } else {
+            for(int i = 0; i < (count % 2 == 0 ? count / 2 : count / 2 + 1); i++) {
+                TableRow row = new TableRow(view.getContext());
+
+                for(int j = 0; j < 2; j++) {
+                    if(i * 2 + j >= count) {
+                        break;
+                    }
+
+                    CheckBox checkBox = new CheckBox(view.getContext());
+                    checkBox.setText(array[i * 2 + j]);
+                    checkBox.setTextSize(20f);
+                    checkBox.setButtonDrawable(R.drawable.checkbox_button);
+                    checkBox.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                            TableRow.LayoutParams.WRAP_CONTENT, 1f));
+
+                    if(type.equals("glass")) {
+                        if(glassResult.contains(array[i * 2 + j])) {
+                            checkBox.setChecked(true);
+                        }
+                    } else if(type.equals("screw")) {
+                        if(screwResult.contains(array[i * 2 + j])) {
+                            checkBox.setChecked(true);
+                        }
+                    } else {
+                        if(brokenResult.contains(array[i * 2 + j])) {
+                            checkBox.setChecked(true);
+                        }
+                    }
+
+                    row.addView(checkBox);
+                }
+
+                root.addView(row);
+            }
         }
 
         return view;
@@ -442,6 +536,7 @@ public class ExteriorLayout extends LinearLayout {
         exterior.put("comment", getEditViewText(rootView, R.id.exterior_comment_edit));
         exterior.put("glass", getEditViewText(rootView, R.id.glass_edit));
         exterior.put("screw", getEditViewText(rootView, R.id.screw_edit));
+        exterior.put("colloidal", getEditViewText(rootView, R.id.colloidal_edit));
         exterior.put("needRepair", ((CheckBox)findViewById(R.id.needRepair)).isChecked() ? "是" : "否");
 
         return exterior;
@@ -452,11 +547,18 @@ public class ExteriorLayout extends LinearLayout {
      */
     public void fillInData(JSONObject exterior) throws JSONException{
         setSpinnerSelectionWithString(rootView, R.id.smooth_spinner, exterior.getString("smooth"));
-        setEditViewText(rootView, R.id.exterior_comment_edit, exterior.get("comment") == JSONObject.NULL ? "" : exterior.getString("comment"));
-        setEditViewText(rootView, R.id.glass_edit, exterior.get("glass") == JSONObject.NULL ? "" : exterior.getString("glass"));
-        glassResult = exterior.getString("glass");
-        setEditViewText(rootView, R.id.screw_edit, exterior.get("screw") == JSONObject.NULL ? "" : exterior.getString("screw"));
-        screwResult = exterior.getString("screw");
+
+        String comment = exterior.get("comment") == JSONObject.NULL ? "" : exterior.getString("comment");
+        setEditViewText(rootView, R.id.exterior_comment_edit, comment);
+
+        glassResult = exterior.get("glass") == JSONObject.NULL ? "" : exterior.getString("glass");
+        setEditViewText(rootView, R.id.glass_edit, glassResult);
+
+        screwResult = exterior.get("screw") == JSONObject.NULL ? "" : exterior.getString("screw");
+        setEditViewText(rootView, R.id.screw_edit, screwResult);
+
+        colloidalResult = exterior.get("colloidal") == JSONObject.NULL ? "" : exterior.getString("colloidal");
+        setEditViewText(rootView, R.id.colloidal_edit, colloidalResult);
 
         ((CheckBox)findViewById(R.id.needRepair)).setChecked(exterior.getString("needRepair").equals("是"));
     }
@@ -533,10 +635,6 @@ public class ExteriorLayout extends LinearLayout {
         posEntities = null;
         photoEntities = null;
         exteriorPaintPreviewView = null;
-
-        if(downloadImageTask != null) {
-            downloadImageTask.cancel(true);
-        }
     }
 
 

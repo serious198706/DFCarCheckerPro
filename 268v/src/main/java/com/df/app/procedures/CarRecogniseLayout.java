@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -44,8 +46,6 @@ import com.df.library.entries.VehicleModel;
 import com.df.library.asyncTask.GetCarSettingsByVinTask;
 import com.df.library.asyncTask.GetCarSettingsTask;
 import com.df.library.asyncTask.UpdateAuthorizeCodeStatusTask;
-import com.df.library.service.IdcardRunner;
-import com.df.library.util.Common;
 import com.df.library.service.LicenseRecognise;
 import com.df.library.util.Helper;
 import com.df.library.util.MyAlertDialog;
@@ -54,9 +54,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -158,25 +160,6 @@ public class CarRecogniseLayout extends LinearLayout {
                     });updateAuthorizeCodeStatusTask.execute();
 
                     createSnFile(authCode);
-
-                    //已有配置文件时读
-                    nMainID = 0;
-                    String cfg = "";
-
-                    IDCardCfg cardCfg = new IDCardCfg();
-                    try{
-                        cfg = cardCfg.readtxt();
-                    } catch(Exception e){
-                        e.printStackTrace();
-                    }
-
-                    String cfgs[] = cfg.split("==##");
-
-                    if (cfgs != null && cfgs.length >= 2) {
-                        nMainID = Integer.valueOf(cfgs[0]);
-                    }
-
-                    Log.d(AppCommon.TAG, "cfg=" + cfg);
                 }
             } catch (Exception e) {
                 Toast.makeText(getContext(), "授权验证失败", Toast.LENGTH_LONG).show();
@@ -206,7 +189,7 @@ public class CarRecogniseLayout extends LinearLayout {
 
         deleteLastLicensePhoto();
 
-        mCarSettings = InputProceduresLayout.mCarSettings;
+        mCarSettings = CarSettings.getInstance();
 
         licenseRecognise = new LicenseRecognise(context, AppCommon.licensePhotoPath);
 
@@ -214,7 +197,7 @@ public class CarRecogniseLayout extends LinearLayout {
         licenseImageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                licenseRecognise.takePhoto(mHandler);
+                licenseRecognise.takePhoto();
             }
         });
 
@@ -356,13 +339,51 @@ public class CarRecogniseLayout extends LinearLayout {
      * 调用行驶证识别接口
      */
     private void recogniseLicense() {
-        Intent intent = new Intent(getContext(), IdcardRunner.class);
-        intent.putExtra("path", AppCommon.licensePhotoPath);
-        intent.putExtra("cut", cut);
-        //设置识别自动裁切
-        intent.putExtra("iscut", true);
-        intent.putExtra("nMainID", nMainID);
-        getContext().startActivity(intent);
+        //调用识别
+        String selectPath = AppCommon.licensePhotoPath;
+        boolean cutBoolean =  cut;
+
+        try {
+            Intent intent = new Intent("wintone.idcard");
+            Bundle bundle = new Bundle();
+            int nSubID[] = null;
+            bundle.putInt("nTypeInitIDCard", 0);       //保留，传0即可
+            bundle.putString("lpFileName", selectPath);//指定的图像路径
+            bundle.putInt("nTypeLoadImageToMemory", 0);//0不确定是哪种图像，1可见光图，2红外光图，4紫外光图
+            bundle.putInt("nMainID", nMainID);    //证件的主类型。6是行驶证，2是二代证，这里只可以传一种证件主类型。每种证件都有一个唯一的ID号，可取值见证件主类型说明
+            bundle.putIntArray("nSubID", nSubID); //保存要识别的证件的子ID，每个证件下面包含的子类型见证件子类型说明。nSubID[0]=null，表示设置主类型为nMainID的所有证件。
+
+            //读设置到文件里的sn
+            File file = new File(AppCommon.licenseUtilPath);
+            String snString = null;
+            if (file.exists()) {
+                String filePATH = AppCommon.licenseUtilPath + "/IdCard.sn";
+                File newFile = new File(filePATH);
+                if (newFile.exists()) {
+                    BufferedReader bfReader = new BufferedReader(new FileReader(newFile));
+                    snString= bfReader.readLine().toUpperCase();
+                    bfReader.close();
+                }else {
+                    bundle.putString("sn", "");
+                }
+                if (snString != null && !snString.equals("")) {
+                    bundle.putString("sn", snString);
+                }else {
+                    bundle.putString("sn", "");
+                }
+            }else {
+                bundle.putString("sn", "");
+            }
+
+            bundle.putString("authfile","");   //文件激活方式  /mnt/sdcard/AndroidWT/357816040594713_zj.txt
+            bundle.putString("logo", ""); //logo路径，logo显示在识别等待页面右上角
+            bundle.putBoolean("isCut", cutBoolean);   //如不设置此项默认自动裁切
+            bundle.putString("returntype", "withvalue");//返回值传递方式withvalue带参数的传值方式（新传值方式）
+            intent.putExtras(bundle);
+            ((Activity)getContext()).startActivityForResult(intent, 8);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "没有找到应用程序" + "wintone.idcard", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -1257,7 +1278,6 @@ public class CarRecogniseLayout extends LinearLayout {
     public void fillInData(int carId) {
         mShowContentCallback.modify(Integer.toString(carId));
     }
-
 
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override

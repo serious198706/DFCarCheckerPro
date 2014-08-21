@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.df.app.R;
 import com.df.app.service.util.AppCommon;
 import com.df.library.entries.Action;
+import com.df.library.entries.CarSettings;
 import com.df.library.entries.Issue;
 import com.df.library.entries.ListedPhoto;
 import com.df.library.entries.PhotoEntity;
@@ -92,7 +93,16 @@ public class AccidentResultLayout extends LinearLayout {
      * 更新界面，主要是更新车型图片
      */
     public void updateUi() {
-        setFigureImage(Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure()));
+        // TODO 会崩
+        int figure;
+        
+        if(CarSettings.getInstance().getFigure().equals("")) {
+            figure = 0;
+        } else {
+            figure = Integer.parseInt(CarSettings.getInstance().getFigure());
+        }
+        
+        setFigureImage(figure);
     }
 
     /**
@@ -215,13 +225,6 @@ public class AccidentResultLayout extends LinearLayout {
     private static String getNameFromFigure(int figure, String view) {
         return "d" + (figure == 2 || figure == 3 ? 2 : 4) + (view.equals("fSketch") ? "_f" : "_r");
     }
-
-    /**
-     * 获取草图Bitmap
-     * @return
-     */
-    public Bitmap getFSketch() { return getBitmapFromFigure(figure, "fSketch"); }
-    public Bitmap getRSketch() { return getBitmapFromFigure(figure, "rSketch"); }
 
     /**
      * 生成草图（前视角x1，后视角x1）

@@ -81,12 +81,12 @@ public class CameraView extends RelativeLayout implements
 	public static final int MSG_CAMERA_STOPPREVIEW = 0x0F; //stopreview
 
 	/**
-	 * The facing of the camera1 is opposite to that of the screen.
+	 * The facing of the camera is opposite to that of the screen.
 	 */
 	public static final int CAMERA_FACING_BACK = 0;
 
 	/**
-	 * The facing of the camera1 is the same as that of the screen.
+	 * The facing of the camera is the same as that of the screen.
 	 */
 	public static final int CAMERA_FACING_FRONT = 1;
 	
@@ -213,7 +213,7 @@ public class CameraView extends RelativeLayout implements
 //		mCamera.setPreviewCallback(new PreviewCallback() {
 //
 //			@Override
-//			public void onPreviewFrame(byte[] data, Camera camera1) {
+//			public void onPreviewFrame(byte[] data, Camera camera) {
 //				if(takePicture){
 //					Size size=camera1.getParameters().getPreviewSize();
 //					int rgb[]=new int[size.width*size.height];

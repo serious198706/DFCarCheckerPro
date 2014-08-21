@@ -93,7 +93,16 @@ public class CarSettings {
     private String exist = "有";
     private String notExist = "无";
 
-    public CarSettings() {
+    private static CarSettings mInstance;
+
+    public static CarSettings getInstance() {
+        if(mInstance == null)
+            mInstance = new CarSettings();
+
+        return mInstance;
+    }
+
+    private CarSettings() {
         brandString = "";
         displacement = "";
         category = "";
@@ -610,5 +619,9 @@ public class CarSettings {
                 "clapBoard"};
 
         return configs;
+    }
+
+    public static void destroyInstance() {
+        mInstance = null;
     }
 }

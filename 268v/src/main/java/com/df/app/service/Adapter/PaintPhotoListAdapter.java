@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.df.app.R;
 import com.df.app.carCheck.PhotoFaultLayout;
-import com.df.app.service.AddPhotoCommentActivity;
+import com.df.library.carCheck.AddPhotoCommentActivity;
 import com.df.app.carCheck.PhotoLayout;
 import com.df.app.service.util.AppCommon;
 import com.df.library.entries.Action;
@@ -186,7 +186,7 @@ public class PaintPhotoListAdapter extends BaseAdapter implements IPhotoProcessL
                     PhotoLayout.paintPhotoListAdapter = PaintPhotoListAdapter.this;
 
                     Intent intent = new Intent(context, AddPhotoCommentActivity.class);
-                    intent.putExtra("fileName", photoEntity.getFileName());
+                    intent.putExtra("fileName", AppCommon.photoDirectory + photoEntity.getFileName());
                     intent.putExtra("comment", ((TextView)view).getText().toString());
                     ((Activity)context).startActivityForResult(intent, Common.MODIFY_PAINT_COMMENT);
                 }

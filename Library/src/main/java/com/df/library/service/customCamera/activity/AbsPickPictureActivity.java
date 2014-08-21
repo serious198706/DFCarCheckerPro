@@ -107,7 +107,7 @@ public abstract class AbsPickPictureActivity extends Activity {
 	// 截取图片
 	private void cropImage(Uri uri, int outputX, int outputY, int requestCode) {
 
-		Intent intent = new Intent("com.android.camera1.action.CROP");
+		Intent intent = new Intent("com.android.camera.action.CROP");
 		intent.setDataAndType(uri, "image/*");
 		intent.putExtra("crop", "true");
 		intent.putExtra("aspectX", 4);

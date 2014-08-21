@@ -60,7 +60,7 @@
             android:layout_marginLeft="5dp"/>
     </RelativeLayout>
 
-    <com.df.kia.paintView.FramePaintView
+    <com.df.appkia.paintView.FramePaintView
         android:id="@+id/image"
         android:layout_width="500dp"
         android:layout_height="350dp"

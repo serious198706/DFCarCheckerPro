@@ -124,15 +124,6 @@ public class AccidentCheckLayout extends LinearLayout implements ViewPager.OnPag
     }
 
     /**
-     * 获取草图Bitmap
-     * @return
-     */
-    public Bitmap getAccidentSketch() { return issueLayout.getAccidentSketch(); }
-    public Bitmap getHomeSketch() { return issueLayout.getAccidentHomeSketch(); }
-    public Bitmap getFSketch() { return accidentResultLayout.getFSketch(); }
-    public Bitmap getRSketch() { return accidentResultLayout.getRSketch(); }
-
-    /**
      * 生成草图（问题查勘x1，查勘结果x2）
      */
     public List<PhotoEntity> generateSketches() {

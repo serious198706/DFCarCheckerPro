@@ -54,7 +54,7 @@ public class WintoneCameraActivity extends Activity implements SurfaceHolder.Cal
     public int srcwidth = 2048;//1600;//2048;final
     public int srcheight = 1536;//1200;//1536;final
     //证件类型
-    int nMainID = 0;
+    int nMainID = 6;
     private ImageButton backbtn, confirmbtn, resetbtn, takepicbtn, lighton,lightoff,cuton,cutoff;
     private TextView back_reset_text,take_recog_text,light_text,cut_text;
     private Camera camera;
@@ -85,24 +85,7 @@ public class WintoneCameraActivity extends Activity implements SurfaceHolder.Cal
         width = dm.widthPixels;
         height = dm.heightPixels;
         setContentView(R.layout.wintone_camera);
-        if (nMainID == 0) {
-            String cfg = "";
-            try {
-                cfg = readtxt();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            String cfgs[] = cfg.split("==##");
-            if (cfgs != null && cfgs.length >= 2) {
-                if (cfgs[0] != null && !cfgs[0].equals("")) {
-                    try {
-                        nMainID = Integer.parseInt(cfgs[0]);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
+
         // 设置拍摄尺寸
         Intent intentget = this.getIntent();
         srcwidth = intentget.getIntExtra("srcwidth", 2048);
@@ -116,7 +99,6 @@ public class WintoneCameraActivity extends Activity implements SurfaceHolder.Cal
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(WintoneCameraActivity.this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        
     }
 
     private void findview() {

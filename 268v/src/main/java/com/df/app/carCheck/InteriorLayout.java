@@ -12,8 +12,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -22,11 +24,13 @@ import android.widget.TextView;
 import com.df.app.R;
 import com.df.app.service.util.AppCommon;
 import com.df.library.entries.Action;
+import com.df.library.entries.CarSettings;
 import com.df.library.entries.PhotoEntity;
 import com.df.library.entries.PosEntity;
 import com.df.app.paintView.InteriorPaintPreviewView;
 import com.df.library.asyncTask.DownloadImageTask;
 import com.df.library.entries.UserInfo;
+import com.df.library.service.SpeechRecognize.SpeechDialog;
 import com.df.library.util.Helper;
 import com.df.library.util.MyScrollView;
 import com.df.library.util.Common;
@@ -75,7 +79,9 @@ public class InteriorLayout extends LinearLayout {
 
     public static int sketchIndex;
     private int figure;
-    private DownloadImageTask downloadImageTask;
+
+    private EditText commentEdit;
+    private MyScrollView scrollView;
 
     public InteriorLayout(Context context) {
         super(context);
@@ -92,9 +98,11 @@ public class InteriorLayout extends LinearLayout {
         init(context);
     }
 
-    private void init(Context context) {
+    private void init(final Context context) {
         InteriorLayout.context = context;
         rootView = LayoutInflater.from(context).inflate(R.layout.interior_layout, this);
+
+        commentEdit = (EditText)findViewById(R.id.interior_comment_edit);
 
         posEntities = new ArrayList<PosEntity>();
         photoEntities = new ArrayList<PhotoEntity>();
@@ -116,7 +124,7 @@ public class InteriorLayout extends LinearLayout {
             }
         });
 
-        MyScrollView scrollView = (MyScrollView) findViewById(R.id.root);
+        scrollView = (MyScrollView) findViewById(R.id.root);
         scrollView.setListener(new MyScrollView.ScrollViewListener() {
             @Override
             public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldx, int oldy) {
@@ -134,6 +142,44 @@ public class InteriorLayout extends LinearLayout {
                 return false;
             }
         });
+
+        findViewById(R.id.speech_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(commentEdit.getWindowToken(), 0);
+
+                SpeechDialog speechDialog = new SpeechDialog(context, new SpeechDialog.OnResult() {
+                    @Override
+                    public void onResult(String result) {
+                        int start = commentEdit.getSelectionStart();
+
+                        String originText = commentEdit.getText().toString();
+
+                        commentEdit.setText(originText.substring(0, start) + result + originText.substring(start, originText.length()));
+
+                        commentEdit.setSelection(start + result.length());
+                    }
+                });
+
+                speechDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        findViewById(R.id.placeHolder).setVisibility(View.GONE);
+                    }
+                });
+
+                speechDialog.show();
+
+                findViewById(R.id.placeHolder).setVisibility(View.VISIBLE);
+
+                scrollView.post(new Runnable() {
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
     }
 
     private void showShadow(boolean show) {
@@ -144,7 +190,12 @@ public class InteriorLayout extends LinearLayout {
      * 更新界面
      */
     public void updateUi() {
-        figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
+        if(CarSettings.getInstance().getFigure().equals("")) {
+            figure = 0;
+        } else {
+            figure = Integer.parseInt(CarSettings.getInstance().getFigure());
+        }
+
         Bitmap previewViewBitmap = getBitmapFromFigure(figure);
 
         interiorPaintPreviewView = (InteriorPaintPreviewView) findViewById(R.id.interior_image);
@@ -548,9 +599,5 @@ public class InteriorLayout extends LinearLayout {
         posEntities = null;
         photoEntities = null;
         interiorPaintPreviewView = null;
-
-        if(downloadImageTask != null) {
-            downloadImageTask.cancel(true);
-        }
     }
 }

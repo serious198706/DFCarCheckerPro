@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ads_status_root"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border"
+    android:layout_margin="20dip"
+    android:layout_gravity="center" >
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+        <ImageView android:id="@+id/ads_status_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/gear"
+            android:adjustViewBounds="true"
+            android:maxWidth="48dip"/>
+	    <TextView android:id="@+id/ads_status_title"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:paddingLeft="16dip"
+	        android:textSize="32dip"
+	        android:gravity="center"
+	        android:textColor="#0BC5FA"
+	        />
+    </FrameLayout>
+    <FrameLayout android:background="@drawable/black_gray"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        />
+    <ProgressBar
+        android:layout_width="fill_parent"
+        android:layout_height="35dip"
+        android:paddingTop="10dip"
+        android:paddingLeft="8dip"
+        android:paddingRight="8dip"
+        android:id="@+id/ads_status_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100"/>
+    <TextView android:id="@+id/ads_status_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dip"
+        android:textSize="24dip"
+        android:textColor="#FFF"
+        />
+</LinearLayout>

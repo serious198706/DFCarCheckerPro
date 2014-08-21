@@ -164,7 +164,7 @@
                         <!--android:layout_height="703dp"-->
                         <!--android:layout_centerHorizontal="true"/>-->
 
-                    <com.df.kia.paintView.ExteriorPaintPreviewView
+                    <com.df.appkia.paintView.ExteriorPaintPreviewView
                         android:id="@+id/exterior_image"
                         android:layout_width="500dp"
                         android:layout_height="703dp"
@@ -243,7 +243,7 @@
                         <!--android:layout_height="703dp"-->
                         <!--android:layout_centerHorizontal="true"/>-->
 
-                    <com.df.kia.paintView.InteriorPaintPreviewView
+                    <com.df.appkia.paintView.InteriorPaintPreviewView
                         android:id="@+id/interior_image"
                         android:layout_width="500dp"
                         android:layout_height="558dp"

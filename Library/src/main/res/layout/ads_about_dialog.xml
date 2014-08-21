@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/about_dialog_layout_root"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:padding="10dp"
+              >
+    <FrameLayout android:background="@drawable/black_gray"
+              android:layout_width="fill_parent"
+              android:layout_height="1dip"/>
+    <TextView android:id="@+id/ads_about_text"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="#FFF"
+              android:text="@string/about_text"
+              />
+    <TextView android:id="@+id/ads_about_contact_method"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="#FFF"
+              android:text="@string/contact_method"
+              />
+    <com.ads.view.AdsAutoLinkTextView android:id="@+id/ads_about_contact_phone"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="#FFF"
+              android:text="@string/contact_phone"
+              android:paddingTop="4dp"
+              android:paddingBottom="4dp"
+              android:autoLink="all|phone"
+              />
+    <com.ads.view.AdsAutoLinkTextView android:id="@+id/ads_about_contact_email"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="#FFF"
+              android:text="@string/contact_email"
+              android:paddingTop="4dp"
+              android:paddingBottom="4dp"
+              android:autoLink="all|email"
+              />
+    <com.ads.view.AdsAutoLinkTextView android:id="@+id/ads_about_contact_http"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="#FFF"
+              android:text="@string/contact_http"
+              android:paddingTop="4dp"
+              android:paddingBottom="4dp"
+              android:autoLink="all|web"
+              />
+    <Button android:id="@+id/ads_about_button_close"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:text="@string/close"/>
+</LinearLayout>

@@ -22,14 +22,14 @@ public class CutPhoto {
     int cut_width;  
     int cut_height;  
       
-    Matrix cut_matrix = new Matrix();  
-      
-    int startx = 0;//剪切的起始點   
+    Matrix cut_matrix = new Matrix();
+
+    int startx = 0;//剪切的起始點
     int starty = 0;  
-  
-    Canvas cutCanvas = null;  
-    Bitmap cacheBitmap = null;  
-    Bitmap resultBitmap = null;//要保存的指定大小的Bitmap  
+
+    Canvas cutCanvas = null;
+    Bitmap cacheBitmap = null;
+    Bitmap resultBitmap = null;//要保存的指定大小的Bitmap
     
 	public CutPhoto(Context context,int cut_width,int cut_height){
 		cavas_width = cut_width;

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ADS</string>
+    <string name="ads_version">硬件版本：V4.16\n平台版本：V002.43\n诊断版本：V002.43</string>
+    <string name="loading">读取中，请稍后。。。</string>
+    <string name="confirm">确认</string>
+    <string name="verify">验证</string>
+    <string name="exit">退出</string>
+    <string name="dllquit">已退出检测功能，感谢您的使用。</string>
+    <string name="dllerror">无法载入该车型的动态库，请检查配置文件。</string>
+    <string name="back">返回</string>
+    <string name="save">保存</string>
+    <string name="capture">录制</string>
+    <string name="readcode">读码</string>
+    <string name="selectall">全选</string>
+    <string name="selectnone">全不选</string>
+    <string name="close">关闭</string>
+    <string name="about">关于</string>
+    <string name="about_title">ADS 车辆检测系统</string>
+    <string name="about_text">请联系我们以获取车辆接头和更新的软件版本.</string>
+    <string name="contact_method">联系方式：</string>
+    <string name="contact_phone">+86-10-63722324</string>
+    <string name="contact_email">tysy@motortools.net</string>
+    <string name="contact_http">http://www.adsscan.com/</string>
+    <string name="not_supported">演示版本，暂不支持此功能。</string>
+    <string name="connect_connector">连接接头</string>
+    <string name="connector_type">接头种类</string>
+    <string name="connector_type_serial">串口</string>
+    <string name="connector_type_bluetooth">蓝牙</string>
+    <string name="no_paired_bluetooth_devices">没有找到已配对的蓝牙接头，请先到系统设置页面进行配对。</string>
+    <string name="select_bluetooth_device_to_connect">请选择以下蓝牙设备中的一个进行连接</string>
+    <string name="bluetooth_connecting">正在连接到蓝牙设备</string>
+    <string name="bluetooth_connection_failed">无法连接到蓝牙设备，请检查蓝牙设置</string>
+    <string name="bluetooth_connection_succeed">已成功连接到蓝牙设备</string>
+    <string name="cannot_extract_manual_file">无法获取用户手册文件，文件可能已经损坏，请尝试重新安装本软件。</string>
+    <string name="cannot_open_manual_file">无法打开用户手册文件，请安装AdobeReader等PDF阅读软件。</string>
+    <string name="box_id">产品编码: </string>
+    <string name="reg_fetching_box_id">正在读取产品编码...</string>
+    <string name="reg_verifying_register">正在验证注册信息...</string>
+    <string name="reg_cannot_get_box_id">无法获取产品编码,请检查连接。 </string>
+    <string name="reg_random_code">随机编码: </string>
+    <string name="reg_password_indicator">注册密码: </string>
+    <string name="reg_password_required">验证之前请先获取注册密码.</string>
+    <string name="reg_verified">注册信息验证通过。</string>
+    <string name="reg_verification_failed">注册信息无法通过验证，请使用重新注册。</string>
+    <string name="reg_readboxid_failed">读取诊断盒编号失败。</string>
+    <string name="ads_webpage_url">http://www.adsscan.com/main.asp</string>
+    <string name="bt_nofound">无法找到蓝牙设备,请确认设备是否蓝牙</string>
+    <string name="bt_pair_hint">请在蓝牙设备列表中选择ADS 或 JBM-242并点击完成配对!</string>
+    <string name="bt_connecting">正在连接蓝牙设备,请稍候...</string>
+    <string name="bt_pair_fail">蓝牙设备配对失败,请重试...</string>
+    <string name="bt_connect_fail">蓝牙设备连接失败,请重试...</string>
+    <string name="bt_fail_tip">连接超时，请确保已打开本机蓝牙并重新尝试连接</string>
+
+    <string name="step_1">第一步：</string>
+    <string name="step_1_1">连接OBD设备到待检车辆</string>
+    <string name="step_1_2">找不到汽车的OBD接口?</string>
+    <string name="step_1_3"><u>点此查找</u></string>
+
+    <string name="step_2">第二步：</string>
+    <string name="step_2_1">将检测系统连接到OBD设备并获取数据</string>
+    <string name="step_2_2">连接OBD设备</string>
+
+    <string name="step_3">第三步</string>
+    <string name="step_3_1">获取故障码</string>
+</resources>

@@ -3,10 +3,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
+        classpath 'com.android.tools.build:gradle:0.12.2'
     }
 }
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 repositories {
     mavenCentral()
@@ -14,13 +14,12 @@ repositories {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.3"
-
+    buildToolsVersion '19.1.0'
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 19
         versionCode 1
-        versionName "1.6.2"
+        versionName '1.7.2'
     }
     buildTypes {
         release {
@@ -28,19 +27,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:19.+'
-    compile files('libs/android_auth.jar')
-    compile files('libs/idcard_sdk.jar')
-    compile files('libs/bcprov-ext-jdk15-146.jar')
-    compile files('libs/pki.jar')
-    compile files('libs/armeabi.jar')
-    compile files('libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies.jar')
-    compile files('libs/swipelistview-1.0-20130701.103547-12-jar-with-dependencies.jar')
-    compile files('libs/nineoldandroids-2.4.0.jar')
-    compile files('libs/zip4j_1.3.1.jar')
-    compile files('libs/seriallib.jar')
+    compile 'com.android.support:appcompat-v7:19.1.0'
 }

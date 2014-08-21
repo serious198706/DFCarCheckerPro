@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.df.app.R;
 import com.df.app.service.util.AppCommon;
 import com.df.library.entries.Action;
+import com.df.library.entries.CarSettings;
 import com.df.library.entries.ListedPhoto;
 import com.df.library.entries.PhotoEntity;
 import com.df.library.entries.PosEntity;
@@ -94,7 +95,7 @@ public class PaintActivity extends Activity {
         setContentView(R.layout.paint_layout);
 
         // 根据CarSettings的figure设定图片
-        int figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
+        int figure = Integer.parseInt(CarSettings.getInstance().getFigure());
         Bitmap bitmap = getBitmapFromFigure(figure, "IN");
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight());
@@ -112,7 +113,7 @@ public class PaintActivity extends Activity {
         interiorPaintView.setLayoutParams(layoutParams);
 
         // 根据CarSettings的figure设定图片
-        figure = Integer.parseInt(BasicInfoLayout.mCarSettings.getFigure());
+        figure = Integer.parseInt(CarSettings.getInstance().getFigure());
         bitmap = getBitmapFromFigure(figure, "EX");
 
         layoutParams = new LinearLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight());
@@ -152,15 +153,6 @@ public class PaintActivity extends Activity {
 
         // 填充照片列表
         initPhotoList();
-
-        // 清除按钮
-        Button clearButton = (Button)findViewById(R.id.clear);
-        clearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertUser(R.string.clear_confirm);
-            }
-        });
 
         // 取消按钮
         Button cancelButton = (Button)findViewById(R.id.cancel);
@@ -263,31 +255,13 @@ public class PaintActivity extends Activity {
             }
         }
 
-//        int length = paintView.getPosEntities().size();
-//
-//        for(int i = 0; i < length; i++) {
-//            PosEntity posEntity = paintView.getPosEntities().get(i);
-//
-//            PhotoEntity photoEntity = null;
-//
-//            int j = i;
-//
-//            do {
-//                photoEntity = paintView.getPhotoEntities().get(j);
-//                j++;
-//            } while (photoEntity.getModifyAction().equals(Action.DELETE));
-//
-//            ListedPhoto listedPhoto = new ListedPhoto(i, photoEntity, posEntity.getType());
-//            listedPhotos.add(listedPhoto);
-//        }
-
-         adapter = new PaintPhotoListAdapter(this, listedPhotos, new PaintPhotoListAdapter.OnDeleteItem() {
+        adapter = new PaintPhotoListAdapter(this, listedPhotos, new PaintPhotoListAdapter.OnDeleteItem() {
             @Override
             public void onDeleteItem(int position) {
-                paintView.getPosEntities().get(position).setDelete(true);
-                paintView.invalidate();
-                adapter.getItem(position).setDelete(true);
-                adapter.notifyDataSetChanged();
+            paintView.getPosEntities().get(position).setDelete(true);
+            paintView.invalidate();
+            adapter.getItem(position).setDelete(true);
+            adapter.notifyDataSetChanged();
             }
         });
 

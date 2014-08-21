@@ -11,34 +11,34 @@
             android:background="#C74810"/>
     </RelativeLayout>
 
-    <com.df.kia.carCheck.BasicInfoLayout
+    <com.df.appkia.carCheck.BasicInfoLayout
         android:id="@+id/basicInfo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/naviBar"/>
 
-    <com.df.kia.carCheck.AccidentCheckLayout
+    <com.df.appkia.carCheck.AccidentCheckLayout
         android:id="@+id/accidentCheck"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/naviBar"
         android:visibility="gone"/>
 
-    <com.df.kia.carCheck.IntegratedCheckLayout
+    <com.df.appkia.carCheck.IntegratedCheckLayout
         android:id="@+id/integratedCheck"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/naviBar"
         android:visibility="gone"/>
 
-    <com.df.kia.carCheck.PhotoLayout
+    <com.df.appkia.carCheck.PhotoLayout
         android:id="@+id/photo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/naviBar"
         android:visibility="gone"/>
 
-    <com.df.kia.carCheck.TransactionNotesLayout
+    <com.df.library.carCheck.TransactionNotesLayout
         android:id="@+id/transactionNotes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

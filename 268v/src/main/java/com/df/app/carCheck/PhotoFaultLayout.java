@@ -18,7 +18,7 @@ import com.df.app.service.util.AppCommon;
 import com.df.library.entries.Action;
 import com.df.library.entries.PhotoEntity;
 import com.df.app.service.Adapter.PhotoListAdapter;
-import com.df.app.service.AddPhotoCommentActivity;
+import com.df.library.carCheck.AddPhotoCommentActivity;
 import com.df.library.entries.UserInfo;
 import com.df.library.service.customCamera.IPhotoProcessListener;
 import com.df.library.service.customCamera.PhotoProcessManager;
@@ -177,7 +177,7 @@ public class PhotoFaultLayout extends LinearLayout implements IPhotoProcessListe
         Helper.handlePhoto(AppCommon.photoDirectory, Long.toString(currentTimeMillis) + ".jpg");
 
         Intent intent = new Intent(context, AddPhotoCommentActivity.class);
-        intent.putExtra("fileName", Long.toString(currentTimeMillis) + ".jpg");
+        intent.putExtra("fileName", AppCommon.photoDirectory + Long.toString(currentTimeMillis) + ".jpg");
         ((Activity)context).startActivityForResult(intent, Common.ADD_COMMENT_FOR_OTHER_FAULT_PHOTO);
     }
 

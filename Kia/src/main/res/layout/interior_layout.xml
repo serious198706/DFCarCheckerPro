@@ -20,7 +20,7 @@
                 <RelativeLayout android:id="@+id/targetView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                    <com.df.kia.paintView.InteriorPaintPreviewView
+                    <com.df.app.paintView.InteriorPaintPreviewView
                         android:id="@+id/interior_image"
                         android:layout_width="500dp"
                         android:layout_height="558dp"
@@ -51,7 +51,7 @@
                               android:textSize="22sp"
                               android:textColor="#555"
                               android:textStyle="bold"
-                              android:gravity="left"/>
+                              android:gravity="right"/>
                     <Spinner android:id="@+id/sealingStrip_spinner"
                              android:layout_width="0dp"
                              android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
                               android:textSize="22sp"
                               android:textColor="#555"
                               android:textStyle="bold"
-                              android:gravity="left"
+                              android:gravity="right"
                               android:layout_weight="3"/>
                     <EditText android:id="@+id/dirty_edit"
                               android:layout_width="0dp"
@@ -101,7 +101,7 @@
                               android:textSize="22sp"
                               android:textColor="#555"
                               android:textStyle="bold"
-                              android:gravity="left"
+                              android:gravity="right"
                               android:layout_weight="3"/>
                     <EditText android:id="@+id/broken_edit"
                               android:layout_width="0dp"
@@ -134,7 +134,7 @@
                             <!--android:text="@string/interior_camera"-->
                             <!--android:paddingLeft="10dp"-->
                             <!--android:paddingRight="10dp"-->
-                            <!--android:drawableRight="@drawable/camera1"-->
+                            <!--android:drawableRight="@drawable/camera"-->
                             <!--android:textColor="#FFF"-->
                             <!--android:background="@drawable/button_custom"/>-->
                 <!--</TableRow>-->
@@ -164,7 +164,18 @@
                         android:background="@drawable/edittext_border"
                         android:paddingLeft="10dp"
                         android:layout_margin="5dp"/>
+                    <Button android:id="@+id/speech_button"
+                        android:layout_width="47dp"
+                        android:layout_height="47dp"
+                        android:background="@drawable/speech"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"/>
                 </TableRow>
+
+                <View android:id="@+id/placeHolder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="300dp"
+                    android:visibility="gone"/>
             </TableLayout>
         </com.df.library.util.MyScrollView>
     </LinearLayout>

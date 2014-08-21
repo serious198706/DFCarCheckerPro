@@ -2,9 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.df.library">
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher" >
+        android:icon="@drawable/ic_launcher"
+        android:name=".util.MyApplication">
 
         <activity
             android:name="com.df.library.service.AttachActivity"
@@ -19,7 +22,6 @@
                 android:resource="@xml/device_filter" />
         </activity>
 
-        <!-- 拍照模块 -->
         <activity
             android:name="com.df.library.service.customCamera.activity.PickPictureActivity"
             android:screenOrientation="landscape" >
@@ -32,22 +34,16 @@
             android:name="com.df.library.service.customCamera.activity.PhotographActivity">
         </activity>
 
-
-        <!-- 拍照识别 -->
         <activity
-            android:name="com.df.library.service.WintoneCameraActivity"
-            android:screenOrientation="landscape" >
+            android:name="com.df.library.carCheck.AddPhotoCommentActivity"
+            android:label="@string/title_activity_add_photo_comment"
+            android:screenOrientation="sensorPortrait"
+            android:windowSoftInputMode="adjustResize" >
         </activity>
 
         <activity
-            android:name="com.df.library.service.IdcardRunner"
-            android:configChanges="keyboardHidden|orientation" >
-            <intent-filter>
-                <action android:name="idcard.receiver" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
+            android:name="com.df.library.service.WintoneCameraActivity"
+            android:screenOrientation="landscape" >
         </activity>
 
         <activity
@@ -81,6 +77,18 @@
                 <action android:name="wintone.idcard.recogService"/>
             </intent-filter>
         </service>
+
+        <activity android:name="com.ads.activity.BaseActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ads.activity.WorkingActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="com.ads.action.RUN_DLL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

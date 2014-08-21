@@ -38,7 +38,7 @@
         android:layout_below="@id/naviBar"
         android:visibility="gone"/>
 
-    <com.df.app.carCheck.TransactionNotesLayout
+    <com.df.library.carCheck.TransactionNotesLayout
         android:id="@+id/transactionNotes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

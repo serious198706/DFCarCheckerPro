@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.df.app.R;
 import com.df.app.service.util.AppCommon;
+import com.df.library.carCheck.Integrated1Layout;
+import com.df.library.carCheck.Integrated3Layout;
 import com.df.library.entries.PhotoEntity;
 import com.df.library.service.views.MyViewPagerAdapter;
 import com.df.library.entries.UserInfo;
@@ -75,7 +77,7 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
 
         exteriorLayout = new ExteriorLayout(context);
         interiorLayout = new InteriorLayout(context);
-        integrated1Layout = new Integrated1Layout(context);
+        integrated1Layout = new Integrated1Layout(context, BasicInfoLayout.carId);
         integrated2Layout = new Integrated2Layout(context);
         integrated3Layout = new Integrated3Layout(context);
 
@@ -185,37 +187,37 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
         if(Common.getEnvironment() != Common.INTERNAL_100_6_VERSION)
             currentField = integrated2Layout.checkAllFields();
 
-        if(currentField.equals("leftFront")) {
+        if(currentField.contains("leftFront")) {
             Toast.makeText(rootView.getContext(), "未拍摄左前轮照片！", Toast.LENGTH_SHORT).show();
             viewPager.setCurrentItem(3);
             integrated2Layout.locateTirePart();
 
             return currentField;
-        } else if(currentField.equals("rightFront")) {
+        } else if(currentField.contains("rightFront")) {
             Toast.makeText(rootView.getContext(), "未拍摄右前轮照片！", Toast.LENGTH_SHORT).show();
             viewPager.setCurrentItem(3);
             integrated2Layout.locateTirePart();
 
             return currentField;
-        } else if(currentField.equals("leftRear")) {
+        } else if(currentField.contains("leftRear")) {
             Toast.makeText(rootView.getContext(), "未拍摄左后轮照片！", Toast.LENGTH_SHORT).show();
             viewPager.setCurrentItem(3);
             integrated2Layout.locateTirePart();
 
             return currentField;
-        } else if(currentField.equals("rightRear")) {
+        } else if(currentField.contains("rightRear")) {
             Toast.makeText(rootView.getContext(), "未拍摄右后轮照片！", Toast.LENGTH_SHORT).show();
             viewPager.setCurrentItem(3);
             integrated2Layout.locateTirePart();
 
             return currentField;
-        } else if(currentField.equals("spare")) {
+        } else if(currentField.contains("spare")) {
             Toast.makeText(rootView.getContext(), "未拍摄备胎照片！", Toast.LENGTH_SHORT).show();
             viewPager.setCurrentItem(3);
             integrated2Layout.locateTirePart();
 
             return currentField;
-        } else if(currentField.equals("edits")) {
+        } else if(currentField.contains("edits")) {
             Toast.makeText(rootView.getContext(), "轮胎标号有误！", Toast.LENGTH_SHORT).show();
             viewPager.setCurrentItem(3);
             integrated2Layout.locateTirePart();
@@ -271,6 +273,7 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
             JSONObject interior = interiorLayout.generateJSONObject();
             JSONObject engine = integrated1Layout.generateEngineJSONObject();
             JSONObject gearbox = integrated1Layout.generateGearboxJSONObject();
+            JSONObject fluid = integrated1Layout.generateFluidJSONObject();
             JSONObject function = integrated1Layout.generateFunctionJSONObject();
             JSONObject flooded = integrated2Layout.generateFloodedJSONObject();
             JSONObject tires = integrated2Layout.generateTiresJSONObject();
@@ -286,6 +289,9 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
 
             // 综合检查 - 变速箱检查
             conditions.put("gearbox", gearbox);
+
+            // 综合检查 - 液位检查
+            conditions.put("fluid", fluid);
 
             // 综合检查 - 功能检查
             conditions.put("function",function);
@@ -336,6 +342,7 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
             JSONObject interior = conditions.getJSONObject("interior");
             JSONObject engine = conditions.getJSONObject("engine");
             JSONObject gearbox = conditions.getJSONObject("gearbox");
+            JSONObject fluid = conditions.getJSONObject("fluid");
             JSONObject function = conditions.getJSONObject("function");
             JSONObject flooded = conditions.getJSONObject("flooded");
             JSONObject tires = conditions.getJSONObject("tires");
@@ -354,7 +361,7 @@ public class IntegratedCheckLayout extends LinearLayout implements ViewPager.OnP
                 interiorLayout.fillInData(interior);
             }
 
-            integrated1Layout.fillInData(engine, gearbox, function, comment1);
+            integrated1Layout.fillInData(engine, gearbox, fluid, function, comment1);
 
             if(CarCheckActivity.isModify()) {
                 integrated2Layout.fillInData(flooded, tires, jsonObject.getJSONObject("photos"), comment2);

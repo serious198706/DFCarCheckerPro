@@ -67,9 +67,6 @@ public class IssueLayout extends LinearLayout {
     public static int sketchIndex;
     public static int sketchHomeIndex;
 
-    // 图片层
-    private ArrayList<Drawable> drawableList;
-
     // 最后会用到，所以保存起来
     private JSONObject sketch;
 
@@ -85,10 +82,6 @@ public class IssueLayout extends LinearLayout {
     private String level2;
     private DownloadImageTask downloadImageTask;
     private DownloadImageTask downloadHomeImageTask;
-
-    private final ScheduledExecutorService scheduler =
-            Executors.newScheduledThreadPool(1);
-    private Thread thread = new Thread(r);
 
     public IssueLayout(Context context) {
         super(context);
@@ -150,75 +143,6 @@ public class IssueLayout extends LinearLayout {
     }
 
     /**
-     * 传入"L,E,K,LC,RB"，传出"L1, E1, K1"
-    *
-     */
-    private String handelLevelNames(String level, int n) {
-        String[] partNames = level.split(",");
-
-        String result = "";
-
-        for(String part : partNames) {
-            // 将LA,LB,LC,RA,RB,RC过滤掉
-            if(part.length() != 1) {
-                continue;
-            }
-
-            part += Integer.toString(n);
-            result += part;
-            result += ",";
-        }
-
-        return result.length() == 0 ? result : result.substring(0, result.length() - 1);
-    }
-
-    /**
-     * 绘制底图
-     */
-    private void drawBase() {
-        Bitmap baseBitmap = BitmapFactory.decodeFile(AppCommon.utilDirectory + "base");
-
-        // 先添加底图
-        drawableList = new ArrayList<Drawable>();
-        drawableList.add(new BitmapDrawable(getResources(), baseBitmap));
-    }
-    /**
-     * 设置漆面预览图
-     * @param level
-     */
-    private void drawSketch(ImageView imageView, String level) {
-        try {
-            if(!level.equals("")) {
-                String[] partNames = level.split(",");
-
-                // 根据名称添加其他图
-                for(String layerName : partNames) {
-                    Drawable bitmapDrawable = Drawable.createFromPath(AppCommon.utilDirectory + layerName);
-                    drawableList.add(bitmapDrawable);
-                }
-            }
-
-            // 创建LayerDrawable
-            LayerDrawable layerDrawable = new LayerDrawable(drawableList.toArray(new Drawable[drawableList.size()]));
-
-            int width = layerDrawable.getIntrinsicWidth();
-            int height = layerDrawable.getIntrinsicHeight();
-
-            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            layerDrawable.setBounds(0, 0, width, height);
-            layerDrawable.draw(new Canvas(bitmap));
-
-            System.gc();
-
-            // 将LayerDrawable添加到imageView中
-            imageView.setImageBitmap(bitmap);
-        } catch (OutOfMemoryError e) {
-            Toast.makeText(rootView.getContext(), "内存不足，请稍候重试！", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-    /**
      * 生成事故检查JSONObject
      * @return
      * @throws JSONException
@@ -239,7 +163,7 @@ public class IssueLayout extends LinearLayout {
             issueObject.put("issueId", temp.getId());
             issueObject.put("summary", "");
             issueObject.put("serious", temp.getSerious());
-            issueObject.put("com/df/library/service/customCamera/view", temp.getView());
+            issueObject.put("view", temp.getView());
             issueObject.put("select", temp.getSelect());
 
             issueItem.put(issueObject);
@@ -250,9 +174,6 @@ public class IssueLayout extends LinearLayout {
 
         return issue;
     }
-
-    public Bitmap getAccidentSketch() { return ((BitmapDrawable)imageView.getDrawable()).getBitmap(); }
-    public Bitmap getAccidentHomeSketch() { return ((BitmapDrawable)imageViewHome.getDrawable()).getBitmap(); }
 
     /**
      * 生成事故检查的漆面草图
@@ -440,7 +361,7 @@ public class IssueLayout extends LinearLayout {
                 JSONObject issueObject = jsonArray.getJSONObject(i);
 
                 Issue issue = new Issue(issueObject.getInt("issueId"),
-                        issueObject.getString("desc"), issueObject.getString("com/df/library/service/customCamera/view"), "", "", "");
+                        issueObject.getString("desc"), issueObject.getString("view"), "", "", "");
 
                 if(issueObject.has("select")) {
                     issue.setSelect(issueObject.getString("select"));

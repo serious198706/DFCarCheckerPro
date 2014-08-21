@@ -137,7 +137,7 @@
             <RelativeLayout android:layout_width="500dp"
                 android:layout_height="350dp">
 
-                <com.df.kia.paintView.FramePaintPreviewView
+                <com.df.appkia.paintView.FramePaintPreviewView
                 android:id="@+id/front_preview"
                 android:layout_width="500dp"
                 android:layout_height="350dp"
@@ -168,7 +168,7 @@
 
             <RelativeLayout android:layout_width="500dp"
                             android:layout_height="350dp">
-                <com.df.kia.paintView.FramePaintPreviewView
+                <com.df.appkia.paintView.FramePaintPreviewView
                 android:id="@+id/rear_preview"
                 android:layout_width="500dp"
                 android:layout_height="350dp"

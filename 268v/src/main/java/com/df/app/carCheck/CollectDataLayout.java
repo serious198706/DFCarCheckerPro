@@ -39,6 +39,7 @@ import com.df.library.asyncTask.GetIssueItemsTask;
 import com.df.app.service.DF3000Service;
 import com.df.app.service.DF5000Service;
 import com.df.app.service.Device3000ListDialog;
+import com.df.library.entries.CarSettings;
 import com.df.library.entries.Measurement;
 import com.df.app.service.Device5000ListDialog;
 import com.df.library.util.MyAlertDialog;
@@ -985,7 +986,7 @@ public class CollectDataLayout extends LinearLayout {
             // 启动获取issue数据线程
             try {
                 GetIssueItemsTask getIssueItemsTask = new GetIssueItemsTask(rootView.getContext(),
-                        Integer.parseInt(BasicInfoLayout.mCarSettings.getSeries().id),
+                        Integer.parseInt(CarSettings.getInstance().getSeries().id),
                         VehicleInfoLayout.getExteriorColor(), VehicleInfoLayout.getBuiltDate(),
                         generateJSONObject(true), new GetIssueItemsTask.OnGetIssueItemsFinished() {
                     @Override
@@ -1078,7 +1079,11 @@ public class CollectDataLayout extends LinearLayout {
      * 注销broadReceiver
      */
     public void unRegisterBroadReceiver() {
-        getContext().unregisterReceiver(broadcastReceiver);
+        try {
+            getContext().unregisterReceiver(broadcastReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

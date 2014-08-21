@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+    
+    <Button android:id="@+id/ads_btn_selectall"
+        android:onClick="onClickFunctionButton"
+        android:layout_weight="1"
+        android:visibility="gone"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:text="@string/selectall"
+        android:textSize="@dimen/txt_size_functionbutton"/>
+    
+	<Button android:id="@+id/ads_btn_selectnone"
+	    android:onClick="onClickFunctionButton"
+	    android:layout_weight="1"
+	    android:visibility="gone"
+	    android:layout_width="160px"
+	    android:layout_height="wrap_content"
+	    android:text="@string/selectnone"
+	    android:textSize="@dimen/txt_size_functionbutton"/>
+	
+    <Button
+		android:id="@+id/ads_function_btn1"
+		android:layout_width="160px"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+		android:textSize="@dimen/txt_size_functionbutton"
+		android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn2"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn3"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn4"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn5"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn6"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn7"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn8"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn9"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn10"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn11"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn12"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+    <Button
+        android:id="@+id/ads_function_btn13"
+        android:layout_width="160px"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="@dimen/txt_size_functionbutton"
+        android:onClick="onClickFunctionButton"/>
+
+</LinearLayout>

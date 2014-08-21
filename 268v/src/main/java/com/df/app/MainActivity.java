@@ -23,10 +23,10 @@ import android.widget.Toast;
 
 import com.df.app.carsChecked.CarsCheckedListActivity;
 import com.df.app.carsWaiting.CarsWaitingListActivity;
+import com.df.app.procedures.InputProceduresActivity;
 import com.df.app.service.util.AppCommon;
 import com.df.library.entries.UserInfo;
 import com.df.library.entries.VehicleModel;
-import com.df.app.procedures.InputProceduresActivity;
 import com.df.library.asyncTask.LogoutTask;
 import com.df.library.service.EncryptDecryptFile;
 import com.df.library.service.VehicleModelParser;

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    android:background="@drawable/speech_bg">
+
+    <Button android:id="@+id/close"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:background="@drawable/speech_close"
+        android:layout_margin="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"/>
+
+    <ImageView android:id="@+id/mic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/mic"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"/>
+
+    <LinearLayout android:id="@+id/volume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp">
+
+        <ImageView android:id="@+id/lv9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/lv9"
+            android:layout_gravity="center"/>
+        <ImageView android:id="@+id/lv8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1px"
+            android:src="@drawable/lv8"
+            android:layout_gravity="center"/>
+        <ImageView android:id="@+id/lv7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1px"
+            android:src="@drawable/lv7"
+            android:layout_gravity="center"/>
+        <ImageView android:id="@+id/lv6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1px"
+            android:src="@drawable/lv6"
+            android:layout_gravity="center"/>
+        <ImageView android:id="@+id/lv5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:src="@drawable/lv5"
+            android:layout_gravity="center"/>
+        <ImageView android:id="@+id/lv4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1px"
+            android:src="@drawable/lv4"
+            android:layout_gravity="center"/>
+        <ImageView android:id="@+id/lv3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1px"
+            android:src="@drawable/lv3"
+            android:layout_gravity="center"/>
+        <ImageView android:id="@+id/lv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1px"
+            android:src="@drawable/lv2"
+            android:layout_gravity="center"/>
+        <ImageView android:id="@+id/lv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:src="@drawable/lv1"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <TextView android:id="@+id/tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mic"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="请讲话"
+        android:textSize="22sp"
+        android:textColor="#555"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tip"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:textColor="#FFF"
+            android:padding="-5dp"/>
+
+        <Button android:id="@+id/start"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="2"
+            android:layout_margin="5dp"
+            android:text="说完了"
+            android:textColor="#FFF"
+            android:background="@drawable/button_custom"
+            android:padding="-5dp"/>
+
+        <Button android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="2"
+            android:layout_margin="5dp"
+            android:text="取消"
+            android:textColor="#FFF"
+            android:background="@drawable/button_custom"
+            android:padding="-5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:textColor="#FFF"
+            android:padding="-5dp"/>
+    </LinearLayout>
+
+
+</RelativeLayout>

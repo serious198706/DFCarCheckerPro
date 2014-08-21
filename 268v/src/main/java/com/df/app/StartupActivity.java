@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class StartupActivity extends Activity {
-    public static int environment;
+    private int environment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.df.library.util.Common;
 import com.df.library.R;
@@ -44,8 +45,7 @@ public class LicenseRecognise {
         checkCameraParameters();
     }
 
-    public void takePhoto(Handler handler) {
-        LicenseRecognise.sHandler = handler;
+    public void takePhoto() {
         writePreferences("Button", "Height", 50);
         Log.i(Common.TAG, "isCatchPreview = " + isCatchPreview + " isCatchPicture = " + isCatchPicture);
         nMainID = Helper.readMainID();
@@ -202,5 +202,60 @@ public class LicenseRecognise {
             }
         }
         return latestImage;
+    }
+
+    public static Object parseFields(Intent data) {
+        // 读识别返回值
+        int ReturnAuthority = data.getIntExtra("ReturnAuthority", -100000);//取激活状态
+        int ReturnInitIDCard = data.getIntExtra("ReturnInitIDCard", -100000);//取初始化返回值
+        int ReturnLoadImageToMemory = data.getIntExtra( "ReturnLoadImageToMemory", -100000);//取读图像的返回值
+        int ReturnRecogIDCard = data.getIntExtra("ReturnRecogIDCard",  -100000);//取识别的返回值
+
+        Log.d(Common.TAG, ReturnAuthority + ", " + ReturnInitIDCard + ", " + ReturnLoadImageToMemory + ", " + ReturnRecogIDCard);
+
+        Log.i(Common.TAG, "ReturnLPFileName:" + data.getStringExtra("ReturnLPFileName"));
+
+        if (ReturnAuthority == 0 && ReturnInitIDCard == 0
+                && ReturnLoadImageToMemory == 0 && ReturnRecogIDCard > 0) {
+            /**
+             0	保留
+             1	号牌号码
+             2	车辆类型
+             3	所有人
+             4	住址
+             5	品牌型号
+             6	车辆识别代号
+             7	发动机号码
+             8	注册日期
+             9	发证日期
+             10	使用性质
+             */
+
+            String[] fieldValue = (String[]) data.getSerializableExtra("GetRecogResult");
+            String fields[] = {fieldValue[1], fieldValue[5], fieldValue[2], fieldValue[10], fieldValue[7], fieldValue[6]};
+
+            return fields;
+        } else {
+            String str = "";
+            if (ReturnAuthority == -100000) {
+                str = "未识别   代码： " + ReturnAuthority;
+            } else if (ReturnAuthority != 0) {
+                str = "激活失败 代码：" + ReturnAuthority;
+            } else if (ReturnInitIDCard != 0) {
+                str = "识别初始化失败 代码：" + ReturnInitIDCard;
+            } else if (ReturnLoadImageToMemory != 0) {
+                if (ReturnLoadImageToMemory == 3) {
+                    str = "识别载入图像失败，请重新识别 代码：" + ReturnLoadImageToMemory;
+                } else if(ReturnLoadImageToMemory == 1){
+                    str = "识别载入图像失败，识别初始化失败,请重试 代码：" + ReturnLoadImageToMemory;
+                } else {
+                    str = "识别载入图像失败 代码：" + ReturnLoadImageToMemory;
+                }
+            } else if (ReturnRecogIDCard != 0) {
+                str = "识别失败 代码：" + ReturnRecogIDCard;
+            }
+
+            return str;
+        }
     }
 }

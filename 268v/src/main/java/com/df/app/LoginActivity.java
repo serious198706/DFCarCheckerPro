@@ -104,7 +104,7 @@ public class LoginActivity extends Activity {
             e.printStackTrace();
         }
 
-        CheckUpdateTask mCheckUpdateTask = new CheckUpdateTask(LoginActivity.this);
+        CheckUpdateTask mCheckUpdateTask = new CheckUpdateTask(LoginActivity.this, AppCommon.appType);
         mCheckUpdateTask.execute();
     }
 
@@ -187,22 +187,16 @@ public class LoginActivity extends Activity {
     }
 
     private void rememberUserName(boolean remember) {
+        SharedPreferences sharedPreferences = getSharedPreferences("userName", Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
         if(remember) {
-            SharedPreferences sharedPreferences = getSharedPreferences("userName", Context.MODE_PRIVATE);
-
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-
             editor.putString("username", mUserNameView.getText().toString());
-
-            editor.commit();
         } else {
-            SharedPreferences sharedPreferences = getSharedPreferences("userName", Context.MODE_PRIVATE);
-
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-
             editor.remove("username");
-
-            editor.commit();
         }
+
+        editor.commit();
     }
 }

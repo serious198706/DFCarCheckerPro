@@ -26,7 +26,7 @@ import com.df.app.R;
 import com.df.app.service.util.AppCommon;
 import com.df.library.entries.PhotoEntity;
 import com.df.library.entries.PosEntity;
-import com.df.app.service.AddPhotoCommentActivity;
+import com.df.library.carCheck.AddPhotoCommentActivity;
 import com.df.library.service.customCamera.IPhotoProcessListener;
 import com.df.library.service.customCamera.PhotoProcessManager;
 import com.df.library.service.customCamera.PhotoTask;
@@ -309,14 +309,6 @@ public class ExteriorPaintView extends PaintView implements IPhotoProcessListene
                 long fileName = Long.parseLong(temp.substring(0, temp.length() - 4));
 
                 Helper.startCamera(getContext(), AppCommon.photoDirectory, name, fileName);
-
-//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//
-//                Uri fileUri = Helper.getOutputMediaFileUri(data.get(data.size() - 1).getImageFileName());
-//                // create a file to save the image
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-//
-//                ((Activity) getContext()).startActivityForResult(intent, Common.PHOTO_FOR_EXTERIOR_FAULT);
             }
         })
         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -348,7 +340,7 @@ public class ExteriorPaintView extends PaintView implements IPhotoProcessListene
 
                 // 进入备注界面
                 Intent intent = new Intent(getContext(), AddPhotoCommentActivity.class);
-                intent.putExtra("fileName", fileName);
+                intent.putExtra("fileName", AppCommon.photoDirectory + fileName);
                 ((Activity)getContext()).startActivityForResult(intent, Common.ADD_COMMENT_FOR_EXTERIOR_AND_INTERIOR_PHOTO);
             } else {
                 // 如果取消了拍摄，将照片名称置空

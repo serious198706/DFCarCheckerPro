@@ -59,7 +59,6 @@ public class VehicleInfoLayout extends LinearLayout {
     private EditText seriesEdit;
     private EditText modelEdit;
 
-
     // 记录五个spinner最后选择的位置
     private int lastCountryIndex = 0;
     private int lastBrandIndex = 0;
@@ -83,7 +82,7 @@ public class VehicleInfoLayout extends LinearLayout {
         rootView = LayoutInflater.from(context).inflate(R.layout.vehicle_info_layout, this);
 
         vehicleModel = MainActivity.vehicleModel;
-        mCarSettings = BasicInfoLayout.mCarSettings;
+        mCarSettings = CarSettings.getInstance();
 
         // 点击品牌选择按钮
         Button brandSelectButton = (Button) rootView.findViewById(R.id.brand_select_button);
@@ -227,20 +226,6 @@ public class VehicleInfoLayout extends LinearLayout {
             mCarSettings.setDriveType("两驱");
         }
 
-//        // 设置变速器形式Spinner
-//        if(modelString.contains("AMT")) {
-//            mCarSettings.setTransmission("AMT");
-//        } else if(modelString.contains("A/MT")) {
-//            mCarSettings.setTransmission("A/MT");
-//        } else if(modelString.contains("MT")) {
-//            mCarSettings.setTransmission("MT");
-//        } else if(modelString.contains("CVT") || modelString.contains("DSG")) {
-//            mCarSettings.setTransmission("CVT");
-//        } else {
-//            mCarSettings.setTransmission("AT");
-//        }
-
-        // TODO!!!!
         // 设置变速器形式Spinner
         if(modelString.contains("AMT")) {
             mCarSettings.setTransmission("AMT");
@@ -630,16 +615,6 @@ public class VehicleInfoLayout extends LinearLayout {
     public void fillInData(JSONObject procedures, String seriesId, String modelId, OnUiUpdated listener) {
         try {
             mUiUpdatedCallback = listener;
-
-//            setEditViewText(rootView, R.id.vin_edit, procedures.getString("vin"));
-//            setEditViewText(rootView, R.id.engineSerial_edit, procedures.getString("engineSerial"));
-//            setEditViewText(rootView, R.id.plateNumber_edit, procedures.getString("plateNumber"));
-//            setEditViewText(rootView, R.id.licenseModel_edit, procedures.getString("licenseModel"));
-//            setEditViewText(rootView, R.id.vehicleType_edit, procedures.getString("vehicleType"));
-//            setEditViewText(rootView, R.id.mileage_edit, procedures.getString("mileage"));
-//            setEditViewText(rootView, R.id.exteriorColor_edit, procedures.getString("exteriorColor"));
-//            setEditViewText(rootView, R.id.regDate_edit, procedures.getString("regDate"));
-//            setEditViewText(rootView, R.id.builtDate_edit, procedures.getString("builtDate"));
 
             setEditViewText(rootView, R.id.vin_edit, procedures.getString("vin"));
 

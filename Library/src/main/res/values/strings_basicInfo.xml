@@ -180,4 +180,9 @@
 
     <string name="airConditioningTemp">空调出风口温度：</string>
     <string name="degree">℃</string>
+
+    <string name="obd">OBD检测：</string>
+    <string name="startobd">进入OBD检测</string>
+
+    <string name="obd1">OBD检测</string>
 </resources>

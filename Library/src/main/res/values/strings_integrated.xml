@@ -83,6 +83,13 @@
 
     <string name="needRepair">车身覆盖件有需要修复的部位</string>
     <string name="needRepair1">车身覆盖件有需要修复的部位：</string>
+    <string name="colloidal">胶体开裂检查：</string>
+    <string-array name="colloidal_item">
+        <item>前（左/右）减震器座胶体开裂</item>
+        <item>前（左/右）翼子板胶体开裂</item>
+        <item>前纵梁胶体开裂、防火墙胶体开裂</item>
+    </string-array>
+    
     <string name="exterior_comment">外观检查备注：</string>
 
     <!-- 内饰检查 -->
@@ -176,6 +183,15 @@
     <string name="AtShiftShock">原地挂档的冲击感在合理范围内：</string>
     <string name="AtShiftNoise">各档位切换时无异响：</string>
     <string name="AtShiftEasy">档位切换清晰、轻便，无涩滞感：</string>
+
+    <string name="fluid_">液位检查：</string>
+    <string name="engineOil">机油液位检查：</string>
+    <string name="antifreezeFluid">防冻液液位检查：</string>
+
+    <string-array name="fluid_item">
+        <item>正常</item>
+        <item>缺失</item>
+    </string-array>
 
     <!-- 功能检查 -->
     <string name="function">功能检查：</string>

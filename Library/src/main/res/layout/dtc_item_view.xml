@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ads_dtc_item_root"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+    
+    <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" 
+    android:gravity="center" >
+		<ImageView android:id="@+id/ads_dtc_item_image"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:adjustViewBounds="true"
+			android:maxHeight="64dp"
+			android:src="@drawable/warning"/>
+        <TextView android:id="@+id/ads_dtc_item_code"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:textSize="18dp"
+              android:textColor="#F00"
+              />
+    </LinearLayout>
+    
+    <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center" >
+        <TextView android:id="@+id/ads_dtc_item_desc"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical"
+              android:textSize="24dp"
+              android:textColor="@drawable/gray"
+              android:padding="8px"
+              />
+        <TextView android:id="@+id/ads_dtc_item_state"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center_vertical|left"
+              android:textSize="20dp"
+              android:textColor="#FF9911"
+              android:padding="8px"
+              />
+    
+    </LinearLayout>
+    
+</LinearLayout>

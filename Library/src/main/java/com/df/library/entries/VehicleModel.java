@@ -1,5 +1,6 @@
 package com.df.library.entries;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,17 +10,13 @@ import java.util.List;
  * 解析xml文件后的实体类
  */
 
-public class VehicleModel {
+public class VehicleModel implements Serializable{
     // 国家列表
     public List<Country> countries;
     public String version;
 
     public VehicleModel() {
         countries = new ArrayList<Country>();
-    }
-
-    public VehicleModel getVehicleModelInstance() {
-        return new VehicleModel();
     }
 
     public List<Country> getCountries() {

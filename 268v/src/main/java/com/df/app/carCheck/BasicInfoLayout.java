@@ -10,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.df.app.R;
-import com.df.library.entries.CarSettings;
 import com.df.library.service.views.MyViewPagerAdapter;
 import com.df.library.util.Common;
 import com.df.library.util.MyOnClick;
@@ -38,9 +37,6 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
     // 配置信息
     private OptionsLayout optionsLayout;
 
-    // 车辆配置
-    public static CarSettings mCarSettings;
-
     // CarId
     public static int carId;
 
@@ -65,8 +61,6 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
 
     public void init(Context context){
         rootView = LayoutInflater.from(context).inflate(R.layout.basic_info_layout, this);
-
-        mCarSettings = new CarSettings();
 
         // 废弃
         optionsLayout = new OptionsLayout(context, new OptionsLayout.OnLoadSettingsButtonClicked() {
@@ -205,7 +199,7 @@ public class BasicInfoLayout extends LinearLayout implements ViewPager.OnPageCha
      * 清空缓存
      */
     public void clearCache() {
-        mCarSettings = null;
+        carId = -1;
     }
 
     /**

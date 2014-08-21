@@ -21,7 +21,7 @@ import com.df.app.R;
 import com.df.app.carCheck.PhotoFaultLayout;
 import com.df.app.service.util.AppCommon;
 import com.df.library.entries.Action;
-import com.df.app.service.AddPhotoCommentActivity;
+import com.df.library.carCheck.AddPhotoCommentActivity;
 import com.df.app.carCheck.IssueLayout;
 import com.df.app.carCheck.PhotoLayout;
 import com.df.library.entries.Issue;
@@ -194,7 +194,7 @@ public class IssuePhotoListAdapter extends BaseAdapter implements IPhotoProcessL
                         IssueLayout.photoListAdapter = IssuePhotoListAdapter.this;
 
                         Intent intent = new Intent(context, AddPhotoCommentActivity.class);
-                        intent.putExtra("fileName", photoEntity.getFileName());
+                        intent.putExtra("fileName", AppCommon.photoDirectory + photoEntity.getFileName());
                         intent.putExtra("comment", ((TextView)view).getText().toString());
                         ((Activity)context).startActivityForResult(intent, Common.MODIFY_COMMENT);
                     }
@@ -220,7 +220,6 @@ public class IssuePhotoListAdapter extends BaseAdapter implements IPhotoProcessL
 
         return view;
     }
-
 
     /**
      * 点击缩略图时，显示对应的图片

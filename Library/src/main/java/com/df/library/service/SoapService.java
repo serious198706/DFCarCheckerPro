@@ -138,10 +138,14 @@ public class SoapService implements ISoapService {
         SoapObject soapObject = (SoapObject) envelope.bodyIn;
 
         // 成功失败标志位
-        String flag = soapObject.getProperty(0).toString();
+        String flag;
 
-        // JSON格式数据
-        resultMessage = soapObject.getProperty(1).toString();
+        if(soapObject.getPropertyCount() == 2) {
+            flag = soapObject.getProperty(0).toString();
+            resultMessage = soapObject.getProperty(1).toString();
+        } else {
+            resultMessage = flag = soapObject.getProperty(0).toString();
+        }
 
         // 成功
         if(flag.equals("0")) {

@@ -26,4 +26,9 @@ public class DeleteFiles {
             }
         }
     }
+
+    public static boolean deleteFile(String path) {
+        File file = new File(path);
+        return file.delete();
+    }
 }

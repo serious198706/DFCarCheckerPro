@@ -61,13 +61,13 @@
                 android:layout_gravity="center"
                 android:orientation="vertical">
 
-                <com.df.kia.paintView.ExteriorPaintView
+                <com.df.appkia.paintView.ExteriorPaintView
                 android:id="@+id/exterior_paint_view"
                 android:layout_width="500dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"/>
 
-                <com.df.kia.paintView.InteriorPaintView
+                <com.df.appkia.paintView.InteriorPaintView
                 android:id="@+id/interior_paint_view"
                 android:layout_width="500dp"
                 android:layout_height="wrap_content"
@@ -79,15 +79,6 @@
                               android:orientation="horizontal"
                               android:layout_gravity="center"
                               android:layout_marginTop="10dp">
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:visibility="gone">
-                    <include layout="@layout/paint_menu"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

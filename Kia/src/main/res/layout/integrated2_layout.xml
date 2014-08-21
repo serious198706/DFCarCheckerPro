@@ -336,7 +336,7 @@
                     android:textSize="22sp"
                     android:textColor="#555"
                     android:textStyle="bold"
-                    android:text="四轮标号相同"/>
+                    android:text="四轮标号相同（勾选此项并填写左前轮标号，四轮标号将同时更改）"/>
 
                 <RelativeLayout android:id="@+id/container"
                     android:layout_width="match_parent"
@@ -450,7 +450,7 @@
                         android:layout_height="wrap_content"
                         android:layout_width="0dp"
                         android:text="@string/it2_comment"
-                        android:layout_weight="1"
+                        android:layout_weight="3"
                         android:textSize="22sp"
                         android:textColor="#555"
                         android:textStyle="bold"
@@ -459,14 +459,25 @@
                         android:id="@+id/it2_comment_edit"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="5"
                         android:inputType="textMultiLine"
                         android:minHeight="40dp"
                         android:ems="10"
                         android:layout_margin="5dp"
                         android:background="@drawable/edittext_border"
                         android:paddingLeft="10dp"/>
+                    <Button android:id="@+id/speech_button"
+                        android:layout_width="47dp"
+                        android:layout_height="47dp"
+                        android:background="@drawable/speech"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"/>
                 </TableRow>
+
+                <View android:id="@+id/placeHolder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="300dp"
+                    android:visibility="gone"/>
             </TableLayout>
         </LinearLayout>
 

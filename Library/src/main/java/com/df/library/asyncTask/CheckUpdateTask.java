@@ -16,6 +16,7 @@ import com.df.library.R;
 import com.df.library.service.SoapService;
 import com.df.library.util.Common;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.df.library.util.Helper.setTextView;
@@ -27,13 +28,15 @@ import static com.df.library.util.Helper.setTextView;
  */
 
 public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
+    private int appType;
     private Context context;
     private SoapService soapService;
     private ProgressDialog mProgressDialog;
     private DownloadNewVersionTask mDownloadTask;
 
-    public CheckUpdateTask(Context context) {
+    public CheckUpdateTask(Context context, int appType) {
         this.context = context;
+        this.appType = appType;
     }
 
     @Override
@@ -43,12 +46,20 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        boolean success;
+        boolean success = false;
 
-        soapService = new SoapService();
-        soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.GET_APP_NEW_VERSION);
+        // 6月13日加 在接口部分增加apptype字段，用来区分版本（专业版、起亚版）
+        try {
+            soapService = new SoapService();
+            soapService.setUtils(Common.getSERVER_ADDRESS() + Common.CAR_CHECK_SERVICE, Common.CHECK_VERSION);
 
-        success = soapService.communicateWithServer();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("AppType", appType);
+
+            success = soapService.communicateWithServer(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         return success;
     }

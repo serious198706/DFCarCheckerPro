@@ -17,8 +17,9 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.df.app.R;
+import com.df.library.carCheck.Integrated1Layout;
 import com.df.library.entries.CarSettings;
-import com.df.app.service.util.AppCommon;
+import com.df.library.util.Common;
 import com.df.library.util.Helper;
 
 import org.json.JSONException;
@@ -46,7 +47,6 @@ public class OptionsLayout extends LinearLayout {
     }
 
     private View rootView;
-
     private CarSettings mCarSettings;
     private OnLoadSettingsButtonClicked mCallback;
 
@@ -70,7 +70,7 @@ public class OptionsLayout extends LinearLayout {
     private void init() {
         rootView = LayoutInflater.from(context).inflate(R.layout.options_layout, this);
 
-        mCarSettings = BasicInfoLayout.mCarSettings;
+        mCarSettings = CarSettings.getInstance();
 
         Button loadSettingsButton = (Button)findViewById(R.id.loadSettingsButton);
         loadSettingsButton.setOnClickListener(new OnClickListener() {
@@ -100,7 +100,6 @@ public class OptionsLayout extends LinearLayout {
             }
         });
 
-
         fillInDefaultData();
     }
 
@@ -113,7 +112,7 @@ public class OptionsLayout extends LinearLayout {
         final String configArray[] = carConfigs.split(",");
 
         for(int i = 0; i < configArray.length; i++) {
-            setSpinnerSelection(AppCommon.carSettingsSpinnerMap[i][0], "无");
+            setSpinnerSelection(Common.carSettingsSpinnerMap[i][0], "无");
         }
     }
 
@@ -122,17 +121,19 @@ public class OptionsLayout extends LinearLayout {
      */
     public void updateUi() {
         // 设置排量EditText
-        setEditViewText(rootView, R.id.displacement_edit, BasicInfoLayout.mCarSettings.getDisplacement());
+        mCarSettings = CarSettings.getInstance();
+
+        setEditViewText(rootView, R.id.displacement_edit, mCarSettings.getDisplacement());
 
         // 设置驱动方式EditText
-        setEditViewText(rootView, R.id.transmission_edit, BasicInfoLayout.mCarSettings.getTransmissionText());
+        setEditViewText(rootView, R.id.transmission_edit, mCarSettings.getTransmissionText());
 
         // 设置车辆型号textView
         setTextView(rootView, R.id.brandText, "车辆型号：" +
-                BasicInfoLayout.mCarSettings.getBrandString());
+                CarSettings.getInstance().getBrandString());
 
         // 改动“综合检查”里的变速器形式
-        Integrated1Layout.setGearType(BasicInfoLayout.mCarSettings.getTransmissionText());
+        Integrated1Layout.setGearType(mCarSettings.getTransmissionText());
     }
 
     /**
@@ -207,7 +208,6 @@ public class OptionsLayout extends LinearLayout {
             options.put("model", mCarSettings.getModel().name);
             options.put("modelId", Integer.parseInt(mCarSettings.getModel().id));
             options.put("figure", Integer.parseInt(mCarSettings.getFigure()));
-
             options.put("displacement", getEditViewText(rootView, R.id.displacement_edit));
             options.put("category", mCarSettings.getCategory());
             options.put("transmission", getEditViewText(rootView, R.id.transmission_edit));
@@ -237,9 +237,9 @@ public class OptionsLayout extends LinearLayout {
             }
 
             if(options.has("displacement"))
-                setEditViewText(rootView, R.id.displacement_edit, Double.toString(options.getDouble("displacement")));
+                setEditViewText(rootView, R.id.displacement_edit, CarSettings.getInstance().getDisplacement());
             if(options.has("transmission"))
-                setEditViewText(rootView, R.id.transmission_edit, options.getString("transmission"));
+                setEditViewText(rootView, R.id.transmission_edit, CarSettings.getInstance().getTransmissionText());
 
             // 备胎
             if(options.has("spareTire"))

@@ -154,36 +154,39 @@ public class BasicInfoLayout extends LinearLayout {
         setTextView(rootView, R.id.compulsoryInsuranceDate_text, procedures.get("jqdate") == JSONObject.NULL ? "无" : procedures.getString("jqdate"));
 
         JSONObject sx = procedures.getJSONObject("sx");
-        setTextView(rootView, R.id.insurance_text, sx.getString("value") == JSONObject.NULL ? "无" : sx.getString("value"));
+        setTextView(rootView, R.id.insurance_text, sx.getString("Value") == JSONObject.NULL ? "无" : sx.getString("Value"));
 
         setTextView(rootView, R.id.insuranceRegion_text, procedures.get("sxdy") == JSONObject.NULL ? "无" : procedures.getString("sxdy"));
         setTextView(rootView, R.id.insuranceAmount_text, procedures.get("sxmoney") == JSONObject.NULL ? "无" : procedures.getString("sxmoney"));
         setTextView(rootView, R.id.insuranceExpiryDate_text, procedures.get("sxdate") == JSONObject.NULL ? "无" : procedures.getString("sxdate"));
 
         setTextView(rootView, R.id.insuranceCompany_text, procedures.get("insurer") == JSONObject.NULL ? "无" : procedures.getString("insurer"));
-        setTextView(rootView, R.id.source_text, procedures.get("source") == JSONObject.NULL ? "无" : procedures.getString("source"));
 
-        JSONObject source = procedures.getJSONObject("source");
-        String sourceString = "";
-        if(source.has("f1")) {
-            sourceString += source.getJSONObject("f1").getString("value");
+        if(procedures.get("source") == JSONObject.NULL) {
+            setTextView(rootView, R.id.source_text, "无");
         } else {
-            sourceString = "无";
-        }
+            JSONObject source = procedures.getJSONObject("source");
+            String sourceString = "";
+            if(source.has("f1") && !source.isNull("f1")) {
+                sourceString += source.getJSONObject("f1").getString("Value");
+            } else {
+                sourceString = "无";
+            }
 
-        // 没有f1就没有f2
-        if(source.has("f2")) {
-            sourceString += " - ";
-            sourceString += source.getJSONObject("f2").getString("value");
-        }
+            // 没有f1就没有f2
+            if(source.has("f2") && !source.isNull("f2")) {
+                sourceString += " - ";
+                sourceString += source.getJSONObject("f2").getString("Value");
+            }
 
-        // 没有f2就没有f3
-        if(source.has("f3")) {
-            sourceString += " - ";
-            sourceString += source.getJSONObject("f3").getString("value");
-        }
+            // 没有f2就没有f3
+            if(source.has("f3") && !source.isNull("f3")) {
+                sourceString += " - ";
+                sourceString += source.getJSONObject("f3").getString("Value");
+            }
 
-        setTextView(rootView, R.id.source_text, sourceString);
+            setTextView(rootView, R.id.source_text, sourceString);
+        }
 
         setTextView(rootView, R.id.seller_text, procedures.get("xsry") == JSONObject.NULL ? "无" : procedures.getString("xsry"));
         setTextView(rootView, R.id.carProperty_text, procedures.get("CarAttributeName") == JSONObject.NULL ? "无" : procedures.getString("CarAttributeName"));

@@ -9,14 +9,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.df.app.R;
-import com.df.library.entries.CarSettings;
+import com.df.library.procedures.ProceduresWebLayout;
 import com.df.library.util.Common;
 import com.df.library.util.MyOnClick;
 import com.df.library.service.views.MyViewPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by 岩 on 14-1-8.
@@ -28,7 +27,7 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
 
     private ViewPager viewPager;
     private MyViewPagerAdapter adapter;
-    private TextView carRecogniseTab, proceduresTab, optionsTab;
+    private TextView carRecogniseTab, proceduresTab;
     private List<View> views;
 
     private boolean loaded = false;
@@ -36,11 +35,6 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
     private CarRecogniseLayout carRecogniseLayout;
     private ProceduresWebLayout proceduresWebLayout;
 
-    public static CarSettings mCarSettings;
-
-    private OnUpdateUiListener mUpdateUiCallback;
-
-    public static String uniqueId;
 
     public InputProceduresLayout(Context context) {
         super(context);
@@ -59,12 +53,6 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
 
     public void init(Context context){
         rootView = LayoutInflater.from(context).inflate(R.layout.input_procedures_layout, this);
-
-        UUID uuid = UUID.randomUUID();
-        uniqueId = uuid.toString();
-
-        // 车辆配置信息
-        mCarSettings = new CarSettings();
 
         carRecogniseLayout = new CarRecogniseLayout(context, new CarRecogniseLayout.OnShowContent() {
                 @Override
@@ -114,7 +102,8 @@ public class InputProceduresLayout extends LinearLayout implements ViewPager.OnP
             }
         });
 
-        proceduresWebLayout = new ProceduresWebLayout(context);
+        // TODO 正式上线后使用new ProceduresWebLayout(context)
+        proceduresWebLayout = new ProceduresWebLayout(context, "add");
 
         InitViewPager(context);
         InitTextView();

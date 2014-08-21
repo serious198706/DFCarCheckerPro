@@ -17,7 +17,9 @@ import android.widget.Toast;
 import com.df.app.carsChecked.CarsCheckedListActivity;
 import com.df.app.R;
 import com.df.app.service.util.AppCommon;
+import com.df.library.carCheck.TransactionNotesLayout;
 import com.df.library.entries.Action;
+import com.df.library.entries.CarSettings;
 import com.df.library.entries.Issue;
 import com.df.library.entries.PhotoEntity;
 import com.df.library.entries.PosEntity;
@@ -28,6 +30,7 @@ import com.df.library.asyncTask.UploadPictureTask;
 import com.df.library.service.views.NaviDialog;
 import com.df.library.util.Common;
 import com.df.library.entries.UserInfo;
+import com.df.library.util.DeleteFiles;
 import com.df.library.util.MyAlertDialog;
 import com.df.library.util.PhotoParser;
 
@@ -228,9 +231,9 @@ public class CarCheckActivity extends Activity {
                 if(pass.equals("accidentCheck")) {
                     Toast.makeText(CarCheckActivity.this, "未完成事故检测！", Toast.LENGTH_SHORT).show();
                     selectTab(1);
-                } else if(pass.equals("leftFront") || pass.equals("rightFront") ||
-                        pass.equals("leftRear") || pass.equals("rightRear") ||
-                        pass.equals("spare") || pass.equals("edits")) {
+                } else if(pass.contains("leftFront") || pass.contains("rightFront") ||
+                        pass.contains("leftRear") || pass.contains("rightRear") ||
+                        pass.contains("spare") || pass.contains("edits")) {
                     selectTab(2);
                 } else if(pass.equals("exterior") || pass.contains("interior") ||
                         pass.contains("engine") || pass.equals("procedures") || pass.equals("agreements") ||
@@ -364,19 +367,45 @@ public class CarCheckActivity extends Activity {
                 startActivity(intent);
                 finish();
 
+                String ex = "";
+                switch (Common.getEnvironment()) {
+                    case Common.INTERNAL_100_110_VERSION:
+                        ex = "100_100_";
+                        break;
+                    case Common.INTERNAL_100_3_VERSION:
+                        ex = "100_3_";
+                        break;
+                    case Common.INTERNAL_100_6_VERSION:
+                        ex = "100_6_";
+                        break;
+                    case Common.EXTERNAL_VERSION:
+                        ex = "ex_";
+                        break;
+                    case Common.PRODUCT_VERSION:
+                        ex = "pro_";
+                        break;
+                }
+
                 // 如果存在临时保存的数据，则删除之
                 try {
-                    File file = new File(AppCommon.savedDirectory + Integer.toString(carId));
+                    File file = new File(AppCommon.savedDirectory + ex + Integer.toString(carId));
                     if(file.exists()) {
                         file.delete();
                     }
 
-                    //TODO 删除相关文件
-//                    DeleteFiles deleteFiles = new DeleteFiles(AppCommon.photoDirectory, filesDelete);
-//                    deleteFiles.deleteFiles();
+                    // 删除相关文件
+                    for(PhotoEntity photoEntity : photoEntities) {
+                        if(!photoEntity.getFileName().equals(""))
+                            DeleteFiles.deleteFile(AppCommon.photoDirectory + photoEntity.getFileName());
+
+                        if(!photoEntity.getThumbFileName().equals(""))
+                            DeleteFiles.deleteFile(AppCommon.photoDirectory + photoEntity.getThumbFileName());
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                clearCache();
             }
 
             @Override
@@ -417,20 +446,56 @@ public class CarCheckActivity extends Activity {
      * 以json形式保存成文件
      */
     private void saveData() {
+        saveData(true);
+    }
+
+    /**
+     * 在切换大项时自动保存
+     */
+    private void autoSaveData() {
+        saveData(false);
+    }
+
+    /**
+     * 保存
+     * @param notify 是否以toast形式显示通知
+     */
+    private void saveData(final boolean notify) {
         GeneratePhotoEntitiesTask generatePhotoEntitiesTask = new GeneratePhotoEntitiesTask(this, photoEntities,
                 accidentCheckLayout, integratedCheckLayout, false, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
             @Override
             public void onFinished(List<PhotoEntity> photoEntities) {
-                SaveDataTask saveDataTask = new SaveDataTask(CarCheckActivity.this, carId, AppCommon.savedDirectory, photoEntities, new SaveDataTask.OnSaveDataFinished() {
+                String ex = "";
+                switch (Common.getEnvironment()) {
+                    case Common.INTERNAL_100_110_VERSION:
+                        ex = "100_100_";
+                        break;
+                    case Common.INTERNAL_100_3_VERSION:
+                        ex = "100_3_";
+                        break;
+                    case Common.INTERNAL_100_6_VERSION:
+                        ex = "100_6_";
+                        break;
+                    case Common.EXTERNAL_VERSION:
+                        ex = "ex_";
+                        break;
+                    case Common.PRODUCT_VERSION:
+                        ex = "pro_";
+                        break;
+                }
+
+                SaveDataTask saveDataTask = new SaveDataTask(CarCheckActivity.this, carId, AppCommon.savedDirectory + ex, photoEntities, new SaveDataTask.OnSaveDataFinished() {
                     @Override
                     public void onFinished() {
-                        Toast.makeText(CarCheckActivity.this, "保存成功！", Toast.LENGTH_SHORT).show();
+                        if(notify)
+                            Toast.makeText(CarCheckActivity.this, "保存成功！", Toast.LENGTH_SHORT).show();
                         Log.d(AppCommon.TAG, "保存成功！");
                     }
 
                     @Override
                     public void onFailed() {
-                        Toast.makeText(CarCheckActivity.this, "保存失败！", Toast.LENGTH_SHORT).show();
+                        if(notify)
+                            Toast.makeText(CarCheckActivity.this, "保存失败！", Toast.LENGTH_SHORT).show();
                         Log.d(AppCommon.TAG, "保存失败！");
                     }
                 });
@@ -440,37 +505,6 @@ public class CarCheckActivity extends Activity {
             @Override
             public void onFailed() {
                 Toast.makeText(CarCheckActivity.this, "处理失败！", Toast.LENGTH_SHORT).show();
-                Log.d(AppCommon.TAG, "生成草图失败！");
-            }
-        });
-
-        generatePhotoEntitiesTask.execute();
-    }
-
-    /**
-     * 在切换大项时自动保存
-     */
-    private void autoSaveData() {
-        GeneratePhotoEntitiesTask generatePhotoEntitiesTask = new GeneratePhotoEntitiesTask(this, photoEntities,
-                accidentCheckLayout, integratedCheckLayout, false, new GeneratePhotoEntitiesTask.OnGenerateFinished() {
-            @Override
-            public void onFinished(List<PhotoEntity> photoEntities) {
-                SaveDataTask saveDataTask = new SaveDataTask(CarCheckActivity.this, carId, AppCommon.savedDirectory, photoEntities, new SaveDataTask.OnSaveDataFinished() {
-                    @Override
-                    public void onFinished() {
-                        Log.d(AppCommon.TAG, "自动保存成功！");
-                    }
-
-                    @Override
-                    public void onFailed() {
-                        Log.d(AppCommon.TAG, "自动保存失败！");
-                    }
-                });
-                saveDataTask.execute(jsonObject);
-            }
-
-            @Override
-            public void onFailed() {
                 Log.d(AppCommon.TAG, "生成草图失败！");
             }
         });
@@ -992,6 +1026,7 @@ public class CarCheckActivity extends Activity {
                     public boolean handleMessage(Message message) {
                         switch (message.what) {
                             case MyAlertDialog.POSITIVE_PRESSED:
+                                clearCache();
                                 Intent intent = new Intent(CarCheckActivity.this, activity);
                                 startActivity(intent);
                                 finish();
@@ -1010,6 +1045,7 @@ public class CarCheckActivity extends Activity {
      */
     private void clearCache() {
         saved = false;
+        CarSettings.destroyInstance();
         basicInfoLayout.clearCache();
         accidentCheckLayout.clearCache();
         integratedCheckLayout.clearCache();
